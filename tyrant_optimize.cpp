@@ -2848,8 +2848,14 @@ void read_owned_cards(Cards& cards)
 	assert(beg != tok.end());
 	unsigned num{atoi((*beg).c_str())};
 	auto card_itr = cards.player_cards_by_name.find(name);
-	assert(card_itr != cards.player_cards_by_name.end());
-	owned_cards[card_itr->second->m_id] = num;
+	if(card_itr == cards.player_cards_by_name.end())
+	{
+	    std::cerr << "Error in file ownedcards.txt, the card \"" << name << "\" does not seem to be a valid card.\n";
+	}
+	else
+	{
+	    owned_cards[card_itr->second->m_id] = num;
+	}
     }
 }
 
@@ -2912,7 +2918,7 @@ std::set<unsigned> top_commanders{
         1172 // Teiffa
 };
 //------------------------------------------------------------------------------
-bool suitable_non_commander(DeckRandom& deck, unsigned slot, const Card* card)
+bool suitable_non_commander(DeckRandom& deck, unsigned slot, const Card* card, const Card* best_card)
 {
     assert(card->m_type != CardType::commander);
     if(use_owned_cards)
@@ -2951,7 +2957,7 @@ bool suitable_non_commander(DeckRandom& deck, unsigned slot, const Card* card)
             }
         }
     }
-    if(card->m_id == deck.cards[slot]->m_id)
+    if(card->m_id == best_card->m_id)
     {
         return(false);
     }
@@ -3262,7 +3268,7 @@ void hill_climbing(unsigned num_iterations, DeckRandom* d1, Process& proc)
             for(unsigned card_i(0); card_i < proc.cards.player_cards.size(); ++card_i)
             {
                 if(proc.cards.player_cards[card_i]->m_type == CardType::commander) { continue; }
-                if(!suitable_non_commander(*d1, slot_i, proc.cards.player_cards[card_i]))
+                if(!suitable_non_commander(*d1, slot_i, proc.cards.player_cards[card_i], proc.cards.by_id(best_cards[slot_i])))
                 { continue; }
                 d1->cards[slot_i] = proc.cards.player_cards[card_i];
                 auto compare_score = proc.compare(num_iterations, best_score);
@@ -3423,7 +3429,7 @@ inline void try_all_ratio_combinations(unsigned deck_size, unsigned var_k, unsig
 	    assert(deck_cards.size() == deck_size);
 	    DeckRandom deck(commander, deck_cards);
 	    *proc.att_deck = deck;
-	    auto new_score = proc.compare(100000, best_score);
+	    auto new_score = proc.compare(num_iterations, best_score);
 	    double new_float_score = compute_score(new_score.first, proc.factors, new_score.second);
 	    if(new_float_score > best_score)
 	    {
@@ -3460,11 +3466,12 @@ void exhaustive_k(unsigned num_iterations, unsigned var_k, Process& proc)
     bool finished(false);
     double best_score{0};
     boost::optional<DeckRandom> best_deck;
+    unsigned num_cards = ((DeckRandom*)proc.att_deck)->cards.size();
     while(!finished)
     {
         if(keep_commander)
         {
-	    try_all_ratio_combinations(10, var_k, num_iterations, indices, ass_structs, ((DeckRandom*)proc.att_deck)->commander, proc, best_score, best_deck);
+	    try_all_ratio_combinations(num_cards, var_k, num_iterations, indices, ass_structs, ((DeckRandom*)proc.att_deck)->commander, proc, best_score, best_deck);
         }
         else
         {
@@ -3473,7 +3480,7 @@ void exhaustive_k(unsigned num_iterations, unsigned var_k, Process& proc)
             {
                 const Card* commander(proc.cards.player_commanders[commanderIndex]);
                 if(!suitable_commander(commander)) { continue; }
-                try_all_ratio_combinations(10, var_k, num_iterations, indices, ass_structs, commander, proc, best_score, best_deck);
+                try_all_ratio_combinations(num_cards, var_k, num_iterations, indices, ass_structs, commander, proc, best_score, best_deck);
             }
         }
 	finished = cardIndices.next();
