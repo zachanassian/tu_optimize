@@ -31,6 +31,7 @@
 #include <map>
 #include <set>
 #include <iterator>
+#include <tuple>
 #include <boost/utility.hpp> // because of 1.51 bug. missing include in range/any_range.hpp ?
 #include <boost/range/algorithm_ext/insert.hpp>
 #include <boost/range/any_range.hpp>
@@ -1497,7 +1498,7 @@ void turn_start_phase(Field* fd)
 #ifndef NDEBUG
 		if(status.m_hp < status.m_card->m_health)
 		{
-		    _DEBUG_MSG("%s refreshed. hp %u -> %u.\n", index, status_description(&status).c_str(), status.m_hp, status.m_card->m_health);
+		    _DEBUG_MSG("%u %s refreshed. hp %u -> %u.\n", index, status_description(&status).c_str(), status.m_hp, status.m_card->m_health);
 		}
 #endif
 		status.m_hp = status.m_card->m_health;
@@ -1698,7 +1699,7 @@ struct AssaultPhase
     {
 	remove_hp(fd, *def_status, att_dmg);
 	killed_by_attack = def_status->m_hp == 0;
-	_DEBUG_MSG("%s attack damage %u", status_description(att_status).c_str(), att_dmg);
+	_DEBUG_MSG("%s attack damage %u\n", status_description(att_status).c_str(), att_dmg);
     }
 
     template<enum CardType::CardType>
@@ -2577,6 +2578,48 @@ struct Decks
     }
 };
 
+template<typename Iterator, typename Functor> Iterator advance_until(Iterator it, Iterator it_end, Functor f)
+{
+    while(it != it_end)
+    {
+        if(f(*it))
+        {
+            break;
+        }
+        ++it;
+    }
+    return(it);
+}
+
+// take care that "it" is 1 past current.
+template<typename Iterator, typename Functor> Iterator recede_until(Iterator it, Iterator it_beg, Functor f)
+{
+    if(it == it_beg) { return(it_beg); }
+    --it;
+    do
+    {
+        if(f(*it))
+        {
+	    return(++it);
+        }
+        --it;
+    } while(it != it_beg);
+    return(it_beg);
+}
+
+template<typename Iterator, typename Functor, typename Token> Iterator read_token(Iterator it, Iterator it_end, Functor f, boost::optional<Token>& token)
+{
+    Iterator token_start = advance_until(it, it_end, [](const char& c){return(c != ' ');});
+    Iterator token_end_after_spaces = advance_until(token_start, it_end, f);
+    if(token_start != token_end_after_spaces)
+    {
+	Iterator token_end = recede_until(token_end_after_spaces, token_start, [](const char& c){return(c != ' ');});
+	token = boost::lexical_cast<Token>(std::string{token_start, token_end});
+	return(token_end_after_spaces);
+    }
+    return(token_end_after_spaces);
+}
+
 // Error codes:
 // 2 -> file not readable
 // 3 -> error while parsing file
@@ -2598,68 +2641,83 @@ unsigned read_custom_decks(Cards& cards, std::string filename, std::map<std::str
 	    std::string deck_string;
 	    getline(decks_file, deck_string);
 	    ++num_line;
-	    //std::cout << "Read " << deck_string.size() << " characters: " << deck_string << "\n";
 	    if(deck_string.size() > 0)
 	    {
 		boost::tokenizer<boost::char_delimiters_separator<char> > deck_tokens{deck_string, boost::char_delimiters_separator<char>{false, ":,", ""}};
-		unsigned token_idx(0);
-		std::string deck_name;
-		for(auto token_iter = deck_tokens.begin(); token_iter != deck_tokens.end(); ++token_iter, ++token_idx)
+		auto token_iter = deck_tokens.begin();
+		boost::optional<std::string> deck_name;
+		if(token_iter != deck_tokens.end())
 		{
-		    if(token_idx == 0)
+		    read_token(token_iter->begin(), token_iter->end(), [](char c){return(false);}, deck_name);
+		    if(!deck_name || (*deck_name).size() == 0)
 		    {
-			deck_name = *token_iter;
-			//std::cout << "Deck name: " << deck_name << "\n";
+			std::cerr << "Error in file " << filename << " at line " << num_line << ", could not read the deck name.\n";
+			continue;
 		    }
-		    else
+		}
+		else
+		{
+		    std::cerr << "Error in file " << filename << " at line " << num_line << ", could not read the deck name.\n";
+		    continue;
+		}
+		++token_iter;
+                for(; token_iter != deck_tokens.end(); ++token_iter)
+                {
+		    std::string card_spec(*token_iter);
+		    try
 		    {
-			std::string card_maybe_id(*token_iter);
-			boost::tokenizer<boost::char_delimiters_separator<char> > card_tokens{card_maybe_id, boost::char_delimiters_separator<char>{false, "[]", ""}};
-			auto card_token_iter = card_tokens.begin();
-			if(card_token_iter == card_tokens.end())
+			auto card_spec_iter = card_spec.begin();
+			boost::optional<std::string> card_name;
+			card_spec_iter = read_token(card_spec_iter, card_spec.end(), [](char c){return(c=='[' || c=='#');}, card_name);
+			if(!card_name)
 			{
-			    std::cerr << "Error in file " << filename << " at line " << num_line << "while parsing card " << card_maybe_id << " in deck " << deck_name << "\n";
-			    return(3);
+			    std::cerr << "Error in file " << filename << " at line " << num_line << " while parsing card " << card_spec << " in deck " << deck_name << "\n";
+			    break;
 			}
 			else
 			{
-			    std::string card_name(*card_token_iter);
-			    ++card_token_iter;
-			    // parse the id
-			    if(card_token_iter != card_tokens.end())
+			    boost::optional<unsigned> card_id;
+			    if(*card_spec_iter == '[')
 			    {
-				try
-				{
-				    unsigned card_id = boost::lexical_cast<unsigned>(*card_token_iter);
-				    //std::cout << "  card " << card_name << " with id " << card_id << "\n";
-				    auto card_it = cards.cards_by_id.find(card_id);
-				    if(card_it != cards.cards_by_id.end())
-				    {
-					card_ids.push_back(card_id);
-				    }
-				}
-				catch(boost::bad_lexical_cast e)
-				{
-				    std::cerr << "Error in file " << filename << " at line " << num_line << " while parsing card " << card_maybe_id << " in deck " << deck_name << "\n";
-				    return(3);
-				}
+				++card_spec_iter;
+				card_spec_iter = read_token(card_spec_iter, card_spec.end(), [](char c){return(c==']');}, card_id);
+				card_spec_iter = advance_until(card_spec_iter, card_spec.end(), [](char c){return(c!=' ');});
 			    }
-			    else
+			    boost::optional<unsigned> card_num;
+			    if(*card_spec_iter == '#')
 			    {
-				auto card_it = cards.player_cards_by_name.find(card_name);
+				++card_spec_iter;
+				card_spec_iter = read_token(card_spec_iter, card_spec.end(), [](char c){return(c < '0' || c > '9');}, card_num);
+			    }
+			    unsigned resolved_id{card_id ? *card_id : 0};
+			    if(resolved_id == 0)
+			    {
+				auto card_it = cards.player_cards_by_name.find(*card_name);
 				if(card_it != cards.player_cards_by_name.end())
 				{
-				    card_ids.push_back(card_it->second->m_id);
+				    resolved_id = card_it->second->m_id;
 				}
-				//std::cout << "  card " << card_name << "\n";
+				else
+				{
+				    std::cerr << "Error in file " << filename << " at line " << num_line << " while parsing card " << card_spec << " in deck " << deck_name << ": card not found\n";
+				    break;
+				}
+			    }
+			    for(unsigned i(0); i < (card_num ? *card_num : 1); ++i)
+			    {
+				card_ids.push_back(resolved_id);
 			    }
 			}
 		    }
+		    catch(boost::bad_lexical_cast e)
+		    {
+			std::cerr << "Error in file " << filename << " at line " << num_line << " while parsing card " << card_spec << " in deck " << deck_name << "\n";
+		    }
 		}
-                DeckIface* deck = new DeckRandom{cards, card_ids};
-		custom_decks.insert({deck_name, deck});
-		// if catch:
-		// std::cerr << "Error in file " << filename << " at line " << num_line << ": " << deck_string << "\n";
+		if(deck_name)
+		{
+		    custom_decks.insert({*deck_name, new DeckRandom{cards, card_ids}});
+		}
 	    }
 	}
     }
