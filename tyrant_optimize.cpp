@@ -2770,7 +2770,7 @@ unsigned read_custom_decks(Cards& cards, std::string filename, std::map<std::str
 				}
 				else
 				{
-				    std::cerr << "Error in file " << filename << " at line " << num_line << " while parsing card " << card_spec << " in deck " << deck_name << ": card not found\n";
+				    std::cerr << "Error in file " << filename << " at line " << num_line << " while parsing card " << card_spec << " in deck " << *deck_name << ": card not found\n";
 				    break;
 				}
 			    }
@@ -3116,7 +3116,7 @@ double compute_efficiency(std::vector<unsigned>& scores, unsigned total)
     return(scores.size() / sum);
 }
 //------------------------------------------------------------------------------
-bool use_efficiency{true};
+bool use_efficiency{false};
 double compute_score(std::vector<unsigned>& scores, std::vector<double>& factors, unsigned total)
 {
     double score{0.};
@@ -3318,22 +3318,26 @@ void thread_evaluate(boost::barrier& main_barrier,
                 ++thread_total; //!
 		unsigned thread_total_local{thread_total}; //!
                 shared_mutex.unlock(); //>>>>
-                if(result.size() > 1 && thread_compare && thread_total_local >= 100)
+                if(thread_compare && thread_total_local >= 1 && thread_total_local % 100 == 0)
                 {
-                    double tolerance{100.0 / (double) thread_total_local};
-		    double score{compute_score(thread_score_local, sim.factors, thread_total_local)};
-                    if(thread_prev_score > score + tolerance)
-		    {
-			shared_mutex.lock(); //<<<<
-			thread_compare_stop = true; //!
-			shared_mutex.unlock(); //>>>>
-		    }
-                }
-                else if(result.size() == 1 && thread_compare && thread_total_local >= 1 && thread_total_local % 100 == 0)
-                {
-		    if(boost::math::binomial_distribution<>::find_upper_bound_on_p(thread_total_local, thread_score_local[0], 0.01) < thread_prev_score)
-			//if(boost::math::cdf(boost::math::binomial_distribution<>(thread_total_local, thread_prev_score), thread_score_local[0]) < 0.01)
-		    {
+                    unsigned score_accum = 0;
+                    // Multiple defense decks case: scaling by factors and approximation of a "discrete" number of events.
+                    if(result.size() > 1)
+                    {
+                        double score_accum_d = 0.0;
+                        for(unsigned i = 0; i < thread_score_local.size(); ++i)
+                        {
+                            score_accum_d += thread_score_local[i] * sim.factors[i];
+                        }
+                        score_accum_d /= std::accumulate(sim.factors.begin(), sim.factors.end(), .0d);
+                        score_accum = score_accum_d;
+                    }
+                    else
+                    {
+                        score_accum = thread_score_local[0];
+                    }
+		    if(boost::math::binomial_distribution<>::find_upper_bound_on_p(thread_total_local, score_accum, 0.01) < thread_prev_score)
+                    {
 			shared_mutex.lock(); //<<<<
 			//std::cout << thread_total_local << "\n";
 			thread_compare_stop = true; //!
@@ -3661,12 +3665,33 @@ void print_available_decks(const Decks& decks)
     }
 }
 
+std::vector<std::pair<std::string, double> > parse_deck_list(std::string list_string)
+{
+    std::vector<std::pair<std::string, double> > res;
+    boost::tokenizer<boost::char_delimiters_separator<char> > list_tokens{list_string, boost::char_delimiters_separator<char>{false, ",", ""}};
+    for(auto list_token = list_tokens.begin(); list_token != list_tokens.end(); ++list_token)
+    {
+        boost::tokenizer<boost::char_delimiters_separator<char> > deck_tokens{*list_token, boost::char_delimiters_separator<char>{false, ":", ""}};
+        auto deck_token = deck_tokens.begin();
+        res.push_back(std::make_pair(*deck_token, 1.0d));
+        ++deck_token;
+        if(deck_token != deck_tokens.end())
+        {
+            res.back().second = boost::lexical_cast<double>(*deck_token);
+        }
+    }
+    return(res);
+}
+
 void usage(int argc, char** argv)
 {
-    std::cout << "usage: " << argv[0] << " <attack deck> <defense deck> [optional flags] [brute <num1> <num2>] [climb <num>]\n";
+    std::cout << "usage: " << argv[0] << " <attack deck> <defense decks list> [optional flags] [brute <num1> <num2>] [climb <num>]\n";
     std::cout << "\n";
-    std::cout << "<attack deck>: the deck name of a custom decks.\n";
-    std::cout << "<defense deck>: the deck name of a mission, raid, or custom decks.\n";
+    std::cout << "<attack deck>: the deck name of a custom deck.\n";
+    std::cout << "<defense decks list>: comma separated list of defense decks, syntax:\n";
+    std::cout << "  deckname1[:factor1],deckname2[:factor2],...\n";
+    std::cout << "  where deckname is the name of a mission, raid, or custom deck, and factor is optional. The default factor is 1.\n";
+    std::cout << "  example: \'fear:0.2,slowroll:0.8\' means fear is the defense deck 20% of the time, while slowroll is the defense deck 80% of the time.\n";
     std::cout << "\n";
     std::cout << "Flags:\n";
     std::cout << "  -c: don't try to optimize the commander.\n";
@@ -3728,18 +3753,23 @@ int main(int argc, char** argv)
         return(4);
     }
     std::string att_deck_name{argv[1]};
-    std::string def_deck_name{argv[2]};
     std::vector<DeckIface*> def_decks;
-    DeckIface* def_deck = find_deck(decks, def_deck_name);
-    if(def_deck != nullptr)
+    std::vector<double> def_decks_factors;
+    auto deck_list_parsed = parse_deck_list(argv[2]);
+    for(auto deck_parsed: deck_list_parsed)
     {
-    	def_decks.push_back(def_deck);
-    }
-    else
-    {
-    	std::cout << "The deck " << def_deck_name << " was not found. Available decks:\n";
-        print_available_decks(decks);
-    	return(5);
+        DeckIface* def_deck = find_deck(decks, deck_parsed.first);
+        if(def_deck != nullptr)
+        {
+            def_decks.push_back(def_deck);
+            def_decks_factors.push_back(deck_parsed.second);
+        }
+        else
+        {
+            std::cout << "The deck " << deck_parsed.first << " was not found. Available decks:\n";
+            print_available_decks(decks);
+            return(5);
+        }
     }
     std::vector<std::tuple<unsigned, unsigned, Operation> > todo;
     for(unsigned argIndex(3); argIndex < argc; ++argIndex)
@@ -3794,7 +3824,7 @@ int main(int argc, char** argv)
     }
     print_deck_random(*att_deck);
 
-    Process p(num_threads, cards, decks, att_deck, def_decks, {1.0}, gamemode);
+    Process p(num_threads, cards, decks, att_deck, def_decks, def_decks_factors, gamemode);
     {
         //ScopeClock timer;
 	for(auto op: todo)
