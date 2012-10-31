@@ -2370,7 +2370,7 @@ CardStatus* get_target_hostile_fast(Field* fd, unsigned trgt, CardStatus* src_st
 		    intercept_card = left_status;
 		}
 	    }
-	    if(rand_index+1 < array_head-1 && !intercept_card)
+	    if(rand_index+1 < array_head && !intercept_card)
 	    {
 		CardStatus* right_status(fd->selection_array[rand_index+1]);
 		if(right_status->m_card->m_intercept && right_status->m_index == c->m_index+1)
