@@ -1927,7 +1927,16 @@ inline bool skill_predicate<chaos>(CardStatus* c)
 
 template<>
 inline bool skill_predicate<cleanse>(CardStatus* c)
-{ return(c->m_hp > 0); }
+{
+    return(c->m_hp > 0 && (
+	       c->m_chaos ||
+	       c->m_diseased ||
+	       c->m_enfeebled > 0 ||
+	       (c->m_frozen && c->m_delay == 0) ||
+	       c->m_jammed ||
+	       c->m_poisoned
+			   ));
+}
 
 template<>
 inline bool skill_predicate<enfeeble>(CardStatus* c)
