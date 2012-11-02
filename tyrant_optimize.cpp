@@ -3546,7 +3546,7 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
                     {
                         std::swap(d1->ordered_cards[slot_i], d1->ordered_cards[current_slot]);
                     }
-                    d1->ordered_cards[current_slot] = card_candidate;
+                    d1->ordered_cards[slot_i] = card_candidate;
                     // Evaluate new deck
                     auto compare_results = proc.compare(num_iterations, best_score);
                     current_score = compute_score(compare_results, proc.factors);
@@ -3555,12 +3555,11 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
                     {
                         // Then update best score/slot, print stuff
                         best_score = current_score;
-                        best_cards[current_slot] = card_candidate;
+                        best_cards[slot_i] = card_candidate;
                         if(slot_i != current_slot)
                         {
-                            best_cards[slot_i] = d1->ordered_cards[slot_i];
+                            best_cards[current_slot] = d1->ordered_cards[current_slot];
                         }
-                        best_cards[slot_i] = card_candidate;
                         eval_commander = true;
                         deck_has_been_improved = true;
                         std::cout << "Deck improved: slot " << slot_i << " -> " << card_candidate->m_name << ": ";
