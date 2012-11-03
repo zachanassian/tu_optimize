@@ -255,7 +255,7 @@ enum SkillSourceType
     source_chaos
 };
 
-typedef std::vector<std::tuple<ActiveSkill, unsigned, Faction> > ActiveSkill_t;
+typedef std::tuple<ActiveSkill, unsigned, Faction> SkillSpec;
 
 class Card
 {
@@ -353,10 +353,10 @@ public:
   bool m_unique;
   unsigned m_valor;
   bool m_wall;
-  ActiveSkill_t m_skills;
-  ActiveSkill_t m_skills_played;
-  ActiveSkill_t m_skills_died;
-  ActiveSkill_t m_skills_attacked;
+  std::vector<SkillSpec> m_skills;
+  std::vector<SkillSpec> m_skills_played;
+  std::vector<SkillSpec> m_skills_died;
+  std::vector<SkillSpec> m_skills_attacked;
   CardType::CardType m_type;
 };
 
@@ -397,7 +397,7 @@ struct CardStatus
     unsigned m_hp;
     bool m_immobilized;
     bool m_infused;
-    ActiveSkill_t infused_skills;
+    std::vector<SkillSpec> infused_skills;
     bool m_jammed;
     unsigned m_poisoned;
     unsigned m_protected;
@@ -459,7 +459,7 @@ struct CardStatus
     }
 };
 //------------------------------------------------------------------------------
-std::string skill_description(const ActiveSkill_t::value_type& s)
+std::string skill_description(const SkillSpec& s)
 {
     return(skill_names[std::get<0>(s)] +
            (std::get<2>(s) == allfactions ? "" : std::string(" ") + faction_names[std::get<2>(s)]) +
@@ -845,6 +845,19 @@ void read_cards(Cards& cards)
 //------------------------------------------------------------------------------
 struct DeckIface
 {
+    const Card* commander;
+    std::vector<const Card*> cards;
+    
+    DeckIface() :
+	commander{nullptr}
+    {}
+
+    DeckIface(const Card* commander_,
+	      boost::any_range<const Card*, boost::forward_traversal_tag, const Card*, std::ptrdiff_t> cards_) :
+	commander(commander_),
+	cards(std::begin(cards_), std::end(cards_))
+    {}
+;
     virtual ~DeckIface() {};
     virtual DeckIface* clone() const = 0;
     virtual const Card* get_commander() = 0;
@@ -856,8 +869,6 @@ struct DeckIface
 //------------------------------------------------------------------------------
 struct DeckRandom : DeckIface
 {
-    const Card* commander;
-    std::vector<const Card*> cards;
     std::vector<std::pair<unsigned, std::vector<const Card*> > > raid_cards;
     std::deque<const Card*> shuffled_cards;
 
@@ -866,15 +877,17 @@ struct DeckRandom : DeckIface
 	const std::vector<const Card*>& cards_,
 	std::vector<std::pair<unsigned, std::vector<const Card*> > > raid_cards_ =
 	std::vector<std::pair<unsigned, std::vector<const Card*> > >()) :
-        commander(commander_),
-        cards(cards_),
+	DeckIface(commander_, cards_),
         raid_cards(raid_cards_)
     {
     }
 
-    DeckRandom(const Cards& all_cards, const std::vector<std::string>& names) :
-	commander{nullptr},
-	cards{}
+    DeckRandom(const DeckIface& other) :
+	DeckIface(other)
+    {
+    }
+
+    DeckRandom(const Cards& all_cards, const std::vector<std::string>& names)
     {
 	for(auto name: names)
 	{
@@ -909,9 +922,7 @@ struct DeckRandom : DeckIface
 	}
     }
 
-    DeckRandom(const Cards& all_cards, const std::vector<unsigned>& ids) :
-	commander{nullptr},
-	cards{}
+    DeckRandom(const Cards& all_cards, const std::vector<unsigned>& ids)
     {
 	for(auto id: ids)
 	{
@@ -983,7 +994,7 @@ struct DeckRandom : DeckIface
     }
 };
 
-void print_deck_random(DeckRandom& deck)
+void print_deck(DeckIface& deck)
 {
     std::cout << "Deck:" << std::endl;
     if(deck.commander)
@@ -1003,16 +1014,18 @@ void print_deck_random(DeckRandom& deck)
 // No support for ordered raid decks
 struct DeckOrdered : DeckIface
 {
-    const Card* commander;
-    std::vector<const Card*> ordered_cards;
     std::deque<const Card*> shuffled_cards;
     // card id -> card order
     std::map<unsigned, std::list<unsigned> > order;
 
-    DeckOrdered(const Card* commander_, boost::any_range<const Card*, boost::forward_traversal_tag, const Card*, std::ptrdiff_t> ordered_cards_) :
-	commander(commander_),
-	ordered_cards(std::begin(ordered_cards_), std::end(ordered_cards_)),
-	shuffled_cards(ordered_cards.begin(), ordered_cards.end())
+    DeckOrdered(const Card* commander_, boost::any_range<const Card*, boost::forward_traversal_tag, const Card*, std::ptrdiff_t> cards_) :
+	DeckIface(commander_, cards_),
+	shuffled_cards(cards.begin(), cards.end())
+    {
+    }
+
+    DeckOrdered(const DeckIface& other) :
+	DeckIface(other)
     {
     }
 
@@ -1068,13 +1081,13 @@ struct DeckOrdered : DeckIface
     {
         unsigned i = 0;
         order.clear();
-        for(auto card: ordered_cards)
+        for(auto card: cards)
         {
             order[card->m_id].push_back(i);
             ++i;
         }
 	shuffled_cards.clear();
-	range::insert(shuffled_cards, shuffled_cards.end(), ordered_cards);
+	range::insert(shuffled_cards, shuffled_cards.end(), cards);
 	std::shuffle(shuffled_cards.begin(), shuffled_cards.end(), re);
     }
 
@@ -1133,7 +1146,7 @@ public:
     gamemode_t gamemode;
     // With the introduction of on death skills, a single skill can trigger arbitrary many skills.
     // They are stored in this, and cleared after all have been performed.
-    std::deque<std::tuple<unsigned, CardStatus*, ActiveSkill_t::value_type> > skill_queue;
+    std::deque<std::tuple<CardStatus*, SkillSpec> > skill_queue;
     std::vector<CardStatus*> killed_with_on_death;
     std::vector<CardStatus*> killed_with_regen;
 
@@ -1170,39 +1183,50 @@ inline unsigned opponent(unsigned player)
     return((player + 1) % 2);
 }
 //------------------------------------------------------------------------------
-void push_on_death_in_front(Field* fd)
+void prepend_on_death(Field* fd)
 {
     for(auto status: boost::adaptors::reverse(fd->killed_with_on_death))
     {
         for(auto& skill: boost::adaptors::reverse(status->m_card->m_skills_died))
         {
             _DEBUG_MSG("On death skill pushed in front %s %u %s\n", skill_names[std::get<0>(skill)].c_str(), std::get<1>(skill), faction_names[std::get<2>(skill)].c_str());
-            fd->skill_queue.emplace_front(status->m_chaos ? status->m_player : opponent(status->m_player), status, skill);
+            fd->skill_queue.emplace_front(status, skill);
         }
     }
     fd->killed_with_on_death.clear();
 }
 //------------------------------------------------------------------------------
-void(*skill_table[num_skills])(Field*, unsigned trgt, CardStatus* src_status, const ActiveSkill_t::value_type&);
+void(*skill_table[num_skills])(Field*, CardStatus* src_status, const SkillSpec&);
 void resolve_skill(Field* fd)
 {
     while(!fd->skill_queue.empty())
     {
-        auto skill_tuple(fd->skill_queue.front());
+        auto skill_instance(fd->skill_queue.front());
+	auto& status(std::get<0>(skill_instance));
+	auto& skill(std::get<1>(skill_instance));
         fd->skill_queue.pop_front();
-	auto& skill(std::get<2>(skill_tuple));
-	skill_table[std::get<0>(skill)](fd, std::get<0>(skill_tuple), std::get<1>(skill_tuple), skill);
+	skill_table[std::get<0>(skill)](fd, status, skill);
     }
 }
 //------------------------------------------------------------------------------
 void assault_phase(Field* fd, unsigned att_index);
-void evaluate_skills(Field* fd, CardStatus* status, const ActiveSkill_t& skills)
+SkillSpec augmented_skill(CardStatus* status, const SkillSpec& s)
 {
+    SkillSpec augmented_s = s;
+    if(std::get<0>(s) != augment)
+    {
+	std::get<1>(augmented_s) += status->m_augmented;
+    }
+    return(augmented_s);
+}
+void evaluate_skills(Field* fd, CardStatus* status, const std::vector<SkillSpec>& skills)
+{
+    assert(status);
     assert(fd->skill_queue.size() == 0);
     for(auto& skill: skills)
     {
         _DEBUG_MSG("Evaluating %s skill %s\n", status_description(status).c_str(), skill_description(skill).c_str());
-        fd->skill_queue.push_back(std::make_tuple(fd->tipi, status, skill));
+        fd->skill_queue.emplace_back(status, status->m_augmented == 0 ? skill : augmented_skill(status, skill));
         resolve_skill(fd);
     }
 }
@@ -1269,7 +1293,7 @@ struct PlayCard
     {
 	for(auto& skill: card->m_skills_played)
 	{
-	    fd->skill_queue.push_back(std::make_tuple(fd->tipi, status, skill));
+	    fd->skill_queue.emplace_back(status, skill);
 	    resolve_skill(fd);
 	}
     }
@@ -1310,7 +1334,7 @@ void PlayCard::onPlaySkills<CardType::action>()
 {
     for(auto& skill: card->m_skills)
     {
-	fd->skill_queue.push_back(std::make_tuple(fd->tipi, nullptr, skill));
+	fd->skill_queue.emplace_back(nullptr, skill);
 	resolve_skill(fd);
 	// Special case: enemy commander killed by a shock action card
 	if(fd->tip->commander.m_hp == 0)
@@ -1328,10 +1352,12 @@ void PlayCard::onPlaySkills<CardType::action>()
 }
 //------------------------------------------------------------------------------
 void turn_start_phase(Field* fd);
-void push_on_death_in_front(Field* fd);
+void prepend_on_death(Field* fd);
 // return value : 0 -> attacker wins, 1 -> defender wins
 unsigned play(Field* fd)
 {
+    fd->players[0]->commander.m_player = 0;
+    fd->players[1]->commander.m_player = 1;
     fd->tapi = fd->gamemode == surge ? 1 : 0;
     fd->tipi = opponent(fd->tapi);
     fd->tap = fd->players[fd->tapi];
@@ -1389,7 +1415,7 @@ unsigned play(Field* fd)
 	    else
 	    {
 		// Special case: check for split (tartarus swarm raid)
-		if(status_ai.m_card->m_split)
+		if(status_ai.m_card->m_split && fd->tap->assaults.size() + fd->tap->structures.size() < 100)
 		{
 		    CardStatus& status_split(fd->tap->assaults.add_back());
 		    status_split.set(status_ai.m_card);
@@ -1559,7 +1585,7 @@ void turn_start_phase(Field* fd)
 	}
     }
     // Perform on death skills (from cards killed by poison damage)
-    push_on_death_in_front(fd);
+    prepend_on_death(fd);
     resolve_skill(fd);
     // Regen from poison
     check_regeneration(fd);
@@ -1711,7 +1737,7 @@ struct AssaultPhase
 		    }
 		    crush_leech<cardtype>();
 		}
-		push_on_death_in_front(fd);
+		prepend_on_death(fd);
 		resolve_skill(fd);
 		check_regeneration(fd);
 	    }
@@ -1752,7 +1778,7 @@ struct AssaultPhase
 	oa_berserk<cardtype>();
 	for(auto& oa_skill: def_status->m_card->m_skills_attacked)
 	{
-	    fd->skill_queue.push_back(std::make_tuple(fd->tapi, def_status, oa_skill));
+	    fd->skill_queue.emplace_back(def_status, oa_skill);
 	    resolve_skill(fd);
 	}
     }
@@ -1921,7 +1947,17 @@ inline bool skill_predicate(CardStatus* c)
 
 template<>
 inline bool skill_predicate<augment>(CardStatus* c)
-{ return(c->m_hp > 0); }
+{
+    if(c->m_hp > 0)
+    {
+	for(auto& s: c->m_card->m_skills)
+	{
+	    // Any quantifiable skill except augment
+	    if(std::get<1>(s) > 0 && std::get<0>(s) != augment) { return(true); }
+	}
+    }
+    return(false);
+}
 
 template<>
 inline bool skill_predicate<chaos>(CardStatus* c)
@@ -2107,7 +2143,7 @@ inline void perform_skill<weaken>(Field* fd, CardStatus* c, unsigned v)
 }
 
 template<unsigned skill_id>
-inline unsigned select_fast(Field* fd, CardStatus* src_status, const std::vector<CardStatus*>& cards, const ActiveSkill_t::value_type& s)
+inline unsigned select_fast(Field* fd, CardStatus* src_status, const std::vector<CardStatus*>& cards, const SkillSpec& s)
 {
     unsigned array_head{0};
     if(std::get<2>(s) == allfactions)
@@ -2137,7 +2173,7 @@ inline unsigned select_fast(Field* fd, CardStatus* src_status, const std::vector
 }
 
 template<unsigned skill_id>
-inline unsigned select_rally_like(Field* fd, CardStatus* src_status, const std::vector<CardStatus*>& cards, const ActiveSkill_t::value_type& s)
+inline unsigned select_rally_like(Field* fd, CardStatus* src_status, const std::vector<CardStatus*>& cards, const SkillSpec& s)
 {
     unsigned array_head{0};
     unsigned card_index((src_status && src_status->m_card->m_type == CardType::assault) ?
@@ -2169,19 +2205,19 @@ inline unsigned select_rally_like(Field* fd, CardStatus* src_status, const std::
 }
 
 template<>
-inline unsigned select_fast<augment>(Field* fd, CardStatus* src_status, const std::vector<CardStatus*>& cards, const ActiveSkill_t::value_type& s)
+inline unsigned select_fast<augment>(Field* fd, CardStatus* src_status, const std::vector<CardStatus*>& cards, const SkillSpec& s)
 {
     return(select_rally_like<augment>(fd, src_status, cards, s));
 }
 
 template<>
-inline unsigned select_fast<rally>(Field* fd, CardStatus* src_status, const std::vector<CardStatus*>& cards, const ActiveSkill_t::value_type& s)
+inline unsigned select_fast<rally>(Field* fd, CardStatus* src_status, const std::vector<CardStatus*>& cards, const SkillSpec& s)
 {
     return(select_rally_like<rally>(fd, src_status, cards, s));
 }
 
 template<>
-inline unsigned select_fast<supply>(Field* fd, CardStatus* src_status, const std::vector<CardStatus*>& cards, const ActiveSkill_t::value_type& s)
+inline unsigned select_fast<supply>(Field* fd, CardStatus* src_status, const std::vector<CardStatus*>& cards, const SkillSpec& s)
 {
     // mimiced supply by a structure, etc ?
     if(!(src_status && src_status->m_card->m_type == CardType::assault)) { return(0); }
@@ -2199,7 +2235,7 @@ inline unsigned select_fast<supply>(Field* fd, CardStatus* src_status, const std
     return(array_head);
 }
 
-inline unsigned select_infuse(Field* fd, const ActiveSkill_t::value_type& s)
+inline unsigned select_infuse(Field* fd, const SkillSpec& s)
 {
     unsigned array_head{0};
     // Select candidates among attacker's assaults
@@ -2223,122 +2259,77 @@ inline unsigned select_infuse(Field* fd, const ActiveSkill_t::value_type& s)
     return(array_head);
 }
 
-inline std::vector<CardStatus*>& skill_targets_hostile_assault(Field* fd, unsigned trgt, CardStatus* src_status)
+inline std::vector<CardStatus*>& skill_targets_hostile_assault(Field* fd, CardStatus* src_status)
 {
-    return(fd->players[src_status && src_status->m_chaos ? opponent(trgt) : trgt]->assaults.m_indirect);
+    return(fd->players[src_status ? (src_status->m_chaos ? src_status->m_player : opponent(src_status->m_player)) : fd->tipi]->assaults.m_indirect);
 }
 
-inline std::vector<CardStatus*>& skill_targets_allied_assault(Field* fd, unsigned trgt, CardStatus* src_status)
+inline std::vector<CardStatus*>& skill_targets_allied_assault(Field* fd, CardStatus* src_status)
 {
-    return(fd->players[opponent(trgt)]->assaults.m_indirect);
+    return(fd->players[src_status ? src_status->m_player : fd->tapi]->assaults.m_indirect);
 }
 
-inline std::vector<CardStatus*>& skill_targets_hostile_structure(Field* fd, unsigned trgt, CardStatus* src_status)
+inline std::vector<CardStatus*>& skill_targets_hostile_structure(Field* fd, CardStatus* src_status)
 {
-    return(fd->players[src_status && src_status->m_chaos ? opponent(trgt) : trgt]->structures.m_indirect);
+    return(fd->players[src_status ? (src_status->m_chaos ? src_status->m_player : opponent(src_status->m_player)) : fd->tipi]->structures.m_indirect);
 }
 
-inline std::vector<CardStatus*>& skill_targets_allied_structure(Field* fd, unsigned trgt, CardStatus* src_status)
+inline std::vector<CardStatus*>& skill_targets_allied_structure(Field* fd, CardStatus* src_status)
 {
-    return(fd->players[opponent(trgt)]->structures.m_indirect);
+    return(fd->players[src_status ? src_status->m_player : fd->tapi]->structures.m_indirect);
 }
 
 template<unsigned skill>
-std::vector<CardStatus*>& skill_targets(Field* fd, unsigned trgt, CardStatus* src_status)
+std::vector<CardStatus*>& skill_targets(Field* fd, CardStatus* src_status)
 {
     std::cout << "skill_targets: Error: no specialization for " << skill_names[skill] << "\n";
     assert(false);
 }
 
-template<>
-std::vector<CardStatus*>& skill_targets<augment>(Field* fd, unsigned trgt, CardStatus* src_status)
-{
-    return(skill_targets_allied_assault(fd, trgt, src_status));
-}
+template<> inline std::vector<CardStatus*>& skill_targets<augment>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_allied_assault(fd, src_status)); }
 
-template<>
-std::vector<CardStatus*>& skill_targets<chaos>(Field* fd, unsigned trgt, CardStatus* src_status)
-{
-    return(skill_targets_hostile_assault(fd, trgt, src_status));
-}
+template<> std::vector<CardStatus*>& skill_targets<chaos>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_hostile_assault(fd, src_status)); }
 
-template<>
-std::vector<CardStatus*>& skill_targets<cleanse>(Field* fd, unsigned trgt, CardStatus* src_status)
-{
-    return(skill_targets_allied_assault(fd, trgt, src_status));
-}
+template<> std::vector<CardStatus*>& skill_targets<cleanse>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_allied_assault(fd, src_status)); }
 
-template<>
-std::vector<CardStatus*>& skill_targets<enfeeble>(Field* fd, unsigned trgt, CardStatus* src_status)
-{
-    return(skill_targets_hostile_assault(fd, trgt, src_status));
-}
+template<> std::vector<CardStatus*>& skill_targets<enfeeble>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_hostile_assault(fd, src_status)); }
 
-template<>
-std::vector<CardStatus*>& skill_targets<freeze>(Field* fd, unsigned trgt, CardStatus* src_status)
-{
-    return(skill_targets_hostile_assault(fd, trgt, src_status));
-}
+template<> std::vector<CardStatus*>& skill_targets<freeze>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_hostile_assault(fd, src_status)); }
 
-template<>
-std::vector<CardStatus*>& skill_targets<heal>(Field* fd, unsigned trgt, CardStatus* src_status)
-{
-    return(skill_targets_allied_assault(fd, trgt, src_status));
-}
+template<> std::vector<CardStatus*>& skill_targets<heal>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_allied_assault(fd, src_status)); }
 
-template<>
-std::vector<CardStatus*>& skill_targets<jam>(Field* fd, unsigned trgt, CardStatus* src_status)
-{
-    return(skill_targets_hostile_assault(fd, trgt, src_status));
-}
+template<> std::vector<CardStatus*>& skill_targets<jam>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_hostile_assault(fd, src_status)); }
 
-template<>
-std::vector<CardStatus*>& skill_targets<mimic>(Field* fd, unsigned trgt, CardStatus* src_status)
-{
-    return(skill_targets_hostile_assault(fd, trgt, src_status));
-}
+template<> std::vector<CardStatus*>& skill_targets<mimic>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_hostile_assault(fd, src_status)); }
 
-template<>
-std::vector<CardStatus*>& skill_targets<protect>(Field* fd, unsigned trgt, CardStatus* src_status)
-{
-    return(skill_targets_allied_assault(fd, trgt, src_status));
-}
+template<> std::vector<CardStatus*>& skill_targets<protect>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_allied_assault(fd, src_status)); }
 
-template<>
-std::vector<CardStatus*>& skill_targets<rally>(Field* fd, unsigned trgt, CardStatus* src_status)
-{
-    return(skill_targets_allied_assault(fd, trgt, src_status));
-}
+template<> std::vector<CardStatus*>& skill_targets<rally>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_allied_assault(fd, src_status)); }
 
-template<>
-std::vector<CardStatus*>& skill_targets<rush>(Field* fd, unsigned trgt, CardStatus* src_status)
-{
-    return(skill_targets_allied_assault(fd, trgt, src_status));
-}
+template<> std::vector<CardStatus*>& skill_targets<rush>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_allied_assault(fd, src_status)); }
 
-template<>
-std::vector<CardStatus*>& skill_targets<strike>(Field* fd, unsigned trgt, CardStatus* src_status)
-{
-    return(skill_targets_hostile_assault(fd, trgt, src_status));
-}
+template<> std::vector<CardStatus*>& skill_targets<strike>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_hostile_assault(fd, src_status)); }
 
-template<>
-std::vector<CardStatus*>& skill_targets<supply>(Field* fd, unsigned trgt, CardStatus* src_status)
-{
-    return(skill_targets_allied_assault(fd, trgt, src_status));
-}
+template<> std::vector<CardStatus*>& skill_targets<supply>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_allied_assault(fd, src_status)); }
 
-template<>
-std::vector<CardStatus*>& skill_targets<weaken>(Field* fd, unsigned trgt, CardStatus* src_status)
-{
-    return(skill_targets_hostile_assault(fd, trgt, src_status));
-}
+template<> std::vector<CardStatus*>& skill_targets<weaken>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_hostile_assault(fd, src_status)); }
 
-template<>
-std::vector<CardStatus*>& skill_targets<siege>(Field* fd, unsigned trgt, CardStatus* src_status)
-{
-    return(skill_targets_hostile_structure(fd, trgt, src_status));
-}
+template<> std::vector<CardStatus*>& skill_targets<siege>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_hostile_structure(fd, src_status)); }
 
 template<typename T>
 void maybeTriggerRegen(Field* fd)
@@ -2348,13 +2339,13 @@ void maybeTriggerRegen(Field* fd)
 template<>
 void maybeTriggerRegen<true_>(Field* fd)
 {
-    fd->skill_queue.emplace_front(0, nullptr, std::make_tuple(trigger_regen, 0, allfactions));
+    fd->skill_queue.emplace_front(nullptr, std::make_tuple(trigger_regen, 0, allfactions));
 }
 
 template<unsigned skill_id>
-CardStatus* get_target_hostile_fast(Field* fd, unsigned trgt, CardStatus* src_status, const ActiveSkill_t::value_type& s)
+CardStatus* get_target_hostile_fast(Field* fd, CardStatus* src_status, const SkillSpec& s)
 {
-    std::vector<CardStatus*>& cards(skill_targets<skill_id>(fd, trgt, src_status));
+    std::vector<CardStatus*>& cards(skill_targets<skill_id>(fd, src_status));
     unsigned array_head{select_fast<skill_id>(fd, src_status, cards, s)};
     if(array_head > 0)
     {
@@ -2388,19 +2379,18 @@ CardStatus* get_target_hostile_fast(Field* fd, unsigned trgt, CardStatus* src_st
 }
 
 template<unsigned skill_id>
-void perform_targetted_hostile_fast(Field* fd, unsigned trgt, CardStatus* src_status, const ActiveSkill_t::value_type& s)
+void perform_targetted_hostile_fast(Field* fd, CardStatus* src_status, const SkillSpec& s)
 {
-    CardStatus* c(get_target_hostile_fast<skill_id>(fd, trgt, src_status, s));
     // null status = action card
-    unsigned augmented_value = std::get<1>(s) + (src_status == nullptr ? 0 : src_status->m_augmented);
+    CardStatus* c(get_target_hostile_fast<skill_id>(fd, src_status, s));
     if(c)
     {
 	// evade
         if(!c->m_card->m_evade || fd->flip())
         {
-            _DEBUG_MSG("%s (%u) from %s on %s.\n", skill_names[skill_id].c_str(), augmented_value, status_description(src_status).c_str(), status_description(c).c_str());
+            _DEBUG_MSG("%s (%u) from %s on %s.\n", skill_names[skill_id].c_str(), std::get<1>(s), status_description(src_status).c_str(), status_description(c).c_str());
 	    // skill
-            perform_skill<skill_id>(fd, c, augmented_value);
+            perform_skill<skill_id>(fd, c, std::get<1>(s));
 	    // payback
             if(c->m_card->m_payback &&
 	       src_status &&
@@ -2413,28 +2403,27 @@ void perform_targetted_hostile_fast(Field* fd, unsigned trgt, CardStatus* src_st
                 if(skill_predicate<skill_id>(src_status) &&
                    (!src_status->m_card->m_evade || fd->flip()))
                 {
-                    _DEBUG_MSG("Payback (%s %u) on (%s)\n", skill_names[skill_id].c_str(), augmented_value, src_status->m_card->m_name.c_str());
+                    _DEBUG_MSG("Payback (%s %u) on (%s)\n", skill_names[skill_id].c_str(), std::get<1>(s), src_status->m_card->m_name.c_str());
 		    // payback skill
-                    perform_skill<skill_id>(fd, src_status, augmented_value);
+                    perform_skill<skill_id>(fd, src_status, std::get<1>(s));
                 }
             }
         }
     }
     maybeTriggerRegen<typename skillTriggersRegen<skill_id>::T>(fd);
-    push_on_death_in_front(fd);
+    prepend_on_death(fd);
 }
 
 template<unsigned skill_id>
-void perform_targetted_allied_fast(Field* fd, unsigned trgt, CardStatus* src_status, const ActiveSkill_t::value_type& s)
+void perform_targetted_allied_fast(Field* fd, CardStatus* src_status, const SkillSpec& s)
 {
-    std::vector<CardStatus*>& cards(skill_targets<skill_id>(fd, trgt, src_status));
+    std::vector<CardStatus*>& cards(skill_targets<skill_id>(fd, src_status));
     unsigned array_head{select_fast<skill_id>(fd, src_status, cards, s)};
-    unsigned augmented_value = std::get<1>(s) + (src_status == nullptr ? 0 : src_status->m_augmented);
     if(array_head > 0)
     {
         CardStatus* c(fd->selection_array[fd->rand(0, array_head - 1)]);
         _DEBUG_MSG(" \033[1;34m%s: %s on %s\033[0m", status_description(src_status).c_str(), skill_description(s).c_str(), status_description(c).c_str());
-        perform_skill<skill_id>(fd, c, augmented_value);
+        perform_skill<skill_id>(fd, c, std::get<1>(s));
         _DEBUG_MSG("\n");
         if(c->m_card->m_tribute &&
            src_status &&
@@ -2444,17 +2433,17 @@ void perform_targetted_allied_fast(Field* fd, unsigned trgt, CardStatus* src_sta
         {
             if(skill_predicate<skill_id>(src_status))
             {
-                _DEBUG_MSG("Tribute (%s %u) on (%s)\n", skill_names[skill_id].c_str(), augmented_value, src_status->m_card->m_name.c_str());
-                perform_skill<skill_id>(fd, src_status, augmented_value);
+                _DEBUG_MSG("Tribute (%s %u) on (%s)\n", skill_names[skill_id].c_str(), std::get<1>(s), src_status->m_card->m_name.c_str());
+                perform_skill<skill_id>(fd, src_status, std::get<1>(s));
             }
         }
     }
 }
 
 template<unsigned skill_id>
-void perform_global_hostile_fast(Field* fd, unsigned trgt, CardStatus* src_status, const ActiveSkill_t::value_type& s)
+void perform_global_hostile_fast(Field* fd, CardStatus* src_status, const SkillSpec& s)
 {
-    std::vector<CardStatus*>& cards(skill_targets<skill_id>(fd, trgt, src_status));
+    std::vector<CardStatus*>& cards(skill_targets<skill_id>(fd, src_status));
     unsigned array_head{select_fast<skill_id>(fd, src_status, cards, s)};
     unsigned payback_count(0);
     for(unsigned s_index(0); s_index < array_head; ++s_index)
@@ -2485,13 +2474,13 @@ void perform_global_hostile_fast(Field* fd, unsigned trgt, CardStatus* src_statu
         }
     }
     maybeTriggerRegen<typename skillTriggersRegen<skill_id>::T>(fd);
-    push_on_death_in_front(fd);
+    prepend_on_death(fd);
 }
 
 template<unsigned skill_id>
-void perform_global_allied_fast(Field* fd, unsigned trgt, CardStatus* src_status, const ActiveSkill_t::value_type& s)
+void perform_global_allied_fast(Field* fd, CardStatus* src_status, const SkillSpec& s)
 {
-    std::vector<CardStatus*>& cards(skill_targets<skill_id>(fd, trgt, src_status));
+    std::vector<CardStatus*>& cards(skill_targets<skill_id>(fd, src_status));
     unsigned array_head{select_fast<skill_id>(fd, src_status, cards, s)};
     for(unsigned s_index(0); s_index < array_head; ++s_index)
     {
@@ -2513,14 +2502,11 @@ void perform_global_allied_fast(Field* fd, unsigned trgt, CardStatus* src_status
     }
 }
 
-void perform_infuse(Field* fd, unsigned trgt, CardStatus* src_status, const ActiveSkill_t::value_type& s)
+void perform_infuse(Field* fd, CardStatus* src_status, const SkillSpec& s)
 {
     unsigned array_head{0};
-    // the index of the first selected enemy assault card
-    unsigned first_enemy(0);
-    bool enemy_found(false);
     // Select candidates among attacker's assaults
-    for(auto card_status: fd->players[opponent(trgt)]->assaults.m_indirect)
+    for(auto card_status: fd->players[src_status->m_player]->assaults.m_indirect)
     {
         if(skill_predicate<infuse>(card_status))
         {
@@ -2529,25 +2515,19 @@ void perform_infuse(Field* fd, unsigned trgt, CardStatus* src_status, const Acti
         }
     }
     // Select candidates among defender's assaults
-    for(auto card_status: fd->players[trgt]->assaults.m_indirect)
+    for(auto card_status: fd->players[opponent(src_status->m_player)]->assaults.m_indirect)
     {
         if(skill_predicate<infuse>(card_status))
         {
-            if(!enemy_found)
-            {
-                enemy_found = true;
-                first_enemy = array_head;
-            }
             fd->selection_array[array_head] = card_status;
             ++array_head;
         }
     }
     if(array_head > 0)
     {
-        unsigned rand_index{fd->rand(0, array_head - 1)};
-        CardStatus* c(fd->selection_array[rand_index]);
+        CardStatus* c(fd->selection_array[fd->rand(0, array_head - 1)]);
         // check evade for enemy assaults only
-        if(!(enemy_found && rand_index >= first_enemy) || (!c->m_card->m_evade || fd->flip()))
+        if(c->m_player == src_status->m_player || !c->m_card->m_evade || fd->flip())
         {
             _DEBUG_MSG("%s on (%s).", skill_names[infuse].c_str(), c->m_card->m_name.c_str());
             perform_skill<infuse>(fd, c, std::get<1>(s));
@@ -2557,11 +2537,11 @@ void perform_infuse(Field* fd, unsigned trgt, CardStatus* src_status, const Acti
 }
 
 // a summoned card's on play skills seem to be evaluated before any other skills on the skill queue.
-void prepend_skills(Field* fd, unsigned target, CardStatus* status, const ActiveSkill_t& skills)
+inline void prepend_skills(Field* fd, CardStatus* status)
 {
-    for(auto& skill: boost::adaptors::reverse(skills))
+    for(auto& skill: boost::adaptors::reverse(status->m_card->m_skills_played))
     {
-        fd->skill_queue.push_front(std::make_tuple(target, status, skill));
+        fd->skill_queue.emplace_front(status, skill);
     }
 }
 void summon_card(Field* fd, unsigned player, const Card* summoned)
@@ -2576,41 +2556,41 @@ void summon_card(Field* fd, unsigned player, const Card* summoned)
 	card_status.m_index = storage->size() - 1;
 	card_status.m_player = player;
 	_DEBUG_MSG("Summoned [%s] as %s %d\n", summoned->m_name.c_str(), cardtype_names[summoned->m_type].c_str(), card_status.m_index);
-	prepend_skills(fd, opponent(player), &card_status, summoned->m_skills_played);
+	prepend_skills(fd, &card_status);
     }
 }
-void perform_summon(Field* fd, unsigned trgt, CardStatus* src_status, const ActiveSkill_t::value_type& s)
+void perform_summon(Field* fd, CardStatus* src_status, const SkillSpec& s)
 {
-    summon_card(fd, opponent(trgt), fd->cards.by_id(std::get<1>(s)));
+    summon_card(fd, src_status ? src_status->m_player : fd->tapi, fd->cards.by_id(std::get<1>(s)));
 }
 
-void perform_trigger_regen(Field* fd, unsigned trgt, CardStatus* src_status, const ActiveSkill_t::value_type& s)
+void perform_trigger_regen(Field* fd, CardStatus* src_status, const SkillSpec& s)
 {
     check_regeneration(fd);
 }
 
-void perform_shock(Field* fd, unsigned trgt, CardStatus* src_status, const ActiveSkill_t::value_type& s)
+void perform_shock(Field* fd, CardStatus* src_status, const SkillSpec& s)
 {
     _DEBUG_MSG("Performing shock on (%s).", fd->tip->commander.m_card->m_name.c_str());
     perform_skill<shock>(fd, &fd->tip->commander, std::get<1>(s));
     _DEBUG_MSG("\n");
 }
 
-void perform_supply(Field* fd, unsigned trgt, CardStatus* src_status, const ActiveSkill_t::value_type& s)
+void perform_supply(Field* fd, CardStatus* src_status, const SkillSpec& s)
 {
-    perform_global_allied_fast<supply>(fd, trgt, src_status, s);
+    perform_global_allied_fast<supply>(fd, src_status, s);
 }
 
 // Special rules for mimic :
 // cannot mimic mimic,
 // structures cannot mimic supply,
 // and is not affected by payback.
-void perform_mimic(Field* fd, unsigned trgt, CardStatus* src_status, const ActiveSkill_t::value_type& s)
+void perform_mimic(Field* fd, CardStatus* src_status, const SkillSpec& s)
 {
     // mimic cannot be triggered by anything. So it should be the only skill in the unresolved skill table.
     // so we can probably clear it safely. This is necessary, because mimic calls resolve_skill as well (infinite loop).
     fd->skill_queue.clear();
-    CardStatus* c(get_target_hostile_fast<mimic>(fd, trgt, src_status, s));
+    CardStatus* c(get_target_hostile_fast<mimic>(fd, src_status, s));
     if(c)
     {
         _DEBUG_MSG("%s on (%s)\n", skill_names[std::get<0>(s)].c_str(), c->m_card->m_name.c_str());
@@ -2621,8 +2601,8 @@ void perform_mimic(Field* fd, unsigned trgt, CardStatus* src_status, const Activ
             if(std::get<0>(skill) != mimic &&
                (std::get<0>(skill) != supply || (src_status && src_status->m_card->m_type == CardType::assault)))
             {
-                ActiveSkill_t::value_type mimic_s(std::get<0>(skill), std::get<1>(skill), allfactions);
-		fd->skill_queue.push_back(std::make_tuple(fd->tipi, src_status, mimic_s));
+                SkillSpec mimic_s(std::get<0>(skill), std::get<1>(skill), allfactions);
+		fd->skill_queue.emplace_back(src_status, src_status && src_status->m_augmented > 0 ? augmented_skill(src_status, mimic_s) : mimic_s);
 		resolve_skill(fd);
 		check_regeneration(fd);
             }
@@ -3046,10 +3026,17 @@ std::set<unsigned> top_commanders{
 	1104, // Stavros
 	1152, // Svetlana
         1141, // Tabitha
-        1172 // Teiffa
+        1172, // Teiffa
+	// halcyon + terminus:
+	1203, // Halcyon the Corrupt shitty artwork
+	1204, // Halcyon the Corrupt LE
+	1200, // Corra
+	1049, // Lord Halcyon
+	1198, // Virulentus
+	1199, // Lord Silus
 };
 //------------------------------------------------------------------------------
-bool suitable_non_commander(DeckRandom& deck, unsigned slot, const Card* card)
+bool suitable_non_commander(DeckIface& deck, unsigned slot, const Card* card)
 {
     assert(card->m_type != CardType::commander);
     if(use_owned_cards)
@@ -3090,57 +3077,20 @@ bool suitable_non_commander(DeckRandom& deck, unsigned slot, const Card* card)
     }
     return(true);
 }
-//------------------------------------------------------------------------------
-bool suitable_non_commander_ordered(DeckOrdered& deck, unsigned slot, const Card* card)
-{
-    assert(card->m_type != CardType::commander);
-    if(use_owned_cards)
-    {
-	if(owned_cards.find(card->m_id) == owned_cards.end()) { return(false); }
-	else
-	{
-	    unsigned num_in_deck{0};
-	    for(unsigned i(0); i < deck.ordered_cards.size(); ++i)
-	    {
-		if(i != slot && deck.ordered_cards[i]->m_id == card->m_id)
-		{
-		    ++num_in_deck;
-		}
-	    }
-	    if(owned_cards.find(card->m_id)->second <= num_in_deck) { return(false); }
-	}
-    }
-    if(card->m_rarity == 4) // legendary - 1 per deck
-    {
-        for(unsigned i(0); i < deck.ordered_cards.size(); ++i)
-        {
-            if(i != slot && deck.ordered_cards[i]->m_rarity == 4)
-            {
-                return(false);
-            }
-        }
-    }
-    if(card->m_unique) // unique - 1 card with same id per deck
-    {
-        for(unsigned i(0); i < deck.ordered_cards.size(); ++i)
-        {
-            if(i != slot && deck.ordered_cards[i]->m_id == card->m_id)
-            {
-                return(false);
-            }
-        }
-    }
-    return(true);
-}
 
 bool keep_commander{false};
 bool suitable_commander(const Card* card)
 {
-    if(keep_commander) { return(false); }
     assert(card->m_type == CardType::commander);
+    if(keep_commander) { return(false); }
     if(use_owned_cards)
     {
-	if(owned_cards.find(card->m_id) == owned_cards.end()) { return(false); }
+	auto owned_iter = owned_cards.find(card->m_id);
+	if(owned_iter == owned_cards.end()) { return(false); }
+	else
+	{
+	    if(owned_iter->second <= 0) { return(false); }
+	}
     }
     if(top_commanders.find(card->m_id) == top_commanders.end()) { return(false); }
     return(true);
@@ -3400,7 +3350,7 @@ void print_score_info(const std::pair<std::vector<unsigned> , unsigned>& results
     std::cout << "out of " << results.second << ")\n" << std::flush;
 }
 //------------------------------------------------------------------------------
-void hill_climbing(unsigned num_iterations, DeckRandom* d1, Process& proc)
+void hill_climbing(unsigned num_iterations, DeckIface* d1, Process& proc)
 {
     auto results = proc.evaluate(num_iterations);
     print_score_info(results, proc.factors);
@@ -3489,7 +3439,7 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
     // Non-commander cards
     auto non_commander_cards = boost::join(boost::join(proc.cards.player_assaults, proc.cards.player_structures), proc.cards.player_actions);
     const Card* best_commander = d1->commander;
-    std::vector<const Card*> best_cards = d1->ordered_cards;
+    std::vector<const Card*> best_cards = d1->cards;
     bool deck_has_been_improved = true;
     bool eval_commander = true;
     while(deck_has_been_improved && best_score < 1.0)
@@ -3536,17 +3486,14 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
             {
                 // Various checks to check if the card is accepted
                 assert(card_candidate->m_type != CardType::commander);
-                for(unsigned slot_i(0); slot_i < d1->ordered_cards.size(); ++slot_i)
+                for(unsigned slot_i(0); slot_i < d1->cards.size(); ++slot_i)
                 {
                     // Various checks to check if the card is accepted
                     if(card_candidate == best_cards[current_slot]) { continue; }
-                    if(!suitable_non_commander_ordered(*d1, current_slot, card_candidate)) { continue; }
+                    if(!suitable_non_commander(*d1, current_slot, card_candidate)) { continue; }
                     // Place it in the deck
-                    if(slot_i != current_slot)
-                    {
-                        std::swap(d1->ordered_cards[slot_i], d1->ordered_cards[current_slot]);
-                    }
-                    d1->ordered_cards[slot_i] = card_candidate;
+		    d1->cards.erase(d1->cards.begin() + current_slot);
+		    d1->cards.insert(d1->cards.begin() + slot_i, card_candidate);
                     // Evaluate new deck
                     auto compare_results = proc.compare(num_iterations, best_score);
                     current_score = compute_score(compare_results, proc.factors);
@@ -3554,18 +3501,15 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
                     if(current_score > best_score)
                     {
                         // Then update best score/slot, print stuff
+                        std::cout << "Deck improved: " << current_slot << " " << best_cards[current_slot]->m_name << " -> " << slot_i << " " << card_candidate->m_name << ": ";
                         best_score = current_score;
-                        best_cards[slot_i] = card_candidate;
-                        if(slot_i != current_slot)
-                        {
-                            best_cards[current_slot] = d1->ordered_cards[current_slot];
-                        }
+			best_cards.erase(best_cards.begin() + current_slot);
+			best_cards.insert(best_cards.begin() + slot_i, card_candidate);
                         eval_commander = true;
                         deck_has_been_improved = true;
-                        std::cout << "Deck improved: slot " << slot_i << " -> " << card_candidate->m_name << ": ";
                         print_score_info(compare_results, proc.factors);
                     }
-                    d1->ordered_cards = best_cards;
+                    d1->cards = best_cards;
                 }
             }
             // Now that all cards are evaluated, take the best one
@@ -3682,7 +3626,7 @@ inline void try_all_ratio_combinations(unsigned deck_size, unsigned var_k, unsig
 	    best_score = new_score;
 	    best_deck = deck;
 	    print_score_info(new_results, proc.factors);
-	    print_deck_random(deck);
+	    print_deck(deck);
 	    std::cout << std::flush;
 	}
 	//++num;
@@ -3722,7 +3666,7 @@ inline void try_all_ratio_combinations(unsigned deck_size, unsigned var_k, unsig
 		best_score = new_score;
 		best_deck = deck;
 		print_score_info(new_results, proc.factors);
-		print_deck_random(deck);
+		print_deck(deck);
 		std::cout << std::flush;
 	    }
 	    ++total_num_combinations_test;
@@ -3821,7 +3765,7 @@ void print_available_decks(const Decks& decks)
 std::vector<std::pair<std::string, double> > parse_deck_list(std::string list_string)
 {
     std::vector<std::pair<std::string, double> > res;
-    boost::tokenizer<boost::char_delimiters_separator<char> > list_tokens{list_string, boost::char_delimiters_separator<char>{false, ",", ""}};
+    boost::tokenizer<boost::char_delimiters_separator<char> > list_tokens{list_string, boost::char_delimiters_separator<char>{false, ";", ""}};
     for(auto list_token = list_tokens.begin(); list_token != list_tokens.end(); ++list_token)
     {
         boost::tokenizer<boost::char_delimiters_separator<char> > deck_tokens{*list_token, boost::char_delimiters_separator<char>{false, ":", ""}};
@@ -3841,14 +3785,15 @@ void usage(int argc, char** argv)
     std::cout << "usage: " << argv[0] << " <attack deck> <defense decks list> [optional flags] [brute <num1> <num2>] [climb <num>]\n";
     std::cout << "\n";
     std::cout << "<attack deck>: the deck name of a custom deck.\n";
-    std::cout << "<defense decks list>: comma separated list of defense decks, syntax:\n";
-    std::cout << "  deckname1[:factor1],deckname2[:factor2],...\n";
+    std::cout << "<defense decks list>: semicolon separated list of defense decks, syntax:\n";
+    std::cout << "  deckname1[:factor1];deckname2[:factor2];...\n";
     std::cout << "  where deckname is the name of a mission, raid, or custom deck, and factor is optional. The default factor is 1.\n";
-    std::cout << "  example: \'fear:0.2,slowroll:0.8\' means fear is the defense deck 20% of the time, while slowroll is the defense deck 80% of the time.\n";
+    std::cout << "  example: \'fear:0.2;slowroll:0.8\' means fear is the defense deck 20% of the time, while slowroll is the defense deck 80% of the time.\n";
     std::cout << "\n";
     std::cout << "Flags:\n";
     std::cout << "  -c: don't try to optimize the commander.\n";
     std::cout << "  -o: restrict hill climbing to the owned cards listed in \"ownedcards.txt\".\n";
+    std::cout << "  -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).\n";
     std::cout << "  -s: use surge (default is fight).\n";
     std::cout << "  -t <num>: set the number of threads, default is 4.\n";
     std::cout << "Operations:\n";
@@ -3862,6 +3807,7 @@ int main(int argc, char** argv)
     debug_print = getenv("DEBUG_PRINT");
     unsigned num_threads = (debug_print || getenv("DEBUG")) ? 1 : 4;
     gamemode_t gamemode = fight;
+    bool ordered = false;
     Cards cards;
     read_cards(cards);
     read_owned_cards(cards);
@@ -3927,22 +3873,26 @@ int main(int argc, char** argv)
     std::vector<std::tuple<unsigned, unsigned, Operation> > todo;
     for(unsigned argIndex(3); argIndex < argc; ++argIndex)
     {
-	if(strcmp(argv[argIndex], "-o") == 0)
+	if(strcmp(argv[argIndex], "-c") == 0)
+	{
+	    keep_commander = true;
+	}
+	else if(strcmp(argv[argIndex], "-o") == 0)
 	{
 	    use_owned_cards = true;
+	}
+	else if(strcmp(argv[argIndex], "-r") == 0)
+	{
+	    ordered = true;
+	}
+	else if(strcmp(argv[argIndex], "-s") == 0)
+	{
+	    gamemode = surge;
 	}
 	else if(strcmp(argv[argIndex], "-t") == 0)
 	{
 	    num_threads = atoi(argv[argIndex+1]);
 	    argIndex += 1;	
-	}
-	else if(strcmp(argv[argIndex], "-c") == 0)
-	{
-	    keep_commander = true;
-	}
-	else if(strcmp(argv[argIndex], "-s") == 0)
-	{
-	    gamemode = surge;
 	}
 	else if(strcmp(argv[argIndex], "brute") == 0)
 	{
@@ -3959,11 +3909,11 @@ int main(int argc, char** argv)
     unsigned attacker_wins(0);
     unsigned defender_wins(0);
 
-    DeckRandom* att_deck{nullptr};
+    DeckIface* att_deck{nullptr};
     auto custom_deck_it = decks.custom_decks.find(att_deck_name);
     if(custom_deck_it != decks.custom_decks.end())
     {
-        att_deck = dynamic_cast<DeckRandom*>(custom_deck_it->second);
+        att_deck = custom_deck_it->second;
     }
     else
     {
@@ -3975,10 +3925,15 @@ int main(int argc, char** argv)
 	}
 	return(5);
     }
-    print_deck_random(*att_deck);
-    DeckOrdered* att_deck_ordered = new DeckOrdered{att_deck->commander, att_deck->cards};
+    print_deck(*att_deck);
 
-    Process p(num_threads, cards, decks, att_deck_ordered, def_decks, def_decks_factors, gamemode);
+    std::shared_ptr<DeckOrdered> att_deck_ordered;
+    if(ordered)
+    {
+	att_deck_ordered = std::make_shared<DeckOrdered>(*att_deck);
+    }
+
+    Process p(num_threads, cards, decks, ordered ? att_deck_ordered.get() : att_deck, def_decks, def_decks_factors, gamemode);
     {
         //ScopeClock timer;
 	for(auto op: todo)
@@ -3990,7 +3945,14 @@ int main(int argc, char** argv)
 		break;
 	    }
 	    case climb: {
-		hill_climbing_ordered(std::get<0>(op), att_deck_ordered, p);
+		if(!ordered)
+		{
+		    hill_climbing(std::get<0>(op), att_deck, p);
+		}
+		else
+		{
+		    hill_climbing_ordered(std::get<0>(op), att_deck_ordered.get(), p);
+		}
 		break;
 	    }
 	    }
