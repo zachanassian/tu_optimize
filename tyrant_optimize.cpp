@@ -388,6 +388,7 @@ struct CardStatus
     unsigned m_player;
     unsigned m_augmented;
     unsigned m_berserk;
+    bool blitz;
     bool m_chaos;
     unsigned m_delay;
     bool m_diseased;
@@ -412,6 +413,7 @@ struct CardStatus
         m_player(0),
         m_augmented(0),
         m_berserk(0),
+	blitz(false),
         m_chaos(false),
         m_delay(card->m_delay),
         m_diseased(false),
@@ -441,6 +443,7 @@ struct CardStatus
         m_player = 0;
         m_augmented = 0;
         m_berserk = 0;
+	blitz = false;
         m_chaos = false;
         m_delay = card.m_delay;
         m_diseased = false;
@@ -1129,6 +1132,7 @@ public:
 // the implementation of the active skills is in the section after that.
 // struct Field is the data model of a battle:
 // an attacker and a defender deck, list of assaults and structures, etc.
+unsigned turn_limit{50};
 class Field
 {
 public:
@@ -1213,7 +1217,7 @@ void assault_phase(Field* fd, unsigned att_index);
 SkillSpec augmented_skill(CardStatus* status, const SkillSpec& s)
 {
     SkillSpec augmented_s = s;
-    if(std::get<0>(s) != augment)
+    if(std::get<0>(s) != augment && std::get<0>(s) != augment_all && std::get<0>(s) != summon)
     {
 	std::get<1>(augmented_s) += status->m_augmented;
     }
@@ -1319,13 +1323,9 @@ void PlayCard::placeCard<CardType::action>()
 template <>
 void PlayCard::blitz<CardType::assault>()
 {
-    if(card->m_blitz && fd->tip->assaults.size() >= status->m_index+1 && fd->tip->assaults[status->m_index].m_hp > 0 && fd->tip->assaults[status->m_index].m_delay == 0)
+    if(card->m_blitz && fd->tip->assaults.size() > status->m_index && fd->tip->assaults[status->m_index].m_hp > 0 && fd->tip->assaults[status->m_index].m_delay == 0)
     {
-	evaluate_skills(fd, status, card->m_skills);
-	if(status->m_hp > 0)
-	{
-	    assault_phase(fd, status->m_index);
-	}
+	status->blitz = true;
     }
 }
 // action
@@ -1364,7 +1364,7 @@ unsigned play(Field* fd)
     fd->tip = fd->players[fd->tipi];
     fd->end = false;
     // Shuffle deck
-    while(fd->turn < 50 && !fd->end)
+    while(fd->turn < turn_limit && !fd->end)
     {
 	// Initialize stuff, remove dead cards
 	_DEBUG_MSG("##### TURN %u #####\n", fd->turn);
@@ -1408,7 +1408,7 @@ unsigned play(Field* fd)
 	{
 	    // ca: current assault
 	    CardStatus& status_ai(fd->tap->assaults[ai]);
-	    if(status_ai.m_delay > 0 || status_ai.m_hp == 0 || status_ai.m_jammed || status_ai.m_frozen)
+	    if((status_ai.m_delay > 0 && !status_ai.blitz) || status_ai.m_hp == 0 || status_ai.m_jammed || status_ai.m_frozen)
 	    {
 		//_DEBUG_MSG("! Assault %u (%s) hp: %u, jammed %u\n", card_index, status_ai.m_card->m_name.c_str(), status_ai.m_hp, status_ai.m_jammed);
 	    }
@@ -1439,7 +1439,7 @@ unsigned play(Field* fd)
     if(fd->players[0]->commander.m_hp == 0) { _DEBUG_MSG("Defender wins.\n"); return(1); }
     // attacker wins
     if(fd->players[1]->commander.m_hp == 0) { _DEBUG_MSG("Attacker wins.\n"); return(0); }
-    if(fd->turn >= 50) { return(1); }
+    if(fd->turn >= turn_limit) { return(1); }
 }
 //------------------------------------------------------------------------------
 // All the stuff that happens at the beginning of a turn, before a card is played
@@ -1546,6 +1546,7 @@ void turn_start_phase(Field* fd)
 	    CardStatus& status(assaults[index]);
 	    status.m_index = index;
 	    status.m_augmented = 0;
+	    status.blitz = false;
 	    status.m_chaos = false;
 	    status.m_frozen = false;
 	    status.m_immobilized = false;
@@ -1830,7 +1831,7 @@ void AssaultPhase::siphon_poison_disease<CardType::assault>()
     if(att_status->m_card->m_siphon > 0)
     {
 	add_hp(&fd->tap->commander, std::min(att_dmg, att_status->m_card->m_siphon));
-	_DEBUG_MSG(" \033[1;32m%s siphon %u; hp %u", std::min(att_dmg, att_status->m_card->m_siphon), fd->tap->commander.m_hp);
+	_DEBUG_MSG(" \033[1;32m%s siphon %u; hp %u\033[0m\n", status_description(att_status).c_str(), std::min(att_dmg, att_status->m_card->m_siphon), fd->tap->commander.m_hp);
     }
     if(att_status->m_card->m_poison > 0)
     {
@@ -1948,12 +1949,12 @@ inline bool skill_predicate(CardStatus* c)
 template<>
 inline bool skill_predicate<augment>(CardStatus* c)
 {
-    if(c->m_hp > 0)
+    if(c->m_hp > 0 && (c->m_delay == 0 || c->blitz) && !c->m_jammed && !c->m_frozen)
     {
 	for(auto& s: c->m_card->m_skills)
 	{
 	    // Any quantifiable skill except augment
-	    if(std::get<1>(s) > 0 && std::get<0>(s) != augment) { return(true); }
+	    if(std::get<1>(s) > 0 && std::get<0>(s) != augment && std::get<0>(s) != augment_all && std::get<0>(s) != summon) { return(true); }
 	}
     }
     return(false);
@@ -2006,7 +2007,7 @@ inline bool skill_predicate<protect>(CardStatus* c)
 
 template<>
 inline bool skill_predicate<rally>(CardStatus* c)
-{ return(c->m_delay == 0 && c->m_hp > 0 && !c->m_jammed && !c->m_frozen && !c->m_immobilized); }
+{ return((c->m_delay == 0 || c->blitz) && c->m_hp > 0 && !c->m_jammed && !c->m_frozen && !c->m_immobilized); }
 
 template<>
 inline bool skill_predicate<rush>(CardStatus* c)
@@ -2427,6 +2428,7 @@ void perform_targetted_allied_fast(Field* fd, CardStatus* src_status, const Skil
         _DEBUG_MSG("\n");
         if(c->m_card->m_tribute &&
            src_status &&
+	   src_status->m_card->m_type == CardType::assault &&
 	   src_status != c &&
 	   src_status->m_hp > 0 &&
            fd->flip())
@@ -2489,6 +2491,7 @@ void perform_global_allied_fast(Field* fd, CardStatus* src_status, const SkillSp
         perform_skill<skill_id>(fd, c, std::get<1>(s));
         if(c->m_card->m_tribute &&
            src_status &&
+	   src_status->m_card->m_type == CardType::assault &&
 	   src_status != c &&
 	   src_status->m_hp > 0 &&
            fd->flip())
@@ -2557,6 +2560,13 @@ void summon_card(Field* fd, unsigned player, const Card* summoned)
 	card_status.m_player = player;
 	_DEBUG_MSG("Summoned [%s] as %s %d\n", summoned->m_name.c_str(), cardtype_names[summoned->m_type].c_str(), card_status.m_index);
 	prepend_skills(fd, &card_status);
+	if(card_status.m_card->m_blitz &&
+	   fd->players[opponent(player)]->assaults.size() > card_status.m_index &&
+	   fd->players[opponent(player)]->assaults[card_status.m_index].m_hp > 0 &&
+	   fd->players[opponent(player)]->assaults[card_status.m_index].m_delay == 0)
+	{
+	    card_status.blitz = true;
+	}
     }
 }
 void perform_summon(Field* fd, CardStatus* src_status, const SkillSpec& s)
@@ -3423,11 +3433,12 @@ void hill_climbing(unsigned num_iterations, DeckIface* d1, Process& proc)
         }
     }
     std::cout << "Best deck: " << best_score * 100.0 << "%\n";
-    std::cout << best_commander->m_name << "\n";
+    std::cout << best_commander->m_name;
     for(const Card* card: best_cards)
     {
-        std::cout << card->m_name << "\n";
+        std::cout << ", " << card->m_name;
     }
+    std::cout << "\n";
 }
 //------------------------------------------------------------------------------
 void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& proc)
@@ -3458,6 +3469,7 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
             {
                 for(const Card* commander_candidate: proc.cards.player_commanders)
                 {
+		    if(best_score == 1.0) { break; }
                     // Various checks to check if the card is accepted
                     assert(commander_candidate->m_type == CardType::commander);
                     if(commander_candidate == best_commander) { continue; }
@@ -3484,12 +3496,13 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
             }
             for(const Card* card_candidate: non_commander_cards)
             {
+		if(best_score == 1.0) { break; }
                 // Various checks to check if the card is accepted
                 assert(card_candidate->m_type != CardType::commander);
                 for(unsigned slot_i(0); slot_i < d1->cards.size(); ++slot_i)
                 {
                     // Various checks to check if the card is accepted
-                    if(card_candidate == best_cards[current_slot]) { continue; }
+                    if(card_candidate == best_cards[slot_i]) { continue; }
                     if(!suitable_non_commander(*d1, current_slot, card_candidate)) { continue; }
                     // Place it in the deck
 		    d1->cards.erase(d1->cards.begin() + current_slot);
@@ -3517,11 +3530,12 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
         }
     }
     std::cout << "Best deck: " << best_score * 100.0 << "%\n";
-    std::cout << best_commander->m_name << "\n";
+    std::cout << best_commander->m_name;
     for(const Card* card: best_cards)
     {
-        std::cout << card->m_name << "\n";
+        std::cout << ", " << card->m_name;
     }
+    std::cout << "\n";
 }
 //------------------------------------------------------------------------------
 // Implements iteration over all combination of k elements from n elements.
@@ -3720,7 +3734,8 @@ void exhaustive_k(unsigned num_iterations, unsigned var_k, Process& proc)
 //------------------------------------------------------------------------------
 enum Operation {
     bruteforce,
-    climb
+    climb,
+    fightonce
 };
 //------------------------------------------------------------------------------
 // void print_raid_deck(DeckRandom& deck)
@@ -3796,6 +3811,7 @@ void usage(int argc, char** argv)
     std::cout << "  -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).\n";
     std::cout << "  -s: use surge (default is fight).\n";
     std::cout << "  -t <num>: set the number of threads, default is 4.\n";
+    std::cout << "  -turnlimit <num>: set the number of turns in a battle, default is 50 (can be used for speedy achievements).\n";
     std::cout << "Operations:\n";
     std::cout << "brute <num1> <num2>: find the best combination of <num1> different cards, using up to <num2> battles to evaluate a deck.\n";
     std::cout << "climb <num>: perform hill-climbing starting from the given attack deck, using up to <num> battles to evaluate a deck.\n";
@@ -3894,6 +3910,11 @@ int main(int argc, char** argv)
 	    num_threads = atoi(argv[argIndex+1]);
 	    argIndex += 1;	
 	}
+	else if(strcmp(argv[argIndex], "-turnlimit") == 0)
+	{
+	    turn_limit = atoi(argv[argIndex+1]);
+	    argIndex += 1;
+	}
 	else if(strcmp(argv[argIndex], "brute") == 0)
 	{
 	    todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex+1]), (unsigned)atoi(argv[argIndex+2]), bruteforce));
@@ -3903,6 +3924,12 @@ int main(int argc, char** argv)
 	{
 	    todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex+1]), 0u, climb));
 	    argIndex += 1;
+	}
+	else if(strcmp(argv[argIndex], "debug") == 0)
+	{
+	    debug_print = true;
+	    num_threads = 1;
+	    todo.push_back(std::make_tuple(0u, 0u, fightonce));
 	}
     }
 
@@ -3953,6 +3980,10 @@ int main(int argc, char** argv)
 		{
 		    hill_climbing_ordered(std::get<0>(op), att_deck_ordered.get(), p);
 		}
+		break;
+	    }
+	    case fightonce: {
+		p.evaluate(1);
 		break;
 	    }
 	    }
