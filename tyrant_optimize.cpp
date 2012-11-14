@@ -99,9 +99,9 @@ using range::shuffle;
 bool debug_print(false);
 bool debug_line(false);
 #ifndef NDEBUG
-#define _DEBUG_MSG(format, args...)					\
-    {									\
-        if(debug_print)							\
+#define _DEBUG_MSG(format, args...)                                     \
+    {                                                                   \
+        if(debug_print)                                                 \
         {                                                               \
             char* format2 = new char[strlen(format) + (8 + 1)*sizeof(char)]; \
             if(debug_line) { strcpy(format2, "%i - "); }                \
@@ -110,7 +110,7 @@ bool debug_line(false);
             if(debug_line) { printf(format2, __LINE__ , ##args); }      \
             else { printf(format2, ##args); }                           \
             delete[] format2;                                           \
-	    std::cout << std::flush;                                    \
+            std::cout << std::flush;                                    \
         }                                                               \
     }
 #else
@@ -260,111 +260,111 @@ typedef std::tuple<ActiveSkill, unsigned, Faction> SkillSpec;
 class Card
 {
 public:
-  Card() :
-    m_antiair(0),
-    m_armored(0),
-    m_attack(0),
-    m_berserk(0),
-    m_berserk_oa(0),
-    m_blitz(false),
-    m_burst(0),
-    m_counter(0),
-    m_crush(0),
-    m_delay(0),
-    m_disease(false),
-    m_disease_oa(false),
-    m_evade(false),
-    m_faction(imperial),
-    m_fear(false),
-    m_flurry(0),
-    m_flying(false),
-    m_health(0),
-    m_id(0),
-    m_immobilize(false),
-    m_intercept(false),
-    m_leech(0),
-    m_name(""),
-    m_payback(false),
-    m_pierce(0),
-    m_poison(0),
-    m_poison_oa(0),
-    m_rarity(1),
-    m_recharge(false),
-    m_refresh(false),
-    m_regenerate(0),
-    m_set(0),
-    m_siphon(0),
-    m_split(false),
-    m_swipe(false),
-    m_tribute(false),
-    m_unique(false),
-    m_valor(0),
-    m_wall(false),
-    m_type(CardType::assault),
-    m_skills()
-  {
-  }
+    Card() :
+        m_antiair(0),
+        m_armored(0),
+        m_attack(0),
+        m_berserk(0),
+        m_berserk_oa(0),
+        m_blitz(false),
+        m_burst(0),
+        m_counter(0),
+        m_crush(0),
+        m_delay(0),
+        m_disease(false),
+        m_disease_oa(false),
+        m_evade(false),
+        m_faction(imperial),
+        m_fear(false),
+        m_flurry(0),
+        m_flying(false),
+        m_health(0),
+        m_id(0),
+        m_immobilize(false),
+        m_intercept(false),
+        m_leech(0),
+        m_name(""),
+        m_payback(false),
+        m_pierce(0),
+        m_poison(0),
+        m_poison_oa(0),
+        m_rarity(1),
+        m_recharge(false),
+        m_refresh(false),
+        m_regenerate(0),
+        m_set(0),
+        m_siphon(0),
+        m_split(false),
+        m_swipe(false),
+        m_tribute(false),
+        m_unique(false),
+        m_valor(0),
+        m_wall(false),
+        m_type(CardType::assault),
+        m_skills()
+    {
+    }
 
-  void add_skill(ActiveSkill v1, unsigned v2, Faction v3)
-  { m_skills.push_back(std::make_tuple(v1, v2, v3)); }
-  void add_played_skill(ActiveSkill v1, unsigned v2, Faction v3)
-  { m_skills_played.push_back(std::make_tuple(v1, v2, v3)); }
-  void add_died_skill(ActiveSkill v1, unsigned v2, Faction v3)
-  { m_skills_died.push_back(std::make_tuple(v1, v2, v3)); }
-  void add_attacked_skill(ActiveSkill v1, unsigned v2, Faction v3)
-  { m_skills_attacked.push_back(std::make_tuple(v1, v2, v3)); }
+    void add_skill(ActiveSkill v1, unsigned v2, Faction v3)
+    { m_skills.push_back(std::make_tuple(v1, v2, v3)); }
+    void add_played_skill(ActiveSkill v1, unsigned v2, Faction v3)
+    { m_skills_played.push_back(std::make_tuple(v1, v2, v3)); }
+    void add_died_skill(ActiveSkill v1, unsigned v2, Faction v3)
+    { m_skills_died.push_back(std::make_tuple(v1, v2, v3)); }
+    void add_attacked_skill(ActiveSkill v1, unsigned v2, Faction v3)
+    { m_skills_attacked.push_back(std::make_tuple(v1, v2, v3)); }
 
-  unsigned m_antiair;
-  unsigned m_armored;
-  unsigned m_attack;
-  unsigned m_berserk;
-  unsigned m_berserk_oa;
-  bool m_blitz;
-  unsigned m_burst;
-  unsigned m_counter;
-  unsigned m_crush;
-  unsigned m_delay;
-  bool m_disease;
-  bool m_disease_oa;
-  bool m_evade;
-  Faction m_faction;
-  bool m_fear;
-  unsigned m_flurry;
-  bool m_flying;
-  unsigned m_health;
-  unsigned m_id;
-  bool m_immobilize;
-  bool m_intercept;
-  unsigned m_leech;
-  std::string m_name;
-  bool m_payback;
-  unsigned m_pierce;
-  unsigned m_poison;
-  unsigned m_poison_oa;
-  unsigned m_rarity;
-  bool m_recharge;
-  bool m_refresh;
-  unsigned m_regenerate;
-  unsigned m_set;
-  unsigned m_siphon;
-  bool m_split;
-  bool m_swipe;
-  bool m_tribute;
-  bool m_unique;
-  unsigned m_valor;
-  bool m_wall;
-  std::vector<SkillSpec> m_skills;
-  std::vector<SkillSpec> m_skills_played;
-  std::vector<SkillSpec> m_skills_died;
-  std::vector<SkillSpec> m_skills_attacked;
-  CardType::CardType m_type;
+    unsigned m_antiair;
+    unsigned m_armored;
+    unsigned m_attack;
+    unsigned m_berserk;
+    unsigned m_berserk_oa;
+    bool m_blitz;
+    unsigned m_burst;
+    unsigned m_counter;
+    unsigned m_crush;
+    unsigned m_delay;
+    bool m_disease;
+    bool m_disease_oa;
+    bool m_evade;
+    Faction m_faction;
+    bool m_fear;
+    unsigned m_flurry;
+    bool m_flying;
+    unsigned m_health;
+    unsigned m_id;
+    bool m_immobilize;
+    bool m_intercept;
+    unsigned m_leech;
+    std::string m_name;
+    bool m_payback;
+    unsigned m_pierce;
+    unsigned m_poison;
+    unsigned m_poison_oa;
+    unsigned m_rarity;
+    bool m_recharge;
+    bool m_refresh;
+    unsigned m_regenerate;
+    unsigned m_set;
+    unsigned m_siphon;
+    bool m_split;
+    bool m_swipe;
+    bool m_tribute;
+    bool m_unique;
+    unsigned m_valor;
+    bool m_wall;
+    std::vector<SkillSpec> m_skills;
+    std::vector<SkillSpec> m_skills_played;
+    std::vector<SkillSpec> m_skills_died;
+    std::vector<SkillSpec> m_skills_attacked;
+    CardType::CardType m_type;
 };
 
 struct Cards
 {
     ~Cards()
     {
-	for(Card* c: cards) { delete(c); }
+        for(Card* c: cards) { delete(c); }
     }
 
     std::vector<Card*> cards;
@@ -413,7 +413,7 @@ struct CardStatus
         m_player(0),
         m_augmented(0),
         m_berserk(0),
-	blitz(false),
+        blitz(false),
         m_chaos(false),
         m_delay(card->m_delay),
         m_diseased(false),
@@ -443,7 +443,7 @@ struct CardStatus
         m_player = 0;
         m_augmented = 0;
         m_berserk = 0;
-	blitz = false;
+        blitz = false;
         m_chaos = false;
         m_delay = card.m_delay;
         m_diseased = false;
@@ -494,40 +494,40 @@ std::map<unsigned, unsigned> sets_counts;
 
 Faction map_to_faction(unsigned i)
 {
-  return(i == 1 ? imperial :
-	 i == 3 ? bloodthirsty :
-	 i == 4 ? xeno :
-	 i == 8 ? righteous :
-	 i == 9 ? raider :
-	 allfactions);
+    return(i == 1 ? imperial :
+           i == 3 ? bloodthirsty :
+           i == 4 ? xeno :
+           i == 8 ? righteous :
+           i == 9 ? raider :
+           allfactions);
 }
 
 Faction skill_faction(xml_node<>* skill)
 {
-  unsigned unmapped_faction(0);
-  xml_attribute<>* y(skill->first_attribute("y"));
-  if(y)
-  {
-    unmapped_faction = atoi(y->value());
-  }
-  return(unmapped_faction == 0 ? allfactions : map_to_faction(unmapped_faction));
+    unsigned unmapped_faction(0);
+    xml_attribute<>* y(skill->first_attribute("y"));
+    if(y)
+    {
+        unmapped_faction = atoi(y->value());
+    }
+    return(unmapped_faction == 0 ? allfactions : map_to_faction(unmapped_faction));
 }
 
 unsigned skill_value(xml_node<>* skill)
 {
-  unsigned value(0);
-  xml_attribute<>* x(skill->first_attribute("x"));
-  if(x)
-  {
-    value = atoi(x->value());
-  }
-  return(value);
+    unsigned value(0);
+    xml_attribute<>* x(skill->first_attribute("x"));
+    if(x)
+    {
+        value = atoi(x->value());
+    }
+    return(value);
 }
 
 template<unsigned>
 struct GlobalSkill
 {
-  enum { type = 99 };
+    enum { type = 99 };
 };
 
 template<> struct GlobalSkill<augment> { enum {type = augment_all}; };
@@ -546,40 +546,40 @@ template<> struct GlobalSkill<weaken> { enum {type = weaken_all}; };
 template<unsigned GlobalSkill>
 bool handle_global_skill(xml_node<>* node, Card* card)
 {
-  bool played(node->first_attribute("played"));
-  bool died(node->first_attribute("died"));
-  bool attacked(node->first_attribute("attacked"));
-  if(node->first_attribute("all"))
-  {
-    if(played) {card->add_played_skill(ActiveSkill(GlobalSkill), skill_value(node), skill_faction(node)); }
-    else if(died) {card->add_died_skill(ActiveSkill(GlobalSkill), skill_value(node), skill_faction(node)); }
-    else if(attacked) {card->add_attacked_skill(ActiveSkill(GlobalSkill), skill_value(node), skill_faction(node)); }
-    else {card->add_skill(ActiveSkill(GlobalSkill), skill_value(node), skill_faction(node)); }
-    return(true);
-  }
-  return(false);
+    bool played(node->first_attribute("played"));
+    bool died(node->first_attribute("died"));
+    bool attacked(node->first_attribute("attacked"));
+    if(node->first_attribute("all"))
+    {
+        if(played) {card->add_played_skill(ActiveSkill(GlobalSkill), skill_value(node), skill_faction(node)); }
+        else if(died) {card->add_died_skill(ActiveSkill(GlobalSkill), skill_value(node), skill_faction(node)); }
+        else if(attacked) {card->add_attacked_skill(ActiveSkill(GlobalSkill), skill_value(node), skill_faction(node)); }
+        else {card->add_skill(ActiveSkill(GlobalSkill), skill_value(node), skill_faction(node)); }
+        return(true);
+    }
+    return(false);
 }
 
 template<>
 bool handle_global_skill<99>(xml_node<>* node, Card* card)
 {
-  return(false);
+    return(false);
 }
 
 template<unsigned Skill>
 void handle_skill(xml_node<>* node, Card* card)
 {
-  bool played(node->first_attribute("played"));
-  bool died(node->first_attribute("died"));
-  bool attacked(node->first_attribute("attacked"));
-  if(handle_global_skill<GlobalSkill<Skill>::type>(node, card)) {}
-  else
-  {
-    if(played) {card->add_played_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node)); }
-    else if(died) {card->add_died_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node)); }
-    else if(attacked) {card->add_attacked_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node)); }
-    else {card->add_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node)); }
-  }
+    bool played(node->first_attribute("played"));
+    bool died(node->first_attribute("died"));
+    bool attacked(node->first_attribute("attacked"));
+    if(handle_global_skill<GlobalSkill<Skill>::type>(node, card)) {}
+    else
+    {
+        if(played) {card->add_played_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node)); }
+        else if(died) {card->add_died_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node)); }
+        else if(attacked) {card->add_attacked_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node)); }
+        else {card->add_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node)); }
+    }
 }
 //------------------------------------------------------------------------------
 const Card* Cards::by_id(unsigned id) const
@@ -587,11 +587,11 @@ const Card* Cards::by_id(unsigned id) const
     std::map<unsigned, Card*>::const_iterator cardIter{cards_by_id.find(id)};
     if(cardIter == cards_by_id.end())
     {
-	throw std::runtime_error("While trying to find the card with id " + to_string(id) + ": no such key in the cards_by_id map.");
+        throw std::runtime_error("While trying to find the card with id " + to_string(id) + ": no such key in the cards_by_id map.");
     }
     else
     {
-	return(cardIter->second);
+        return(cardIter->second);
     }
 }
 //------------------------------------------------------------------------------
@@ -606,39 +606,39 @@ void Cards::organize()
     player_actions.clear();
     for(Card* card: cards)
     {
-	cards_by_id[card->m_id] = card;
-	// Card available to players
-	if(card->m_set != -1)
-	{
-	    player_cards.push_back(card);
-	    switch(card->m_type)
-	    {
-	    case CardType::commander: {
-		player_commanders.push_back(card);
-		break;
-	    }
-	    case CardType::assault: {
-		player_assaults.push_back(card);
-		break;
-	    }
-	    case CardType::structure: {
-		player_structures.push_back(card);
-		break;
-	    }
-	    case CardType::action: {
-		player_actions.push_back(card);
-		break;
-	    }
-	    }
-	    if(player_cards_by_name.find(card->m_name) != player_cards_by_name.end())
-	    {
-		throw std::runtime_error("While trying to insert the card [" + card->m_name + ", id " + to_string(card->m_id) + "] in the player_cards_by_name map: the key already exists [id " + to_string(player_cards_by_name[card->m_name]->m_id) + "].");
-	    }
-	    else
-	    {
-		player_cards_by_name[card->m_name] = card;
-	    }
-	}
+        cards_by_id[card->m_id] = card;
+        // Card available to players
+        if(card->m_set != -1)
+        {
+            player_cards.push_back(card);
+            switch(card->m_type)
+            {
+            case CardType::commander: {
+                player_commanders.push_back(card);
+                break;
+            }
+            case CardType::assault: {
+                player_assaults.push_back(card);
+                break;
+            }
+            case CardType::structure: {
+                player_structures.push_back(card);
+                break;
+            }
+            case CardType::action: {
+                player_actions.push_back(card);
+                break;
+            }
+            }
+            if(player_cards_by_name.find(card->m_name) != player_cards_by_name.end())
+            {
+                throw std::runtime_error("While trying to insert the card [" + card->m_name + ", id " + to_string(card->m_id) + "] in the player_cards_by_name map: the key already exists [id " + to_string(player_cards_by_name[card->m_name]->m_id) + "].");
+            }
+            else
+            {
+                player_cards_by_name[card->m_name] = card;
+            }
+        }
     }
 }
 //------------------------------------------------------------------------------
@@ -655,192 +655,192 @@ void parse_file(const char* filename, std::vector<char>& buffer, xml_document<>&
     buffer[length] = '\0';
     try
     {
-	doc.parse<0>(&buffer[0]);
+        doc.parse<0>(&buffer[0]);
     }
     catch(rapidxml::parse_error& e)
     {
-	std::cout << "Parse error exception.\n";
-	std::cout << e.what();
-	throw(e);
+        std::cout << "Parse error exception.\n";
+        std::cout << e.what();
+        throw(e);
     }
 }
 //------------------------------------------------------------------------------
 void read_cards(Cards& cards)
 {
-  std::vector<char> buffer;
-  xml_document<> doc;
-  parse_file("cards.xml", buffer, doc);
-  xml_node<>* root = doc.first_node();
-  bool mission_only(false);
-  unsigned nb_cards(0);
-  for(xml_node<>* card = root->first_node();
-      card;
-      card = card->next_sibling())
-  {
-    if(strcmp(card->name(), "unit") == 0)
+    std::vector<char> buffer;
+    xml_document<> doc;
+    parse_file("cards.xml", buffer, doc);
+    xml_node<>* root = doc.first_node();
+    bool mission_only(false);
+    unsigned nb_cards(0);
+    for(xml_node<>* card = root->first_node();
+        card;
+        card = card->next_sibling())
     {
-      xml_node<>* id_node(card->first_node("id"));
-      int id(id_node ? atoi(id_node->value()) : -1);
-	// Replacement art card
-      xml_node<>* replace_node(card->first_node("replace"));
-      if(replace_node)
-      {
-	  cards.replace[id] = atoi(replace_node->value());
-	  continue;
-      }
-      xml_node<>* name_node(card->first_node("name"));
-      xml_node<>* attack_node(card->first_node("attack"));
-      xml_node<>* health_node(card->first_node("health"));
-      xml_node<>* cost_node(card->first_node("cost"));
-      xml_node<>* unique_node(card->first_node("unique"));
-      xml_node<>* rarity_node(card->first_node("rarity"));
-      xml_node<>* type_node(card->first_node("type"));
-      xml_node<>* set_node(card->first_node("set"));
-      int set(set_node ? atoi(set_node->value()) : -1);
-      mission_only = set == -1;
-      if((mission_only || set >= 0) && name_node && rarity_node)
-      {
-	if(!mission_only)
-	{
-	  nb_cards++;
-	  sets_counts[set]++;
-	}
-	Card* c(new Card());
-	c->m_id = id;
-	c->m_name = name_node->value();
-	if(id < 1000)
-	{ c->m_type = CardType::assault; }
-	else if(id < 2000)
-	{ c->m_type = CardType::commander; }
-	else if(id < 3000)
-	{ c->m_type = CardType::structure; }
-	else
-	{ c->m_type = CardType::action; }
-	if(attack_node) { c->m_attack = atoi(attack_node->value()); }
-	if(health_node) { c->m_health = atoi(health_node->value()); }
-	if(cost_node) { c->m_delay = atoi(cost_node->value()); }
-	if(unique_node) { c->m_unique = true; }
-	c->m_rarity = atoi(rarity_node->value());
-	unsigned type(type_node ? atoi(type_node->value()) : 0);
-	c->m_faction = map_to_faction(type);
-	c->m_set = set;
-	for(xml_node<>* skill = card->first_node("skill"); skill;
-	    skill = skill->next_sibling("skill"))
-	{
-	  if(strcmp(skill->first_attribute("id")->value(), "antiair") == 0)
-	  { c->m_antiair = atoi(skill->first_attribute("x")->value()); }
-	  if(strcmp(skill->first_attribute("id")->value(), "armored") == 0)
-	  { c->m_armored = atoi(skill->first_attribute("x")->value()); }
-	  if(strcmp(skill->first_attribute("id")->value(), "augment") == 0)
-	  { handle_skill<augment>(skill, c); }
-	  if(strcmp(skill->first_attribute("id")->value(), "berserk") == 0)
-	  {
-              bool attacked(skill->first_attribute("attacked"));
-              if(attacked) { c->m_berserk_oa = atoi(skill->first_attribute("x")->value()); }
-              else {c->m_berserk = atoi(skill->first_attribute("x")->value()); }
-          }
-	  if(strcmp(skill->first_attribute("id")->value(), "blitz") == 0)
-	  { c->m_blitz = true; }
-	  if(strcmp(skill->first_attribute("id")->value(), "burst") == 0)
-	  { c->m_burst = atoi(skill->first_attribute("x")->value()); }
-	  if(strcmp(skill->first_attribute("id")->value(), "counter") == 0)
-	  { c->m_counter = atoi(skill->first_attribute("x")->value()); }
-	  if(strcmp(skill->first_attribute("id")->value(), "crush") == 0)
-	  { c->m_crush = atoi(skill->first_attribute("x")->value()); }
-	  if(strcmp(skill->first_attribute("id")->value(), "disease") == 0)
-	  {
-              bool attacked(skill->first_attribute("attacked"));
-              if(attacked) { c->m_disease_oa = true; }
-              else {c->m_disease = true; }
-          }
-	  if(strcmp(skill->first_attribute("id")->value(), "evade") == 0)
-	  { c->m_evade = true; }
-	  if(strcmp(skill->first_attribute("id")->value(), "fear") == 0)
-	  { c->m_fear = true; }
-	  if(strcmp(skill->first_attribute("id")->value(), "flurry") == 0)
-	  { c->m_flurry = atoi(skill->first_attribute("x")->value()); }
-	  if(strcmp(skill->first_attribute("id")->value(), "flying") == 0)
-	  { c->m_flying = true; }
-	  if(strcmp(skill->first_attribute("id")->value(), "immobilize") == 0)
-	  { c->m_immobilize = true; }
-	  if(strcmp(skill->first_attribute("id")->value(), "intercept") == 0)
-	  { c->m_intercept = true; }
-	  if(strcmp(skill->first_attribute("id")->value(), "leech") == 0)
-	  { c->m_leech = atoi(skill->first_attribute("x")->value()); }
-	  if(strcmp(skill->first_attribute("id")->value(), "payback") == 0)
-	  { c->m_payback = true; }
-	  if(strcmp(skill->first_attribute("id")->value(), "pierce") == 0)
-	  { c->m_pierce = atoi(skill->first_attribute("x")->value()); }
-	  if(strcmp(skill->first_attribute("id")->value(), "poison") == 0)
-	  {
-              bool attacked(skill->first_attribute("attacked"));
-              if(attacked) { c->m_poison_oa = atoi(skill->first_attribute("x")->value()); }
-              else {c->m_poison = atoi(skill->first_attribute("x")->value()); }
-          }
-	  if(strcmp(skill->first_attribute("id")->value(), "recharge") == 0)
-	  { c->m_recharge = true; }
-	  if(strcmp(skill->first_attribute("id")->value(), "refresh") == 0)
-	  { c->m_refresh = true; }
-	  if(strcmp(skill->first_attribute("id")->value(), "regenerate") == 0)
-	  { c->m_regenerate = atoi(skill->first_attribute("x")->value()); }
-	  if(strcmp(skill->first_attribute("id")->value(), "siphon") == 0)
-	  { c->m_siphon = atoi(skill->first_attribute("x")->value()); }
-	  if(strcmp(skill->first_attribute("id")->value(), "split") == 0)
-	  { c->m_split = true; }
-	  if(strcmp(skill->first_attribute("id")->value(), "swipe") == 0)
-	  { c->m_swipe = true; }
-	  if(strcmp(skill->first_attribute("id")->value(), "tribute") == 0)
-	  { c->m_tribute = true; }
-	  if(strcmp(skill->first_attribute("id")->value(), "valor") == 0)
-	  { c->m_valor = atoi(skill->first_attribute("x")->value()); }
-	  if(strcmp(skill->first_attribute("id")->value(), "wall") == 0)
-	  { c->m_wall = true; }
-	  if(strcmp(skill->first_attribute("id")->value(), "chaos") == 0)
-	  { handle_skill<chaos>(skill, c); }
-	  if(strcmp(skill->first_attribute("id")->value(), "cleanse") == 0)
-	  { handle_skill<cleanse>(skill, c); }
-	  if(strcmp(skill->first_attribute("id")->value(), "enfeeble") == 0)
-	  { handle_skill<enfeeble>(skill, c); }
-	  if(strcmp(skill->first_attribute("id")->value(), "freeze") == 0)
-	  { handle_skill<freeze>(skill, c); }
-	  if(strcmp(skill->first_attribute("id")->value(), "heal") == 0)
-	  { handle_skill<heal>(skill, c); }
-	  if(strcmp(skill->first_attribute("id")->value(), "infuse") == 0)
-	  { handle_skill<infuse>(skill, c); }
-	  if(strcmp(skill->first_attribute("id")->value(), "jam") == 0)
-	  { handle_skill<jam>(skill, c); }
-	  if(strcmp(skill->first_attribute("id")->value(), "mimic") == 0)
-	  { handle_skill<mimic>(skill, c); }
-	  if(strcmp(skill->first_attribute("id")->value(), "protect") == 0)
-	  { handle_skill<protect>(skill, c); }
-	  if(strcmp(skill->first_attribute("id")->value(), "rally") == 0)
-	  { handle_skill<rally>(skill, c); }
-	  if(strcmp(skill->first_attribute("id")->value(), "rush") == 0)
-	  { handle_skill<rush>(skill, c); }
-	  if(strcmp(skill->first_attribute("id")->value(), "shock") == 0)
-	  { handle_skill<shock>(skill, c); }
-	  if(strcmp(skill->first_attribute("id")->value(), "siege") == 0)
-	  { handle_skill<siege>(skill, c); }
-	  if(strcmp(skill->first_attribute("id")->value(), "strike") == 0)
-	  { handle_skill<strike>(skill, c); }
-	  if(strcmp(skill->first_attribute("id")->value(), "summon") == 0)
-	  { handle_skill<summon>(skill, c); }
-	  if(strcmp(skill->first_attribute("id")->value(), "supply") == 0)
-	  { handle_skill<supply>(skill, c); }
-	  if(strcmp(skill->first_attribute("id")->value(), "weaken") == 0)
-	  { handle_skill<weaken>(skill, c); }
-	}
-	cards.cards.push_back(c);
-      }
+        if(strcmp(card->name(), "unit") == 0)
+        {
+            xml_node<>* id_node(card->first_node("id"));
+            int id(id_node ? atoi(id_node->value()) : -1);
+            // Replacement art card
+            xml_node<>* replace_node(card->first_node("replace"));
+            if(replace_node)
+            {
+                cards.replace[id] = atoi(replace_node->value());
+                continue;
+            }
+            xml_node<>* name_node(card->first_node("name"));
+            xml_node<>* attack_node(card->first_node("attack"));
+            xml_node<>* health_node(card->first_node("health"));
+            xml_node<>* cost_node(card->first_node("cost"));
+            xml_node<>* unique_node(card->first_node("unique"));
+            xml_node<>* rarity_node(card->first_node("rarity"));
+            xml_node<>* type_node(card->first_node("type"));
+            xml_node<>* set_node(card->first_node("set"));
+            int set(set_node ? atoi(set_node->value()) : -1);
+            mission_only = set == -1;
+            if((mission_only || set >= 0) && name_node && rarity_node)
+            {
+                if(!mission_only)
+                {
+                    nb_cards++;
+                    sets_counts[set]++;
+                }
+                Card* c(new Card());
+                c->m_id = id;
+                c->m_name = name_node->value();
+                if(id < 1000)
+                { c->m_type = CardType::assault; }
+                else if(id < 2000)
+                { c->m_type = CardType::commander; }
+                else if(id < 3000)
+                { c->m_type = CardType::structure; }
+                else
+                { c->m_type = CardType::action; }
+                if(attack_node) { c->m_attack = atoi(attack_node->value()); }
+                if(health_node) { c->m_health = atoi(health_node->value()); }
+                if(cost_node) { c->m_delay = atoi(cost_node->value()); }
+                if(unique_node) { c->m_unique = true; }
+                c->m_rarity = atoi(rarity_node->value());
+                unsigned type(type_node ? atoi(type_node->value()) : 0);
+                c->m_faction = map_to_faction(type);
+                c->m_set = set;
+                for(xml_node<>* skill = card->first_node("skill"); skill;
+                    skill = skill->next_sibling("skill"))
+                {
+                    if(strcmp(skill->first_attribute("id")->value(), "antiair") == 0)
+                    { c->m_antiair = atoi(skill->first_attribute("x")->value()); }
+                    if(strcmp(skill->first_attribute("id")->value(), "armored") == 0)
+                    { c->m_armored = atoi(skill->first_attribute("x")->value()); }
+                    if(strcmp(skill->first_attribute("id")->value(), "augment") == 0)
+                    { handle_skill<augment>(skill, c); }
+                    if(strcmp(skill->first_attribute("id")->value(), "berserk") == 0)
+                    {
+                        bool attacked(skill->first_attribute("attacked"));
+                        if(attacked) { c->m_berserk_oa = atoi(skill->first_attribute("x")->value()); }
+                        else {c->m_berserk = atoi(skill->first_attribute("x")->value()); }
+                    }
+                    if(strcmp(skill->first_attribute("id")->value(), "blitz") == 0)
+                    { c->m_blitz = true; }
+                    if(strcmp(skill->first_attribute("id")->value(), "burst") == 0)
+                    { c->m_burst = atoi(skill->first_attribute("x")->value()); }
+                    if(strcmp(skill->first_attribute("id")->value(), "counter") == 0)
+                    { c->m_counter = atoi(skill->first_attribute("x")->value()); }
+                    if(strcmp(skill->first_attribute("id")->value(), "crush") == 0)
+                    { c->m_crush = atoi(skill->first_attribute("x")->value()); }
+                    if(strcmp(skill->first_attribute("id")->value(), "disease") == 0)
+                    {
+                        bool attacked(skill->first_attribute("attacked"));
+                        if(attacked) { c->m_disease_oa = true; }
+                        else {c->m_disease = true; }
+                    }
+                    if(strcmp(skill->first_attribute("id")->value(), "evade") == 0)
+                    { c->m_evade = true; }
+                    if(strcmp(skill->first_attribute("id")->value(), "fear") == 0)
+                    { c->m_fear = true; }
+                    if(strcmp(skill->first_attribute("id")->value(), "flurry") == 0)
+                    { c->m_flurry = atoi(skill->first_attribute("x")->value()); }
+                    if(strcmp(skill->first_attribute("id")->value(), "flying") == 0)
+                    { c->m_flying = true; }
+                    if(strcmp(skill->first_attribute("id")->value(), "immobilize") == 0)
+                    { c->m_immobilize = true; }
+                    if(strcmp(skill->first_attribute("id")->value(), "intercept") == 0)
+                    { c->m_intercept = true; }
+                    if(strcmp(skill->first_attribute("id")->value(), "leech") == 0)
+                    { c->m_leech = atoi(skill->first_attribute("x")->value()); }
+                    if(strcmp(skill->first_attribute("id")->value(), "payback") == 0)
+                    { c->m_payback = true; }
+                    if(strcmp(skill->first_attribute("id")->value(), "pierce") == 0)
+                    { c->m_pierce = atoi(skill->first_attribute("x")->value()); }
+                    if(strcmp(skill->first_attribute("id")->value(), "poison") == 0)
+                    {
+                        bool attacked(skill->first_attribute("attacked"));
+                        if(attacked) { c->m_poison_oa = atoi(skill->first_attribute("x")->value()); }
+                        else {c->m_poison = atoi(skill->first_attribute("x")->value()); }
+                    }
+                    if(strcmp(skill->first_attribute("id")->value(), "recharge") == 0)
+                    { c->m_recharge = true; }
+                    if(strcmp(skill->first_attribute("id")->value(), "refresh") == 0)
+                    { c->m_refresh = true; }
+                    if(strcmp(skill->first_attribute("id")->value(), "regenerate") == 0)
+                    { c->m_regenerate = atoi(skill->first_attribute("x")->value()); }
+                    if(strcmp(skill->first_attribute("id")->value(), "siphon") == 0)
+                    { c->m_siphon = atoi(skill->first_attribute("x")->value()); }
+                    if(strcmp(skill->first_attribute("id")->value(), "split") == 0)
+                    { c->m_split = true; }
+                    if(strcmp(skill->first_attribute("id")->value(), "swipe") == 0)
+                    { c->m_swipe = true; }
+                    if(strcmp(skill->first_attribute("id")->value(), "tribute") == 0)
+                    { c->m_tribute = true; }
+                    if(strcmp(skill->first_attribute("id")->value(), "valor") == 0)
+                    { c->m_valor = atoi(skill->first_attribute("x")->value()); }
+                    if(strcmp(skill->first_attribute("id")->value(), "wall") == 0)
+                    { c->m_wall = true; }
+                    if(strcmp(skill->first_attribute("id")->value(), "chaos") == 0)
+                    { handle_skill<chaos>(skill, c); }
+                    if(strcmp(skill->first_attribute("id")->value(), "cleanse") == 0)
+                    { handle_skill<cleanse>(skill, c); }
+                    if(strcmp(skill->first_attribute("id")->value(), "enfeeble") == 0)
+                    { handle_skill<enfeeble>(skill, c); }
+                    if(strcmp(skill->first_attribute("id")->value(), "freeze") == 0)
+                    { handle_skill<freeze>(skill, c); }
+                    if(strcmp(skill->first_attribute("id")->value(), "heal") == 0)
+                    { handle_skill<heal>(skill, c); }
+                    if(strcmp(skill->first_attribute("id")->value(), "infuse") == 0)
+                    { handle_skill<infuse>(skill, c); }
+                    if(strcmp(skill->first_attribute("id")->value(), "jam") == 0)
+                    { handle_skill<jam>(skill, c); }
+                    if(strcmp(skill->first_attribute("id")->value(), "mimic") == 0)
+                    { handle_skill<mimic>(skill, c); }
+                    if(strcmp(skill->first_attribute("id")->value(), "protect") == 0)
+                    { handle_skill<protect>(skill, c); }
+                    if(strcmp(skill->first_attribute("id")->value(), "rally") == 0)
+                    { handle_skill<rally>(skill, c); }
+                    if(strcmp(skill->first_attribute("id")->value(), "rush") == 0)
+                    { handle_skill<rush>(skill, c); }
+                    if(strcmp(skill->first_attribute("id")->value(), "shock") == 0)
+                    { handle_skill<shock>(skill, c); }
+                    if(strcmp(skill->first_attribute("id")->value(), "siege") == 0)
+                    { handle_skill<siege>(skill, c); }
+                    if(strcmp(skill->first_attribute("id")->value(), "strike") == 0)
+                    { handle_skill<strike>(skill, c); }
+                    if(strcmp(skill->first_attribute("id")->value(), "summon") == 0)
+                    { handle_skill<summon>(skill, c); }
+                    if(strcmp(skill->first_attribute("id")->value(), "supply") == 0)
+                    { handle_skill<supply>(skill, c); }
+                    if(strcmp(skill->first_attribute("id")->value(), "weaken") == 0)
+                    { handle_skill<weaken>(skill, c); }
+                }
+                cards.cards.push_back(c);
+            }
+        }
     }
-  }
-  cards.organize();
-  // std::cout << "nb cards: " << nb_cards << "\n";
-  // for(auto counts: sets_counts)
-  // {
-  //   std::cout << "set " << counts.first << " (" << sets[counts.first] << ")" << ": " << counts.second << "\n";
-  // }
-  // std::cout << "nb mission cards: " << cards.mission_cards.size() << "\n";
+    cards.organize();
+    // std::cout << "nb cards: " << nb_cards << "\n";
+    // for(auto counts: sets_counts)
+    // {
+    //   std::cout << "set " << counts.first << " (" << sets[counts.first] << ")" << ": " << counts.second << "\n";
+    // }
+    // std::cout << "nb mission cards: " << cards.mission_cards.size() << "\n";
 }
 //---------------------- $30 Deck: a commander + a sequence of cards -----------
 // Can be shuffled.
@@ -850,17 +850,17 @@ struct DeckIface
 {
     const Card* commander;
     std::vector<const Card*> cards;
-    
+
     DeckIface() :
-	commander{nullptr}
+        commander{nullptr}
     {}
 
     DeckIface(const Card* commander_,
-	      boost::any_range<const Card*, boost::forward_traversal_tag, const Card*, std::ptrdiff_t> cards_) :
-	commander(commander_),
-	cards(std::begin(cards_), std::end(cards_))
+              boost::any_range<const Card*, boost::forward_traversal_tag, const Card*, std::ptrdiff_t> cards_) :
+        commander(commander_),
+        cards(std::begin(cards_), std::end(cards_))
     {}
-;
+    ;
     virtual ~DeckIface() {};
     virtual DeckIface* clone() const = 0;
     virtual const Card* get_commander() = 0;
@@ -876,124 +876,124 @@ struct DeckRandom : DeckIface
     std::deque<const Card*> shuffled_cards;
 
     DeckRandom(
-	const Card* commander_,
-	const std::vector<const Card*>& cards_,
-	std::vector<std::pair<unsigned, std::vector<const Card*> > > raid_cards_ =
-	std::vector<std::pair<unsigned, std::vector<const Card*> > >()) :
-	DeckIface(commander_, cards_),
+        const Card* commander_,
+        const std::vector<const Card*>& cards_,
+        std::vector<std::pair<unsigned, std::vector<const Card*> > > raid_cards_ =
+        std::vector<std::pair<unsigned, std::vector<const Card*> > >()) :
+        DeckIface(commander_, cards_),
         raid_cards(raid_cards_)
     {
     }
 
     DeckRandom(const DeckIface& other) :
-	DeckIface(other)
+        DeckIface(other)
     {
     }
 
     DeckRandom(const Cards& all_cards, const std::vector<std::string>& names)
     {
-	for(auto name: names)
-	{
-	    auto card_it(all_cards.player_cards_by_name.find(name));
-	    if(card_it == all_cards.player_cards_by_name.end())
-	    {
-		throw std::runtime_error("While constructing a deck: the card " + name + " was not found.");
-	    }
-	    else
-	    {
-		const Card* card{card_it->second};
-		if(card->m_type == CardType::commander)
-		{
-		    if(commander == nullptr)
-		    {
-			commander = card;
-		    }
-		    else
-		    {
-			throw std::runtime_error("While constructing a deck: two commanders detected (" + name + " and " + commander->m_name + ")");
-		    }
-		}
-		else
-		{
-		    cards.emplace_back(card);
-		}
-	    }
-	}
-	if(commander == nullptr)
-	{
-	    throw std::runtime_error("While constructing a deck: no commander found");
-	}
+        for(auto name: names)
+        {
+            auto card_it(all_cards.player_cards_by_name.find(name));
+            if(card_it == all_cards.player_cards_by_name.end())
+            {
+                throw std::runtime_error("While constructing a deck: the card " + name + " was not found.");
+            }
+            else
+            {
+                const Card* card{card_it->second};
+                if(card->m_type == CardType::commander)
+                {
+                    if(commander == nullptr)
+                    {
+                        commander = card;
+                    }
+                    else
+                    {
+                        throw std::runtime_error("While constructing a deck: two commanders detected (" + name + " and " + commander->m_name + ")");
+                    }
+                }
+                else
+                {
+                    cards.emplace_back(card);
+                }
+            }
+        }
+        if(commander == nullptr)
+        {
+            throw std::runtime_error("While constructing a deck: no commander found");
+        }
     }
 
     DeckRandom(const Cards& all_cards, const std::vector<unsigned>& ids)
     {
-	for(auto id: ids)
-	{
-	    const Card* card{all_cards.by_id(id)};
-	    if(card->m_type == CardType::commander)
-	    {
-		if(commander == nullptr)
-		{
-		    commander = card;
-		}
-		else
-		{
-		    throw std::runtime_error("While constructing a deck: two commanders detected (" + card->m_name + " and " + commander->m_name + ")");
-		}
-	    }
-	    else
-	    {
-		cards.emplace_back(card);
-	    }
-	}
-	if(commander == nullptr)
-	{
-	    throw std::runtime_error("While constructing a deck: no commander found");
-	}
+        for(auto id: ids)
+        {
+            const Card* card{all_cards.by_id(id)};
+            if(card->m_type == CardType::commander)
+            {
+                if(commander == nullptr)
+                {
+                    commander = card;
+                }
+                else
+                {
+                    throw std::runtime_error("While constructing a deck: two commanders detected (" + card->m_name + " and " + commander->m_name + ")");
+                }
+            }
+            else
+            {
+                cards.emplace_back(card);
+            }
+        }
+        if(commander == nullptr)
+        {
+            throw std::runtime_error("While constructing a deck: no commander found");
+        }
     }
 
     ~DeckRandom() {}
 
     virtual DeckIface* clone() const
     {
-	return(new DeckRandom(*this));
+        return(new DeckRandom(*this));
     }
 
     const Card* get_commander()
     {
-	return(commander);
+        return(commander);
     }
 
     const Card* next()
     {
-	if(!shuffled_cards.empty())
-	{
-	    const Card* card = shuffled_cards.front();
-	    shuffled_cards.pop_front();
-	    return(card);
-	}
-	else
-	{
-	    return(nullptr);
-	}
+        if(!shuffled_cards.empty())
+        {
+            const Card* card = shuffled_cards.front();
+            shuffled_cards.pop_front();
+            return(card);
+        }
+        else
+        {
+            return(nullptr);
+        }
     }
 
     void shuffle(std::mt19937& re)
     {
-	shuffled_cards.clear();
-	boost::insert(shuffled_cards, shuffled_cards.end(), cards);
-	for(auto& card_pool: raid_cards)
-	{
-	    assert(card_pool.first <= card_pool.second.size());
-	    partial_shuffle(card_pool.second.begin(), card_pool.second.begin() + card_pool.first, card_pool.second.end(), re);
-	    shuffled_cards.insert(shuffled_cards.end(), card_pool.second.begin(), card_pool.second.begin() + card_pool.first);
-	}
-	boost::shuffle(shuffled_cards, re);
+        shuffled_cards.clear();
+        boost::insert(shuffled_cards, shuffled_cards.end(), cards);
+        for(auto& card_pool: raid_cards)
+        {
+            assert(card_pool.first <= card_pool.second.size());
+            partial_shuffle(card_pool.second.begin(), card_pool.second.begin() + card_pool.first, card_pool.second.end(), re);
+            shuffled_cards.insert(shuffled_cards.end(), card_pool.second.begin(), card_pool.second.begin() + card_pool.first);
+        }
+        boost::shuffle(shuffled_cards, re);
     }
 
     void place_at_bottom(const Card* card)
     {
-	shuffled_cards.push_back(card);
+        shuffled_cards.push_back(card);
     }
 };
 
@@ -1002,11 +1002,11 @@ void print_deck(DeckIface& deck)
     std::cout << "Deck:" << std::endl;
     if(deck.commander)
     {
-	std::cout << deck.commander->m_name << "\n";
+        std::cout << deck.commander->m_name << "\n";
     }
     else
     {
-	std::cout << "No commander\n";
+        std::cout << "No commander\n";
     }
     for(const Card* card: deck.cards)
     {
@@ -1022,13 +1022,13 @@ struct DeckOrdered : DeckIface
     std::map<unsigned, std::list<unsigned> > order;
 
     DeckOrdered(const Card* commander_, boost::any_range<const Card*, boost::forward_traversal_tag, const Card*, std::ptrdiff_t> cards_) :
-	DeckIface(commander_, cards_),
-	shuffled_cards(cards.begin(), cards.end())
+        DeckIface(commander_, cards_),
+        shuffled_cards(cards.begin(), cards.end())
     {
     }
 
     DeckOrdered(const DeckIface& other) :
-	DeckIface(other)
+        DeckIface(other)
     {
     }
 
@@ -1036,48 +1036,48 @@ struct DeckOrdered : DeckIface
 
     virtual DeckOrdered* clone() const
     {
-	return(new DeckOrdered(*this));
+        return(new DeckOrdered(*this));
     }
 
     const Card* get_commander() { return(commander); }
 
     const Card* next()
     {
-	if(shuffled_cards.empty())
-	{
-	    return(nullptr);
-	}
-	else
-	{
-	    auto cardIter = std::min_element(shuffled_cards.begin(), shuffled_cards.begin() + std::min<unsigned>(3u, shuffled_cards.size()), [this](const Card* card1, const Card* card2) -> bool
-		     {
-			 auto card1_order = order.find(card1->m_id);
-			 if(!card1_order->second.empty())
-			 {
-			     auto card2_order = order.find(card2->m_id);
-			     if(!card1_order->second.empty())
-			     {
-				 return(*card1_order->second.begin() < *card2_order->second.begin());
-			     }
-			     else
-			     {
-				 return(true);
-			     }
-			 }
-			 else
-			 {
-			     return(false);
-			 }
-		     });
-	    auto card = *cardIter;
-	    shuffled_cards.erase(cardIter);
-	    auto card_order = order.find(card->m_id);
-	    if(!card_order->second.empty())
-	    {
-		card_order->second.erase(card_order->second.begin());
-	    }
-	    return(card);
-	}
+        if(shuffled_cards.empty())
+        {
+            return(nullptr);
+        }
+        else
+        {
+            auto cardIter = std::min_element(shuffled_cards.begin(), shuffled_cards.begin() + std::min<unsigned>(3u, shuffled_cards.size()), [this](const Card* card1, const Card* card2) -> bool
+                                             {
+                                                 auto card1_order = order.find(card1->m_id);
+                                                 if(!card1_order->second.empty())
+                                                 {
+                                                     auto card2_order = order.find(card2->m_id);
+                                                     if(!card1_order->second.empty())
+                                                     {
+                                                         return(*card1_order->second.begin() < *card2_order->second.begin());
+                                                     }
+                                                     else
+                                                     {
+                                                         return(true);
+                                                     }
+                                                 }
+                                                 else
+                                                 {
+                                                     return(false);
+                                                 }
+                                             });
+            auto card = *cardIter;
+            shuffled_cards.erase(cardIter);
+            auto card_order = order.find(card->m_id);
+            if(!card_order->second.empty())
+            {
+                card_order->second.erase(card_order->second.begin());
+            }
+            return(card);
+        }
     }
 
     void shuffle(std::mt19937& re)
@@ -1089,14 +1089,14 @@ struct DeckOrdered : DeckIface
             order[card->m_id].push_back(i);
             ++i;
         }
-	shuffled_cards.clear();
-	range::insert(shuffled_cards, shuffled_cards.end(), cards);
-	std::shuffle(shuffled_cards.begin(), shuffled_cards.end(), re);
+        shuffled_cards.clear();
+        range::insert(shuffled_cards, shuffled_cards.end(), cards);
+        std::shuffle(shuffled_cards.begin(), shuffled_cards.end(), re);
     }
 
     void place_at_bottom(const Card* card)
     {
-	shuffled_cards.push_back(card);
+        shuffled_cards.push_back(card);
     }
 };
 //------------------------------------------------------------------------------
@@ -1107,18 +1107,18 @@ class Hand
 public:
 
     Hand(DeckIface* deck_) :
-	deck(deck_),
-	assaults(15),
-	structures(15)
+        deck(deck_),
+        assaults(15),
+        structures(15)
     {
     }
 
     void reset(std::mt19937& re)
     {
-	assaults.reset();
-	structures.reset();
-	commander = CardStatus(deck->get_commander());
-	deck->shuffle(re);
+        assaults.reset();
+        structures.reset();
+        commander = CardStatus(deck->get_commander());
+        deck->shuffle(re);
     }
 
     DeckIface* deck;
@@ -1154,12 +1154,12 @@ public:
     std::vector<CardStatus*> killed_with_on_death;
     std::vector<CardStatus*> killed_with_regen;
     enum phase
-        {
-            playcard_phase,
-            commander_phase,
-            structures_phase,
-            assaults_phase
-        };
+    {
+        playcard_phase,
+        commander_phase,
+        structures_phase,
+        assaults_phase
+    };
     // the current phase of the turn: starts with playcard_phase, then commander_phase, structures_phase, and assaults_phase
     phase current_phase;
     // the index of the card being evaluated in the current phase.
@@ -1171,7 +1171,7 @@ public:
         end{false},
         re(re_),
         cards(cards_),
-	players{{&hand1, &hand2}},
+        players{{&hand1, &hand2}},
         turn(1),
         gamemode(_gamemode)
     {
@@ -1179,12 +1179,12 @@ public:
 
     inline unsigned rand(unsigned x, unsigned y)
     {
-	return(std::uniform_int_distribution<unsigned>(x, y)(re));
+        return(std::uniform_int_distribution<unsigned>(x, y)(re));
     }
 
     inline unsigned flip()
     {
-	return(this->rand(0,1));
+        return(this->rand(0,1));
     }
 
     template <typename T>
@@ -1219,10 +1219,10 @@ void resolve_skill(Field* fd)
     while(!fd->skill_queue.empty())
     {
         auto skill_instance(fd->skill_queue.front());
-	auto& status(std::get<0>(skill_instance));
-	auto& skill(std::get<1>(skill_instance));
+        auto& status(std::get<0>(skill_instance));
+        auto& skill(std::get<1>(skill_instance));
         fd->skill_queue.pop_front();
-	skill_table[std::get<0>(skill)](fd, status, skill);
+        skill_table[std::get<0>(skill)](fd, status, skill);
     }
 }
 //------------------------------------------------------------------------------
@@ -1232,7 +1232,7 @@ SkillSpec augmented_skill(CardStatus* status, const SkillSpec& s)
     SkillSpec augmented_s = s;
     if(std::get<0>(s) != augment && std::get<0>(s) != augment_all && std::get<0>(s) != summon)
     {
-	std::get<1>(augmented_s) += status->m_augmented;
+        std::get<1>(augmented_s) += status->m_augmented;
     }
     return(augmented_s);
 }
@@ -1253,49 +1253,49 @@ struct PlayCard
     Field* fd;
     CardStatus* status;
     Storage<CardStatus>* storage;
-    
+
     PlayCard(const Card* card_, Field* fd_) :
-	card{card_},
-	fd{fd_},
-	status{nullptr},
-	storage{nullptr}
+        card{card_},
+        fd{fd_},
+        status{nullptr},
+        storage{nullptr}
     {}
-    
+
     template <enum CardType::CardType type>
     bool op()
     {
-	setStorage<type>();
-	placeCard<type>();
-	onPlaySkills<type>();
-	blitz<type>();
+        setStorage<type>();
+        placeCard<type>();
+        onPlaySkills<type>();
+        blitz<type>();
     }
-    
+
     // action
     template <enum CardType::CardType>
     void setStorage()
     {
     }
-    
+
     // assault + structure
     template <enum CardType::CardType type>
     void placeCard()
     {
-	status = &storage->add_back();
-	status->set(card);
-	status->m_index = storage->size() - 1;
-	status->m_player = fd->tapi;
-	if(fd->turn == 1 && fd->gamemode == tournament && status->m_delay > 0)
-	{
-	    ++status->m_delay;
-	}
-	placeDebugMsg<type>();
+        status = &storage->add_back();
+        status->set(card);
+        status->m_index = storage->size() - 1;
+        status->m_player = fd->tapi;
+        if(fd->turn == 1 && fd->gamemode == tournament && status->m_delay > 0)
+        {
+            ++status->m_delay;
+        }
+        placeDebugMsg<type>();
     }
-    
+
     // assault + structure
     template <enum CardType::CardType type>
     void placeDebugMsg()
     {
-	_DEBUG_MSG("Placed [%s] as %s %d\n", card->m_name.c_str(), cardtype_names[type].c_str(), storage->size() - 1);
+        _DEBUG_MSG("Placed [%s] as %s %d\n", card->m_name.c_str(), cardtype_names[type].c_str(), storage->size() - 1);
     }
 
     // all except assault: noop
@@ -1303,16 +1303,16 @@ struct PlayCard
     void blitz()
     {
     }
-    
+
     // assault + structure
     template <enum CardType::CardType>
     void onPlaySkills()
     {
-	for(auto& skill: card->m_skills_played)
-	{
-	    fd->skill_queue.emplace_back(status, skill);
-	    resolve_skill(fd);
-	}
+        for(auto& skill: card->m_skills_played)
+        {
+            fd->skill_queue.emplace_back(status, skill);
+            resolve_skill(fd);
+        }
     }
 };
 // assault
@@ -1338,7 +1338,7 @@ void PlayCard::blitz<CardType::assault>()
 {
     if(card->m_blitz && fd->tip->assaults.size() > status->m_index && fd->tip->assaults[status->m_index].m_hp > 0 && fd->tip->assaults[status->m_index].m_delay == 0)
     {
-	status->blitz = true;
+        status->blitz = true;
     }
 }
 // action
@@ -1347,20 +1347,20 @@ void PlayCard::onPlaySkills<CardType::action>()
 {
     for(auto& skill: card->m_skills)
     {
-	fd->skill_queue.emplace_back(nullptr, skill);
-	resolve_skill(fd);
-	// Special case: enemy commander killed by a shock action card
-	if(fd->tip->commander.m_hp == 0)
-	{
-	    _DEBUG_MSG("turn's defender dead.\n");
-	    fd->end = true;
-	    break;
-	}
+        fd->skill_queue.emplace_back(nullptr, skill);
+        resolve_skill(fd);
+        // Special case: enemy commander killed by a shock action card
+        if(fd->tip->commander.m_hp == 0)
+        {
+            _DEBUG_MSG("turn's defender dead.\n");
+            fd->end = true;
+            break;
+        }
     }
     // Special case: recharge ability
     if(card->m_recharge && fd->flip())
     {
-	fd->tap->deck->place_at_bottom(card);
+        fd->tap->deck->place_at_bottom(card);
     }
 }
 //------------------------------------------------------------------------------
@@ -1380,77 +1380,77 @@ unsigned play(Field* fd)
     while(fd->turn < turn_limit && !fd->end)
     {
         fd->current_phase = Field::playcard_phase;
-	// Initialize stuff, remove dead cards
-	_DEBUG_MSG("##### TURN %u #####\n", fd->turn);
-	turn_start_phase(fd);
-	// Special case: refresh on commander
-	if(fd->tip->commander.m_card->m_refresh && fd->tip->commander.m_hp > 0)
-	{
-	    fd->tip->commander.m_hp = fd->tip->commander.m_card->m_health;
-	}
-	// Play a card
-	const Card* played_card(fd->tap->deck->next());
-	if(played_card)
-	{
-	    switch(played_card->m_type)
-	    {
-	    case CardType::action:
-		// end: handles commander death by shock
-		PlayCard(played_card, fd).op<CardType::action>();
-		break;
-	    case CardType::assault:
-		PlayCard(played_card, fd).op<CardType::assault>();
-		break;
-	    case CardType::structure:
-		PlayCard(played_card, fd).op<CardType::structure>();
-		break;
-	    }
-	}
-	// Evaluate commander
+        // Initialize stuff, remove dead cards
+        _DEBUG_MSG("##### TURN %u #####\n", fd->turn);
+        turn_start_phase(fd);
+        // Special case: refresh on commander
+        if(fd->tip->commander.m_card->m_refresh && fd->tip->commander.m_hp > 0)
+        {
+            fd->tip->commander.m_hp = fd->tip->commander.m_card->m_health;
+        }
+        // Play a card
+        const Card* played_card(fd->tap->deck->next());
+        if(played_card)
+        {
+            switch(played_card->m_type)
+            {
+            case CardType::action:
+                // end: handles commander death by shock
+                PlayCard(played_card, fd).op<CardType::action>();
+                break;
+            case CardType::assault:
+                PlayCard(played_card, fd).op<CardType::assault>();
+                break;
+            case CardType::structure:
+                PlayCard(played_card, fd).op<CardType::structure>();
+                break;
+            }
+        }
+        // Evaluate commander
         fd->current_phase = Field::commander_phase;
-	evaluate_skills(fd, &fd->tap->commander, fd->tap->commander.m_card->m_skills);
-	// Evaluate structures
+        evaluate_skills(fd, &fd->tap->commander, fd->tap->commander.m_card->m_skills);
+        // Evaluate structures
         fd->current_phase = Field::structures_phase;
-	for(fd->current_ci = 0; !fd->end && fd->current_ci < fd->tap->structures.size(); ++fd->current_ci)
-	{
-	    CardStatus& current_status(fd->tap->structures[fd->current_ci]);
-	    if(current_status.m_delay == 0)
-	    {
-		evaluate_skills(fd, &current_status, current_status.m_card->m_skills);
-	    }
-	}
-	// Evaluate assaults
+        for(fd->current_ci = 0; !fd->end && fd->current_ci < fd->tap->structures.size(); ++fd->current_ci)
+        {
+            CardStatus& current_status(fd->tap->structures[fd->current_ci]);
+            if(current_status.m_delay == 0)
+            {
+                evaluate_skills(fd, &current_status, current_status.m_card->m_skills);
+            }
+        }
+        // Evaluate assaults
         fd->current_phase = Field::assaults_phase;
-	for(fd->current_ci = 0; !fd->end && fd->current_ci < fd->tap->assaults.size(); ++fd->current_ci)
-	{
-	    // ca: current assault
-	    CardStatus& current_status(fd->tap->assaults[fd->current_ci]);
-	    if((current_status.m_delay > 0 && !current_status.blitz) || current_status.m_hp == 0 || current_status.m_jammed || current_status.m_frozen)
-	    {
-		//_DEBUG_MSG("! Assault %u (%s) hp: %u, jammed %u\n", card_index, current_status.m_card->m_name.c_str(), current_status.m_hp, current_status.m_jammed);
-	    }
-	    else
-	    {
-		// Special case: check for split (tartarus swarm raid)
-		if(current_status.m_card->m_split && fd->tap->assaults.size() + fd->tap->structures.size() < 100)
-		{
-		    CardStatus& status_split(fd->tap->assaults.add_back());
-		    status_split.set(current_status.m_card);
-		    _DEBUG_MSG("Split assault %d (%s)\n", fd->tap->assaults.size() - 1, current_status.m_card->m_name.c_str());
-		}
-		// Evaluate skills
-		// Special case: Gore Typhon's infuse
-		evaluate_skills(fd, &current_status, current_status.m_infused ? current_status.infused_skills : current_status.m_card->m_skills);
-		// Attack
-		if(!current_status.m_immobilized && current_status.m_hp > 0)
-		{
-		    attack_phase(fd);
-		}
-	    }
-	}
-	std::swap(fd->tapi, fd->tipi);
-	std::swap(fd->tap, fd->tip);
-	++fd->turn;
+        for(fd->current_ci = 0; !fd->end && fd->current_ci < fd->tap->assaults.size(); ++fd->current_ci)
+        {
+            // ca: current assault
+            CardStatus& current_status(fd->tap->assaults[fd->current_ci]);
+            if((current_status.m_delay > 0 && !current_status.blitz) || current_status.m_hp == 0 || current_status.m_jammed || current_status.m_frozen)
+            {
+                //_DEBUG_MSG("! Assault %u (%s) hp: %u, jammed %u\n", card_index, current_status.m_card->m_name.c_str(), current_status.m_hp, current_status.m_jammed);
+            }
+            else
+            {
+                // Special case: check for split (tartarus swarm raid)
+                if(current_status.m_card->m_split && fd->tap->assaults.size() + fd->tap->structures.size() < 100)
+                {
+                    CardStatus& status_split(fd->tap->assaults.add_back());
+                    status_split.set(current_status.m_card);
+                    _DEBUG_MSG("Split assault %d (%s)\n", fd->tap->assaults.size() - 1, current_status.m_card->m_name.c_str());
+                }
+                // Evaluate skills
+                // Special case: Gore Typhon's infuse
+                evaluate_skills(fd, &current_status, current_status.m_infused ? current_status.infused_skills : current_status.m_card->m_skills);
+                // Attack
+                if(!current_status.m_immobilized && current_status.m_hp > 0)
+                {
+                    attack_phase(fd);
+                }
+            }
+        }
+        std::swap(fd->tapi, fd->tipi);
+        std::swap(fd->tap, fd->tip);
+        ++fd->turn;
     }
     // defender wins
     if(fd->players[0]->commander.m_hp == 0) { _DEBUG_MSG("Defender wins.\n"); return(1); }
@@ -1472,15 +1472,15 @@ bool remove_hp(Field* fd, CardStatus& status, unsigned dmg)
     const bool just_died(status.m_hp == 0);
     if(just_died)
     {
-	_DEBUG_MSG("Card %u (%s) dead\n", status.m_index, status.m_card->m_name.c_str());
+        _DEBUG_MSG("Card %u (%s) dead\n", status.m_index, status.m_card->m_name.c_str());
         if(status.m_card->m_skills_died.size() > 0)
         {
             fd->killed_with_on_death.push_back(&status);
         }
-	if(status.m_card->m_regenerate)
-	{
-	    fd->killed_with_regen.push_back(&status);
-	}
+        if(status.m_card->m_regenerate)
+        {
+            fd->killed_with_regen.push_back(&status);
+        }
     }
     return(just_died);
 }
@@ -1501,15 +1501,15 @@ void check_regeneration(Field* fd)
 {
     for(unsigned i(0); i < fd->killed_with_regen.size(); ++i)
     {
-	CardStatus& status = *fd->killed_with_regen[i];
-	if(status.m_hp == 0 && status.m_card->m_regenerate > 0 && !status.m_diseased)
-	{
-	    status.m_hp = fd->flip() ? status.m_card->m_regenerate : 0;
-	}
-	if(status.m_hp > 0)
-	{
-	    _DEBUG_MSG("Card %s regenerated, hp 0 -> %u\n", status.m_card->m_name.c_str(), status.m_hp);
-	}
+        CardStatus& status = *fd->killed_with_regen[i];
+        if(status.m_hp == 0 && status.m_card->m_regenerate > 0 && !status.m_diseased)
+        {
+            status.m_hp = fd->flip() ? status.m_card->m_regenerate : 0;
+        }
+        if(status.m_hp > 0)
+        {
+            _DEBUG_MSG("Card %s regenerated, hp 0 -> %u\n", status.m_card->m_name.c_str(), status.m_hp);
+        }
 
     }
     fd->killed_with_regen.clear();
@@ -1524,83 +1524,83 @@ void turn_start_phase(Field* fd)
     // update index
     // remove enfeeble, protect; apply poison damage, reduce delay
     {
-	auto& assaults(fd->tap->assaults);
-	for(unsigned index(0), end(assaults.size());
-	    index < end;
-	    ++index)
-	{
-	    CardStatus& status(assaults[index]);
-	    status.m_index = index;
-	    status.m_enfeebled = 0;
-	    status.m_protected = 0;
-	    remove_hp(fd, status, status.m_poisoned);
+        auto& assaults(fd->tap->assaults);
+        for(unsigned index(0), end(assaults.size());
+            index < end;
+            ++index)
+        {
+            CardStatus& status(assaults[index]);
+            status.m_index = index;
+            status.m_enfeebled = 0;
+            status.m_protected = 0;
+            remove_hp(fd, status, status.m_poisoned);
             if(status.m_delay > 0 && !status.m_frozen) { --status.m_delay; }
-	}
+        }
     }
     // Active player's structure cards:
     // update index
     // reduce delay
     {
-	auto& structures(fd->tap->structures);
-	for(unsigned index(0), end(structures.size());
-	    index < end;
-	    ++index)
-	{
-	    CardStatus& status(structures[index]);
-	    status.m_index = index;
+        auto& structures(fd->tap->structures);
+        for(unsigned index(0), end(structures.size());
+            index < end;
+            ++index)
+        {
+            CardStatus& status(structures[index]);
+            status.m_index = index;
             if(status.m_delay > 0) { --status.m_delay; }
-	}
+        }
     }
     // Defending player's assault cards:
     // update index
     // remove augment, chaos, freeze, immobilize, jam, rally, weaken, apply refresh
     {
-	auto& assaults(fd->tip->assaults);
-	for(unsigned index(0), end(assaults.size());
-	    index < end;
-	    ++index)
-	{
-	    CardStatus& status(assaults[index]);
-	    status.m_index = index;
-	    status.m_augmented = 0;
-	    status.blitz = false;
-	    status.m_chaos = false;
-	    status.m_frozen = false;
-	    status.m_immobilized = false;
-	    status.m_jammed = false;
-	    status.m_rallied = 0;
-	    status.m_weakened = 0;
-	    if(status.m_card->m_refresh && !status.m_diseased)
-	    {
+        auto& assaults(fd->tip->assaults);
+        for(unsigned index(0), end(assaults.size());
+            index < end;
+            ++index)
+        {
+            CardStatus& status(assaults[index]);
+            status.m_index = index;
+            status.m_augmented = 0;
+            status.blitz = false;
+            status.m_chaos = false;
+            status.m_frozen = false;
+            status.m_immobilized = false;
+            status.m_jammed = false;
+            status.m_rallied = 0;
+            status.m_weakened = 0;
+            if(status.m_card->m_refresh && !status.m_diseased)
+            {
 #ifndef NDEBUG
-		if(status.m_hp < status.m_card->m_health)
-		{
-		    _DEBUG_MSG("%u %s refreshed. hp %u -> %u.\n", index, status_description(&status).c_str(), status.m_hp, status.m_card->m_health);
-		}
+                if(status.m_hp < status.m_card->m_health)
+                {
+                    _DEBUG_MSG("%u %s refreshed. hp %u -> %u.\n", index, status_description(&status).c_str(), status.m_hp, status.m_card->m_health);
+                }
 #endif
-		status.m_hp = status.m_card->m_health;
-	    }
-	}
+                status.m_hp = status.m_card->m_health;
+            }
+        }
     }
     // Defending player's structure cards:
     // update index
     // apply refresh
     {
-	auto& structures(fd->tip->structures);
-	for(unsigned index(0), end(structures.size());
-	    index < end;
-	    ++index)
-	{
-	    CardStatus& status(structures[index]);
-	    status.m_index = index;
-	    if(status.m_card->m_refresh && status.m_hp < status.m_card->m_health)
-	    {
+        auto& structures(fd->tip->structures);
+        for(unsigned index(0), end(structures.size());
+            index < end;
+            ++index)
+        {
+            CardStatus& status(structures[index]);
+            status.m_index = index;
+            if(status.m_card->m_refresh && status.m_hp < status.m_card->m_health)
+            {
 #ifndef NDEBUG
-		_DEBUG_MSG("%s refreshed. hp %u -> %u.\n", index, status_description(&status).c_str(), status.m_hp, status.m_card->m_health);
+                _DEBUG_MSG("%s refreshed. hp %u -> %u.\n", index, status_description(&status).c_str(), status.m_hp, status.m_card->m_health);
 #endif
-		status.m_hp = status.m_card->m_health;
-	    }
-	}
+                status.m_hp = status.m_card->m_health;
+            }
+        }
     }
     // Perform on death skills (from cards killed by poison damage)
     prepend_on_death(fd);
@@ -1719,53 +1719,53 @@ struct PerformAttack
     bool killed_by_attack;
 
     PerformAttack(Field* fd_, CardStatus* att_status_, CardStatus* def_status_) :
-	fd(fd_), att_status(att_status_), def_status(def_status_), att_dmg(0), killed_by_attack(false)
+        fd(fd_), att_status(att_status_), def_status(def_status_), att_dmg(0), killed_by_attack(false)
     {}
 
     template<enum CardType::CardType cardtype>
     void op()
     {
-	if(attack_power(att_status) > 0)
-	{
-	    const bool fly_check(!def_status->m_card->m_flying || att_status->m_card->m_flying || att_status->m_card->m_antiair > 0 || fd->flip());
-	    if(fly_check) // unnecessary check for structures, commander -> fix later ?
-	    {
-		// Evaluation order:
-		// assaults only: fly check
-		// assaults only: immobilize
-		// deal damage
-		// assaults only: (siphon, poison, disease)
-		// oa: poison, disease, assaults only: berserk, skills
-		// counter, berserk
-		// assaults only: (crush, leech if still alive)
-		// check regeneration
-		att_dmg = calculate_attack_damage<cardtype>();
-		if(att_dmg > 0)
-		{
-		    immobilize<cardtype>();
-		    attack_damage<cardtype>();
-		    siphon_poison_disease<cardtype>();
-		}
-		oa<cardtype>();
-		if(att_dmg > 0)
-		{
-		    if(att_status->m_hp > 0)
-		    {
-			counter_berserk<cardtype>();
-		    }
-		    crush_leech<cardtype>();
-		}
-		prepend_on_death(fd);
-		resolve_skill(fd);
-		check_regeneration(fd);
-	    }
-	}
+        if(attack_power(att_status) > 0)
+        {
+            const bool fly_check(!def_status->m_card->m_flying || att_status->m_card->m_flying || att_status->m_card->m_antiair > 0 || fd->flip());
+            if(fly_check) // unnecessary check for structures, commander -> fix later ?
+            {
+                // Evaluation order:
+                // assaults only: fly check
+                // assaults only: immobilize
+                // deal damage
+                // assaults only: (siphon, poison, disease)
+                // oa: poison, disease, assaults only: berserk, skills
+                // counter, berserk
+                // assaults only: (crush, leech if still alive)
+                // check regeneration
+                att_dmg = calculate_attack_damage<cardtype>();
+                if(att_dmg > 0)
+                {
+                    immobilize<cardtype>();
+                    attack_damage<cardtype>();
+                    siphon_poison_disease<cardtype>();
+                }
+                oa<cardtype>();
+                if(att_dmg > 0)
+                {
+                    if(att_status->m_hp > 0)
+                    {
+                        counter_berserk<cardtype>();
+                    }
+                    crush_leech<cardtype>();
+                }
+                prepend_on_death(fd);
+                resolve_skill(fd);
+                check_regeneration(fd);
+            }
+        }
     }
 
     template<enum CardType::CardType>
     unsigned calculate_attack_damage()
     {
-	return(attack_damage_against_non_assault(fd, *att_status));
+        return(attack_damage_against_non_assault(fd, *att_status));
     }
 
     template<enum CardType::CardType>
@@ -1774,9 +1774,9 @@ struct PerformAttack
     template<enum CardType::CardType>
     void attack_damage()
     {
-	remove_hp(fd, *def_status, att_dmg);
-	killed_by_attack = def_status->m_hp == 0;
-	_DEBUG_MSG("%s attack damage %u\n", status_description(att_status).c_str(), att_dmg);
+        remove_hp(fd, *def_status, att_dmg);
+        killed_by_attack = def_status->m_hp == 0;
+        _DEBUG_MSG("%s attack damage %u\n", status_description(att_status).c_str(), att_dmg);
     }
 
     template<enum CardType::CardType>
@@ -1785,20 +1785,20 @@ struct PerformAttack
     template<enum CardType::CardType cardtype>
     void oa()
     {
-	if(def_status->m_card->m_poison_oa > 0)
-	{
-	    apply_poison(att_status, def_status->m_card->m_poison_oa);
-	}
-	if(def_status->m_card->m_disease_oa)
-	{
-	    att_status->m_diseased = true;
-	}
-	oa_berserk<cardtype>();
-	for(auto& oa_skill: def_status->m_card->m_skills_attacked)
-	{
-	    fd->skill_queue.emplace_back(def_status, oa_skill);
-	    resolve_skill(fd);
-	}
+        if(def_status->m_card->m_poison_oa > 0)
+        {
+            apply_poison(att_status, def_status->m_card->m_poison_oa);
+        }
+        if(def_status->m_card->m_disease_oa)
+        {
+            att_status->m_diseased = true;
+        }
+        oa_berserk<cardtype>();
+        for(auto& oa_skill: def_status->m_card->m_skills_attacked)
+        {
+            fd->skill_queue.emplace_back(def_status, oa_skill);
+            resolve_skill(fd);
+        }
     }
 
     template<enum CardType::CardType>
@@ -1807,13 +1807,13 @@ struct PerformAttack
     template<enum CardType::CardType>
     void counter_berserk()
     {
-	if(def_status->m_card->m_counter > 0)
-	{
-	    unsigned counter_dmg(counter_damage(att_status, def_status));
-	    remove_hp(fd, *att_status, counter_dmg);
-	    _DEBUG_MSG("%s counter %u by %s\n", status_description(att_status).c_str(), counter_dmg, status_description(def_status).c_str());
-	}
-	att_status->m_berserk += att_status->m_card->m_berserk;
+        if(def_status->m_card->m_counter > 0)
+        {
+            unsigned counter_dmg(counter_damage(att_status, def_status));
+            remove_hp(fd, *att_status, counter_dmg);
+            _DEBUG_MSG("%s counter %u by %s\n", status_description(att_status).c_str(), counter_dmg, status_description(def_status).c_str());
+        }
+        att_status->m_berserk += att_status->m_card->m_berserk;
     }
 
     template<enum CardType::CardType>
@@ -1831,7 +1831,7 @@ void PerformAttack::immobilize<CardType::assault>()
 {
     if(att_status->m_card->m_immobilize)
     {
-	def_status->m_immobilized |= fd->flip();
+        def_status->m_immobilized |= fd->flip();
     }
 }
 
@@ -1847,16 +1847,16 @@ void PerformAttack::siphon_poison_disease<CardType::assault>()
 {
     if(att_status->m_card->m_siphon > 0)
     {
-	add_hp(&fd->tap->commander, std::min(att_dmg, att_status->m_card->m_siphon));
-	_DEBUG_MSG(" \033[1;32m%s siphon %u; hp %u\033[0m\n", status_description(att_status).c_str(), std::min(att_dmg, att_status->m_card->m_siphon), fd->tap->commander.m_hp);
+        add_hp(&fd->tap->commander, std::min(att_dmg, att_status->m_card->m_siphon));
+        _DEBUG_MSG(" \033[1;32m%s siphon %u; hp %u\033[0m\n", status_description(att_status).c_str(), std::min(att_dmg, att_status->m_card->m_siphon), fd->tap->commander.m_hp);
     }
     if(att_status->m_card->m_poison > 0)
     {
-	apply_poison(def_status, att_status->m_card->m_poison);
+        apply_poison(def_status, att_status->m_card->m_poison);
     }
     if(att_status->m_card->m_disease)
     {
-	def_status->m_diseased = true;
+        def_status->m_diseased = true;
     }
 }
 
@@ -1868,13 +1868,13 @@ void PerformAttack::crush_leech<CardType::assault>()
 {
     if(att_status->m_card->m_crush > 0 && killed_by_attack)
     {
-	remove_commander_hp(fd, fd->tip->commander, att_status->m_card->m_crush);
-	_DEBUG_MSG("%s crush %u; commander hp %u\n", status_description(att_status).c_str(), att_status->m_card->m_crush, fd->tip->commander.m_hp);
+        remove_commander_hp(fd, fd->tip->commander, att_status->m_card->m_crush);
+        _DEBUG_MSG("%s crush %u; commander hp %u\n", status_description(att_status).c_str(), att_status->m_card->m_crush, fd->tip->commander.m_hp);
     }
     if(att_status->m_card->m_leech > 0 && att_status->m_hp > 0 && !att_status->m_diseased)
     {
-	add_hp(att_status, std::min(att_dmg, att_status->m_card->m_leech));
-	_DEBUG_MSG("%s leech %u; hp: %u.\n", status_description(att_status).c_str(), std::min(att_dmg, att_status->m_card->m_leech), att_status->m_hp);
+        add_hp(att_status, std::min(att_dmg, att_status->m_card->m_leech));
+        _DEBUG_MSG("%s leech %u; hp: %u.\n", status_description(att_status).c_str(), std::min(att_dmg, att_status->m_card->m_leech), att_status->m_hp);
     }
 }
 
@@ -1896,40 +1896,40 @@ void attack_phase(Field* fd)
             // attack mode 1.
             if(!att_status->m_card->m_swipe)
             {
-		PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci]}.op<CardType::assault>();
+                PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci]}.op<CardType::assault>();
             }
             // attack mode 2.
             else
-	    {
-		// attack the card on the left
-		if(alive_assault(def_assaults, fd->current_ci - 1))
-		{
-		    PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci-1]}.op<CardType::assault>();
-		}
-		// stille alive? attack the card in front
-		if(fd->tip->commander.m_hp > 0 && att_status->m_hp > 0 && alive_assault(def_assaults, fd->current_ci))
-		{
-		    PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci]}.op<CardType::assault>();
-		}
-		// still alive? attack the card on the right
-		if(fd->tip->commander.m_hp > 0 && att_status->m_hp > 0 && alive_assault(def_assaults, fd->current_ci + 1))
-		{
-		    PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci+1]}.op<CardType::assault>();
-		}
-	    }
+            {
+                // attack the card on the left
+                if(alive_assault(def_assaults, fd->current_ci - 1))
+                {
+                    PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci-1]}.op<CardType::assault>();
+                }
+                // stille alive? attack the card in front
+                if(fd->tip->commander.m_hp > 0 && att_status->m_hp > 0 && alive_assault(def_assaults, fd->current_ci))
+                {
+                    PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci]}.op<CardType::assault>();
+                }
+                // still alive? attack the card on the right
+                if(fd->tip->commander.m_hp > 0 && att_status->m_hp > 0 && alive_assault(def_assaults, fd->current_ci + 1))
+                {
+                    PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci+1]}.op<CardType::assault>();
+                }
+            }
         }
         // attack mode 3.
         else
         {
             CardStatus* def_status{select_first_enemy_wall(fd)}; // defending wall
             if(def_status != nullptr)
-	    {
-		PerformAttack{fd, att_status, def_status}.op<CardType::structure>();
-	    }
+            {
+                PerformAttack{fd, att_status, def_status}.op<CardType::structure>();
+            }
             else
             {
-		PerformAttack{fd, att_status, &fd->tip->commander}.op<CardType::commander>();
-	    }
+                PerformAttack{fd, att_status, &fd->tip->commander}.op<CardType::commander>();
+            }
         }
     }
 }
@@ -1968,11 +1968,11 @@ inline bool skill_predicate<augment>(CardStatus* c)
 {
     if(c->m_hp > 0 && (c->m_delay == 0 || c->blitz) && !c->m_jammed && !c->m_frozen)
     {
-	for(auto& s: c->m_card->m_skills)
-	{
-	    // Any quantifiable skill except augment
-	    if(std::get<1>(s) > 0 && std::get<0>(s) != augment && std::get<0>(s) != augment_all && std::get<0>(s) != summon) { return(true); }
-	}
+        for(auto& s: c->m_card->m_skills)
+        {
+            // Any quantifiable skill except augment
+            if(std::get<1>(s) > 0 && std::get<0>(s) != augment && std::get<0>(s) != augment_all && std::get<0>(s) != summon) { return(true); }
+        }
     }
     return(false);
 }
@@ -1985,13 +1985,13 @@ template<>
 inline bool skill_predicate<cleanse>(CardStatus* c)
 {
     return(c->m_hp > 0 && (
-	       c->m_chaos ||
-	       c->m_diseased ||
-	       c->m_enfeebled > 0 ||
-	       (c->m_frozen && c->m_delay == 0) ||
-	       c->m_jammed ||
-	       c->m_poisoned
-			   ));
+               c->m_chaos ||
+               c->m_diseased ||
+               c->m_enfeebled > 0 ||
+               (c->m_frozen && c->m_delay == 0) ||
+               c->m_jammed ||
+               c->m_poisoned
+               ));
 }
 
 template<>
@@ -2366,31 +2366,31 @@ CardStatus* get_target_hostile_fast(Field* fd, CardStatus* src_status, const Ski
     unsigned array_head{select_fast<skill_id>(fd, src_status, cards, s)};
     if(array_head > 0)
     {
-	unsigned rand_index(fd->rand(0, array_head - 1));
+        unsigned rand_index(fd->rand(0, array_head - 1));
         CardStatus* c(fd->selection_array[rand_index]);
-	// intercept
-	if(src_status && !src_status->m_chaos)
-	{
-	    CardStatus* intercept_card(nullptr);
-	    if(rand_index > 0)
-	    {
-		CardStatus* left_status(fd->selection_array[rand_index-1]);
-		if(left_status->m_card->m_intercept && left_status->m_index == c->m_index-1)
-		{
-		    intercept_card = left_status;
-		}
-	    }
-	    if(rand_index+1 < array_head && !intercept_card)
-	    {
-		CardStatus* right_status(fd->selection_array[rand_index+1]);
-		if(right_status->m_card->m_intercept && right_status->m_index == c->m_index+1)
-		{
-		    intercept_card = right_status;
-		}
-	    }
-	    if(intercept_card) { c = intercept_card; }
-	}
-	return(c);
+        // intercept
+        if(src_status && !src_status->m_chaos)
+        {
+            CardStatus* intercept_card(nullptr);
+            if(rand_index > 0)
+            {
+                CardStatus* left_status(fd->selection_array[rand_index-1]);
+                if(left_status->m_card->m_intercept && left_status->m_index == c->m_index-1)
+                {
+                    intercept_card = left_status;
+                }
+            }
+            if(rand_index+1 < array_head && !intercept_card)
+            {
+                CardStatus* right_status(fd->selection_array[rand_index+1]);
+                if(right_status->m_card->m_intercept && right_status->m_index == c->m_index+1)
+                {
+                    intercept_card = right_status;
+                }
+            }
+            if(intercept_card) { c = intercept_card; }
+        }
+        return(c);
     }
     return(nullptr);
 }
@@ -2402,26 +2402,26 @@ void perform_targetted_hostile_fast(Field* fd, CardStatus* src_status, const Ski
     CardStatus* c(get_target_hostile_fast<skill_id>(fd, src_status, s));
     if(c)
     {
-	// evade
+        // evade
         if(!c->m_card->m_evade || fd->flip())
         {
             _DEBUG_MSG("%s (%u) from %s on %s.\n", skill_names[skill_id].c_str(), std::get<1>(s), status_description(src_status).c_str(), status_description(c).c_str());
-	    // skill
+            // skill
             perform_skill<skill_id>(fd, c, std::get<1>(s));
-	    // payback
+            // payback
             if(c->m_card->m_payback &&
-	       src_status &&
-	       src_status->m_card->m_type == CardType::assault &&
-	       !src_status->m_chaos &&
-	       src_status->m_hp > 0 &&
+               src_status &&
+               src_status->m_card->m_type == CardType::assault &&
+               !src_status->m_chaos &&
+               src_status->m_hp > 0 &&
                fd->flip())
             {
-		// payback evade
+                // payback evade
                 if(skill_predicate<skill_id>(src_status) &&
                    (!src_status->m_card->m_evade || fd->flip()))
                 {
                     _DEBUG_MSG("Payback (%s %u) on (%s)\n", skill_names[skill_id].c_str(), std::get<1>(s), src_status->m_card->m_name.c_str());
-		    // payback skill
+                    // payback skill
                     perform_skill<skill_id>(fd, src_status, std::get<1>(s));
                 }
             }
@@ -2444,9 +2444,9 @@ void perform_targetted_allied_fast(Field* fd, CardStatus* src_status, const Skil
         _DEBUG_MSG("\n");
         if(c->m_card->m_tribute &&
            src_status &&
-	   src_status->m_card->m_type == CardType::assault &&
-	   src_status != c &&
-	   src_status->m_hp > 0 &&
+           src_status->m_card->m_type == CardType::assault &&
+           src_status != c &&
+           src_status->m_hp > 0 &&
            fd->flip())
         {
             if(skill_predicate<skill_id>(src_status))
@@ -2471,12 +2471,12 @@ void perform_global_hostile_fast(Field* fd, CardStatus* src_status, const SkillS
         {
             _DEBUG_MSG("%s (%u) on (%s)\n", skill_names[skill_id].c_str(), std::get<1>(s), c->m_card->m_name.c_str());
             perform_skill<skill_id>(fd, c, std::get<1>(s));
-	    // payback
+            // payback
             if(c->m_card->m_payback &&
-	       src_status &&
-	       src_status->m_card->m_type == CardType::assault &&
-	       !src_status->m_chaos &&
-	       src_status->m_hp > 0 &&
+               src_status &&
+               src_status->m_card->m_type == CardType::assault &&
+               !src_status->m_chaos &&
+               src_status->m_hp > 0 &&
                fd->flip())
             {
                 ++payback_count;
@@ -2507,9 +2507,9 @@ void perform_global_allied_fast(Field* fd, CardStatus* src_status, const SkillSp
         perform_skill<skill_id>(fd, c, std::get<1>(s));
         if(c->m_card->m_tribute &&
            src_status &&
-	   src_status->m_card->m_type == CardType::assault &&
-	   src_status != c &&
-	   src_status->m_hp > 0 &&
+           src_status->m_card->m_type == CardType::assault &&
+           src_status != c &&
+           src_status->m_hp > 0 &&
            fd->flip())
         {
             if(skill_predicate<skill_id>(src_status))
@@ -2569,20 +2569,20 @@ void summon_card(Field* fd, unsigned player, const Card* summoned)
     Hand* hand{fd->players[player]};
     if(hand->assaults.size() + hand->structures.size() < 100)
     {
-	Storage<CardStatus>* storage{summoned->m_type == CardType::assault ? &hand->assaults : &hand->structures};
-	CardStatus& card_status(storage->add_back());
-	card_status.set(summoned);
-	card_status.m_index = storage->size() - 1;
-	card_status.m_player = player;
-	_DEBUG_MSG("Summoned [%s] as %s %d\n", summoned->m_name.c_str(), cardtype_names[summoned->m_type].c_str(), card_status.m_index);
-	prepend_skills(fd, &card_status);
-	if(card_status.m_card->m_blitz &&
-	   fd->players[opponent(player)]->assaults.size() > card_status.m_index &&
-	   fd->players[opponent(player)]->assaults[card_status.m_index].m_hp > 0 &&
-	   fd->players[opponent(player)]->assaults[card_status.m_index].m_delay == 0)
-	{
-	    card_status.blitz = true;
-	}
+        Storage<CardStatus>* storage{summoned->m_type == CardType::assault ? &hand->assaults : &hand->structures};
+        CardStatus& card_status(storage->add_back());
+        card_status.set(summoned);
+        card_status.m_index = storage->size() - 1;
+        card_status.m_player = player;
+        _DEBUG_MSG("Summoned [%s] as %s %d\n", summoned->m_name.c_str(), cardtype_names[summoned->m_type].c_str(), card_status.m_index);
+        prepend_skills(fd, &card_status);
+        if(card_status.m_card->m_blitz &&
+           fd->players[opponent(player)]->assaults.size() > card_status.m_index &&
+           fd->players[opponent(player)]->assaults[card_status.m_index].m_hp > 0 &&
+           fd->players[opponent(player)]->assaults[card_status.m_index].m_delay == 0)
+        {
+            card_status.blitz = true;
+        }
     }
 }
 void perform_summon(Field* fd, CardStatus* src_status, const SkillSpec& s)
@@ -2628,9 +2628,9 @@ void perform_mimic(Field* fd, CardStatus* src_status, const SkillSpec& s)
                (std::get<0>(skill) != supply || (src_status && src_status->m_card->m_type == CardType::assault)))
             {
                 SkillSpec mimic_s(std::get<0>(skill), std::get<1>(skill), allfactions);
-		fd->skill_queue.emplace_back(src_status, src_status && src_status->m_augmented > 0 ? augmented_skill(src_status, mimic_s) : mimic_s);
-		resolve_skill(fd);
-		check_regeneration(fd);
+                fd->skill_queue.emplace_back(src_status, src_status && src_status->m_augmented > 0 ? augmented_skill(src_status, mimic_s) : mimic_s);
+                resolve_skill(fd);
+                check_regeneration(fd);
             }
         }
     }
@@ -2679,7 +2679,7 @@ template<typename Iterator, typename Functor> Iterator recede_until(Iterator it,
     {
         if(f(*it))
         {
-	    return(++it);
+            return(++it);
         }
         --it;
     } while(it != it_beg);
@@ -2692,9 +2692,9 @@ template<typename Iterator, typename Functor, typename Token> Iterator read_toke
     Iterator token_end_after_spaces = advance_until(token_start, it_end, f);
     if(token_start != token_end_after_spaces)
     {
-	Iterator token_end = recede_until(token_end_after_spaces, token_start, [](const char& c){return(c != ' ');});
-	token = boost::lexical_cast<Token>(std::string{token_start, token_end});
-	return(token_end_after_spaces);
+        Iterator token_end = recede_until(token_end_after_spaces, token_start, [](const char& c){return(c != ' ');});
+        token = boost::lexical_cast<Token>(std::string{token_start, token_end});
+        return(token_end_after_spaces);
     }
     return(token_end_after_spaces);
 }
@@ -2707,104 +2707,104 @@ unsigned read_custom_decks(Cards& cards, std::string filename, std::map<std::str
     std::ifstream decks_file(filename.c_str());
     if(!decks_file.is_open())
     {
-	std::cerr << "File " << filename << " could not be opened\n";
-	return(2);
+        std::cerr << "File " << filename << " could not be opened\n";
+        return(2);
     }
     unsigned num_line(0);
     decks_file.exceptions(std::ifstream::badbit);
     try
     {
-	while(decks_file && !decks_file.eof())
-	{
-	    std::vector<unsigned> card_ids;
-	    std::string deck_string;
-	    getline(decks_file, deck_string);
-	    ++num_line;
-	    if(deck_string.size() > 0)
-	    {
-		boost::tokenizer<boost::char_delimiters_separator<char> > deck_tokens{deck_string, boost::char_delimiters_separator<char>{false, ":,", ""}};
-		auto token_iter = deck_tokens.begin();
-		boost::optional<std::string> deck_name;
-		if(token_iter != deck_tokens.end())
-		{
-		    read_token(token_iter->begin(), token_iter->end(), [](char c){return(false);}, deck_name);
-		    if(!deck_name || (*deck_name).size() == 0)
-		    {
-			std::cerr << "Error in file " << filename << " at line " << num_line << ", could not read the deck name.\n";
-			continue;
-		    }
-		}
-		else
-		{
-		    std::cerr << "Error in file " << filename << " at line " << num_line << ", could not read the deck name.\n";
-		    continue;
-		}
-		++token_iter;
+        while(decks_file && !decks_file.eof())
+        {
+            std::vector<unsigned> card_ids;
+            std::string deck_string;
+            getline(decks_file, deck_string);
+            ++num_line;
+            if(deck_string.size() > 0)
+            {
+                boost::tokenizer<boost::char_delimiters_separator<char> > deck_tokens{deck_string, boost::char_delimiters_separator<char>{false, ":,", ""}};
+                auto token_iter = deck_tokens.begin();
+                boost::optional<std::string> deck_name;
+                if(token_iter != deck_tokens.end())
+                {
+                    read_token(token_iter->begin(), token_iter->end(), [](char c){return(false);}, deck_name);
+                    if(!deck_name || (*deck_name).size() == 0)
+                    {
+                        std::cerr << "Error in file " << filename << " at line " << num_line << ", could not read the deck name.\n";
+                        continue;
+                    }
+                }
+                else
+                {
+                    std::cerr << "Error in file " << filename << " at line " << num_line << ", could not read the deck name.\n";
+                    continue;
+                }
+                ++token_iter;
                 for(; token_iter != deck_tokens.end(); ++token_iter)
                 {
-		    std::string card_spec(*token_iter);
-		    try
-		    {
-			auto card_spec_iter = card_spec.begin();
-			boost::optional<std::string> card_name;
-			card_spec_iter = read_token(card_spec_iter, card_spec.end(), [](char c){return(c=='[' || c=='#');}, card_name);
-			if(!card_name)
-			{
-			    std::cerr << "Error in file " << filename << " at line " << num_line << " while parsing card " << card_spec << " in deck " << deck_name << "\n";
-			    break;
-			}
-			else
-			{
-			    boost::optional<unsigned> card_id;
-			    if(*card_spec_iter == '[')
-			    {
-				++card_spec_iter;
-				card_spec_iter = read_token(card_spec_iter, card_spec.end(), [](char c){return(c==']');}, card_id);
-				card_spec_iter = advance_until(card_spec_iter, card_spec.end(), [](char c){return(c!=' ');});
-			    }
-			    boost::optional<unsigned> card_num;
-			    if(*card_spec_iter == '#')
-			    {
-				++card_spec_iter;
-				card_spec_iter = read_token(card_spec_iter, card_spec.end(), [](char c){return(c < '0' || c > '9');}, card_num);
-			    }
-			    unsigned resolved_id{card_id ? *card_id : 0};
-			    if(resolved_id == 0)
-			    {
-				auto card_it = cards.player_cards_by_name.find(*card_name);
-				if(card_it != cards.player_cards_by_name.end())
-				{
-				    resolved_id = card_it->second->m_id;
-				}
-				else
-				{
-				    std::cerr << "Error in file " << filename << " at line " << num_line << " while parsing card " << card_spec << " in deck " << *deck_name << ": card not found\n";
-				    break;
-				}
-			    }
-			    for(unsigned i(0); i < (card_num ? *card_num : 1); ++i)
-			    {
-				card_ids.push_back(resolved_id);
-			    }
-			}
-		    }
-		    catch(boost::bad_lexical_cast e)
-		    {
-			std::cerr << "Error in file " << filename << " at line " << num_line << " while parsing card " << card_spec << " in deck " << deck_name << "\n";
-		    }
-		}
-		if(deck_name)
-		{
-		    custom_decks.insert({*deck_name, new DeckRandom{cards, card_ids}});
-		}
-	    }
-	}
+                    std::string card_spec(*token_iter);
+                    try
+                    {
+                        auto card_spec_iter = card_spec.begin();
+                        boost::optional<std::string> card_name;
+                        card_spec_iter = read_token(card_spec_iter, card_spec.end(), [](char c){return(c=='[' || c=='#');}, card_name);
+                        if(!card_name)
+                        {
+                            std::cerr << "Error in file " << filename << " at line " << num_line << " while parsing card " << card_spec << " in deck " << deck_name << "\n";
+                            break;
+                        }
+                        else
+                        {
+                            boost::optional<unsigned> card_id;
+                            if(*card_spec_iter == '[')
+                            {
+                                ++card_spec_iter;
+                                card_spec_iter = read_token(card_spec_iter, card_spec.end(), [](char c){return(c==']');}, card_id);
+                                card_spec_iter = advance_until(card_spec_iter, card_spec.end(), [](char c){return(c!=' ');});
+                            }
+                            boost::optional<unsigned> card_num;
+                            if(*card_spec_iter == '#')
+                            {
+                                ++card_spec_iter;
+                                card_spec_iter = read_token(card_spec_iter, card_spec.end(), [](char c){return(c < '0' || c > '9');}, card_num);
+                            }
+                            unsigned resolved_id{card_id ? *card_id : 0};
+                            if(resolved_id == 0)
+                            {
+                                auto card_it = cards.player_cards_by_name.find(*card_name);
+                                if(card_it != cards.player_cards_by_name.end())
+                                {
+                                    resolved_id = card_it->second->m_id;
+                                }
+                                else
+                                {
+                                    std::cerr << "Error in file " << filename << " at line " << num_line << " while parsing card " << card_spec << " in deck " << *deck_name << ": card not found\n";
+                                    break;
+                                }
+                            }
+                            for(unsigned i(0); i < (card_num ? *card_num : 1); ++i)
+                            {
+                                card_ids.push_back(resolved_id);
+                            }
+                        }
+                    }
+                    catch(boost::bad_lexical_cast e)
+                    {
+                        std::cerr << "Error in file " << filename << " at line " << num_line << " while parsing card " << card_spec << " in deck " << deck_name << "\n";
+                    }
+                }
+                if(deck_name)
+                {
+                    custom_decks.insert({*deck_name, new DeckRandom{cards, card_ids}});
+                }
+            }
+        }
     }
     catch (std::ifstream::failure e)
     {
-	std::cerr << "Exception while parsing the file " << filename << " (badbit is set).\n";
-	e.what();
-	return(3);
+        std::cerr << "Exception while parsing the file " << filename << " (badbit is set).\n";
+        e.what();
+        return(3);
     }
 }
 //------------------------------------------------------------------------------
@@ -2815,36 +2815,36 @@ void read_missions(Decks& decks, Cards& cards, std::string filename)
     parse_file(filename.c_str(), buffer, doc);
     xml_node<>* root = doc.first_node();
     for(xml_node<>* mission_node = root->first_node();
-	mission_node;
-	mission_node = mission_node->next_sibling())
+        mission_node;
+        mission_node = mission_node->next_sibling())
     {
-	if(strcmp(mission_node->name(), "mission") == 0)
-	{
-	    std::vector<unsigned> card_ids;
-	    xml_node<>* id_node(mission_node->first_node("id"));
-	    int id(id_node ? atoi(id_node->value()) : -1);
-	    xml_node<>* name_node(mission_node->first_node("name"));
-	    std::string deck_name{name_node->value()};
-	    xml_node<>* commander_node(mission_node->first_node("commander"));
-	    card_ids.push_back(atoi(commander_node->value()));
-	    xml_node<>* deck_node(mission_node->first_node("deck"));
-	    for(xml_node<>* card_node = deck_node->first_node();
-		card_node;
-		card_node = card_node->next_sibling())
-	    {
-		unsigned card_id{atoi(card_node->value())};
-		// Handle the replacement art cards
-		if(cards.replace.find(card_id) != cards.replace.end())
-		{
-		    card_id = cards.replace[card_id];
-		}
-		card_ids.push_back(card_id);
-	    }
-	    decks.mission_decks.push_back(DeckRandom{cards, card_ids});
-	    DeckRandom* deck = &decks.mission_decks.back();
-	    decks.mission_decks_by_id[id] = deck;
-	    decks.mission_decks_by_name[deck_name] = deck;
-	}
+        if(strcmp(mission_node->name(), "mission") == 0)
+        {
+            std::vector<unsigned> card_ids;
+            xml_node<>* id_node(mission_node->first_node("id"));
+            int id(id_node ? atoi(id_node->value()) : -1);
+            xml_node<>* name_node(mission_node->first_node("name"));
+            std::string deck_name{name_node->value()};
+            xml_node<>* commander_node(mission_node->first_node("commander"));
+            card_ids.push_back(atoi(commander_node->value()));
+            xml_node<>* deck_node(mission_node->first_node("deck"));
+            for(xml_node<>* card_node = deck_node->first_node();
+                card_node;
+                card_node = card_node->next_sibling())
+            {
+                unsigned card_id{atoi(card_node->value())};
+                // Handle the replacement art cards
+                if(cards.replace.find(card_id) != cards.replace.end())
+                {
+                    card_id = cards.replace[card_id];
+                }
+                card_ids.push_back(card_id);
+            }
+            decks.mission_decks.push_back(DeckRandom{cards, card_ids});
+            DeckRandom* deck = &decks.mission_decks.back();
+            decks.mission_decks_by_id[id] = deck;
+            decks.mission_decks_by_name[deck_name] = deck;
+        }
     }
 }
 //------------------------------------------------------------------------------
@@ -2855,65 +2855,65 @@ void read_raids(Decks& decks, Cards& cards, std::string filename)
     parse_file(filename.c_str(), buffer, doc);
     xml_node<>* root = doc.first_node();
     for(xml_node<>* raid_node = root->first_node();
-	raid_node;
-	raid_node = raid_node->next_sibling())
+        raid_node;
+        raid_node = raid_node->next_sibling())
     {
-	if(strcmp(raid_node->name(), "raid") == 0)
-	{
-	    std::vector<const Card*> always_cards;
-	    std::vector<std::pair<unsigned, std::vector<const Card*> > > some_cards;
-	    xml_node<>* id_node(raid_node->first_node("id"));
-	    int id(id_node ? atoi(id_node->value()) : -1);
-	    xml_node<>* name_node(raid_node->first_node("name"));
-	    std::string deck_name{name_node->value()};
-	    xml_node<>* commander_node(raid_node->first_node("commander"));
-	    const Card* commander_card{cards.by_id(atoi(commander_node->value()))};
-	    xml_node<>* deck_node(raid_node->first_node("deck"));
-	    xml_node<>* always_node{deck_node->first_node("always_include")};
-	    if(always_node)
-	    {
-		for(xml_node<>* card_node = always_node->first_node();
-		    card_node;
-		    card_node = card_node->next_sibling())
-		{
-		    unsigned card_id{atoi(card_node->value())};
-		    // Handle the replacement art cards
-		    if(cards.replace.find(card_id) != cards.replace.end())
-		    {
-			card_id = cards.replace[card_id];
-		    }
-		    always_cards.push_back(cards.by_id(card_id));
-		}
-	    }
-	    for(xml_node<>* pool_node = always_node->next_sibling();
-		pool_node;
-		pool_node = pool_node->next_sibling())
-	    {
-		if(strcmp(pool_node->name(), "card_pool") == 0)
-		{
-		    unsigned num_cards_from_pool{atoi(pool_node->first_attribute("amount")->value())};
-		    std::vector<const Card*> cards_from_pool;
+        if(strcmp(raid_node->name(), "raid") == 0)
+        {
+            std::vector<const Card*> always_cards;
+            std::vector<std::pair<unsigned, std::vector<const Card*> > > some_cards;
+            xml_node<>* id_node(raid_node->first_node("id"));
+            int id(id_node ? atoi(id_node->value()) : -1);
+            xml_node<>* name_node(raid_node->first_node("name"));
+            std::string deck_name{name_node->value()};
+            xml_node<>* commander_node(raid_node->first_node("commander"));
+            const Card* commander_card{cards.by_id(atoi(commander_node->value()))};
+            xml_node<>* deck_node(raid_node->first_node("deck"));
+            xml_node<>* always_node{deck_node->first_node("always_include")};
+            if(always_node)
+            {
+                for(xml_node<>* card_node = always_node->first_node();
+                    card_node;
+                    card_node = card_node->next_sibling())
+                {
+                    unsigned card_id{atoi(card_node->value())};
+                    // Handle the replacement art cards
+                    if(cards.replace.find(card_id) != cards.replace.end())
+                    {
+                        card_id = cards.replace[card_id];
+                    }
+                    always_cards.push_back(cards.by_id(card_id));
+                }
+            }
+            for(xml_node<>* pool_node = always_node->next_sibling();
+                pool_node;
+                pool_node = pool_node->next_sibling())
+            {
+                if(strcmp(pool_node->name(), "card_pool") == 0)
+                {
+                    unsigned num_cards_from_pool{atoi(pool_node->first_attribute("amount")->value())};
+                    std::vector<const Card*> cards_from_pool;
 
-		    for(xml_node<>* card_node = pool_node->first_node();
-			card_node;
-			card_node = card_node->next_sibling())
-		    {
-			unsigned card_id{atoi(card_node->value())};
-			// Handle the replacement art cards
-			if(cards.replace.find(card_id) != cards.replace.end())
-			{
-			    card_id = cards.replace[card_id];
-			}
-			cards_from_pool.push_back(cards.by_id(card_id));
-		    }
-		    some_cards.push_back(std::make_pair(num_cards_from_pool, cards_from_pool));
-		}
-	    }
-	    decks.raid_decks.push_back(DeckRandom{commander_card, always_cards, some_cards});
-	    DeckRandom* deck = &decks.raid_decks.back();
-	    decks.raid_decks_by_id[id] = deck;
-	    decks.raid_decks_by_name[deck_name] = deck;
-	}
+                    for(xml_node<>* card_node = pool_node->first_node();
+                        card_node;
+                        card_node = card_node->next_sibling())
+                    {
+                        unsigned card_id{atoi(card_node->value())};
+                        // Handle the replacement art cards
+                        if(cards.replace.find(card_id) != cards.replace.end())
+                        {
+                            card_id = cards.replace[card_id];
+                        }
+                        cards_from_pool.push_back(cards.by_id(card_id));
+                    }
+                    some_cards.push_back(std::make_pair(num_cards_from_pool, cards_from_pool));
+                }
+            }
+            decks.raid_decks.push_back(DeckRandom{commander_card, always_cards, some_cards});
+            DeckRandom* deck = &decks.raid_decks.back();
+            decks.raid_decks_by_id[id] = deck;
+            decks.raid_decks_by_name[deck_name] = deck;
+        }
     }
 }
 //------------------------------------------------------------------------------
@@ -2938,7 +2938,7 @@ void load_decks(Decks& decks, Cards& cards)
     if(boost::filesystem::exists("Custom.txt"))
     {
         try
-        {       
+        {
             read_custom_decks(cards, std::string{"Custom.txt"}, decks.custom_decks);
         }
         catch(const std::runtime_error& e)
@@ -2953,17 +2953,17 @@ DeckIface* find_deck(const Decks& decks, std::string name)
     auto it1 = decks.mission_decks_by_name.find(name);
     if(it1 != decks.mission_decks_by_name.end())
     {
-	return(it1->second);
+        return(it1->second);
     }
     auto it2 = decks.raid_decks_by_name.find(name);
     if(it2 != decks.raid_decks_by_name.end())
     {
-	return(it2->second);
+        return(it2->second);
     }
     auto it3 = decks.custom_decks.find(name);
     if(it3 != decks.custom_decks.end())
     {
-	return(it3->second);
+        return(it3->second);
     }
     return(nullptr);
 }
@@ -2980,19 +2980,19 @@ void read_owned_cards(Cards& cards)
     boost::tokenizer<boost::char_delimiters_separator<char> > tok{owned_str, boost::char_delimiters_separator<char>{false, "()\n", ""}};
     for(boost::tokenizer<boost::char_delimiters_separator<char> >::iterator beg=tok.begin(); beg!=tok.end();++beg)
     {
-	std::string name{*beg};
-	++beg;
-	assert(beg != tok.end());
-	unsigned num{atoi((*beg).c_str())};
-	auto card_itr = cards.player_cards_by_name.find(name);
-	if(card_itr == cards.player_cards_by_name.end())
-	{
-	    std::cerr << "Error in file ownedcards.txt, the card \"" << name << "\" does not seem to be a valid card.\n";
-	}
-	else
-	{
-	    owned_cards[card_itr->second->m_id] = num;
-	}
+        std::string name{*beg};
+        ++beg;
+        assert(beg != tok.end());
+        unsigned num{atoi((*beg).c_str())};
+        auto card_itr = cards.player_cards_by_name.find(name);
+        if(card_itr == cards.player_cards_by_name.end())
+        {
+            std::cerr << "Error in file ownedcards.txt, the card \"" << name << "\" does not seem to be a valid card.\n";
+        }
+        else
+        {
+            owned_cards[card_itr->second->m_id] = num;
+        }
     }
 }
 
@@ -3034,52 +3034,52 @@ std::set<unsigned> top_commanders{
         1121, // Daizon
         // uncommon commanders:
         1031, // Dalia
-	1017, // Duncan
-	1120, // Emanuel
+        1017, // Duncan
+        1120, // Emanuel
         1102, // Korvald
         // rare commanders:
-	1021, // Atlas
-	1153, // Daedalus
-	1045, // Dracorex
-	1099, // Empress
-	1116, // Gaia
-	1182, // Gialdrea
-	1050, // IC
+        1021, // Atlas
+        1153, // Daedalus
+        1045, // Dracorex
+        1099, // Empress
+        1116, // Gaia
+        1182, // Gialdrea
+        1050, // IC
         1184, // Kleave
-	1004, // LoT
-	1123, // LtW
+        1004, // LoT
+        1123, // LtW
         1171, // Nexor
-	1104, // Stavros
-	1152, // Svetlana
+        1104, // Stavros
+        1152, // Svetlana
         1141, // Tabitha
         1172, // Teiffa
-	// halcyon + terminus:
-	1203, // Halcyon the Corrupt shitty artwork
-	1204, // Halcyon the Corrupt LE
-	1200, // Corra
-	1049, // Lord Halcyon
-	1198, // Virulentus
-	1199, // Lord Silus
-};
+        // halcyon + terminus:
+        1203, // Halcyon the Corrupt shitty artwork
+        1204, // Halcyon the Corrupt LE
+        1200, // Corra
+        1049, // Lord Halcyon
+        1198, // Virulentus
+        1199, // Lord Silus
+        };
 //------------------------------------------------------------------------------
 bool suitable_non_commander(DeckIface& deck, unsigned slot, const Card* card)
 {
     assert(card->m_type != CardType::commander);
     if(use_owned_cards)
     {
-	if(owned_cards.find(card->m_id) == owned_cards.end()) { return(false); }
-	else
-	{
-	    unsigned num_in_deck{0};
-	    for(unsigned i(0); i < deck.cards.size(); ++i)
-	    {
-		if(i != slot && deck.cards[i]->m_id == card->m_id)
-		{
-		    ++num_in_deck;
-		}
-	    }
-	    if(owned_cards.find(card->m_id)->second <= num_in_deck) { return(false); }
-	}
+        if(owned_cards.find(card->m_id) == owned_cards.end()) { return(false); }
+        else
+        {
+            unsigned num_in_deck{0};
+            for(unsigned i(0); i < deck.cards.size(); ++i)
+            {
+                if(i != slot && deck.cards[i]->m_id == card->m_id)
+                {
+                    ++num_in_deck;
+                }
+            }
+            if(owned_cards.find(card->m_id)->second <= num_in_deck) { return(false); }
+        }
     }
     if(card->m_rarity == 4) // legendary - 1 per deck
     {
@@ -3111,12 +3111,12 @@ bool suitable_commander(const Card* card)
     if(keep_commander) { return(false); }
     if(use_owned_cards)
     {
-	auto owned_iter = owned_cards.find(card->m_id);
-	if(owned_iter == owned_cards.end()) { return(false); }
-	else
-	{
-	    if(owned_iter->second <= 0) { return(false); }
-	}
+        auto owned_iter = owned_cards.find(card->m_id);
+        if(owned_iter == owned_cards.end()) { return(false); }
+        else
+        {
+            if(owned_iter->second <= 0) { return(false); }
+        }
     }
     if(top_commanders.find(card->m_id) == top_commanders.end()) { return(false); }
     return(true);
@@ -3128,7 +3128,7 @@ double compute_efficiency(const std::pair<std::vector<unsigned> , unsigned>& res
     double sum{0.};
     for(unsigned index(0); index < results.first.size(); ++index)
     {
-	sum += (double)results.second / results.first[index];
+        sum += (double)results.second / results.first[index];
     }
     return(results.first.size() / sum);
 }
@@ -3139,17 +3139,17 @@ double compute_score(const std::pair<std::vector<unsigned> , unsigned>& results,
     double score{0.};
     if(use_efficiency)
     {
-	score = compute_efficiency(results);
+        score = compute_efficiency(results);
     }
     else
     {
-	if(results.second == 0) { score = 0.; }
-	double sum{0.};
-	for(unsigned index(0); index < results.first.size(); ++index)
-	{
-	    sum += results.first[index] * factors[index];
-	}
-	score = sum / std::accumulate(factors.begin(), factors.end(), 0.) / (double)results.second;
+        if(results.second == 0) { score = 0.; }
+        double sum{0.};
+        for(unsigned index(0); index < results.first.size(); ++index)
+        {
+            sum += results.first[index] * factors[index];
+        }
+        score = sum / std::accumulate(factors.begin(), factors.end(), 0.) / (double)results.second;
     }
     return(score);
 }
@@ -3178,57 +3178,57 @@ struct SimulationData
     gamemode_t gamemode;
 
     SimulationData(unsigned seed, const Cards& cards_, const Decks& decks_, unsigned num_def_decks_, std::vector<double> factors_, gamemode_t gamemode_) :
-	re(seed),
+        re(seed),
         cards(cards_),
         decks(decks_),
-	att_deck(),
-	att_hand(nullptr),
-	def_decks(num_def_decks_),
-	factors(factors_),
+        att_deck(),
+        att_hand(nullptr),
+        def_decks(num_def_decks_),
+        factors(factors_),
         gamemode(gamemode_)
     {
-	for(auto def_deck: def_decks)
-	{
-	    def_hands.emplace_back(new Hand(nullptr));
-	}
+        for(auto def_deck: def_decks)
+        {
+            def_hands.emplace_back(new Hand(nullptr));
+        }
     }
 
     ~SimulationData()
     {
-	for(auto hand: def_hands) { delete(hand); }
+        for(auto hand: def_hands) { delete(hand); }
     }
 
     void set_decks(const DeckIface* const att_deck_, std::vector<DeckIface*> const & def_decks_)
     {
-	att_deck.reset(att_deck_->clone());
-	att_hand.deck = att_deck.get();
-	for(unsigned i(0); i < def_decks_.size(); ++i)
-	{
-	    def_decks[i].reset(def_decks_[i]->clone());
-	    def_hands[i]->deck = def_decks[i].get();
-	}
+        att_deck.reset(att_deck_->clone());
+        att_hand.deck = att_deck.get();
+        for(unsigned i(0); i < def_decks_.size(); ++i)
+        {
+            def_decks[i].reset(def_decks_[i]->clone());
+            def_hands[i]->deck = def_decks[i].get();
+        }
     }
 
     inline std::vector<unsigned> evaluate()
     {
-	std::vector<unsigned> res;
-	for(Hand* def_hand: def_hands)
-	{
-	    att_hand.reset(re);
-	    def_hand->reset(re);
-	    Field fd(re, cards, att_hand, *def_hand, gamemode);
-	    unsigned result(play(&fd));
-	    res.emplace_back(result);
-	}
-	return(res);
+        std::vector<unsigned> res;
+        for(Hand* def_hand: def_hands)
+        {
+            att_hand.reset(re);
+            def_hand->reset(re);
+            Field fd(re, cards, att_hand, *def_hand, gamemode);
+            unsigned result(play(&fd));
+            res.emplace_back(result);
+        }
+        return(res);
     }
 };
 //------------------------------------------------------------------------------
 class Process;
 void thread_evaluate(boost::barrier& main_barrier,
-		     boost::mutex& shared_mutex,
-		     SimulationData& sim,
-		     const Process& p);
+                     boost::mutex& shared_mutex,
+                     SimulationData& sim,
+                     const Process& p);
 //------------------------------------------------------------------------------
 class Process
 {
@@ -3302,14 +3302,14 @@ public:
 };
 //------------------------------------------------------------------------------
 void thread_evaluate(boost::barrier& main_barrier,
-		     boost::mutex& shared_mutex,
-		     SimulationData& sim,
-		     const Process& p)
+                     boost::mutex& shared_mutex,
+                     SimulationData& sim,
+                     const Process& p)
 {
     while(true)
     {
         main_barrier.wait();
-	sim.set_decks(p.att_deck, p.def_decks);
+        sim.set_decks(p.att_deck, p.def_decks);
         if(destroy_threads) { return; }
         while(true)
         {
@@ -3326,14 +3326,14 @@ void thread_evaluate(boost::barrier& main_barrier,
                 shared_mutex.unlock(); //>>>>
                 std::vector<unsigned> result{sim.evaluate()};
                 shared_mutex.lock(); //<<<<
-		std::vector<unsigned> thread_score_local(thread_score.size(), 0); //!
+                std::vector<unsigned> thread_score_local(thread_score.size(), 0); //!
                 for(unsigned index(0); index < result.size(); ++index)
                 {
                     thread_score[index] += result[index] == 0 ? 1 : 0; //!
-		    thread_score_local[index] = thread_score[index]; // !
+                    thread_score_local[index] = thread_score[index]; // !
                 }
                 ++thread_total; //!
-		unsigned thread_total_local{thread_total}; //!
+                unsigned thread_total_local{thread_total}; //!
                 shared_mutex.unlock(); //>>>>
                 if(thread_compare && thread_total_local >= 1 && thread_total_local % 100 == 0)
                 {
@@ -3353,13 +3353,13 @@ void thread_evaluate(boost::barrier& main_barrier,
                     {
                         score_accum = thread_score_local[0];
                     }
-		    if(boost::math::binomial_distribution<>::find_upper_bound_on_p(thread_total_local, score_accum, 0.01) < thread_prev_score)
+                    if(boost::math::binomial_distribution<>::find_upper_bound_on_p(thread_total_local, score_accum, 0.01) < thread_prev_score)
                     {
-			shared_mutex.lock(); //<<<<
-			//std::cout << thread_total_local << "\n";
-			thread_compare_stop = true; //!
-			shared_mutex.unlock(); //>>>>
-		    }
+                        shared_mutex.lock(); //<<<<
+                        //std::cout << thread_total_local << "\n";
+                        thread_compare_stop = true; //!
+                        shared_mutex.unlock(); //>>>>
+                    }
                 }
             }
         }
@@ -3485,7 +3485,7 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
             {
                 for(const Card* commander_candidate: proc.cards.player_commanders)
                 {
-		    if(best_score == 1.0) { break; }
+                    if(best_score == 1.0) { break; }
                     // Various checks to check if the card is accepted
                     assert(commander_candidate->m_type == CardType::commander);
                     if(commander_candidate == best_commander) { continue; }
@@ -3512,7 +3512,7 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
             }
             for(const Card* card_candidate: non_commander_cards)
             {
-		if(best_score == 1.0) { break; }
+                if(best_score == 1.0) { break; }
                 // Various checks to check if the card is accepted
                 assert(card_candidate->m_type != CardType::commander);
                 for(unsigned slot_i(0); slot_i < d1->cards.size(); ++slot_i)
@@ -3521,8 +3521,8 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
                     if(card_candidate == best_cards[slot_i]) { continue; }
                     if(!suitable_non_commander(*d1, current_slot, card_candidate)) { continue; }
                     // Place it in the deck
-		    d1->cards.erase(d1->cards.begin() + current_slot);
-		    d1->cards.insert(d1->cards.begin() + slot_i, card_candidate);
+                    d1->cards.erase(d1->cards.begin() + current_slot);
+                    d1->cards.insert(d1->cards.begin() + slot_i, card_candidate);
                     // Evaluate new deck
                     auto compare_results = proc.compare(num_iterations, best_score);
                     current_score = compute_score(compare_results, proc.factors);
@@ -3532,8 +3532,8 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
                         // Then update best score/slot, print stuff
                         std::cout << "Deck improved: " << current_slot << " " << best_cards[current_slot]->m_name << " -> " << slot_i << " " << card_candidate->m_name << ": ";
                         best_score = current_score;
-			best_cards.erase(best_cards.begin() + current_slot);
-			best_cards.insert(best_cards.begin() + slot_i, card_candidate);
+                        best_cards.erase(best_cards.begin() + current_slot);
+                        best_cards.insert(best_cards.begin() + slot_i, card_candidate);
                         eval_commander = true;
                         deck_has_been_improved = true;
                         print_score_info(compare_results, proc.factors);
@@ -3564,43 +3564,43 @@ class Combination
 {
 public:
     Combination(unsigned all_, unsigned choose_, unsigned firstIndexLimit_ = 0) :
-	all(all_),
-	choose(choose_),
-	firstIndexLimit(firstIndexLimit_ == 0 ? all_ - choose_ : firstIndexLimit_),
-	indices(choose_, 0),
-	indicesLimits(choose_, 0)
+        all(all_),
+        choose(choose_),
+        firstIndexLimit(firstIndexLimit_ == 0 ? all_ - choose_ : firstIndexLimit_),
+        indices(choose_, 0),
+        indicesLimits(choose_, 0)
     {
-	assert(choose > 0);
-	assert(choose <= all);
-	assert(firstIndexLimit <= all);
-	indicesLimits[0] = firstIndexLimit;
-	for(unsigned i(1); i < choose; ++i)
-	{
-	    indices[i] = i;
-	    indicesLimits[i] =  all - choose + i;
-	}
+        assert(choose > 0);
+        assert(choose <= all);
+        assert(firstIndexLimit <= all);
+        indicesLimits[0] = firstIndexLimit;
+        for(unsigned i(1); i < choose; ++i)
+        {
+            indices[i] = i;
+            indicesLimits[i] =  all - choose + i;
+        }
     }
 
     const std::vector<unsigned>& getIndices()
     {
-	return(indices);
+        return(indices);
     }
 
     bool next()
     {
-	for(index = choose - 1; index >= 0; --index)
-	{
-	    if(indices[index] < indicesLimits[index])
-	    {
-		++indices[index];
-		for(nextIndex = index + 1; nextIndex < choose; nextIndex++)
-		{
-		    indices[nextIndex] = indices[index] - index + nextIndex;
-		}
-		return(false);
-	    }
-	}
-	return(true);
+        for(index = choose - 1; index >= 0; --index)
+        {
+            if(indices[index] < indicesLimits[index])
+            {
+                ++indices[index];
+                for(nextIndex = index + 1; nextIndex < choose; nextIndex++)
+                {
+                    indices[nextIndex] = indices[index] - index + nextIndex;
+                }
+                return(false);
+            }
+        }
+        return(true);
     }
 
 private:
@@ -3624,84 +3624,84 @@ inline void try_all_ratio_combinations(unsigned deck_size, unsigned var_k, unsig
     bool legendary_found(false);
     for(unsigned card_index: card_indices)
     {
-	const Card* card(cards[card_index]);
-	if(card->m_unique || card->m_rarity == 4)
-	{
-	    if(card->m_rarity == 4)
-	    {
-		if(legendary_found) { return; }
-		legendary_found = true;
-	    }
-	    --num_cards_to_combine;
-	    unique_cards.push_back(card);
-	}
-	else
-	{
-	    cards_to_combine.push_back(card);
-	}
+        const Card* card(cards[card_index]);
+        if(card->m_unique || card->m_rarity == 4)
+        {
+            if(card->m_rarity == 4)
+            {
+                if(legendary_found) { return; }
+                legendary_found = true;
+            }
+            --num_cards_to_combine;
+            unique_cards.push_back(card);
+        }
+        else
+        {
+            cards_to_combine.push_back(card);
+        }
     }
     // all unique or legendaries, quit
     if(cards_to_combine.size() == 0) { return; }
     if(cards_to_combine.size() == 1)
     {
-	std::vector<const Card*> deck_cards = unique_cards;
-	std::vector<const Card*> combined_cards(num_cards_to_combine, cards_to_combine[0]);
-	deck_cards.insert(deck_cards.end(), combined_cards.begin(), combined_cards.end());
-	DeckRandom deck(commander, deck_cards);
-	(*dynamic_cast<DeckRandom*>(proc.att_deck)) = deck;
-	auto new_results = proc.compare(num_iterations, best_score);
-	double new_score = compute_score(new_results, proc.factors);
-	if(new_score > best_score)
-	{
-	    best_score = new_score;
-	    best_deck = deck;
-	    print_score_info(new_results, proc.factors);
-	    print_deck(deck);
-	    std::cout << std::flush;
-	}
-	//++num;
-	// num_cards = num_cards_to_combine ...
+        std::vector<const Card*> deck_cards = unique_cards;
+        std::vector<const Card*> combined_cards(num_cards_to_combine, cards_to_combine[0]);
+        deck_cards.insert(deck_cards.end(), combined_cards.begin(), combined_cards.end());
+        DeckRandom deck(commander, deck_cards);
+        (*dynamic_cast<DeckRandom*>(proc.att_deck)) = deck;
+        auto new_results = proc.compare(num_iterations, best_score);
+        double new_score = compute_score(new_results, proc.factors);
+        if(new_score > best_score)
+        {
+            best_score = new_score;
+            best_deck = deck;
+            print_score_info(new_results, proc.factors);
+            print_deck(deck);
+            std::cout << std::flush;
+        }
+        //++num;
+        // num_cards = num_cards_to_combine ...
     }
     else
     {
-	var_k = cards_to_combine.size() - 1;
-	Combination cardAmounts(num_cards_to_combine-1, var_k);
-	bool finished(false);
-	while(!finished)
-	{
-	    const std::vector<unsigned>& indices = cardAmounts.getIndices();
-	    std::vector<unsigned> num_cards(var_k+1, 0);
-	    num_cards[0] = indices[0] + 1;
-	    for(unsigned i(1); i < var_k; ++i)
-	    {
-		num_cards[i] = indices[i] - indices[i-1];
-	    }
-	    num_cards[var_k] = num_cards_to_combine - (indices[var_k-1] + 1);
-	    std::vector<const Card*> deck_cards = unique_cards;
-	    //std::cout << "num cards: ";
-	    for(unsigned num_index(0); num_index < num_cards.size(); ++num_index)
-	    {
-		//std::cout << num_cards[num_index] << " ";
-		for(unsigned i(0); i < num_cards[num_index]; ++i) { deck_cards.push_back(cards[card_indices[num_index]]); }
-	    }
-	    //std::cout << "\n" << std::flush;
-	    //std::cout << std::flush;
-	    assert(deck_cards.size() == deck_size);
-	    DeckRandom deck(commander, deck_cards);
-	    *proc.att_deck = deck;
-	    auto new_results = proc.compare(num_iterations, best_score);
-	    double new_score = compute_score(new_results, proc.factors);
-	    if(new_score > best_score)
-	    {
-		best_score = new_score;
-		best_deck = deck;
-		print_score_info(new_results, proc.factors);
-		print_deck(deck);
-		std::cout << std::flush;
-	    }
-	    ++total_num_combinations_test;
-	    finished = cardAmounts.next();
-	}
+        var_k = cards_to_combine.size() - 1;
+        Combination cardAmounts(num_cards_to_combine-1, var_k);
+        bool finished(false);
+        while(!finished)
+        {
+            const std::vector<unsigned>& indices = cardAmounts.getIndices();
+            std::vector<unsigned> num_cards(var_k+1, 0);
+            num_cards[0] = indices[0] + 1;
+            for(unsigned i(1); i < var_k; ++i)
+            {
+                num_cards[i] = indices[i] - indices[i-1];
+            }
+            num_cards[var_k] = num_cards_to_combine - (indices[var_k-1] + 1);
+            std::vector<const Card*> deck_cards = unique_cards;
+            //std::cout << "num cards: ";
+            for(unsigned num_index(0); num_index < num_cards.size(); ++num_index)
+            {
+                //std::cout << num_cards[num_index] << " ";
+                for(unsigned i(0); i < num_cards[num_index]; ++i) { deck_cards.push_back(cards[card_indices[num_index]]); }
+            }
+            //std::cout << "\n" << std::flush;
+            //std::cout << std::flush;
+            assert(deck_cards.size() == deck_size);
+            DeckRandom deck(commander, deck_cards);
+            *proc.att_deck = deck;
+            auto new_results = proc.compare(num_iterations, best_score);
+            double new_score = compute_score(new_results, proc.factors);
+            if(new_score > best_score)
+            {
+                best_score = new_score;
+                best_deck = deck;
+                print_score_info(new_results, proc.factors);
+                print_deck(deck);
+                std::cout << std::flush;
+            }
+            ++total_num_combinations_test;
+            finished = cardAmounts.next();
+        }
     }
 }
 //------------------------------------------------------------------------------
@@ -3710,11 +3710,11 @@ void exhaustive_k(unsigned num_iterations, unsigned var_k, Process& proc)
     std::vector<const Card*> ass_structs;
     for(const Card* card: proc.cards.player_assaults)
     {
-	if(card->m_rarity >= 3) { ass_structs.push_back(card); }
+        if(card->m_rarity >= 3) { ass_structs.push_back(card); }
     }
     for(const Card* card: proc.cards.player_structures)
     {
-	if(card->m_rarity >= 3) { ass_structs.push_back(card); }
+        if(card->m_rarity >= 3) { ass_structs.push_back(card); }
     }
     //std::vector<Card*> ass_structs; = cards.player_assaults;
     //ass_structs.insert(ass_structs.end(), cards.player_structures.begin(), cards.player_structures.end());
@@ -3731,7 +3731,7 @@ void exhaustive_k(unsigned num_iterations, unsigned var_k, Process& proc)
     {
         if(keep_commander)
         {
-	    try_all_ratio_combinations(num_cards, var_k, num_iterations, indices, ass_structs, ((DeckRandom*)proc.att_deck)->commander, proc, best_score, best_deck);
+            try_all_ratio_combinations(num_cards, var_k, num_iterations, indices, ass_structs, ((DeckRandom*)proc.att_deck)->commander, proc, best_score, best_deck);
         }
         else
         {
@@ -3743,7 +3743,7 @@ void exhaustive_k(unsigned num_iterations, unsigned var_k, Process& proc)
                 try_all_ratio_combinations(num_cards, var_k, num_iterations, indices, ass_structs, commander, proc, best_score, best_deck);
             }
         }
-	finished = cardIndices.next();
+        finished = cardIndices.next();
     }
     std::cout << "done " << num << "\n";
 }
@@ -3756,22 +3756,22 @@ enum Operation {
 //------------------------------------------------------------------------------
 // void print_raid_deck(DeckRandom& deck)
 // {
-// 	std::cout << "--------------- Raid ---------------\n";
-// 	std::cout << "Commander:\n";
-// 	std::cout << "  " << deck.m_commander->m_name << "\n";
-// 	std::cout << "Always include:\n";
-// 	for(auto& card: deck.m_cards)
-// 	{
-// 	    std::cout << "  " << card->m_name << "\n";
-// 	}
-// 	for(auto& pool: deck.m_raid_cards)
-// 	{
-// 	    std::cout << pool.first << " from:\n";
-// 	    for(auto& card: pool.second)
-// 	    {
-// 		std::cout << "  " << card->m_name << "\n";
-// 	    }
-// 	}
+//         std::cout << "--------------- Raid ---------------\n";
+//         std::cout << "Commander:\n";
+//         std::cout << "  " << deck.m_commander->m_name << "\n";
+//         std::cout << "Always include:\n";
+//         for(auto& card: deck.m_cards)
+//         {
+//             std::cout << "  " << card->m_name << "\n";
+//         }
+//         for(auto& pool: deck.m_raid_cards)
+//         {
+//             std::cout << pool.first << " from:\n";
+//             for(auto& card: pool.second)
+//             {
+//                 std::cout << "  " << card->m_name << "\n";
+//             }
+//         }
 // }
 //------------------------------------------------------------------------------
 void print_available_decks(const Decks& decks)
@@ -3905,48 +3905,48 @@ int main(int argc, char** argv)
     std::vector<std::tuple<unsigned, unsigned, Operation> > todo;
     for(unsigned argIndex(3); argIndex < argc; ++argIndex)
     {
-	if(strcmp(argv[argIndex], "-c") == 0)
-	{
-	    keep_commander = true;
-	}
-	else if(strcmp(argv[argIndex], "-o") == 0)
-	{
-	    use_owned_cards = true;
-	}
-	else if(strcmp(argv[argIndex], "-r") == 0)
-	{
-	    ordered = true;
-	}
-	else if(strcmp(argv[argIndex], "-s") == 0)
-	{
-	    gamemode = surge;
-	}
-	else if(strcmp(argv[argIndex], "-t") == 0)
-	{
-	    num_threads = atoi(argv[argIndex+1]);
-	    argIndex += 1;	
-	}
-	else if(strcmp(argv[argIndex], "-turnlimit") == 0)
-	{
-	    turn_limit = atoi(argv[argIndex+1]);
-	    argIndex += 1;
-	}
-	else if(strcmp(argv[argIndex], "brute") == 0)
-	{
-	    todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex+1]), (unsigned)atoi(argv[argIndex+2]), bruteforce));
-	    argIndex += 2;
-	}
-	else if(strcmp(argv[argIndex], "climb") == 0)
-	{
-	    todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex+1]), 0u, climb));
-	    argIndex += 1;
-	}
-	else if(strcmp(argv[argIndex], "debug") == 0)
-	{
-	    debug_print = true;
-	    num_threads = 1;
-	    todo.push_back(std::make_tuple(0u, 0u, fightonce));
-	}
+        if(strcmp(argv[argIndex], "-c") == 0)
+        {
+            keep_commander = true;
+        }
+        else if(strcmp(argv[argIndex], "-o") == 0)
+        {
+            use_owned_cards = true;
+        }
+        else if(strcmp(argv[argIndex], "-r") == 0)
+        {
+            ordered = true;
+        }
+        else if(strcmp(argv[argIndex], "-s") == 0)
+        {
+            gamemode = surge;
+        }
+        else if(strcmp(argv[argIndex], "-t") == 0)
+        {
+            num_threads = atoi(argv[argIndex+1]);
+            argIndex += 1;
+        }
+        else if(strcmp(argv[argIndex], "-turnlimit") == 0)
+        {
+            turn_limit = atoi(argv[argIndex+1]);
+            argIndex += 1;
+        }
+        else if(strcmp(argv[argIndex], "brute") == 0)
+        {
+            todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex+1]), (unsigned)atoi(argv[argIndex+2]), bruteforce));
+            argIndex += 2;
+        }
+        else if(strcmp(argv[argIndex], "climb") == 0)
+        {
+            todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex+1]), 0u, climb));
+            argIndex += 1;
+        }
+        else if(strcmp(argv[argIndex], "debug") == 0)
+        {
+            debug_print = true;
+            num_threads = 1;
+            todo.push_back(std::make_tuple(0u, 0u, fightonce));
+        }
     }
 
     unsigned attacker_wins(0);
@@ -3960,50 +3960,50 @@ int main(int argc, char** argv)
     }
     else
     {
-	std::cout << "The deck " << att_deck_name << " was not found. Available decks:\n";
-	std::cout << "Custom decks:\n";
-	for(auto it: decks.custom_decks)
-	{
-	    std::cout << "  " << it.first << "\n";
-	}
-	return(5);
+        std::cout << "The deck " << att_deck_name << " was not found. Available decks:\n";
+        std::cout << "Custom decks:\n";
+        for(auto it: decks.custom_decks)
+        {
+            std::cout << "  " << it.first << "\n";
+        }
+        return(5);
     }
     print_deck(*att_deck);
 
     std::shared_ptr<DeckOrdered> att_deck_ordered;
     if(ordered)
     {
-	att_deck_ordered = std::make_shared<DeckOrdered>(*att_deck);
+        att_deck_ordered = std::make_shared<DeckOrdered>(*att_deck);
     }
 
     Process p(num_threads, cards, decks, ordered ? att_deck_ordered.get() : att_deck, def_decks, def_decks_factors, gamemode);
     {
         //ScopeClock timer;
-	for(auto op: todo)
-	{
-	    switch(std::get<2>(op))
-	    {
-	    case bruteforce: {
-		exhaustive_k(std::get<1>(op), std::get<0>(op), p);
-		break;
-	    }
-	    case climb: {
-		if(!ordered)
-		{
-		    hill_climbing(std::get<0>(op), att_deck, p);
-		}
-		else
-		{
-		    hill_climbing_ordered(std::get<0>(op), att_deck_ordered.get(), p);
-		}
-		break;
-	    }
-	    case fightonce: {
-		p.evaluate(1);
-		break;
-	    }
-	    }
-	}
+        for(auto op: todo)
+        {
+            switch(std::get<2>(op))
+            {
+            case bruteforce: {
+                exhaustive_k(std::get<1>(op), std::get<0>(op), p);
+                break;
+            }
+            case climb: {
+                if(!ordered)
+                {
+                    hill_climbing(std::get<0>(op), att_deck, p);
+                }
+                else
+                {
+                    hill_climbing_ordered(std::get<0>(op), att_deck_ordered.get(), p);
+                }
+                break;
+            }
+            case fightonce: {
+                p.evaluate(1);
+                break;
+            }
+            }
+        }
     }
     return(0);
 }
