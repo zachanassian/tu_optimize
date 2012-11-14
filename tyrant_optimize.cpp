@@ -2751,7 +2751,7 @@ unsigned read_custom_decks(Cards& cards, std::string filename, std::map<std::str
                     {
                         auto card_spec_iter = card_spec.begin();
                         boost::optional<std::string> card_name;
-                        card_spec_iter = read_token(card_spec_iter, card_spec.end(), [](char c){return(c=='[' || c=='#');}, card_name);
+                        card_spec_iter = read_token(card_spec_iter, card_spec.end(), [](char c){return(c=='[' || c=='#' || c=='\r');}, card_name);
                         if(!card_name)
                         {
                             std::cerr << "Error in file " << filename << " at line " << num_line << " while parsing card " << card_spec << " in deck " << deck_name << "\n";
