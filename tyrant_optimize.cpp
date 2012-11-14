@@ -1153,6 +1153,19 @@ public:
     std::deque<std::tuple<CardStatus*, SkillSpec> > skill_queue;
     std::vector<CardStatus*> killed_with_on_death;
     std::vector<CardStatus*> killed_with_regen;
+    enum phase
+        {
+            playcard_phase,
+            commander_phase,
+            structures_phase,
+            assaults_phase
+        };
+    // the current phase of the turn: starts with playcard_phase, then commander_phase, structures_phase, and assaults_phase
+    phase current_phase;
+    // the index of the card being evaluated in the current phase.
+    // Meaningless in playcard_phase,
+    // otherwise is the index of the current card in players->structures or players->assaults
+    unsigned current_ci;
 
     Field(std::mt19937& re_, const Cards& cards_, Hand& hand1, Hand& hand2, gamemode_t _gamemode) :
         end{false},
@@ -1213,7 +1226,7 @@ void resolve_skill(Field* fd)
     }
 }
 //------------------------------------------------------------------------------
-void assault_phase(Field* fd, unsigned att_index);
+void attack_phase(Field* fd);
 SkillSpec augmented_skill(CardStatus* status, const SkillSpec& s)
 {
     SkillSpec augmented_s = s;
@@ -1366,6 +1379,7 @@ unsigned play(Field* fd)
     // Shuffle deck
     while(fd->turn < turn_limit && !fd->end)
     {
+        fd->current_phase = Field::playcard_phase;
 	// Initialize stuff, remove dead cards
 	_DEBUG_MSG("##### TURN %u #####\n", fd->turn);
 	turn_start_phase(fd);
@@ -1393,41 +1407,44 @@ unsigned play(Field* fd)
 	    }
 	}
 	// Evaluate commander
+        fd->current_phase = Field::commander_phase;
 	evaluate_skills(fd, &fd->tap->commander, fd->tap->commander.m_card->m_skills);
 	// Evaluate structures
-	for(unsigned si(0); !fd->end && si < fd->tap->structures.size(); ++si)
+        fd->current_phase = Field::structures_phase;
+	for(fd->current_ci = 0; !fd->end && fd->current_ci < fd->tap->structures.size(); ++fd->current_ci)
 	{
-	    CardStatus& status_si(fd->tap->structures[si]);
-	    if(status_si.m_delay == 0)
+	    CardStatus& current_status(fd->tap->structures[fd->current_ci]);
+	    if(current_status.m_delay == 0)
 	    {
-		evaluate_skills(fd, &status_si, status_si.m_card->m_skills);
+		evaluate_skills(fd, &current_status, current_status.m_card->m_skills);
 	    }
 	}
 	// Evaluate assaults
-	for(unsigned ai(0); !fd->end && ai < fd->tap->assaults.size(); ++ai)
+        fd->current_phase = Field::assaults_phase;
+	for(fd->current_ci = 0; !fd->end && fd->current_ci < fd->tap->assaults.size(); ++fd->current_ci)
 	{
 	    // ca: current assault
-	    CardStatus& status_ai(fd->tap->assaults[ai]);
-	    if((status_ai.m_delay > 0 && !status_ai.blitz) || status_ai.m_hp == 0 || status_ai.m_jammed || status_ai.m_frozen)
+	    CardStatus& current_status(fd->tap->assaults[fd->current_ci]);
+	    if((current_status.m_delay > 0 && !current_status.blitz) || current_status.m_hp == 0 || current_status.m_jammed || current_status.m_frozen)
 	    {
-		//_DEBUG_MSG("! Assault %u (%s) hp: %u, jammed %u\n", card_index, status_ai.m_card->m_name.c_str(), status_ai.m_hp, status_ai.m_jammed);
+		//_DEBUG_MSG("! Assault %u (%s) hp: %u, jammed %u\n", card_index, current_status.m_card->m_name.c_str(), current_status.m_hp, current_status.m_jammed);
 	    }
 	    else
 	    {
 		// Special case: check for split (tartarus swarm raid)
-		if(status_ai.m_card->m_split && fd->tap->assaults.size() + fd->tap->structures.size() < 100)
+		if(current_status.m_card->m_split && fd->tap->assaults.size() + fd->tap->structures.size() < 100)
 		{
 		    CardStatus& status_split(fd->tap->assaults.add_back());
-		    status_split.set(status_ai.m_card);
-		    _DEBUG_MSG("Split assault %d (%s)\n", fd->tap->assaults.size() - 1, status_ai.m_card->m_name.c_str());
+		    status_split.set(current_status.m_card);
+		    _DEBUG_MSG("Split assault %d (%s)\n", fd->tap->assaults.size() - 1, current_status.m_card->m_name.c_str());
 		}
 		// Evaluate skills
 		// Special case: Gore Typhon's infuse
-		evaluate_skills(fd, &status_ai, status_ai.m_infused ? status_ai.infused_skills : status_ai.m_card->m_skills);
+		evaluate_skills(fd, &current_status, current_status.m_infused ? current_status.infused_skills : current_status.m_card->m_skills);
 		// Attack
-		if(!status_ai.m_immobilized && status_ai.m_hp > 0)
+		if(!current_status.m_immobilized && current_status.m_hp > 0)
 		{
-		    assault_phase(fd, ai);
+		    attack_phase(fd);
 		}
 	    }
 	}
@@ -1693,7 +1710,7 @@ void remove_commander_hp(Field* fd, CardStatus& status, unsigned dmg)
 //------------------------------------------------------------------------------
 // implementation of one attack by an assault card, against either an enemy
 // assault card, the first enemy wall, or the enemy commander.
-struct AssaultPhase
+struct PerformAttack
 {
     Field* fd;
     CardStatus* att_status;
@@ -1701,7 +1718,7 @@ struct AssaultPhase
     unsigned att_dmg;
     bool killed_by_attack;
 
-    AssaultPhase(Field* fd_, CardStatus* att_status_, CardStatus* def_status_) :
+    PerformAttack(Field* fd_, CardStatus* att_status_, CardStatus* def_status_) :
 	fd(fd_), att_status(att_status_), def_status(def_status_), att_dmg(0), killed_by_attack(false)
     {}
 
@@ -1804,13 +1821,13 @@ struct AssaultPhase
 };
 
 template<>
-unsigned AssaultPhase::calculate_attack_damage<CardType::assault>()
+unsigned PerformAttack::calculate_attack_damage<CardType::assault>()
 {
     return(attack_damage_against_assault(fd, *att_status, *def_status));
 }
 
 template<>
-void AssaultPhase::immobilize<CardType::assault>()
+void PerformAttack::immobilize<CardType::assault>()
 {
     if(att_status->m_card->m_immobilize)
     {
@@ -1819,14 +1836,14 @@ void AssaultPhase::immobilize<CardType::assault>()
 }
 
 template<>
-void AssaultPhase::attack_damage<CardType::commander>()
+void PerformAttack::attack_damage<CardType::commander>()
 {
     remove_commander_hp(fd, *def_status, att_dmg);
     _DEBUG_MSG("%s attack damage %u to commander; commander hp %u\n", status_description(att_status).c_str(), att_dmg, fd->tip->commander.m_hp);
 }
 
 template<>
-void AssaultPhase::siphon_poison_disease<CardType::assault>()
+void PerformAttack::siphon_poison_disease<CardType::assault>()
 {
     if(att_status->m_card->m_siphon > 0)
     {
@@ -1844,10 +1861,10 @@ void AssaultPhase::siphon_poison_disease<CardType::assault>()
 }
 
 template<>
-void AssaultPhase::oa_berserk<CardType::assault>() { def_status->m_berserk += def_status->m_card->m_berserk_oa; }
+void PerformAttack::oa_berserk<CardType::assault>() { def_status->m_berserk += def_status->m_card->m_berserk_oa; }
 
 template<>
-void AssaultPhase::crush_leech<CardType::assault>()
+void PerformAttack::crush_leech<CardType::assault>()
 {
     if(att_status->m_card->m_crush > 0 && killed_by_attack)
     {
@@ -1861,10 +1878,10 @@ void AssaultPhase::crush_leech<CardType::assault>()
     }
 }
 
-// General attack phase by the assault at att_index, taking into accounts exotic stuff such as flurry,swipe,etc.
-void assault_phase(Field* fd, unsigned att_index)
+// General attack phase by the currently evaluated assault, taking into accounts exotic stuff such as flurry,swipe,etc.
+void attack_phase(Field* fd)
 {
-    CardStatus* att_status(&fd->tap->assaults[att_index]); // attacking card
+    CardStatus* att_status(&fd->tap->assaults[fd->current_ci]); // attacking card
     Storage<CardStatus>& def_assaults(fd->tip->assaults);
     unsigned num_attacks(att_status->m_card->m_flurry > 0 && fd->flip() ? att_status->m_card->m_flurry + 1 : 1);
     for(unsigned attack_index(0); attack_index < num_attacks && att_status->m_hp > 0 && fd->tip->commander.m_hp > 0; ++attack_index)
@@ -1874,30 +1891,30 @@ void assault_phase(Field* fd, unsigned att_index)
         // - 2. swipe attack the assault in front and adjacent assaults if any
         // - 3. attack against the commander or walls (if there is no assault or if the attacker has the fear attribute)
         // Check if attack mode is 1. or 2. (there is a living assault card in front, and no fear)
-        if(alive_assault(def_assaults, att_index) && !att_status->m_card->m_fear)
+        if(alive_assault(def_assaults, fd->current_ci) && !att_status->m_card->m_fear)
         {
             // attack mode 1.
             if(!att_status->m_card->m_swipe)
             {
-		AssaultPhase{fd, &fd->tap->assaults[att_index], &fd->tip->assaults[att_index]}.op<CardType::assault>();
+		PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci]}.op<CardType::assault>();
             }
             // attack mode 2.
             else
 	    {
 		// attack the card on the left
-		if(alive_assault(def_assaults, att_index - 1))
+		if(alive_assault(def_assaults, fd->current_ci - 1))
 		{
-		    AssaultPhase{fd, att_status, &fd->tip->assaults[att_index-1]}.op<CardType::assault>();
+		    PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci-1]}.op<CardType::assault>();
 		}
 		// stille alive? attack the card in front
-		if(fd->tip->commander.m_hp > 0 && att_status->m_hp > 0 && alive_assault(def_assaults, att_index))
+		if(fd->tip->commander.m_hp > 0 && att_status->m_hp > 0 && alive_assault(def_assaults, fd->current_ci))
 		{
-		    AssaultPhase{fd, att_status, &fd->tip->assaults[att_index]}.op<CardType::assault>();
+		    PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci]}.op<CardType::assault>();
 		}
 		// still alive? attack the card on the right
-		if(fd->tip->commander.m_hp > 0 && att_status->m_hp > 0 && alive_assault(def_assaults, att_index + 1))
+		if(fd->tip->commander.m_hp > 0 && att_status->m_hp > 0 && alive_assault(def_assaults, fd->current_ci + 1))
 		{
-		    AssaultPhase{fd, att_status, &fd->tip->assaults[att_index+1]}.op<CardType::assault>();
+		    PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci+1]}.op<CardType::assault>();
 		}
 	    }
         }
@@ -1907,11 +1924,11 @@ void assault_phase(Field* fd, unsigned att_index)
             CardStatus* def_status{select_first_enemy_wall(fd)}; // defending wall
             if(def_status != nullptr)
 	    {
-		AssaultPhase{fd, att_status, def_status}.op<CardType::structure>();
+		PerformAttack{fd, att_status, def_status}.op<CardType::structure>();
 	    }
             else
             {
-		AssaultPhase{fd, att_status, &fd->tip->commander}.op<CardType::commander>();
+		PerformAttack{fd, att_status, &fd->tip->commander}.op<CardType::commander>();
 	    }
         }
     }
@@ -2177,8 +2194,7 @@ template<unsigned skill_id>
 inline unsigned select_rally_like(Field* fd, CardStatus* src_status, const std::vector<CardStatus*>& cards, const SkillSpec& s)
 {
     unsigned array_head{0};
-    unsigned card_index((src_status && src_status->m_card->m_type == CardType::assault) ?
-                        src_status->m_index : 0);
+    unsigned card_index(fd->current_phase == Field::assaults_phase ? fd->current_ci : 0);
     if(std::get<2>(s) == allfactions)
     {
         for(; card_index < cards.size(); ++card_index)
