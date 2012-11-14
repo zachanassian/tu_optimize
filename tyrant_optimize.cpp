@@ -2722,6 +2722,10 @@ unsigned read_custom_decks(Cards& cards, std::string filename, std::map<std::str
             ++num_line;
             if(deck_string.size() > 0)
             {
+                if(strncmp(deck_string.c_str(), "//", 2) == 0)
+                {
+                    continue;
+                }
                 boost::tokenizer<boost::char_delimiters_separator<char> > deck_tokens{deck_string, boost::char_delimiters_separator<char>{false, ":,", ""}};
                 auto token_iter = deck_tokens.begin();
                 boost::optional<std::string> deck_name;
