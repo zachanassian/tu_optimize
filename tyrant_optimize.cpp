@@ -1868,8 +1868,17 @@ void PerformAttack::crush_leech<CardType::assault>()
 {
     if(att_status->m_card->m_crush > 0 && killed_by_attack)
     {
-        remove_commander_hp(fd, fd->tip->commander, att_status->m_card->m_crush);
-        _DEBUG_MSG("%s crush %u; commander hp %u\n", status_description(att_status).c_str(), att_status->m_card->m_crush, fd->tip->commander.m_hp);
+        CardStatus* def_status{select_first_enemy_wall(fd)}; // defending wall
+        if (def_status != nullptr)
+        {
+            remove_hp(fd, *def_status, att_status->m_card->m_crush);
+            _DEBUG_MSG("%s crush %u; wall %s hp %u\n", status_description(att_status).c_str(), att_status->m_card->m_crush, status_description(def_status).c_str(), def_status->m_hp);
+        }
+        else
+        {
+            remove_commander_hp(fd, fd->tip->commander, att_status->m_card->m_crush);
+            _DEBUG_MSG("%s crush %u; commander hp %u\n", status_description(att_status).c_str(), att_status->m_card->m_crush, fd->tip->commander.m_hp);
+        }
     }
     if(att_status->m_card->m_leech > 0 && att_status->m_hp > 0 && !att_status->m_diseased)
     {
