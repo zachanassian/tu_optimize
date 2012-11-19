@@ -108,6 +108,26 @@ void handle_skill(xml_node<>* node, Card* card)
     }
 }
 //------------------------------------------------------------------------------
+void load_decks_xml(Decks& decks, Cards& cards)
+{
+    try
+    {
+        read_missions(decks, cards, "missions.xml");
+    }
+    catch(const rapidxml::parse_error& e)
+    {
+        std::cout << "\nException while loading decks from file missions.xml\n";
+    }
+    try
+    {
+        read_raids(decks, cards, "raids.xml");
+    }
+    catch(const rapidxml::parse_error& e)
+    {
+        std::cout << "\nException while loading decks from file raids.xml\n";
+    }
+}
+//------------------------------------------------------------------------------
 void parse_file(const char* filename, std::vector<char>& buffer, xml_document<>& doc)
 {
     std::ifstream cards_stream(filename, std::ios::binary);

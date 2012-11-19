@@ -37,7 +37,6 @@
 #include <boost/thread/barrier.hpp>
 #include <boost/math/distributions/binomial.hpp>
 #include <boost/filesystem.hpp>
-#include "rapidxml.hpp"
 #include "card.h"
 #include "cards.h"
 #include "deck.h"
@@ -1965,22 +1964,6 @@ unsigned read_custom_decks(Cards& cards, std::string filename, std::map<std::str
 //------------------------------------------------------------------------------
 void load_decks(Decks& decks, Cards& cards)
 {
-    try
-    {
-        read_missions(decks, cards, "missions.xml");
-    }
-    catch(const rapidxml::parse_error& e)
-    {
-        std::cout << "\nException while loading decks from file missions.xml\n";
-    }
-    try
-    {
-        read_raids(decks, cards, "raids.xml");
-    }
-    catch(const rapidxml::parse_error& e)
-    {
-        std::cout << "\nException while loading decks from file raids.xml\n";
-    }
     if(boost::filesystem::exists("Custom.txt"))
     {
         try
@@ -2890,6 +2873,7 @@ int main(int argc, char** argv)
     read_cards(cards);
     read_owned_cards(cards);
     Decks decks;
+    load_decks_xml(decks, cards);
     load_decks(decks, cards);
 
     skill_table[augment] = perform_targetted_allied_fast<augment>;
