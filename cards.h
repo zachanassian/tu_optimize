@@ -5,14 +5,11 @@
 #include <string>
 #include <vector>
 
-#include "card.h"
+class Card;
 
 struct Cards
 {
-    ~Cards()
-    {
-        for(Card* c: cards) { delete(c); }
-    }
+    ~Cards();
 
     std::vector<Card*> cards;
     std::map<unsigned, Card*> cards_by_id;

@@ -4,6 +4,7 @@
 #include <sstream>
 #include <stdexcept>
 
+#include "card.h"
 #include "tyrant.h"
 
 template<typename T>
@@ -12,6 +13,11 @@ std::string to_string(T val)
     std::stringstream s;
     s << val;
     return s.str();
+}
+
+Cards::~Cards()
+{
+    for(Card* c: cards) { delete(c); }
 }
 
 const Card* Cards::by_id(unsigned id) const
