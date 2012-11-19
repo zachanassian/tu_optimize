@@ -20,25 +20,16 @@
 #include <vector>
 #include <array>
 #include <deque>
-#include <memory>
-#include <algorithm>
-#include <functional>
-#include <random>
 #include <string>
 #include <sstream>
 #include <fstream>
-#include <streambuf>
 #include <map>
 #include <set>
-#include <iterator>
 #include <tuple>
 #include <boost/utility.hpp> // because of 1.51 bug. missing include in range/any_range.hpp ?
 #include <boost/range/algorithm_ext/insert.hpp>
 #include <boost/range/any_range.hpp>
-#include <boost/range/category.hpp>
-#include <boost/range/difference_type.hpp>
 #include <boost/range/join.hpp>
-#include <boost/range/algorithm/transform.hpp>
 #include <boost/range/adaptors.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
