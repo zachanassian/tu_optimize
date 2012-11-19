@@ -22,24 +22,21 @@
 #include <deque>
 #include <string>
 #include <sstream>
-#include <fstream>
 #include <map>
 #include <set>
 #include <tuple>
 #include <boost/range/join.hpp>
 #include <boost/range/adaptors.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/tokenizer.hpp>
 #include <boost/pool/pool.hpp>
 #include <boost/optional.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/barrier.hpp>
 #include <boost/math/distributions/binomial.hpp>
-#include <boost/filesystem.hpp>
 #include "card.h"
 #include "cards.h"
 #include "deck.h"
+#include "read.h"
 #include "tyrant.h"
 #include "xml.h"
 //#include "timer.hpp"
@@ -1805,177 +1802,6 @@ void perform_mimic(Field* fd, CardStatus* src_status, const SkillSpec& s)
         }
     }
 }
-
-//---------------------- $70 More xml parsing: missions and raids --------------
-template<typename Iterator, typename Functor> Iterator advance_until(Iterator it, Iterator it_end, Functor f)
-{
-    while(it != it_end)
-    {
-        if(f(*it))
-        {
-            break;
-        }
-        ++it;
-    }
-    return(it);
-}
-
-// take care that "it" is 1 past current.
-template<typename Iterator, typename Functor> Iterator recede_until(Iterator it, Iterator it_beg, Functor f)
-{
-    if(it == it_beg) { return(it_beg); }
-    --it;
-    do
-    {
-        if(f(*it))
-        {
-            return(++it);
-        }
-        --it;
-    } while(it != it_beg);
-    return(it_beg);
-}
-
-template<typename Iterator, typename Functor, typename Token> Iterator read_token(Iterator it, Iterator it_end, Functor f, boost::optional<Token>& token)
-{
-    Iterator token_start = advance_until(it, it_end, [](const char& c){return(c != ' ');});
-    Iterator token_end_after_spaces = advance_until(token_start, it_end, f);
-    if(token_start != token_end_after_spaces)
-    {
-        Iterator token_end = recede_until(token_end_after_spaces, token_start, [](const char& c){return(c != ' ');});
-        token = boost::lexical_cast<Token>(std::string{token_start, token_end});
-        return(token_end_after_spaces);
-    }
-    return(token_end_after_spaces);
-}
-
-// Error codes:
-// 2 -> file not readable
-// 3 -> error while parsing file
-unsigned read_custom_decks(Cards& cards, std::string filename, std::map<std::string, DeckIface*>& custom_decks)
-{
-    std::ifstream decks_file(filename.c_str());
-    if(!decks_file.is_open())
-    {
-        std::cerr << "File " << filename << " could not be opened\n";
-        return(2);
-    }
-    unsigned num_line(0);
-    decks_file.exceptions(std::ifstream::badbit);
-    try
-    {
-        while(decks_file && !decks_file.eof())
-        {
-            std::vector<unsigned> card_ids;
-            std::string deck_string;
-            getline(decks_file, deck_string);
-            ++num_line;
-            if(deck_string.size() > 0)
-            {
-                if(strncmp(deck_string.c_str(), "//", 2) == 0)
-                {
-                    continue;
-                }
-                boost::tokenizer<boost::char_delimiters_separator<char> > deck_tokens{deck_string, boost::char_delimiters_separator<char>{false, ":,", ""}};
-                auto token_iter = deck_tokens.begin();
-                boost::optional<std::string> deck_name;
-                if(token_iter != deck_tokens.end())
-                {
-                    read_token(token_iter->begin(), token_iter->end(), [](char c){return(false);}, deck_name);
-                    if(!deck_name || (*deck_name).size() == 0)
-                    {
-                        std::cerr << "Error in file " << filename << " at line " << num_line << ", could not read the deck name.\n";
-                        continue;
-                    }
-                }
-                else
-                {
-                    std::cerr << "Error in file " << filename << " at line " << num_line << ", could not read the deck name.\n";
-                    continue;
-                }
-                ++token_iter;
-                for(; token_iter != deck_tokens.end(); ++token_iter)
-                {
-                    std::string card_spec(*token_iter);
-                    try
-                    {
-                        auto card_spec_iter = card_spec.begin();
-                        boost::optional<std::string> card_name;
-                        card_spec_iter = read_token(card_spec_iter, card_spec.end(), [](char c){return(c=='[' || c=='#' || c=='\r');}, card_name);
-                        if(!card_name)
-                        {
-                            std::cerr << "Error in file " << filename << " at line " << num_line << " while parsing card " << card_spec << " in deck " << deck_name << "\n";
-                            break;
-                        }
-                        else
-                        {
-                            boost::optional<unsigned> card_id;
-                            if(*card_spec_iter == '[')
-                            {
-                                ++card_spec_iter;
-                                card_spec_iter = read_token(card_spec_iter, card_spec.end(), [](char c){return(c==']');}, card_id);
-                                card_spec_iter = advance_until(card_spec_iter, card_spec.end(), [](char c){return(c!=' ');});
-                            }
-                            boost::optional<unsigned> card_num;
-                            if(*card_spec_iter == '#')
-                            {
-                                ++card_spec_iter;
-                                card_spec_iter = read_token(card_spec_iter, card_spec.end(), [](char c){return(c < '0' || c > '9');}, card_num);
-                            }
-                            unsigned resolved_id{card_id ? *card_id : 0};
-                            if(resolved_id == 0)
-                            {
-                                auto card_it = cards.player_cards_by_name.find(*card_name);
-                                if(card_it != cards.player_cards_by_name.end())
-                                {
-                                    resolved_id = card_it->second->m_id;
-                                }
-                                else
-                                {
-                                    std::cerr << "Error in file " << filename << " at line " << num_line << " while parsing card " << card_spec << " in deck " << *deck_name << ": card not found\n";
-                                    break;
-                                }
-                            }
-                            for(unsigned i(0); i < (card_num ? *card_num : 1); ++i)
-                            {
-                                card_ids.push_back(resolved_id);
-                            }
-                        }
-                    }
-                    catch(boost::bad_lexical_cast e)
-                    {
-                        std::cerr << "Error in file " << filename << " at line " << num_line << " while parsing card " << card_spec << " in deck " << deck_name << "\n";
-                    }
-                }
-                if(deck_name)
-                {
-                    custom_decks.insert({*deck_name, new DeckRandom{cards, card_ids}});
-                }
-            }
-        }
-    }
-    catch (std::ifstream::failure e)
-    {
-        std::cerr << "Exception while parsing the file " << filename << " (badbit is set).\n";
-        e.what();
-        return(3);
-    }
-}
-//------------------------------------------------------------------------------
-void load_decks(Decks& decks, Cards& cards)
-{
-    if(boost::filesystem::exists("Custom.txt"))
-    {
-        try
-        {
-            read_custom_decks(cards, std::string{"Custom.txt"}, decks.custom_decks);
-        }
-        catch(const std::runtime_error& e)
-        {
-            std::cout << "Exception while loading custom decks: " << e.what() << "\n";
-        }
-    }
-}
 //------------------------------------------------------------------------------
 DeckIface* find_deck(const Decks& decks, std::string name)
 {
@@ -2002,28 +1828,6 @@ DeckIface* find_deck(const Decks& decks, std::string name)
 //------------------------------------------------------------------------------
 std::map<unsigned, unsigned> owned_cards;
 bool use_owned_cards{false};
-void read_owned_cards(Cards& cards)
-{
-    std::ifstream owned_file{"ownedcards.txt"};
-    std::string owned_str{(std::istreambuf_iterator<char>(owned_file)), std::istreambuf_iterator<char>()};
-    boost::tokenizer<boost::char_delimiters_separator<char> > tok{owned_str, boost::char_delimiters_separator<char>{false, "()\n", ""}};
-    for(boost::tokenizer<boost::char_delimiters_separator<char> >::iterator beg=tok.begin(); beg!=tok.end();++beg)
-    {
-        std::string name{*beg};
-        ++beg;
-        assert(beg != tok.end());
-        unsigned num{atoi((*beg).c_str())};
-        auto card_itr = cards.player_cards_by_name.find(name);
-        if(card_itr == cards.player_cards_by_name.end())
-        {
-            std::cerr << "Error in file ownedcards.txt, the card \"" << name << "\" does not seem to be a valid card.\n";
-        }
-        else
-        {
-            owned_cards[card_itr->second->m_id] = num;
-        }
-    }
-}
 
 // No raid rewards from 500 and 1k honor for ancient raids
 // No very hard to get rewards (level >= 150, faction >= 13)
@@ -2822,24 +2626,6 @@ void print_available_decks(const Decks& decks)
     }
 }
 
-std::vector<std::pair<std::string, double> > parse_deck_list(std::string list_string)
-{
-    std::vector<std::pair<std::string, double> > res;
-    boost::tokenizer<boost::char_delimiters_separator<char> > list_tokens{list_string, boost::char_delimiters_separator<char>{false, ";", ""}};
-    for(auto list_token = list_tokens.begin(); list_token != list_tokens.end(); ++list_token)
-    {
-        boost::tokenizer<boost::char_delimiters_separator<char> > deck_tokens{*list_token, boost::char_delimiters_separator<char>{false, ":", ""}};
-        auto deck_token = deck_tokens.begin();
-        res.push_back(std::make_pair(*deck_token, 1.0d));
-        ++deck_token;
-        if(deck_token != deck_tokens.end())
-        {
-            res.back().second = boost::lexical_cast<double>(*deck_token);
-        }
-    }
-    return(res);
-}
-
 void usage(int argc, char** argv)
 {
     std::cout << "usage: " << argv[0] << " <attack deck> <defense decks list> [optional flags] [brute <num1> <num2>] [climb <num>]\n";
@@ -2871,7 +2657,7 @@ int main(int argc, char** argv)
     bool ordered = false;
     Cards cards;
     read_cards(cards);
-    read_owned_cards(cards);
+    read_owned_cards(cards, owned_cards);
     Decks decks;
     load_decks_xml(decks, cards);
     load_decks(decks, cards);
