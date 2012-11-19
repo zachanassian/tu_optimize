@@ -42,6 +42,7 @@
 #include <boost/filesystem.hpp>
 #include "rapidxml.hpp"
 #include "card.h"
+#include "cards.h"
 #include "tyrant.h"
 //#include "timer.hpp"
 
@@ -174,25 +175,6 @@ public:
     boost::pool<> m_pool;
 };
 //--------------------- $10 data model: card properties, etc -------------------
-struct Cards
-{
-    ~Cards()
-    {
-        for(Card* c: cards) { delete(c); }
-    }
-
-    std::vector<Card*> cards;
-    std::map<unsigned, Card*> cards_by_id;
-    std::vector<Card*> player_cards;
-    std::map<std::string, Card*> player_cards_by_name;
-    std::vector<Card*> player_commanders;
-    std::vector<Card*> player_assaults;
-    std::vector<Card*> player_structures;
-    std::vector<Card*> player_actions;
-    std::map<unsigned, unsigned> replace;
-    const Card * by_id(unsigned id) const;
-    void organize();
-};
 Cards globalCards;
 //------------------------------------------------------------------------------
 struct CardStatus
@@ -393,66 +375,6 @@ void handle_skill(xml_node<>* node, Card* card)
         else if(died) {card->add_died_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node)); }
         else if(attacked) {card->add_attacked_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node)); }
         else {card->add_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node)); }
-    }
-}
-//------------------------------------------------------------------------------
-const Card* Cards::by_id(unsigned id) const
-{
-    std::map<unsigned, Card*>::const_iterator cardIter{cards_by_id.find(id)};
-    if(cardIter == cards_by_id.end())
-    {
-        throw std::runtime_error("While trying to find the card with id " + to_string(id) + ": no such key in the cards_by_id map.");
-    }
-    else
-    {
-        return(cardIter->second);
-    }
-}
-//------------------------------------------------------------------------------
-void Cards::organize()
-{
-    cards_by_id.clear();
-    player_cards.clear();
-    player_cards_by_name.clear();
-    player_commanders.clear();
-    player_assaults.clear();
-    player_structures.clear();
-    player_actions.clear();
-    for(Card* card: cards)
-    {
-        cards_by_id[card->m_id] = card;
-        // Card available to players
-        if(card->m_set != -1)
-        {
-            player_cards.push_back(card);
-            switch(card->m_type)
-            {
-            case CardType::commander: {
-                player_commanders.push_back(card);
-                break;
-            }
-            case CardType::assault: {
-                player_assaults.push_back(card);
-                break;
-            }
-            case CardType::structure: {
-                player_structures.push_back(card);
-                break;
-            }
-            case CardType::action: {
-                player_actions.push_back(card);
-                break;
-            }
-            }
-            if(player_cards_by_name.find(card->m_name) != player_cards_by_name.end())
-            {
-                throw std::runtime_error("While trying to insert the card [" + card->m_name + ", id " + to_string(card->m_id) + "] in the player_cards_by_name map: the key already exists [id " + to_string(player_cards_by_name[card->m_name]->m_id) + "].");
-            }
-            else
-            {
-                player_cards_by_name[card->m_name] = card;
-            }
-        }
     }
 }
 //------------------------------------------------------------------------------
