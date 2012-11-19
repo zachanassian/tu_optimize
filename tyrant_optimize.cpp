@@ -41,6 +41,7 @@
 #include <boost/math/distributions/binomial.hpp>
 #include <boost/filesystem.hpp>
 #include "rapidxml.hpp"
+#include "tyrant.h"
 //#include "timer.hpp"
 
 using namespace rapidxml;
@@ -172,82 +173,6 @@ public:
     boost::pool<> m_pool;
 };
 //--------------------- $10 data model: card properties, etc -------------------
-enum Faction
-{
-    allfactions,
-    bloodthirsty,
-    imperial,
-    raider,
-    righteous,
-    xeno,
-    num_factions
-};
-const std::string faction_names[num_factions] =
-{ "", "bloodthirsty", "imperial", "raider", "righteous", "xeno" };
-
-enum ActiveSkill
-{augment, augment_all, chaos, chaos_all, cleanse, cleanse_all, enfeeble, enfeeble_all,
- freeze, freeze_all, heal, heal_all, infuse, jam, jam_all,
- mimic, protect, protect_all, rally, rally_all, rush, shock,
- siege, siege_all, strike, strike_all, summon, supply,
- trigger_regen, // not actually a skill; handles regeneration after strike/siege
- weaken, weaken_all, num_skills};
-std::string skill_names[num_skills] =
-{"augment", "augment_all", "chaos", "chaos_all", "cleanse", "cleanse_all", "enfeeble", "enfeeble_all",
- "freeze", "freeze_all", "heal", "heal_all", "infuse", "jam", "jam_all",
- "mimic", "protect", "protect_all", "rally", "rally_all", "rush", "shock",
- "siege", "siege_all", "strike", "strike_all", "summon", "supply",
- "trigger_regen",
- "weaken", "weaken_all"};
-
-namespace CardType {
-enum CardType {
-    action,
-    assault,
-    commander,
-    structure,
-    num_cardtypes
-};
-}
-std::string cardtype_names[CardType::num_cardtypes]{"action", "assault", "commander", "structure"};
-
-enum gamemode_t
-{
-    fight,
-    surge,
-    tournament
-};
-
-struct true_ {};
-
-struct false_ {};
-
-template<unsigned>
-struct skillTriggersRegen { typedef false_ T; };
-
-template<>
-struct skillTriggersRegen<strike> { typedef true_ T; };
-
-template<>
-struct skillTriggersRegen<strike_all> { typedef true_ T; };
-
-template<>
-struct skillTriggersRegen<siege> { typedef true_ T; };
-
-template<>
-struct skillTriggersRegen<siege_all> { typedef true_ T; };
-
-enum SkillSourceType
-{
-    source_hostile,
-    source_allied,
-    source_global_hostile,
-    source_global_allied,
-    source_chaos
-};
-
-typedef std::tuple<ActiveSkill, unsigned, Faction> SkillSpec;
-
 class Card
 {
 public:
