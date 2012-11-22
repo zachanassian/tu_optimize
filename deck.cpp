@@ -1,8 +1,7 @@
 #include "deck.h"
 
-#include <boost/utility.hpp> // because of 1.51 bug. missing include in range/any_range.hpp ?
 #include <boost/range/algorithm_ext/insert.hpp>
-#include <boost/range/any_range.hpp>
+#include <stdexcept>
 
 #include "card.h"
 

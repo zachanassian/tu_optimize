@@ -1,11 +1,9 @@
 #ifndef DECK_H_INCLUDED
 #define DECK_H_INCLUDED
 
-#include <boost/utility.hpp> // because of 1.51 bug. missing include in range/any_range.hpp ?
-#include <boost/range/algorithm_ext/insert.hpp>
-#include <boost/range/any_range.hpp>
 #include <deque>
 #include <list>
+#include <random>
 #include <vector>
 
 #include "cards.h"
@@ -26,7 +24,7 @@ struct DeckIface
     {}
 
     DeckIface(const Card* commander_,
-              boost::any_range<const Card*, boost::forward_traversal_tag, const Card*, std::ptrdiff_t> cards_) :
+              std::vector<const Card*> cards_) :
         commander(commander_),
         cards(std::begin(cards_), std::end(cards_))
     {}
@@ -79,7 +77,7 @@ struct DeckOrdered : DeckIface
     // card id -> card order
     std::map<unsigned, std::list<unsigned> > order;
 
-    DeckOrdered(const Card* commander_, boost::any_range<const Card*, boost::forward_traversal_tag, const Card*, std::ptrdiff_t> cards_) :
+    DeckOrdered(const Card* commander_, std::vector<const Card*> cards_) :
         DeckIface(commander_, cards_),
         shuffled_cards(cards.begin(), cards.end())
     {
