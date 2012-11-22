@@ -4,6 +4,7 @@
 #include <stdexcept>
 
 #include "card.h"
+#include "cards.h"
 
 template<class RandomAccessIterator, class UniformRandomNumberGenerator>
 void partial_shuffle(RandomAccessIterator first, RandomAccessIterator middle,

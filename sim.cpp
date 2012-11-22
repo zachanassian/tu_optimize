@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "card.h"
+#include "cards.h"
 #include "deck.h"
 
 //---------------------- $00 general stuff -------------------------------------

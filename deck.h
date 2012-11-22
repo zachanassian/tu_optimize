@@ -3,12 +3,12 @@
 
 #include <deque>
 #include <list>
+#include <map>
 #include <random>
 #include <vector>
 
-#include "cards.h"
-
 class Card;
+class Cards;
 
 //---------------------- $30 Deck: a commander + a sequence of cards -----------
 // Can be shuffled.
