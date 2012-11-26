@@ -60,7 +60,8 @@ CardStatus::CardStatus(const Card* card) :
     m_poisoned(0),
     m_protected(0),
     m_rallied(0),
-    m_weakened(0)
+    m_weakened(0),
+    m_temporary_split(false)
 {
 }
 //------------------------------------------------------------------------------
@@ -350,6 +351,17 @@ unsigned play(Field* fd)
         {
             fd->tip->commander.m_hp = fd->tip->commander.m_card->m_health;
         }
+
+        if(fd->effect == Effect::clone_project ||
+           (fd->effect == Effect::clone_experiment && (fd->turn == 9 || fd->turn == 10)))
+        {
+            std::vector<SkillSpec> skills;
+            skills.emplace_back(temporary_split, 0, allfactions);
+            // The skill doesn't actually come from the commander,
+            // but we need to provide some source and it seemed most reasonable.
+            evaluate_skills(fd, &fd->tap->commander, skills);
+        }
+
         // Play a card
         const Card* played_card(fd->tap->deck->next());
         if(played_card)
@@ -397,8 +409,8 @@ unsigned play(Field* fd)
             }
             else
             {
-                // Special case: check for split (tartarus swarm raid)
-                if(current_status.m_card->m_split && fd->tap->assaults.size() + fd->tap->structures.size() < 100)
+                // Special case: check for split (tartarus swarm raid, or clone battlefield effects)
+                if((current_status.m_temporary_split || current_status.m_card->m_split) && fd->tap->assaults.size() + fd->tap->structures.size() < 100)
                 {
                     CardStatus& status_split(fd->tap->assaults.add_back());
                     status_split.set(current_status.m_card);
@@ -410,6 +422,7 @@ unsigned play(Field* fd)
                         fd->skill_queue.emplace_back(&status_split, skill);
                         resolve_skill(fd);
                     }
+                    // TODO: Determine whether we need to check for Blitz for the newly-Split unit
                 }
                 // Evaluate skills
                 // Special case: Gore Typhon's infuse
@@ -547,6 +560,7 @@ void turn_start_phase(Field* fd)
     // Defending player's assault cards:
     // update index
     // remove augment, chaos, freeze, immobilize, jam, rally, weaken, apply refresh
+    // remove temp split
     {
         auto& assaults(fd->tip->assaults);
         for(unsigned index(0), end(assaults.size());
@@ -563,6 +577,7 @@ void turn_start_phase(Field* fd)
             status.m_jammed = false;
             status.m_rallied = 0;
             status.m_weakened = 0;
+            status.m_temporary_split = false;
             if(status.m_card->m_refresh && !status.m_diseased)
             {
 #ifndef NDEBUG
@@ -1045,6 +1060,12 @@ inline bool skill_predicate<supply>(CardStatus* c)
 { return(c->m_hp > 0 && c->m_hp < c->m_card->m_health && !c->m_diseased); }
 
 template<>
+inline bool skill_predicate<temporary_split>(CardStatus* c)
+// It is unnecessary to check for Blitz, since temporary_split status is
+// awarded before a card is played.
+{ return(c->m_delay == 0 && c->m_hp > 0); }
+
+template<>
 inline bool skill_predicate<weaken>(CardStatus* c)
 { return(c->m_delay <= 1 && c->m_hp > 0 && attack_power(c) > 0 && !c->m_jammed && !c->m_frozen && !c->m_immobilized); }
 
@@ -1170,6 +1191,12 @@ template<>
 inline void perform_skill<supply>(Field* fd, CardStatus* c, unsigned v)
 {
     add_hp(fd, c, v);
+}
+
+template<>
+inline void perform_skill<temporary_split>(Field* fd, CardStatus* c, unsigned v)
+{
+    c->m_temporary_split = true;
 }
 
 template<>
@@ -1361,6 +1388,9 @@ template<> std::vector<CardStatus*>& skill_targets<strike>(Field* fd, CardStatus
 { return(skill_targets_hostile_assault(fd, src_status)); }
 
 template<> std::vector<CardStatus*>& skill_targets<supply>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_allied_assault(fd, src_status)); }
+
+template<> std::vector<CardStatus*>& skill_targets<temporary_split>(Field* fd, CardStatus* src_status)
 { return(skill_targets_allied_assault(fd, src_status)); }
 
 template<> std::vector<CardStatus*>& skill_targets<weaken>(Field* fd, CardStatus* src_status)
@@ -1724,6 +1754,7 @@ void fill_skill_table()
     skill_table[strike] = perform_targetted_hostile_fast<strike>;
     skill_table[strike_all] = perform_global_hostile_fast<strike>;
     skill_table[summon] = perform_summon;
+    skill_table[temporary_split] = perform_targetted_allied_fast<temporary_split>;
     skill_table[trigger_regen] = perform_trigger_regen;
     skill_table[weaken] = perform_targetted_hostile_fast<weaken>;
     skill_table[weaken_all] = perform_global_hostile_fast<weaken>;
@@ -1789,6 +1820,10 @@ void modify_cards(Cards& cards, enum Effect effect)
             break;
         case Effect::invigorate:
             // Do nothing; this is implemented in add_hp
+            break;
+        case Effect::clone_project:
+        case Effect::clone_experiment:
+            // Do nothing; these are implemented in the temporary_split skill
             break;
         case Effect::decrepit:
             replace_on_commanders(cards, enfeeble, enfeeble_all, 1);

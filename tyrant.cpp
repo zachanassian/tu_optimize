@@ -10,6 +10,7 @@ std::string skill_names[num_skills] =
  "freeze", "freeze_all", "heal", "heal_all", "infuse", "jam", "jam_all",
  "mimic", "protect", "protect_all", "rally", "rally_all", "repair", "repair_all", "rush", "shock",
  "siege", "siege_all", "strike", "strike_all", "summon", "supply",
+ "temporary_split",
  "trigger_regen",
  "weaken", "weaken_all"};
 

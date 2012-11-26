@@ -109,6 +109,7 @@ struct CardStatus
     unsigned m_protected;
     unsigned m_rallied;
     unsigned m_weakened;
+    bool m_temporary_split;
 
     CardStatus() {}
     CardStatus(const Card* card);
