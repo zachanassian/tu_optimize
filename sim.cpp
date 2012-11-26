@@ -474,6 +474,10 @@ inline void remove_dead(Storage<CardStatus>& storage)
 {
     storage.remove(is_it_dead);
 }
+inline void add_hp(Field* field, CardStatus* target, unsigned v)
+{
+    target->m_hp = std::min(target->m_hp + v, target->m_card->m_health);
+}
 void check_regeneration(Field* fd)
 {
     for(unsigned i(0); i < fd->killed_with_regen.size(); ++i)
@@ -481,7 +485,10 @@ void check_regeneration(Field* fd)
         CardStatus& status = *fd->killed_with_regen[i];
         if(status.m_hp == 0 && status.m_card->m_regenerate > 0 && !status.m_diseased)
         {
-            status.m_hp = fd->flip() ? status.m_card->m_regenerate : 0;
+            if (fd->flip())
+            {
+                add_hp(fd, &status, status.m_card->m_regenerate);
+            }
         }
         if(status.m_hp > 0)
         {
@@ -558,7 +565,7 @@ void turn_start_phase(Field* fd)
                     _DEBUG_MSG("%u %s refreshed. hp %u -> %u.\n", index, status_description(&status).c_str(), status.m_hp, status.m_card->m_health);
                 }
 #endif
-                status.m_hp = status.m_card->m_health;
+                add_hp(fd, &status, status.m_card->m_health);
             }
         }
     }
@@ -578,7 +585,7 @@ void turn_start_phase(Field* fd)
 #ifndef NDEBUG
                 _DEBUG_MSG("%s refreshed. hp %u -> %u.\n", index, status_description(&status).c_str(), status.m_hp, status.m_card->m_health);
 #endif
-                status.m_hp = status.m_card->m_health;
+                add_hp(fd, &status, status.m_card->m_health);
             }
         }
     }
@@ -589,10 +596,6 @@ void turn_start_phase(Field* fd)
     check_regeneration(fd);
 }
 //---------------------- $50 attack by assault card implementation -------------
-inline void add_hp(CardStatus* target, unsigned v)
-{
-    target->m_hp = std::min(target->m_hp + v, target->m_card->m_health);
-}
 inline void apply_poison(CardStatus* target, unsigned v)
 {
     target->m_poisoned = std::max(target->m_poisoned, v);
@@ -827,7 +830,7 @@ void PerformAttack::siphon_poison_disease<CardType::assault>()
 {
     if(att_status->m_card->m_siphon > 0)
     {
-        add_hp(&fd->tap->commander, std::min(att_dmg, att_status->m_card->m_siphon));
+        add_hp(fd, &fd->tap->commander, std::min(att_dmg, att_status->m_card->m_siphon));
         _DEBUG_MSG(" \033[1;32m%s siphon %u; hp %u\033[0m\n", status_description(att_status).c_str(), std::min(att_dmg, att_status->m_card->m_siphon), fd->tap->commander.m_hp);
     }
     if(att_status->m_card->m_poison > 0)
@@ -862,7 +865,7 @@ void PerformAttack::crush_leech<CardType::assault>()
     }
     if(att_status->m_card->m_leech > 0 && att_status->m_hp > 0 && !att_status->m_diseased)
     {
-        add_hp(att_status, std::min(att_dmg, att_status->m_card->m_leech));
+        add_hp(fd, att_status, std::min(att_dmg, att_status->m_card->m_leech));
         _DEBUG_MSG("%s leech %u; hp: %u.\n", status_description(att_status).c_str(), std::min(att_dmg, att_status->m_card->m_leech), att_status->m_hp);
     }
 }
@@ -1092,7 +1095,7 @@ inline void perform_skill<freeze>(Field* fd, CardStatus* c, unsigned v)
 template<>
 inline void perform_skill<heal>(Field* fd, CardStatus* c, unsigned v)
 {
-    add_hp(c, v);
+    add_hp(fd, c, v);
 }
 
 template<>
@@ -1128,7 +1131,7 @@ inline void perform_skill<rally>(Field* fd, CardStatus* c, unsigned v)
 template<>
 inline void perform_skill<repair>(Field* fd, CardStatus* c, unsigned v)
 {
-    add_hp(c, v);
+    add_hp(fd, c, v);
 }
 
 template<>
@@ -1160,7 +1163,7 @@ inline void perform_skill<strike>(Field* fd, CardStatus* c, unsigned v)
 template<>
 inline void perform_skill<supply>(Field* fd, CardStatus* c, unsigned v)
 {
-    add_hp(c, v);
+    add_hp(fd, c, v);
 }
 
 template<>
