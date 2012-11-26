@@ -333,7 +333,6 @@ void PlayCard::onPlaySkills<CardType::action>()
 //------------------------------------------------------------------------------
 void turn_start_phase(Field* fd);
 void prepend_on_death(Field* fd);
-void summon_card(Field* fd, unsigned player, const Card* summoned);
 // return value : 0 -> attacker wins, 1 -> defender wins
 unsigned play(Field* fd)
 {
@@ -397,8 +396,9 @@ unsigned play(Field* fd)
         if (fd->effect == Effect::genesis)
         {
             unsigned index(fd->rand(0, fd->cards.player_assaults.size() - 1));
-            Card* summonee(fd->cards.player_assaults[index]);
-            summon_card(fd, fd->tapi, summonee);
+            std::vector<SkillSpec> skills;
+            skills.emplace_back(summon, fd->cards.player_assaults[index]->m_id, allfactions);
+            evaluate_skills(fd, &fd->tap->commander, skills);
         }
 
         // Evaluate structures
