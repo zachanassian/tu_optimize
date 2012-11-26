@@ -1684,3 +1684,16 @@ void fill_skill_table()
     skill_table[weaken] = perform_targetted_hostile_fast<weaken>;
     skill_table[weaken_all] = perform_global_hostile_fast<weaken>;
 }
+//------------------------------------------------------------------------------
+void modify_cards(Cards& cards, enum Effect effect)
+{
+    switch (effect)
+    {
+        case Effect::none:
+            break;
+        default:
+            // TODO: throw something more useful
+            throw effect;
+            break;
+    }
+}

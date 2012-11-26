@@ -20,6 +20,7 @@ extern unsigned turn_limit;
 
 void fill_skill_table();
 unsigned play(Field* fd);
+void modify_cards(Cards& cards, enum Effect effect);
 // Pool-based indexed storage.
 //---------------------- Pool-based indexed storage ----------------------------
 template<typename T>

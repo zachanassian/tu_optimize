@@ -1038,6 +1038,8 @@ int main(int argc, char** argv)
         att_deck_ordered = std::make_shared<DeckOrdered>(*att_deck);
     }
 
+    modify_cards(cards, effect);
+
     Process p(num_threads, cards, decks, ordered ? att_deck_ordered.get() : att_deck, def_decks, def_decks_factors, gamemode, effect);
     {
         //ScopeClock timer;
