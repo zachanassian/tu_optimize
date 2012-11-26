@@ -302,6 +302,11 @@ void PlayCard::fieldEffects<CardType::assault>()
     {
         status->m_poisoned = 1;
     }
+    else if(fd->effect == Effect::decay)
+    {
+        status->m_poisoned = 1;
+        status->m_diseased = true;
+    }
 }
 // action
 template <>
@@ -1107,6 +1112,10 @@ inline void perform_skill<chaos>(Field* fd, CardStatus* c, unsigned v)
 template<>
 inline void perform_skill<cleanse>(Field* fd, CardStatus* c, unsigned v)
 {
+    if(fd->effect == Effect::decay)
+    {
+        return;
+    }
     c->m_chaos = false;
     c->m_diseased = false;
     c->m_enfeebled = 0;
@@ -1656,6 +1665,11 @@ void summon_card(Field* fd, unsigned player, const Card* summoned)
         {
             card_status.m_poisoned = 1;
         }
+        else if(fd->effect == Effect::decay)
+        {
+            card_status.m_poisoned = 1;
+            card_status.m_diseased = true;
+        }
     }
 }
 void perform_summon(Field* fd, CardStatus* src_status, const SkillSpec& s)
@@ -1862,6 +1876,10 @@ void modify_cards(Cards& cards, enum Effect effect)
                     card->m_evade = true;
                 }
             }
+            break;
+        case Effect::decay:
+            // Do nothing; this is implemented in PlayCard::fieldEffects,
+            // summon_card, and perform_skill<cleanse>
             break;
         case Effect::invigorate:
             // Do nothing; this is implemented in add_hp
