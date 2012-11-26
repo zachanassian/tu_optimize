@@ -328,6 +328,7 @@ void PlayCard::onPlaySkills<CardType::action>()
 //------------------------------------------------------------------------------
 void turn_start_phase(Field* fd);
 void prepend_on_death(Field* fd);
+void summon_card(Field* fd, unsigned player, const Card* summoned);
 // return value : 0 -> attacker wins, 1 -> defender wins
 unsigned play(Field* fd)
 {
@@ -387,6 +388,14 @@ unsigned play(Field* fd)
         // Evaluate commander
         fd->current_phase = Field::commander_phase;
         evaluate_skills(fd, &fd->tap->commander, fd->tap->commander.m_card->m_skills);
+
+        if (fd->effect == Effect::genesis)
+        {
+            unsigned index(fd->rand(0, fd->cards.player_assaults.size() - 1));
+            Card* summonee(fd->cards.player_assaults[index]);
+            summon_card(fd, fd->tapi, summonee);
+        }
+
         // Evaluate structures
         fd->current_phase = Field::structures_phase;
         for(fd->current_ci = 0; !fd->end && fd->current_ci < fd->tap->structures.size(); ++fd->current_ci)
@@ -1824,6 +1833,9 @@ void modify_cards(Cards& cards, enum Effect effect)
         case Effect::clone_project:
         case Effect::clone_experiment:
             // Do nothing; these are implemented in the temporary_split skill
+            break;
+        case Effect::genesis:
+            // Do nothing; this is implemented in play
             break;
         case Effect::decrepit:
             replace_on_commanders(cards, enfeeble, enfeeble_all, 1);
