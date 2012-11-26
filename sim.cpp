@@ -1650,16 +1650,30 @@ void perform_mimic(Field* fd, CardStatus* src_status, const SkillSpec& s)
     // mimic cannot be triggered by anything. So it should be the only skill in the unresolved skill table.
     // so we can probably clear it safely. This is necessary, because mimic calls resolve_skill as well (infinite loop).
     fd->skill_queue.clear();
-    CardStatus* c(get_target_hostile_fast<mimic>(fd, src_status, s));
-    if(c)
+    CardStatus* c(nullptr);
+    if(fd->effect == Effect::copycat)
     {
+        std::vector<CardStatus*>& cards(skill_targets_allied_assault(fd, src_status));
+        unsigned array_head{select_fast<mimic>(fd, src_status, cards, s)};
+        if(array_head > 0)
+        {
+            c = fd->selection_array[fd->rand(0, array_head - 1)];
+        }
+    }
+    else
+    {
+        c = get_target_hostile_fast<mimic>(fd, src_status, s);
         // evade check for mimic
         // individual skills are subject to evade checks too,
         // but resolve_skill will handle those.
-        if(c->m_card->m_evade && (!src_status || !src_status->m_chaos) && fd->flip())
+        if(c && c->m_card->m_evade && (!src_status || !src_status->m_chaos) && fd->flip())
         {
             return;
         }
+    }
+
+    if(c)
+    {
         _DEBUG_MSG("%s on (%s)\n", skill_names[std::get<0>(s)].c_str(), c->m_card->m_name.c_str());
         for(auto skill: c->m_card->m_skills)
         {
@@ -1769,6 +1783,9 @@ void modify_cards(Cards& cards, enum Effect effect)
             break;
         case Effect::time_surge:
             add_to_commanders(cards, rush, 1);
+            break;
+        case Effect::copycat:
+            // Do nothing; this is implemented in perform_mimic
             break;
         case Effect::invigorate:
             // Do nothing; this is implemented in add_hp
