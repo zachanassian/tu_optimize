@@ -759,6 +759,14 @@ struct PerformAttack
                 // assaults only: (crush, leech if still alive)
                 // check regeneration
                 att_dmg = calculate_attack_damage<cardtype>();
+
+                // If Impenetrable, force attack damage against walls to be 0,
+                // but still activate Counter!
+                if(fd->effect == Effect::impenetrable && def_status->m_card->m_wall)
+                {
+                    att_dmg = 0;
+                }
+
                 if(att_dmg > 0)
                 {
                     immobilize<cardtype>();
@@ -775,6 +783,14 @@ struct PerformAttack
                     }
                     crush_leech<cardtype>();
                 }
+
+                // If Impenetrable, force attack damage against walls to be 0,
+                // but still activate Counter!
+                if(fd->effect == Effect::impenetrable && def_status->m_card->m_wall && att_status->m_hp > 0)
+                {
+                    counter<cardtype>();
+                }
+
                 prepend_on_death(fd);
                 resolve_skill(fd);
                 check_regeneration(fd);
@@ -1890,6 +1906,16 @@ void modify_cards(Cards& cards, enum Effect effect)
             break;
         case Effect::high_skies:
             // Do nothing; this is implemented in PerformAttack
+            break;
+        case Effect::impenetrable:
+            // Also implemented in PerformAttack
+            for(Card* card: cards.cards)
+            {
+                if(card->m_type == CardType::structure)
+                {
+                    card->m_refresh = false;
+                }
+            }
             break;
         case Effect::invigorate:
             // Do nothing; this is implemented in add_hp
