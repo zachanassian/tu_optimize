@@ -37,6 +37,31 @@ enum CardType {
 
 extern std::string cardtype_names[CardType::num_cardtypes];
 
+enum Effect {
+    none,
+    time_surge,
+    copycat,
+    quicksilver,
+    decay,
+    high_skies,
+    impenetrable,
+    invigorate,
+    clone_project,
+    friendly_fire,
+    genesis,
+    artillery_fire,
+    photon_shield,
+    decrepit,
+    forcefield,
+    chilling_touch,
+    clone_experiment,
+    toxic,
+    haunt,
+    num_effects
+};
+
+extern std::string effect_names[Effect::num_effects];
+
 enum gamemode_t
 {
     fight,

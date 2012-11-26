@@ -14,3 +14,25 @@ std::string skill_names[num_skills] =
  "weaken", "weaken_all"};
 
 std::string cardtype_names[CardType::num_cardtypes]{"action", "assault", "commander", "structure"};
+
+std::string effect_names[Effect::num_effects] = {
+    "None",
+    "Time Surge",
+    "Copycat",
+    "Quicksilver",
+    "Decay",
+    "High Skies",
+    "Impenetrable",
+    "Invigorate",
+    "Clone Project",
+    "Friendly Fire",
+    "Genesis",
+    "Artillery Fire",
+    "Photon Shield",
+    "Decrepit",
+    "Forcefield",
+    "Chilling Touch",
+    "Clone Experiment",
+    "Toxic",
+    "Haunt",
+};

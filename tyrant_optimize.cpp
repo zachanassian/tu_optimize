@@ -262,8 +262,9 @@ struct SimulationData
     std::vector<Hand*> def_hands;
     std::vector<double> factors;
     gamemode_t gamemode;
+    enum Effect effect;
 
-    SimulationData(unsigned seed, const Cards& cards_, const Decks& decks_, unsigned num_def_decks_, std::vector<double> factors_, gamemode_t gamemode_) :
+    SimulationData(unsigned seed, const Cards& cards_, const Decks& decks_, unsigned num_def_decks_, std::vector<double> factors_, gamemode_t gamemode_, enum Effect effect_) :
         re(seed),
         cards(cards_),
         decks(decks_),
@@ -271,7 +272,8 @@ struct SimulationData
         att_hand(nullptr),
         def_decks(num_def_decks_),
         factors(factors_),
-        gamemode(gamemode_)
+        gamemode(gamemode_),
+        effect(effect_)
     {
         for(auto def_deck: def_decks)
         {
@@ -302,7 +304,7 @@ struct SimulationData
         {
             att_hand.reset(re);
             def_hand->reset(re);
-            Field fd(re, cards, att_hand, *def_hand, gamemode);
+            Field fd(re, cards, att_hand, *def_hand, gamemode, effect);
             unsigned result(play(&fd));
             res.emplace_back(result);
         }
@@ -330,8 +332,9 @@ public:
     const std::vector<DeckIface*> def_decks;
     std::vector<double> factors;
     gamemode_t gamemode;
+    enum Effect effect;
 
-    Process(unsigned _num_threads, const Cards& cards_, const Decks& decks_, DeckIface* att_deck_, std::vector<DeckIface*> _def_decks, std::vector<double> _factors, gamemode_t _gamemode) :
+    Process(unsigned _num_threads, const Cards& cards_, const Decks& decks_, DeckIface* att_deck_, std::vector<DeckIface*> _def_decks, std::vector<double> _factors, gamemode_t _gamemode, enum Effect _effect) :
         num_threads(_num_threads),
         main_barrier(num_threads+1),
         cards(cards_),
@@ -339,13 +342,14 @@ public:
         att_deck(att_deck_),
         def_decks(_def_decks),
         factors(_factors),
-        gamemode(_gamemode)
+        gamemode(_gamemode),
+        effect(_effect)
     {
         destroy_threads = false;
         unsigned seed(time(0));
         for(unsigned i(0); i < num_threads; ++i)
         {
-            threads_data.push_back(new SimulationData(seed + i, cards, decks, def_decks.size(), factors, gamemode));
+            threads_data.push_back(new SimulationData(seed + i, cards, decks, def_decks.size(), factors, gamemode, effect));
             threads.push_back(new boost::thread(thread_evaluate, std::ref(main_barrier), std::ref(shared_mutex), std::ref(*threads_data.back()), std::ref(*this)));
         }
     }
@@ -942,12 +946,32 @@ int main(int argc, char** argv)
             return(5);
         }
     }
+
+    enum Effect effect = Effect::none;
+    std::map<std::string, int> effect_map;
+    for(unsigned i(0); i < Effect::num_effects; ++i)
+    {
+        effect_map[effect_names[i]] = i;
+    }
+
     std::vector<std::tuple<unsigned, unsigned, Operation> > todo;
     for(int argIndex(3); argIndex < argc; ++argIndex)
     {
         if(strcmp(argv[argIndex], "-c") == 0)
         {
             keep_commander = true;
+        }
+        else if(strcmp(argv[argIndex], "-e") == 0)
+        {
+            std::string arg_effect(argv[argIndex + 1]);
+            auto x = effect_map.find(arg_effect);
+            if(x == effect_map.end())
+            {
+                std::cout << "The effect '" << arg_effect << "' was not found.\n";
+                return(6);
+            }
+            effect = static_cast<enum Effect>(x->second);
+            argIndex += 1;
         }
         else if(strcmp(argv[argIndex], "-o") == 0)
         {
@@ -1014,7 +1038,7 @@ int main(int argc, char** argv)
         att_deck_ordered = std::make_shared<DeckOrdered>(*att_deck);
     }
 
-    Process p(num_threads, cards, decks, ordered ? att_deck_ordered.get() : att_deck, def_decks, def_decks_factors, gamemode);
+    Process p(num_threads, cards, decks, ordered ? att_deck_ordered.get() : att_deck, def_decks, def_decks_factors, gamemode, effect);
     {
         //ScopeClock timer;
         for(auto op: todo)
