@@ -745,7 +745,8 @@ struct PerformAttack
     {
         if(attack_power(att_status) > 0)
         {
-            const bool fly_check(!def_status->m_card->m_flying || att_status->m_card->m_flying || att_status->m_card->m_antiair > 0 || fd->flip());
+            const bool fly_check(!def_status->m_card->m_flying || att_status->m_card->m_flying || att_status->m_card->m_antiair > 0 ||
+                                 (fd->effect != Effect::high_skies && fd->flip()));
             if(fly_check) // unnecessary check for structures, commander -> fix later ?
             {
                 // Evaluation order:
@@ -1880,6 +1881,9 @@ void modify_cards(Cards& cards, enum Effect effect)
         case Effect::decay:
             // Do nothing; this is implemented in PlayCard::fieldEffects,
             // summon_card, and perform_skill<cleanse>
+            break;
+        case Effect::high_skies:
+            // Do nothing; this is implemented in PerformAttack
             break;
         case Effect::invigorate:
             // Do nothing; this is implemented in add_hp
