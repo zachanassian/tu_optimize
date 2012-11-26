@@ -1771,6 +1771,33 @@ void fill_skill_table()
 //------------------------------------------------------------------------------
 // Utility functions for modify_cards.
 
+// Adds the skill "<new_skill> <magnitude>" to all assaults,
+// except those who have any instance of either <new_skill> or <conflict>.
+inline void maybe_add_to_assaults(Cards& cards, ActiveSkill new_skill, unsigned magnitude, ActiveSkill conflict)
+{
+    for(Card* card: cards.cards)
+    {
+        if(card->m_type != CardType::assault)
+        {
+            continue;
+        }
+
+        bool conflict(false);
+        for(auto& skill: card->m_skills)
+        {
+            if(std::get<0>(skill) == new_skill ||
+               std::get<0>(skill) == conflict)
+            {
+                conflict = true;
+            }
+        }
+
+        if(!conflict)
+        {
+            card->add_skill(new_skill, magnitude, allfactions);
+        }
+    }
+}
 // Adds the skill "<skill> <magnitude>" to all commanders.
 inline void add_to_commanders(Cards& cards, ActiveSkill skill, unsigned magnitude)
 {
@@ -1827,12 +1854,25 @@ void modify_cards(Cards& cards, enum Effect effect)
         case Effect::copycat:
             // Do nothing; this is implemented in perform_mimic
             break;
+        case Effect::quicksilver:
+            for(Card* card: cards.cards)
+            {
+                if(card->m_type == CardType::assault)
+                {
+                    card->m_evade = true;
+                }
+            }
+            break;
         case Effect::invigorate:
             // Do nothing; this is implemented in add_hp
             break;
         case Effect::clone_project:
         case Effect::clone_experiment:
             // Do nothing; these are implemented in the temporary_split skill
+            break;
+        case Effect::friendly_fire:
+            replace_on_commanders(cards, chaos, chaos_all, 0);
+            maybe_add_to_assaults(cards, strike, 1, strike_all);
             break;
         case Effect::genesis:
             // Do nothing; this is implemented in play
