@@ -107,6 +107,11 @@ struct Decks
     std::list<DeckRandom> raid_decks;
     std::map<unsigned, DeckRandom*> raid_decks_by_id;
     std::map<std::string, DeckRandom*> raid_decks_by_name;
+    std::list<DeckRandom> quest_decks;
+    std::map<unsigned, DeckRandom*> quest_decks_by_id;
+    std::map<std::string, DeckRandom*> quest_decks_by_name;
+    std::map<unsigned, unsigned> quest_effects_by_id;
+    std::map<std::string, unsigned> quest_effects_by_name;
 
     ~Decks()
     {

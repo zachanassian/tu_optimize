@@ -135,6 +135,14 @@ void load_decks_xml(Decks& decks, Cards& cards)
     {
         std::cout << "\nException while loading decks from file raids.xml\n";
     }
+    try
+    {
+        read_quests(decks, cards, "quests.xml");
+    }
+    catch(const rapidxml::parse_error& e)
+    {
+        std::cout << "\nException while loading decks from file quests.xml\n";
+    }
 }
 //------------------------------------------------------------------------------
 void parse_file(const char* filename, std::vector<char>& buffer, xml_document<>& doc)
@@ -481,6 +489,70 @@ void read_raids(Decks& decks, Cards& cards, std::string filename)
             DeckRandom* deck = &decks.raid_decks.back();
             decks.raid_decks_by_id[id] = deck;
             decks.raid_decks_by_name[deck_name] = deck;
+        }
+    }
+}
+//------------------------------------------------------------------------------
+void read_quests(Decks& decks, Cards& cards, std::string filename)
+{
+    std::vector<char> buffer;
+    xml_document<> doc;
+    parse_file(filename.c_str(), buffer, doc);
+    xml_node<>* root = doc.first_node();
+
+    if(!root)
+    {
+        return;
+    }
+
+    // Seems always_cards is empty for all quests.
+    std::vector<const Card*> always_cards;
+
+    for(xml_node<>* quest_node = root->first_node();
+        quest_node;
+        quest_node = quest_node->next_sibling())
+    {
+        if(strcmp(quest_node->name(), "step") == 0)
+        {
+            std::vector<std::pair<unsigned, std::vector<const Card*> > > some_cards;
+            xml_node<>* id_node(quest_node->first_node("id"));
+            int id(id_node ? atoi(id_node->value()) : -1);
+            std::string deck_name{"Step " + std::string{id_node->value()}};
+            xml_node<>* commander_node(quest_node->first_node("commander"));
+            const Card* commander_card{cards.by_id(atoi(commander_node->value()))};
+            xml_node<>* battleground_id_node(quest_node->first_node("battleground_id"));
+            int battleground_id(battleground_id_node ? atoi(battleground_id_node->value()) : -1);
+            xml_node<>* deck_node(quest_node->first_node("deck"));
+            for(xml_node<>* pool_node = deck_node->first_node("card_pool");
+                pool_node;
+                pool_node = pool_node->next_sibling())
+            {
+                if(strcmp(pool_node->name(), "card_pool") == 0)
+                {
+                    unsigned num_cards_from_pool{static_cast<unsigned>(atoi(pool_node->first_attribute("amount")->value()))};
+                    std::vector<const Card*> cards_from_pool;
+
+                    for(xml_node<>* card_node = pool_node->first_node();
+                        card_node;
+                        card_node = card_node->next_sibling())
+                    {
+                        unsigned card_id{static_cast<unsigned>(atoi(card_node->value()))};
+                        // Handle the replacement art cards
+                        if(cards.replace.find(card_id) != cards.replace.end())
+                        {
+                            card_id = cards.replace[card_id];
+                        }
+                        cards_from_pool.push_back(cards.by_id(card_id));
+                    }
+                    some_cards.push_back(std::make_pair(num_cards_from_pool, cards_from_pool));
+                }
+            }
+            decks.quest_decks.push_back(DeckRandom{commander_card, always_cards, some_cards});
+            DeckRandom* deck = &decks.quest_decks.back();
+            decks.quest_decks_by_id[id] = deck;
+            decks.quest_effects_by_id[id] = battleground_id;
+            decks.quest_decks_by_name[deck_name] = deck;
+            decks.quest_effects_by_name[deck_name] = battleground_id;
         }
     }
 }

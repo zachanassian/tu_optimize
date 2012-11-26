@@ -68,6 +68,11 @@ DeckIface* find_deck(const Decks& decks, std::string name)
     {
         return(it2->second);
     }
+    auto it4 = decks.quest_decks_by_name.find(name);
+    if(it4 != decks.quest_decks_by_name.end())
+    {
+        return(it4->second);
+    }
     auto it3 = decks.custom_decks.find(name);
     if(it3 != decks.custom_decks.end())
     {
