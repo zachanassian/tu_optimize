@@ -1685,11 +1685,69 @@ void fill_skill_table()
     skill_table[weaken_all] = perform_global_hostile_fast<weaken>;
 }
 //------------------------------------------------------------------------------
+// Utility functions for modify_cards.
+
+// Adds the skill "<skill> <magnitude>" to all commanders.
+inline void add_to_commanders(Cards& cards, ActiveSkill skill, unsigned magnitude)
+{
+    for(Card* card: cards.cards)
+    {
+        if(card->m_type != CardType::commander)
+        {
+            continue;
+        }
+        card->add_skill(skill, magnitude, allfactions);
+    }
+}
+
+// Adds the skill "<new> <magnitude>" to all commanders.
+// If the commander has an instance of either <old> or <new> in its skill list,
+// the new skill replaces it.
+// Otherwise, the new skill is added on to the end.
+inline void replace_on_commanders(Cards& cards, ActiveSkill old_skill, ActiveSkill new_skill, unsigned magnitude)
+{
+    for(Card* card: cards.cards)
+    {
+        if(card->m_type != CardType::commander)
+        {
+            continue;
+        }
+
+        bool replaced(false);
+        for(auto& skill: card->m_skills)
+        {
+            if(std::get<0>(skill) == old_skill ||
+               std::get<0>(skill) == new_skill)
+            {
+                skill = std::make_tuple(new_skill, magnitude, allfactions);
+                replaced = true;
+            }
+        }
+
+        if(!replaced)
+        {
+            card->add_skill(new_skill, magnitude, allfactions);
+        }
+    }
+}
+//------------------------------------------------------------------------------
 void modify_cards(Cards& cards, enum Effect effect)
 {
     switch (effect)
     {
         case Effect::none:
+            break;
+        case Effect::time_surge:
+            add_to_commanders(cards, rush, 1);
+            break;
+        case Effect::decrepit:
+            replace_on_commanders(cards, enfeeble, enfeeble_all, 1);
+            break;
+        case Effect::forcefield:
+            replace_on_commanders(cards, protect, protect_all, 1);
+            break;
+        case Effect::chilling_touch:
+            add_to_commanders(cards, freeze, 0);
             break;
         default:
             // TODO: throw something more useful
