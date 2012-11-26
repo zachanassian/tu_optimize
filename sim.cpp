@@ -770,7 +770,8 @@ struct PerformAttack
                 {
                     if(att_status->m_hp > 0)
                     {
-                        counter_berserk<cardtype>();
+                        counter<cardtype>();
+                        berserk<cardtype>();
                     }
                     crush_leech<cardtype>();
                 }
@@ -824,7 +825,7 @@ struct PerformAttack
     void oa_berserk() {}
 
     template<enum CardType::CardType>
-    void counter_berserk()
+    void counter()
     {
         if(def_status->m_card->m_counter > 0)
         {
@@ -832,6 +833,11 @@ struct PerformAttack
             remove_hp(fd, *att_status, counter_dmg);
             _DEBUG_MSG("%s counter %u by %s\n", status_description(att_status).c_str(), counter_dmg, status_description(def_status).c_str());
         }
+    }
+
+    template<enum CardType::CardType>
+    void berserk()
+    {
         att_status->m_berserk += att_status->m_card->m_berserk;
     }
 
