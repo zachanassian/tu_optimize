@@ -898,6 +898,7 @@ void usage(int argc, char** argv)
     std::cout << "\n";
     std::cout << "Flags:\n";
     std::cout << "  -c: don't try to optimize the commander.\n";
+    std::cout << "  -e <effect>: set the battleground effect.\n";
     std::cout << "  -o: restrict hill climbing to the owned cards listed in \"ownedcards.txt\".\n";
     std::cout << "  -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).\n";
     std::cout << "  -s: use surge (default is fight).\n";
