@@ -476,7 +476,13 @@ inline void remove_dead(Storage<CardStatus>& storage)
 }
 inline void add_hp(Field* field, CardStatus* target, unsigned v)
 {
+    unsigned old_hp = target->m_hp;
     target->m_hp = std::min(target->m_hp + v, target->m_card->m_health);
+    if(field->effect == Effect::invigorate && target->m_card->m_type == CardType::assault)
+    {
+        unsigned healed = target->m_hp - old_hp;
+        target->m_berserk += healed;
+    }
 }
 void check_regeneration(Field* fd)
 {
@@ -1763,6 +1769,9 @@ void modify_cards(Cards& cards, enum Effect effect)
             break;
         case Effect::time_surge:
             add_to_commanders(cards, rush, 1);
+            break;
+        case Effect::invigorate:
+            // Do nothing; this is implemented in add_hp
             break;
         case Effect::decrepit:
             replace_on_commanders(cards, enfeeble, enfeeble_all, 1);
