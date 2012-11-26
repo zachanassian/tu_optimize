@@ -905,6 +905,7 @@ void usage(int argc, char** argv)
     std::cout << "  -c: don't try to optimize the commander.\n";
     std::cout << "  -e <effect>: set the battleground effect.\n";
     std::cout << "  -o: restrict hill climbing to the owned cards listed in \"ownedcards.txt\".\n";
+    std::cout << "  -q: quest mode. Removes faction restrictions from defending commanders and automatically sets quest effect.\n";
     std::cout << "  -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).\n";
     std::cout << "  -s: use surge (default is fight).\n";
     std::cout << "  -t <num>: set the number of threads, default is 4.\n";
@@ -983,6 +984,38 @@ int main(int argc, char** argv)
         {
             read_owned_cards(cards, owned_cards);
             use_owned_cards = true;
+        }
+        else if(strcmp(argv[argIndex], "-q") == 0)
+        {
+            // Strip faction restrictions from commanders of all defending decks
+            // The assumption is that the attacking deck won't use these commanders.
+            // If the attacking deck does, its commander will receive this modification as well.
+            for(auto def_deck: def_decks)
+            {
+                // Can't directly use def_deck->commander, as it is const.
+                unsigned commander_id(def_deck->commander->m_id);
+                for(auto& skill: cards.cards_by_id[commander_id]->m_skills)
+                {
+                    skill = std::make_tuple(std::get<0>(skill), std::get<1>(skill), allfactions);
+                }
+            }
+            // Set quest effect:
+            for(auto deck_parsed: deck_list_parsed)
+            {
+                auto effect_id = decks.quest_effects_by_name.find(deck_parsed.first);
+                if(effect_id == decks.quest_effects_by_name.end())
+                {
+                    std::cout << "WARNING: The deck '" << deck_parsed.first << "' has no battleground effect! Are you sure it's a quest deck?\n";
+                    continue;
+                }
+                enum Effect this_effect = static_cast<enum Effect>(effect_id->second);
+                if(effect != Effect::none && this_effect != effect)
+                {
+                    std::cout << "ERROR: Inconsistent effects! Had " << effect << ", now have " << this_effect << "\n";
+                    return(7);
+                }
+                effect = this_effect;
+            }
         }
         else if(strcmp(argv[argIndex], "-r") == 0)
         {
