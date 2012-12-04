@@ -763,7 +763,7 @@ unsigned PerformAttack::calculate_attack_damage<CardType::assault>()
 template<>
 void PerformAttack::immobilize<CardType::assault>()
 {
-    if(att_status->m_card->m_immobilize)
+    if(att_status->m_card->m_immobilize && def_status->m_delay <= 1 && !def_status->m_jammed && !def_status->m_frozen)
     {
         def_status->m_immobilized |= fd->flip();
     }
@@ -922,7 +922,7 @@ inline bool skill_predicate<augment>(CardStatus* c)
 
 template<>
 inline bool skill_predicate<chaos>(CardStatus* c)
-{ return(c->m_delay <= 1 && c->m_hp > 0 && !c->m_chaos); }
+{ return(c->m_delay <= 1 && c->m_hp > 0 && !c->m_chaos && !c->m_jammed && !c->m_frozen); }
 
 template<>
 inline bool skill_predicate<cleanse>(CardStatus* c)
@@ -943,7 +943,7 @@ inline bool skill_predicate<enfeeble>(CardStatus* c)
 
 template<>
 inline bool skill_predicate<freeze>(CardStatus* c)
-{ return(c->m_hp > 0 && !c->m_frozen); }
+{ return(c->m_hp > 0 && !c->m_jammed && !c->m_frozen); }
 
 template<>
 inline bool skill_predicate<heal>(CardStatus* c)
@@ -955,7 +955,7 @@ inline bool skill_predicate<infuse>(CardStatus* c)
 
 template<>
 inline bool skill_predicate<jam>(CardStatus* c)
-{ return(c->m_delay <= 1 && c->m_hp > 0 && !c->m_jammed); }
+{ return(c->m_delay <= 1 && c->m_hp > 0 && !c->m_jammed && !c->m_frozen); }
 
 template<>
 inline bool skill_predicate<mimic>(CardStatus* c)
