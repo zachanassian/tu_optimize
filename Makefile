@@ -11,7 +11,7 @@ obj/%.o: %.cpp
 	$(CXX) $(CPPFLAGS) -o $@ -c $<
 
 $(MAIN): $(OBJS)
-	$(CXX) -o $@ $(LDFLAGS) $(OBJS)
+	$(CXX) -o $@ $(OBJS) $(LDFLAGS)
 
 clean:
 	rm -f $(MAIN) obj/*.o
