@@ -1562,6 +1562,13 @@ void perform_mimic(Field* fd, CardStatus* src_status, const SkillSpec& s)
     CardStatus* c(get_target_hostile_fast<mimic>(fd, src_status, s));
     if(c)
     {
+        // evade check for mimic
+        // individual skills are subject to evade checks too,
+        // but resolve_skill will handle those.
+        if(c->m_card->m_evade && fd->flip())
+        {
+            return;
+        }
         _DEBUG_MSG("%s on (%s)\n", skill_names[std::get<0>(s)].c_str(), c->m_card->m_name.c_str());
         for(auto skill: c->m_card->m_skills)
         {
