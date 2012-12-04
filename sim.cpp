@@ -827,7 +827,7 @@ void attack_phase(Field* fd)
     CardStatus* att_status(&fd->tap->assaults[fd->current_ci]); // attacking card
     Storage<CardStatus>& def_assaults(fd->tip->assaults);
     unsigned num_attacks(att_status->m_card->m_flurry > 0 && fd->flip() ? att_status->m_card->m_flurry + 1 : 1);
-    for(unsigned attack_index(0); attack_index < num_attacks && att_status->m_hp > 0 && fd->tip->commander.m_hp > 0; ++attack_index)
+    for(unsigned attack_index(0); attack_index < num_attacks && !att_status->m_jammed && !att_status->m_frozen && att_status->m_hp > 0 && fd->tip->commander.m_hp > 0; ++attack_index)
     {
         // 3 possibilities:
         // - 1. attack against the assault in front
