@@ -1346,7 +1346,7 @@ void perform_targetted_hostile_fast(Field* fd, CardStatus* src_status, const Ski
     if(c)
     {
         // evade
-        if(!c->m_card->m_evade || fd->flip())
+        if(!c->m_card->m_evade || (src_status && src_status->m_chaos) || fd->flip())
         {
             _DEBUG_MSG("%s (%u) from %s on %s.\n", skill_names[skill_id].c_str(), std::get<1>(s), status_description(src_status).c_str(), status_description(c).c_str());
             // skill
@@ -1410,7 +1410,7 @@ void perform_global_hostile_fast(Field* fd, CardStatus* src_status, const SkillS
     for(unsigned s_index(0); s_index < array_head; ++s_index)
     {
         CardStatus* c(fd->selection_array[s_index]);
-        if(!c->m_card->m_evade || fd->flip())
+        if(!c->m_card->m_evade || (src_status && src_status->m_chaos) || fd->flip())
         {
             _DEBUG_MSG("%s (%u) on (%s)\n", skill_names[skill_id].c_str(), std::get<1>(s), c->m_card->m_name.c_str());
             perform_skill<skill_id>(fd, c, std::get<1>(s));
@@ -1565,7 +1565,7 @@ void perform_mimic(Field* fd, CardStatus* src_status, const SkillSpec& s)
         // evade check for mimic
         // individual skills are subject to evade checks too,
         // but resolve_skill will handle those.
-        if(c->m_card->m_evade && fd->flip())
+        if(c->m_card->m_evade && (!src_status || !src_status->m_chaos) && fd->flip())
         {
             return;
         }
