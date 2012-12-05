@@ -983,6 +983,10 @@ inline bool skill_predicate<rally>(CardStatus* c)
 { return((c->m_delay == 0 || c->blitz) && c->m_hp > 0 && !c->m_jammed && !c->m_frozen && !c->m_immobilized); }
 
 template<>
+inline bool skill_predicate<repair>(CardStatus* c)
+{ return(c->m_hp > 0 && c->m_hp < c->m_card->m_health); }
+
+template<>
 inline bool skill_predicate<rush>(CardStatus* c)
 { return(c->m_delay > 0); }
 
@@ -1086,6 +1090,12 @@ template<>
 inline void perform_skill<rally>(Field* fd, CardStatus* c, unsigned v)
 {
     c->m_rallied += v;
+}
+
+template<>
+inline void perform_skill<repair>(Field* fd, CardStatus* c, unsigned v)
+{
+    add_hp(c, v);
 }
 
 template<>
@@ -1298,6 +1308,9 @@ template<> std::vector<CardStatus*>& skill_targets<protect>(Field* fd, CardStatu
 
 template<> std::vector<CardStatus*>& skill_targets<rally>(Field* fd, CardStatus* src_status)
 { return(skill_targets_allied_assault(fd, src_status)); }
+
+template<> std::vector<CardStatus*>& skill_targets<repair>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_allied_structure(fd, src_status)); }
 
 template<> std::vector<CardStatus*>& skill_targets<rush>(Field* fd, CardStatus* src_status)
 { return(skill_targets_allied_assault(fd, src_status)); }
@@ -1640,6 +1653,8 @@ void fill_skill_table()
     skill_table[protect_all] = perform_global_allied_fast<protect>;
     skill_table[rally] = perform_targetted_allied_fast<rally>;
     skill_table[rally_all] = perform_global_allied_fast<rally>;
+    skill_table[repair] = perform_targetted_allied_fast<repair>;
+    skill_table[repair_all] = perform_global_allied_fast<repair>;
     skill_table[rush] = perform_targetted_allied_fast<rush>;
     skill_table[shock] = perform_shock;
     skill_table[siege] = perform_targetted_hostile_fast<siege>;
