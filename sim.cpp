@@ -1000,6 +1000,16 @@ inline void perform_skill<augment>(Field* fd, CardStatus* c, unsigned v)
 }
 
 template<>
+inline void perform_skill<backfire>(Field* fd, CardStatus* c, unsigned v)
+{
+    c->m_hp = safe_minus(c->m_hp, v);
+    if(c->m_hp == 0)
+    {
+        fd->end = true;
+    }
+}
+
+template<>
 inline void perform_skill<chaos>(Field* fd, CardStatus* c, unsigned v)
 {
     c->m_chaos = true;
@@ -1464,6 +1474,14 @@ void perform_global_allied_fast(Field* fd, CardStatus* src_status, const SkillSp
     }
 }
 
+void perform_backfire(Field* fd, CardStatus* src_status, const SkillSpec& s)
+{
+    Hand* backfired_side = fd->players[src_status->m_player];
+    _DEBUG_MSG("Performing backfire on (%s).", backfired_side->commander.m_card->m_name.c_str());
+    perform_skill<backfire>(fd, &backfired_side->commander, std::get<1>(s));
+    _DEBUG_MSG("\n");
+}
+
 void perform_infuse(Field* fd, CardStatus* src_status, const SkillSpec& s)
 {
     unsigned array_head{0};
@@ -1590,6 +1608,7 @@ void fill_skill_table()
 {
     skill_table[augment] = perform_targetted_allied_fast<augment>;
     skill_table[augment_all] = perform_global_allied_fast<augment>;
+    skill_table[backfire] = perform_backfire;
     skill_table[chaos] = perform_targetted_hostile_fast<chaos>;
     skill_table[chaos_all] = perform_global_hostile_fast<chaos>;
     skill_table[cleanse] = perform_targetted_allied_fast<cleanse>;

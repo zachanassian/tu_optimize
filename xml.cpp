@@ -281,6 +281,8 @@ void read_cards(Cards& cards)
                     { c->m_valor = atoi(skill->first_attribute("x")->value()); }
                     if(strcmp(skill->first_attribute("id")->value(), "wall") == 0)
                     { c->m_wall = true; }
+                    if(strcmp(skill->first_attribute("id")->value(), "backfire") == 0)
+                    { handle_skill<backfire>(skill, c); }
                     if(strcmp(skill->first_attribute("id")->value(), "chaos") == 0)
                     { handle_skill<chaos>(skill, c); }
                     if(strcmp(skill->first_attribute("id")->value(), "cleanse") == 0)
