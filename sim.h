@@ -173,6 +173,8 @@ public:
     // otherwise is the index of the current card in players->structures or players->assaults
     unsigned current_ci;
 
+    unsigned fusion_count;
+
     Field(std::mt19937& re_, const Cards& cards_, Hand& hand1, Hand& hand2, gamemode_t _gamemode) :
         end{false},
         re(re_),

@@ -170,14 +170,23 @@ SkillSpec augmented_skill(CardStatus* status, const SkillSpec& s)
     }
     return(augmented_s);
 }
+SkillSpec fusioned_skill(const SkillSpec& s)
+{
+    SkillSpec fusioned_s = s;
+    std::get<1>(fusioned_s) *= 2;
+    return(fusioned_s);
+}
 void evaluate_skills(Field* fd, CardStatus* status, const std::vector<SkillSpec>& skills)
 {
     assert(status);
     assert(fd->skill_queue.size() == 0);
     for(auto& skill: skills)
     {
+        // Assumptions for fusion: Only active player can use it, and it is incompatible with augment.
+        // This is fine for now since it only exists on the three Blightbloom structures (can't augment structures)
         _DEBUG_MSG("Evaluating %s skill %s\n", status_description(status).c_str(), skill_description(skill).c_str());
-        fd->skill_queue.emplace_back(status, status->m_augmented == 0 ? skill : augmented_skill(status, skill));
+        bool fusion_active = status->m_card->m_fusion && status->m_player == fd->tapi && fd->fusion_count >= 3;
+        fd->skill_queue.emplace_back(status, fusion_active ? fusioned_skill(skill) : (status->m_augmented == 0 ? skill : augmented_skill(status, skill)));
         resolve_skill(fd);
     }
 }
@@ -309,6 +318,7 @@ unsigned play(Field* fd)
     fd->tipi = opponent(fd->tapi);
     fd->tap = fd->players[fd->tapi];
     fd->tip = fd->players[fd->tipi];
+    fd->fusion_count = 0;
     fd->end = false;
     // Shuffle deck
     while(fd->turn < turn_limit && !fd->end)
@@ -454,6 +464,7 @@ void turn_start_phase(Field* fd)
     remove_dead(fd->tap->structures);
     remove_dead(fd->tip->assaults);
     remove_dead(fd->tip->structures);
+    fd->fusion_count = 0;
     // Active player's assault cards:
     // update index
     // remove enfeeble, protect; apply poison damage, reduce delay
@@ -469,6 +480,7 @@ void turn_start_phase(Field* fd)
             status.m_protected = 0;
             remove_hp(fd, status, status.m_poisoned);
             if(status.m_delay > 0 && !status.m_frozen) { --status.m_delay; }
+            if(status.m_card->m_fusion && status.m_delay == 0) { ++fd->fusion_count; }
         }
     }
     // Active player's structure cards:
@@ -483,6 +495,7 @@ void turn_start_phase(Field* fd)
             CardStatus& status(structures[index]);
             status.m_index = index;
             if(status.m_delay > 0) { --status.m_delay; }
+            if(status.m_card->m_fusion && status.m_delay == 0) { ++fd->fusion_count; }
         }
     }
     // Defending player's assault cards:
