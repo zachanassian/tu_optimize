@@ -170,14 +170,23 @@ SkillSpec augmented_skill(CardStatus* status, const SkillSpec& s)
     }
     return(augmented_s);
 }
+SkillSpec fusioned_skill(const SkillSpec& s)
+{
+    SkillSpec fusioned_s = s;
+    std::get<1>(fusioned_s) *= 2;
+    return(fusioned_s);
+}
 void evaluate_skills(Field* fd, CardStatus* status, const std::vector<SkillSpec>& skills)
 {
     assert(status);
     assert(fd->skill_queue.size() == 0);
     for(auto& skill: skills)
     {
+        // Assumptions for fusion: Only active player can use it, and it is incompatible with augment.
+        // This is fine for now since it only exists on the three Blightbloom structures (can't augment structures)
         _DEBUG_MSG("Evaluating %s skill %s\n", status_description(status).c_str(), skill_description(skill).c_str());
-        fd->skill_queue.emplace_back(status, status->m_augmented == 0 ? skill : augmented_skill(status, skill));
+        bool fusion_active = status->m_card->m_fusion && status->m_player == fd->tapi && fd->fusion_count >= 3;
+        fd->skill_queue.emplace_back(status, fusion_active ? fusioned_skill(skill) : (status->m_augmented == 0 ? skill : augmented_skill(status, skill)));
         resolve_skill(fd);
     }
 }
@@ -309,6 +318,7 @@ unsigned play(Field* fd)
     fd->tipi = opponent(fd->tapi);
     fd->tap = fd->players[fd->tapi];
     fd->tip = fd->players[fd->tipi];
+    fd->fusion_count = 0;
     fd->end = false;
     // Shuffle deck
     while(fd->turn < turn_limit && !fd->end)
@@ -454,6 +464,7 @@ void turn_start_phase(Field* fd)
     remove_dead(fd->tap->structures);
     remove_dead(fd->tip->assaults);
     remove_dead(fd->tip->structures);
+    fd->fusion_count = 0;
     // Active player's assault cards:
     // update index
     // remove enfeeble, protect; apply poison damage, reduce delay
@@ -469,6 +480,7 @@ void turn_start_phase(Field* fd)
             status.m_protected = 0;
             remove_hp(fd, status, status.m_poisoned);
             if(status.m_delay > 0 && !status.m_frozen) { --status.m_delay; }
+            if(status.m_card->m_fusion && status.m_delay == 0) { ++fd->fusion_count; }
         }
     }
     // Active player's structure cards:
@@ -483,6 +495,7 @@ void turn_start_phase(Field* fd)
             CardStatus& status(structures[index]);
             status.m_index = index;
             if(status.m_delay > 0) { --status.m_delay; }
+            if(status.m_card->m_fusion && status.m_delay == 0) { ++fd->fusion_count; }
         }
     }
     // Defending player's assault cards:
@@ -970,6 +983,10 @@ inline bool skill_predicate<rally>(CardStatus* c)
 { return((c->m_delay == 0 || c->blitz) && c->m_hp > 0 && !c->m_jammed && !c->m_frozen && !c->m_immobilized); }
 
 template<>
+inline bool skill_predicate<repair>(CardStatus* c)
+{ return(c->m_hp > 0 && c->m_hp < c->m_card->m_health); }
+
+template<>
 inline bool skill_predicate<rush>(CardStatus* c)
 { return(c->m_delay > 0); }
 
@@ -997,6 +1014,16 @@ template<>
 inline void perform_skill<augment>(Field* fd, CardStatus* c, unsigned v)
 {
     c->m_augmented += v;
+}
+
+template<>
+inline void perform_skill<backfire>(Field* fd, CardStatus* c, unsigned v)
+{
+    c->m_hp = safe_minus(c->m_hp, v);
+    if(c->m_hp == 0)
+    {
+        fd->end = true;
+    }
 }
 
 template<>
@@ -1063,6 +1090,12 @@ template<>
 inline void perform_skill<rally>(Field* fd, CardStatus* c, unsigned v)
 {
     c->m_rallied += v;
+}
+
+template<>
+inline void perform_skill<repair>(Field* fd, CardStatus* c, unsigned v)
+{
+    add_hp(c, v);
 }
 
 template<>
@@ -1276,6 +1309,9 @@ template<> std::vector<CardStatus*>& skill_targets<protect>(Field* fd, CardStatu
 template<> std::vector<CardStatus*>& skill_targets<rally>(Field* fd, CardStatus* src_status)
 { return(skill_targets_allied_assault(fd, src_status)); }
 
+template<> std::vector<CardStatus*>& skill_targets<repair>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_allied_structure(fd, src_status)); }
+
 template<> std::vector<CardStatus*>& skill_targets<rush>(Field* fd, CardStatus* src_status)
 { return(skill_targets_allied_assault(fd, src_status)); }
 
@@ -1464,6 +1500,14 @@ void perform_global_allied_fast(Field* fd, CardStatus* src_status, const SkillSp
     }
 }
 
+void perform_backfire(Field* fd, CardStatus* src_status, const SkillSpec& s)
+{
+    Hand* backfired_side = fd->players[src_status->m_player];
+    _DEBUG_MSG("Performing backfire on (%s).", backfired_side->commander.m_card->m_name.c_str());
+    perform_skill<backfire>(fd, &backfired_side->commander, std::get<1>(s));
+    _DEBUG_MSG("\n");
+}
+
 void perform_infuse(Field* fd, CardStatus* src_status, const SkillSpec& s)
 {
     unsigned array_head{0};
@@ -1590,6 +1634,7 @@ void fill_skill_table()
 {
     skill_table[augment] = perform_targetted_allied_fast<augment>;
     skill_table[augment_all] = perform_global_allied_fast<augment>;
+    skill_table[backfire] = perform_backfire;
     skill_table[chaos] = perform_targetted_hostile_fast<chaos>;
     skill_table[chaos_all] = perform_global_hostile_fast<chaos>;
     skill_table[cleanse] = perform_targetted_allied_fast<cleanse>;
@@ -1608,6 +1653,8 @@ void fill_skill_table()
     skill_table[protect_all] = perform_global_allied_fast<protect>;
     skill_table[rally] = perform_targetted_allied_fast<rally>;
     skill_table[rally_all] = perform_global_allied_fast<rally>;
+    skill_table[repair] = perform_targetted_allied_fast<repair>;
+    skill_table[repair_all] = perform_global_allied_fast<repair>;
     skill_table[rush] = perform_targetted_allied_fast<rush>;
     skill_table[shock] = perform_shock;
     skill_table[siege] = perform_targetted_hostile_fast<siege>;

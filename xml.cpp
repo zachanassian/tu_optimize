@@ -65,6 +65,7 @@ template<> struct GlobalSkill<heal> { enum {type = heal_all}; };
 template<> struct GlobalSkill<jam> { enum {type = jam_all}; };
 template<> struct GlobalSkill<protect> { enum {type = protect_all}; };
 template<> struct GlobalSkill<rally> { enum {type = rally_all}; };
+template<> struct GlobalSkill<repair> { enum {type = repair_all}; };
 template<> struct GlobalSkill<siege> { enum {type = siege_all}; };
 template<> struct GlobalSkill<strike> { enum {type = strike_all}; };
 template<> struct GlobalSkill<weaken> { enum {type = weaken_all}; };
@@ -247,6 +248,8 @@ void read_cards(Cards& cards)
                     { c->m_flurry = atoi(skill->first_attribute("x")->value()); }
                     if(strcmp(skill->first_attribute("id")->value(), "flying") == 0)
                     { c->m_flying = true; }
+                    if(strcmp(skill->first_attribute("id")->value(), "fusion") == 0)
+                    { c->m_fusion = true; }
                     if(strcmp(skill->first_attribute("id")->value(), "immobilize") == 0)
                     { c->m_immobilize = true; }
                     if(strcmp(skill->first_attribute("id")->value(), "intercept") == 0)
@@ -281,6 +284,8 @@ void read_cards(Cards& cards)
                     { c->m_valor = atoi(skill->first_attribute("x")->value()); }
                     if(strcmp(skill->first_attribute("id")->value(), "wall") == 0)
                     { c->m_wall = true; }
+                    if(strcmp(skill->first_attribute("id")->value(), "backfire") == 0)
+                    { handle_skill<backfire>(skill, c); }
                     if(strcmp(skill->first_attribute("id")->value(), "chaos") == 0)
                     { handle_skill<chaos>(skill, c); }
                     if(strcmp(skill->first_attribute("id")->value(), "cleanse") == 0)
@@ -301,6 +306,8 @@ void read_cards(Cards& cards)
                     { handle_skill<protect>(skill, c); }
                     if(strcmp(skill->first_attribute("id")->value(), "rally") == 0)
                     { handle_skill<rally>(skill, c); }
+                    if(strcmp(skill->first_attribute("id")->value(), "repair") == 0)
+                    { handle_skill<repair>(skill, c); }
                     if(strcmp(skill->first_attribute("id")->value(), "rush") == 0)
                     { handle_skill<rush>(skill, c); }
                     if(strcmp(skill->first_attribute("id")->value(), "shock") == 0)

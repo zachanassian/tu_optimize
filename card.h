@@ -26,6 +26,7 @@ public:
         m_fear(false),
         m_flurry(0),
         m_flying(false),
+        m_fusion(false),
         m_health(0),
         m_id(0),
         m_immobilize(false),
@@ -79,6 +80,7 @@ public:
     bool m_fear;
     unsigned m_flurry;
     bool m_flying;
+    bool m_fusion;
     unsigned m_health;
     unsigned m_id;
     bool m_immobilize;
