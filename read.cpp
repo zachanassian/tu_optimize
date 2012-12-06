@@ -201,6 +201,13 @@ unsigned read_custom_decks(Cards& cards, std::string filename, std::map<std::str
 void read_owned_cards(Cards& cards, std::map<unsigned, unsigned>& owned_cards)
 {
     std::ifstream owned_file{"ownedcards.txt"};
+
+    if(!owned_file.good())
+    {
+        std::cerr << "Warning: The file 'ownedcards.txt' does not exist. This will result in you not owning any cards.\n";
+        return;
+    }
+
     std::string owned_str{(std::istreambuf_iterator<char>(owned_file)), std::istreambuf_iterator<char>()};
     boost::tokenizer<boost::char_delimiters_separator<char> > tok{owned_str, boost::char_delimiters_separator<char>{false, "()\n", ""}};
     for(boost::tokenizer<boost::char_delimiters_separator<char> >::iterator beg=tok.begin(); beg!=tok.end();++beg)
