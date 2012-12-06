@@ -910,7 +910,6 @@ int main(int argc, char** argv)
     bool ordered = false;
     Cards cards;
     read_cards(cards);
-    read_owned_cards(cards, owned_cards);
     Decks decks;
     load_decks_xml(decks, cards);
     load_decks(decks, cards);
@@ -949,6 +948,7 @@ int main(int argc, char** argv)
         }
         else if(strcmp(argv[argIndex], "-o") == 0)
         {
+            read_owned_cards(cards, owned_cards);
             use_owned_cards = true;
         }
         else if(strcmp(argv[argIndex], "-r") == 0)
