@@ -132,6 +132,14 @@ void load_decks_xml(Decks& decks, Cards& cards)
 void parse_file(const char* filename, std::vector<char>& buffer, xml_document<>& doc)
 {
     std::ifstream cards_stream(filename, std::ios::binary);
+    if(!cards_stream.good())
+    {
+        std::cout << "Warning: The file '" << filename << "' does not exist. Proceeding without reading from this file.\n";
+        buffer.resize(1);
+        buffer[0] = 0;
+        doc.parse<0>(&buffer[0]);
+        return;
+    }
     // Get the size of the file
     cards_stream.seekg(0,std::ios::end);
     std::streampos length = cards_stream.tellg();
@@ -158,6 +166,12 @@ void read_cards(Cards& cards)
     xml_document<> doc;
     parse_file("cards.xml", buffer, doc);
     xml_node<>* root = doc.first_node();
+
+    if(!root)
+    {
+        return;
+    }
+
     bool mission_only(false);
     unsigned nb_cards(0);
     for(xml_node<>* card = root->first_node();
@@ -342,6 +356,12 @@ void read_missions(Decks& decks, Cards& cards, std::string filename)
     xml_document<> doc;
     parse_file(filename.c_str(), buffer, doc);
     xml_node<>* root = doc.first_node();
+
+    if(!root)
+    {
+        return;
+    }
+
     for(xml_node<>* mission_node = root->first_node();
         mission_node;
         mission_node = mission_node->next_sibling())
@@ -382,6 +402,12 @@ void read_raids(Decks& decks, Cards& cards, std::string filename)
     xml_document<> doc;
     parse_file(filename.c_str(), buffer, doc);
     xml_node<>* root = doc.first_node();
+
+    if(!root)
+    {
+        return;
+    }
+
     for(xml_node<>* raid_node = root->first_node();
         raid_node;
         raid_node = raid_node->next_sibling())
