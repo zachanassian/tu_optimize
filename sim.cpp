@@ -380,6 +380,8 @@ unsigned play(Field* fd)
                 {
                     CardStatus& status_split(fd->tap->assaults.add_back());
                     status_split.set(current_status.m_card);
+                    status_split.m_index = fd->tap->assaults.size() - 1;
+                    status_split.m_player = fd->tapi;
                     _DEBUG_MSG("Split assault %d (%s)\n", fd->tap->assaults.size() - 1, current_status.m_card->m_name.c_str());
                 }
                 // Evaluate skills
