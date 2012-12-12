@@ -383,6 +383,11 @@ unsigned play(Field* fd)
                     status_split.m_index = fd->tap->assaults.size() - 1;
                     status_split.m_player = fd->tapi;
                     _DEBUG_MSG("Split assault %d (%s)\n", fd->tap->assaults.size() - 1, current_status.m_card->m_name.c_str());
+                    for(auto& skill: status_split.m_card->m_skills_played)
+                    {
+                        fd->skill_queue.emplace_back(&status_split, skill);
+                        resolve_skill(fd);
+                    }
                 }
                 // Evaluate skills
                 // Special case: Gore Typhon's infuse
