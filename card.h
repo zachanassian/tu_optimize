@@ -95,7 +95,7 @@ public:
     bool m_recharge;
     bool m_refresh;
     unsigned m_regenerate;
-    unsigned m_set;
+    int m_set;
     unsigned m_siphon;
     bool m_split;
     bool m_swipe;
