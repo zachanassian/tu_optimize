@@ -111,6 +111,7 @@ std::string status_description(CardStatus* status)
     case CardType::action: desc = "Action "; break;
     case CardType::assault: desc = "A " + to_string(status->m_index) + " "; break;
     case CardType::structure: desc = "S " + to_string(status->m_index) + " "; break;
+    case CardType::num_cardtypes: assert(false); break;
     }
     desc += "[" + status->m_card->m_name + "]";
     return(desc);
@@ -211,6 +212,7 @@ struct PlayCard
         placeCard<type>();
         onPlaySkills<type>();
         blitz<type>();
+        return(true);
     }
 
     // action
@@ -348,6 +350,10 @@ unsigned play(Field* fd)
             case CardType::structure:
                 PlayCard(played_card, fd).op<CardType::structure>();
                 break;
+            case CardType::commander:
+            case CardType::num_cardtypes:
+                assert(false);
+                break;
             }
         }
         // Evaluate commander
@@ -408,6 +414,10 @@ unsigned play(Field* fd)
     // attacker wins
     if(fd->players[1]->commander.m_hp == 0) { _DEBUG_MSG("Attacker wins.\n"); return(0); }
     if(fd->turn >= turn_limit) { return(1); }
+
+    // Huh? How did we get here?
+    assert(false);
+    return 0;
 }
 //------------------------------------------------------------------------------
 // All the stuff that happens at the beginning of a turn, before a card is played
