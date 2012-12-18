@@ -333,12 +333,12 @@ public:
 
     Process(unsigned _num_threads, const Cards& cards_, const Decks& decks_, DeckIface* att_deck_, std::vector<DeckIface*> _def_decks, std::vector<double> _factors, gamemode_t _gamemode) :
         num_threads(_num_threads),
+        main_barrier(num_threads+1),
         cards(cards_),
         decks(decks_),
         att_deck(att_deck_),
         def_decks(_def_decks),
         factors(_factors),
-        main_barrier(num_threads+1),
         gamemode(_gamemode)
     {
         destroy_threads = false;
@@ -674,7 +674,10 @@ public:
 
     bool next()
     {
-        for(index = choose - 1; index >= 0; --index)
+        // The end condition's a bit odd here, but index is unsigned.
+        // The last iteration is when index = 0.
+        // After that, index = max int, which is clearly >= choose.
+        for(index = choose - 1; index < choose; --index)
         {
             if(indices[index] < indicesLimits[index])
             {
@@ -695,8 +698,8 @@ private:
     unsigned firstIndexLimit;
     std::vector<unsigned> indices;
     std::vector<unsigned> indicesLimits;
-    int index;
-    int nextIndex;
+    unsigned index;
+    unsigned nextIndex;
 };
 //------------------------------------------------------------------------------
 static unsigned total_num_combinations_test(0);
@@ -940,7 +943,7 @@ int main(int argc, char** argv)
         }
     }
     std::vector<std::tuple<unsigned, unsigned, Operation> > todo;
-    for(unsigned argIndex(3); argIndex < argc; ++argIndex)
+    for(int argIndex(3); argIndex < argc; ++argIndex)
     {
         if(strcmp(argv[argIndex], "-c") == 0)
         {
@@ -986,9 +989,6 @@ int main(int argc, char** argv)
             todo.push_back(std::make_tuple(0u, 0u, fightonce));
         }
     }
-
-    unsigned attacker_wins(0);
-    unsigned defender_wins(0);
 
     DeckIface* att_deck{nullptr};
     auto custom_deck_it = decks.custom_decks.find(att_deck_name);

@@ -380,7 +380,7 @@ void read_missions(Decks& decks, Cards& cards, std::string filename)
                 card_node;
                 card_node = card_node->next_sibling())
             {
-                unsigned card_id{atoi(card_node->value())};
+                unsigned card_id{static_cast<unsigned>(atoi(card_node->value()))};
                 // Handle the replacement art cards
                 if(cards.replace.find(card_id) != cards.replace.end())
                 {
@@ -430,7 +430,7 @@ void read_raids(Decks& decks, Cards& cards, std::string filename)
                     card_node;
                     card_node = card_node->next_sibling())
                 {
-                    unsigned card_id{atoi(card_node->value())};
+                    unsigned card_id{static_cast<unsigned>(atoi(card_node->value()))};
                     // Handle the replacement art cards
                     if(cards.replace.find(card_id) != cards.replace.end())
                     {
@@ -445,14 +445,14 @@ void read_raids(Decks& decks, Cards& cards, std::string filename)
             {
                 if(strcmp(pool_node->name(), "card_pool") == 0)
                 {
-                    unsigned num_cards_from_pool{atoi(pool_node->first_attribute("amount")->value())};
+                    unsigned num_cards_from_pool{static_cast<unsigned>(atoi(pool_node->first_attribute("amount")->value()))};
                     std::vector<const Card*> cards_from_pool;
 
                     for(xml_node<>* card_node = pool_node->first_node();
                         card_node;
                         card_node = card_node->next_sibling())
                     {
-                        unsigned card_id{atoi(card_node->value())};
+                        unsigned card_id{static_cast<unsigned>(atoi(card_node->value()))};
                         // Special case Arctis Vanguard id 0 because of stray ` character.
                         // Don't continue on other raids because I want to be notified of other errors.
                         if(card_id == 0 && id == 1)
