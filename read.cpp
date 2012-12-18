@@ -196,6 +196,7 @@ unsigned read_custom_decks(Cards& cards, std::string filename, std::map<std::str
         e.what();
         return(3);
     }
+    return(0);
 }
 
 void read_owned_cards(Cards& cards, std::map<unsigned, unsigned>& owned_cards)
@@ -215,7 +216,7 @@ void read_owned_cards(Cards& cards, std::map<unsigned, unsigned>& owned_cards)
         std::string name{*beg};
         ++beg;
         assert(beg != tok.end());
-        unsigned num{atoi((*beg).c_str())};
+        unsigned num{static_cast<unsigned>(atoi((*beg).c_str()))};
         auto card_itr = cards.player_cards_by_name.find(name);
         if(card_itr == cards.player_cards_by_name.end())
         {
