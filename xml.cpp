@@ -453,6 +453,12 @@ void read_raids(Decks& decks, Cards& cards, std::string filename)
                         card_node = card_node->next_sibling())
                     {
                         unsigned card_id{atoi(card_node->value())};
+                        // Special case Arctis Vanguard id 0 because of stray ` character.
+                        // Don't continue on other raids because I want to be notified of other errors.
+                        if(card_id == 0 && id == 1)
+                        {
+                            continue;
+                        }
                         // Handle the replacement art cards
                         if(cards.replace.find(card_id) != cards.replace.end())
                         {
