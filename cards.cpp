@@ -67,6 +67,10 @@ void Cards::organize()
                 player_actions.push_back(card);
                 break;
             }
+            case CardType::num_cardtypes: {
+                throw card->m_type;
+                break;
+            }
             }
             if(player_cards_by_name.find(card->m_name) != player_cards_by_name.end())
             {
