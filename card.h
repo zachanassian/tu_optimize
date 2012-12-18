@@ -49,8 +49,8 @@ public:
         m_unique(false),
         m_valor(0),
         m_wall(false),
-        m_type(CardType::assault),
-        m_skills()
+        m_skills(),
+        m_type(CardType::assault)
     {
     }
 
