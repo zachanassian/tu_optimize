@@ -78,7 +78,11 @@ bool handle_global_skill(xml_node<>* node, Card* card)
     bool attacked(node->first_attribute("attacked"));
     if(node->first_attribute("all"))
     {
-        if(played) {card->add_played_skill(ActiveSkill(GlobalSkill), skill_value(node), skill_faction(node)); }
+        if(played)
+        {
+            card->add_played_skill(ActiveSkill(GlobalSkill), skill_value(node), skill_faction(node));
+            if(died) {card->add_died_skill(ActiveSkill(GlobalSkill), skill_value(node), skill_faction(node)); }
+        }
         else if(died) {card->add_died_skill(ActiveSkill(GlobalSkill), skill_value(node), skill_faction(node)); }
         else if(attacked) {card->add_attacked_skill(ActiveSkill(GlobalSkill), skill_value(node), skill_faction(node)); }
         else {card->add_skill(ActiveSkill(GlobalSkill), skill_value(node), skill_faction(node)); }
@@ -102,7 +106,11 @@ void handle_skill(xml_node<>* node, Card* card)
     if(handle_global_skill<GlobalSkill<Skill>::type>(node, card)) {}
     else
     {
-        if(played) {card->add_played_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node)); }
+        if(played)
+        {
+            card->add_played_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node));
+            if(died) {card->add_died_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node)); }
+        }
         else if(died) {card->add_died_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node)); }
         else if(attacked) {card->add_attacked_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node)); }
         else {card->add_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node)); }
