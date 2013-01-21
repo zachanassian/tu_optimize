@@ -14,6 +14,11 @@ std::string skill_names[num_skills] =
  "trigger_regen",
  "weaken", "weaken_all"};
 
+std::set<ActiveSkill> helpful_skills{
+    augment, augment_all, cleanse, cleanse_all, heal, heal_all, protect, protect_all, rally, rally_all,
+    /*repair, repair_all, rush, */supply,
+};
+
 std::string cardtype_names[CardType::num_cardtypes]{"action", "assault", "commander", "structure"};
 
 std::string effect_names[Effect::num_effects] = {

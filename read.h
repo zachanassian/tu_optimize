@@ -9,6 +9,7 @@ class Cards;
 class Decks;
 class DeckIface;
 
+DeckIface* hash_to_deck(const char* hash, const Cards& cards);
 void load_decks(Decks& decks, Cards& cards);
 std::vector<std::pair<std::string, double> > parse_deck_list(std::string list_string);
 unsigned read_custom_decks(Cards& cards, std::string filename, std::map<std::string, DeckIface*>& custom_decks);

@@ -76,6 +76,7 @@ bool handle_global_skill(xml_node<>* node, Card* card)
     bool played(node->first_attribute("played"));
     bool died(node->first_attribute("died"));
     bool attacked(node->first_attribute("attacked"));
+    bool kill(node->first_attribute("kill"));
     if(node->first_attribute("all"))
     {
         if(played)
@@ -85,6 +86,7 @@ bool handle_global_skill(xml_node<>* node, Card* card)
         }
         else if(died) {card->add_died_skill(ActiveSkill(GlobalSkill), skill_value(node), skill_faction(node)); }
         else if(attacked) {card->add_attacked_skill(ActiveSkill(GlobalSkill), skill_value(node), skill_faction(node)); }
+        else if(kill) {card->add_kill_skill(ActiveSkill(GlobalSkill), skill_value(node), skill_faction(node)); }
         else {card->add_skill(ActiveSkill(GlobalSkill), skill_value(node), skill_faction(node)); }
         return(true);
     }
@@ -103,6 +105,7 @@ void handle_skill(xml_node<>* node, Card* card)
     bool played(node->first_attribute("played"));
     bool died(node->first_attribute("died"));
     bool attacked(node->first_attribute("attacked"));
+    bool kill(node->first_attribute("kill"));
     if(handle_global_skill<GlobalSkill<Skill>::type>(node, card)) {}
     else
     {
@@ -113,6 +116,7 @@ void handle_skill(xml_node<>* node, Card* card)
         }
         else if(died) {card->add_died_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node)); }
         else if(attacked) {card->add_attacked_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node)); }
+        else if(kill) {card->add_kill_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node)); }
         else {card->add_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node)); }
     }
 }
@@ -270,6 +274,8 @@ void read_cards(Cards& cards)
                         if(attacked) { c->m_disease_oa = true; }
                         else {c->m_disease = true; }
                     }
+                    if(strcmp(skill->first_attribute("id")->value(), "emulate") == 0)
+                    { c->m_emulate = true; }
                     if(strcmp(skill->first_attribute("id")->value(), "evade") == 0)
                     { c->m_evade = true; }
                     if(strcmp(skill->first_attribute("id")->value(), "fear") == 0)

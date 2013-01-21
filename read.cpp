@@ -4,11 +4,62 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/optional.hpp>
 #include <boost/tokenizer.hpp>
+#include <cstring>
+#include <vector>
 #include <fstream>
 
 #include "card.h"
 #include "cards.h"
 #include "deck.h"
+
+namespace {
+const char* base64_chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "abcdefghijklmnopqrstuvwxyz"
+    "0123456789+/";
+
+// Converts `pairs' pairs of cards in `hash' to a deck.
+// Stores resulting card IDs in `ids'.
+void hash_to_ids(const char* hash, size_t pairs,
+                 std::vector<unsigned int>& ids)
+{
+    unsigned int last_id = 0;
+
+    for (size_t i = 0; i < pairs; ++i)
+    {
+        const char* p0 = strchr(base64_chars, hash[2 * i]);
+        const char* p1 = strchr(base64_chars, hash[2 * i + 1]);
+        if (!p0 || !p1)
+        {
+            throw std::runtime_error(hash);
+        }
+        size_t index0 = p0 - base64_chars;
+        size_t index1 = p1 - base64_chars;
+        unsigned int id = (index0 << 6) + index1;
+
+        if (id < 4000)
+        {
+            ids.push_back(id);
+            last_id = id;
+        }
+        else for (unsigned int j = 0; j < id - 4001; ++j)
+        {
+            ids.push_back(last_id);
+        }
+    }
+}
+}
+
+// Constructs and returns a deck from `hash'.
+// The caller is responsible for freeing the deck.
+DeckIface* hash_to_deck(const char* hash, const Cards& cards)
+{
+    std::vector<unsigned int> ids;
+    size_t pairs = strlen(hash) / 2;
+    hash_to_ids(hash, pairs, ids);
+
+    return new DeckRandom(cards, ids);
+}
 
 void load_decks(Decks& decks, Cards& cards)
 {

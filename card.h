@@ -21,6 +21,7 @@ public:
         m_delay(0),
         m_disease(false),
         m_disease_oa(false),
+        m_emulate(false),
         m_evade(false),
         m_faction(imperial),
         m_fear(false),
@@ -62,6 +63,8 @@ public:
     { m_skills_died.push_back(std::make_tuple(v1, v2, v3)); }
     void add_attacked_skill(ActiveSkill v1, unsigned v2, Faction v3)
     { m_skills_attacked.push_back(std::make_tuple(v1, v2, v3)); }
+    void add_kill_skill(ActiveSkill v1, unsigned v2, Faction v3)
+    { m_skills_kill.push_back(std::make_tuple(v1, v2, v3)); }
 
     unsigned m_antiair;
     unsigned m_armored;
@@ -75,6 +78,7 @@ public:
     unsigned m_delay;
     bool m_disease;
     bool m_disease_oa;
+    bool m_emulate;
     bool m_evade;
     Faction m_faction;
     bool m_fear;
@@ -107,6 +111,7 @@ public:
     std::vector<SkillSpec> m_skills_played;
     std::vector<SkillSpec> m_skills_died;
     std::vector<SkillSpec> m_skills_attacked;
+    std::vector<SkillSpec> m_skills_kill;
     CardType::CardType m_type;
 };
 

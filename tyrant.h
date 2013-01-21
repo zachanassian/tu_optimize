@@ -2,6 +2,7 @@
 #define TYRANT_H_INCLUDED
 
 #include <string>
+#include <set>
 #include <tuple>
 
 enum Faction
@@ -25,6 +26,7 @@ enum ActiveSkill
  trigger_regen, // not actually a skill; handles regeneration after strike/siege
  weaken, weaken_all, num_skills};
 extern std::string skill_names[num_skills];
+extern std::set<ActiveSkill> helpful_skills;
 
 namespace CardType {
 enum CardType {

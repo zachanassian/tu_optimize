@@ -103,7 +103,6 @@ struct CardStatus
     unsigned m_hp;
     bool m_immobilized;
     bool m_infused;
-    std::vector<SkillSpec> infused_skills;
     bool m_jammed;
     unsigned m_poisoned;
     unsigned m_protected;
@@ -175,6 +174,8 @@ public:
     // Meaningless in playcard_phase,
     // otherwise is the index of the current card in players->structures or players->assaults
     unsigned current_ci;
+    unsigned last_decision_turn;
+    unsigned points_since_last_decision;
 
     unsigned fusion_count;
 

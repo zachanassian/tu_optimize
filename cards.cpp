@@ -82,4 +82,13 @@ void Cards::organize()
             }
         }
     }
+    for(const auto& r: replace)
+    {
+        auto replacement = cards_by_id.find(r.second);
+        if(replacement == cards_by_id.end())
+        {
+            throw std::runtime_error("Replacement " + to_string(r.second) + " for " + to_string(r.first) + " doesn't exist.");
+        }
+        cards_by_id[r.first] = replacement->second;
+    }
 }

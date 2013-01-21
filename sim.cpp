@@ -40,6 +40,7 @@ bool debug_line(false);
 #define _DEBUG_MSG(format, args...)
 #endif
 //------------------------------------------------------------------------------
+
 CardStatus::CardStatus(const Card* card) :
     m_card(card),
     m_index(0),
@@ -64,6 +65,7 @@ CardStatus::CardStatus(const Card* card) :
     m_temporary_split(false)
 {
 }
+
 //------------------------------------------------------------------------------
 inline void CardStatus::set(const Card* card)
 {
@@ -86,13 +88,13 @@ inline void CardStatus::set(const Card& card)
     m_frozen = false;
     m_hp = card.m_health;
     m_immobilized = false;
-    infused_skills.clear();
     m_infused = false;
     m_jammed = false;
     m_poisoned = 0;
     m_protected = 0;
     m_rallied = 0;
     m_weakened = 0;
+    m_temporary_split = false;
 }
 //------------------------------------------------------------------------------
 std::string skill_description(const SkillSpec& s)
@@ -104,7 +106,10 @@ std::string skill_description(const SkillSpec& s)
 //------------------------------------------------------------------------------
 std::string status_description(CardStatus* status)
 {
-    assert(status);
+    if (!status)  // Unknown Action card?
+    {
+        return("Action");
+    }
     std::string desc;
     switch(status->m_card->m_type)
     {
@@ -165,11 +170,12 @@ void resolve_skill(Field* fd)
 void attack_phase(Field* fd);
 SkillSpec augmented_skill(CardStatus* status, const SkillSpec& s)
 {
-    SkillSpec augmented_s = s;
-    if(std::get<0>(s) != augment && std::get<0>(s) != augment_all && std::get<0>(s) != summon)
+    if (std::get<0>(s) == augment || std::get<0>(s) == augment_all || std::get<0>(s) == summon || std::get<1>(s) == 0)
     {
-        std::get<1>(augmented_s) += status->m_augmented;
+        return s;
     }
+    SkillSpec augmented_s = s;
+    std::get<1>(augmented_s) += status->m_augmented;
     return(augmented_s);
 }
 SkillSpec fusioned_skill(const SkillSpec& s)
@@ -178,17 +184,28 @@ SkillSpec fusioned_skill(const SkillSpec& s)
     std::get<1>(fusioned_s) *= 2;
     return(fusioned_s);
 }
+SkillSpec infused_skill(const SkillSpec& s)
+{
+    if (std::get<2>(s) == allfactions || std::get<2>(s) == bloodthirsty || helpful_skills.find(std::get<0>(s)) == helpful_skills.end())
+    {
+        return s;
+    }
+    SkillSpec infused_s = s;
+    std::get<2>(infused_s) = bloodthirsty;
+    return(infused_s);
+}
 void evaluate_skills(Field* fd, CardStatus* status, const std::vector<SkillSpec>& skills)
 {
     assert(status);
     assert(fd->skill_queue.size() == 0);
     for(auto& skill: skills)
     {
-        // Assumptions for fusion: Only active player can use it, and it is incompatible with augment.
-        // This is fine for now since it only exists on the three Blightbloom structures (can't augment structures)
         _DEBUG_MSG("Evaluating %s skill %s\n", status_description(status).c_str(), skill_description(skill).c_str());
         bool fusion_active = status->m_card->m_fusion && status->m_player == fd->tapi && fd->fusion_count >= 3;
-        fd->skill_queue.emplace_back(status, fusion_active ? fusioned_skill(skill) : (status->m_augmented == 0 ? skill : augmented_skill(status, skill)));
+        auto& augmented_s = status->m_augmented > 0 ? augmented_skill(status, skill) : skill;
+        auto& fusioned_s = fusion_active ? fusioned_skill(augmented_s) : augmented_s;
+        auto& infused_s = status->m_infused ? infused_skill(fusioned_s) : fusioned_s;
+        fd->skill_queue.emplace_back(status, infused_s);
         resolve_skill(fd);
     }
 }
@@ -211,6 +228,7 @@ struct PlayCard
     {
         setStorage<type>();
         placeCard<type>();
+        placeDebugMsg<type>();
         onPlaySkills<type>();
         blitz<type>();
         fieldEffects<type>();
@@ -231,18 +249,25 @@ struct PlayCard
         status->set(card);
         status->m_index = storage->size() - 1;
         status->m_player = fd->tapi;
+		status->m_temporary_split = false;
         if(fd->turn == 1 && fd->gamemode == tournament && status->m_delay > 0)
         {
             ++status->m_delay;
         }
-        placeDebugMsg<type>();
     }
 
-    // assault + structure
+    // all
     template <enum CardType::CardType type>
     void placeDebugMsg()
     {
-        _DEBUG_MSG("Placed [%s] as %s %d\n", card->m_name.c_str(), cardtype_names[type].c_str(), storage->size() - 1);
+        if (storage)
+        {
+            _DEBUG_MSG("Placed [%s] as %s %d\n", card->m_name.c_str(), cardtype_names[type].c_str(), storage->size() - 1);
+        }
+        else
+        {
+            _DEBUG_MSG("Placed [%s] as %s\n", card->m_name.c_str(), cardtype_names[type].c_str());
+        }
     }
 
     // all except assault: noop
@@ -333,7 +358,7 @@ void PlayCard::onPlaySkills<CardType::action>()
 //------------------------------------------------------------------------------
 void turn_start_phase(Field* fd);
 void prepend_on_death(Field* fd);
-// return value : 0 -> attacker wins, 1 -> defender wins
+// return value : (raid points) -> attacker wins, 0 -> defender wins
 unsigned play(Field* fd)
 {
     fd->players[0]->commander.m_player = 0;
@@ -344,12 +369,24 @@ unsigned play(Field* fd)
     fd->tip = fd->players[fd->tipi];
     fd->fusion_count = 0;
     fd->end = false;
+
+    // ANP: Last decision point is second-to-last card played.
+    fd->points_since_last_decision = 0;
+    unsigned p0_size = fd->players[0]->deck->cards.size();
+    fd->last_decision_turn = p0_size * 2 - (surge ? 2 : 3);
+
     // Shuffle deck
-    while(fd->turn < turn_limit && !fd->end)
+    while(fd->turn <= turn_limit && !fd->end)
     {
         fd->current_phase = Field::playcard_phase;
         // Initialize stuff, remove dead cards
         _DEBUG_MSG("##### TURN %u #####\n", fd->turn);
+        // ANP: If it's the player's turn and he's making a decision,
+        // reset his points to 0.
+        if(fd->tapi == 0 && fd->turn <= fd->last_decision_turn)
+        {
+            fd->points_since_last_decision = 0;
+        }
         turn_start_phase(fd);
         // Special case: refresh on commander
         if(fd->tip->commander.m_card->m_refresh && fd->tip->commander.m_hp > 0)
@@ -439,8 +476,7 @@ unsigned play(Field* fd)
                     // TODO: Determine whether we need to check for Blitz for the newly-Split unit
                 }
                 // Evaluate skills
-                // Special case: Gore Typhon's infuse
-                evaluate_skills(fd, &current_status, current_status.m_infused ? current_status.infused_skills : current_status.m_card->m_skills);
+                evaluate_skills(fd, &current_status, current_status.m_card->m_skills);
                 // Attack
                 if(!current_status.m_immobilized && current_status.m_hp > 0)
                 {
@@ -453,10 +489,30 @@ unsigned play(Field* fd)
         ++fd->turn;
     }
     // defender wins
-    if(fd->players[0]->commander.m_hp == 0) { _DEBUG_MSG("Defender wins.\n"); return(1); }
+    if(fd->players[0]->commander.m_hp == 0)
+    {
+        _DEBUG_MSG("Defender wins.\n");
+        return(0);
+    }
     // attacker wins
-    if(fd->players[1]->commander.m_hp == 0) { _DEBUG_MSG("Attacker wins.\n"); return(0); }
-    if(fd->turn >= turn_limit) { return(1); }
+    if(fd->players[1]->commander.m_hp == 0)
+    {
+        // ANP: Speedy if last_decision + 10 > turn.
+        // fd->turn has advanced once past the actual turn the battle has ended.
+        // So we were speedy if last_decision + 10 > (fd->turn - 1),
+        // or, equivalently, if last_decision + 10 >= fd->turn.
+        bool speedy = fd->last_decision_turn + 10 >= fd->turn;
+        if(fd->points_since_last_decision > 10)
+        {
+            fd->points_since_last_decision = 10;
+        }
+        _DEBUG_MSG("Attacker wins.\n");
+        return(10 + (speedy ? 5 : 0) + fd->points_since_last_decision);
+    }
+    if(fd->turn > turn_limit)
+    {
+        return(0);
+    }
 
     // Huh? How did we get here?
     assert(false);
@@ -723,6 +779,12 @@ void remove_commander_hp(Field* fd, CardStatus& status, unsigned dmg)
     assert(status.m_hp > 0);
     assert(status.m_card->m_type == CardType::commander);
     status.m_hp = safe_minus(status.m_hp, dmg);
+    // ANP: If commander is enemy's, player gets points equal to damage.
+    // Points are awarded for overkill, so it is correct to simply add dmg.
+    if(status.m_player == 1)
+    {
+        fd->points_since_last_decision += dmg;
+    }
     if(status.m_hp == 0) { fd->end = true; }
 }
 //------------------------------------------------------------------------------
@@ -773,6 +835,7 @@ struct PerformAttack
                     attack_damage<cardtype>();
                     siphon_poison_disease<cardtype>();
                 }
+                on_kill<cardtype>();
                 oa<cardtype>();
                 if(att_dmg > 0)
                 {
@@ -817,6 +880,9 @@ struct PerformAttack
 
     template<enum CardType::CardType>
     void siphon_poison_disease() {}
+
+    template<enum CardType::CardType>
+    void on_kill() {}
 
     template<enum CardType::CardType cardtype>
     void oa()
@@ -898,6 +964,19 @@ void PerformAttack::siphon_poison_disease<CardType::assault>()
     if(att_status->m_card->m_disease)
     {
         def_status->m_diseased = true;
+    }
+}
+
+template<>
+void PerformAttack::on_kill<CardType::assault>()
+{
+    if(killed_by_attack)
+    {
+        for(auto& on_kill_skill: att_status->m_card->m_skills_kill)
+        {
+            fd->skill_queue.emplace_back(att_status, on_kill_skill);
+            resolve_skill(fd);
+        }
     }
 }
 
@@ -1171,11 +1250,6 @@ inline void perform_skill<infuse>(Field* fd, CardStatus* c, unsigned v)
 {
     c->m_faction = bloodthirsty;
     c->m_infused = true;
-    c->infused_skills.clear();
-    for(auto& skill: c->m_card->m_skills)
-    {
-        c->infused_skills.emplace_back(std::get<0>(skill), std::get<1>(skill), std::get<2>(skill) == allfactions ? allfactions : bloodthirsty);
-    }
 }
 
 template<>
@@ -1547,6 +1621,18 @@ void perform_targetted_allied_fast(Field* fd, CardStatus* src_status, const Skil
                 perform_skill<skill_id>(fd, src_status, std::get<1>(s));
             }
         }
+
+        // check emulate
+        Hand* opp = fd->players[opponent(c->m_player)];
+        if(opp->assaults.size() > c->m_index)
+        {
+            CardStatus& emulator = opp->assaults[c->m_index];
+            if(emulator.m_card->m_emulate && skill_predicate<skill_id>(&emulator))
+            {
+                _DEBUG_MSG("Emulate (%s %u) on (%s)\n", skill_names[skill_id].c_str(), std::get<1>(s), emulator.m_card->m_name.c_str());
+                perform_skill<skill_id>(fd, &emulator, std::get<1>(s));
+            }
+        }
     }
 }
 
@@ -1561,7 +1647,7 @@ void perform_global_hostile_fast(Field* fd, CardStatus* src_status, const SkillS
         CardStatus* c(fd->selection_array[s_index]);
         if(!c->m_card->m_evade || (src_status && src_status->m_chaos) || fd->flip())
         {
-            _DEBUG_MSG("%s (%u) on (%s)\n", skill_names[skill_id].c_str(), std::get<1>(s), c->m_card->m_name.c_str());
+            _DEBUG_MSG("%s (%u) from %s on %s.\n", skill_names[skill_id].c_str(), std::get<1>(s), status_description(src_status).c_str(), status_description(c).c_str());
             perform_skill<skill_id>(fd, c, std::get<1>(s));
             // payback
             if(c->m_card->m_payback &&
@@ -1608,6 +1694,18 @@ void perform_global_allied_fast(Field* fd, CardStatus* src_status, const SkillSp
             {
                 _DEBUG_MSG("Tribute (%s %u) on (%s)\n", skill_names[skill_id].c_str(), std::get<1>(s), src_status->m_card->m_name.c_str());
                 perform_skill<skill_id>(fd, src_status, std::get<1>(s));
+            }
+        }
+
+        // check emulate
+        Hand* opp = fd->players[opponent(c->m_player)];
+        if(opp->assaults.size() > c->m_index)
+        {
+            CardStatus& emulator = opp->assaults[c->m_index];
+            if(emulator.m_card->m_emulate && skill_predicate<skill_id>(&emulator))
+            {
+                _DEBUG_MSG("Emulate (%s %u) on (%s)\n", skill_names[skill_id].c_str(), std::get<1>(s), emulator.m_card->m_name.c_str());
+                perform_skill<skill_id>(fd, &emulator, std::get<1>(s));
             }
         }
     }
