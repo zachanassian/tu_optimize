@@ -218,7 +218,7 @@ bool suitable_commander(const Card* card)
             if(owned_iter->second <= 0) { return(false); }
         }
     }
-    if(top_commanders.find(card->m_id) == top_commanders.end()) { return(false); }
+//    if(top_commanders.find(card->m_id) == top_commanders.end()) { return(false); }  // XXX
     return(true);
 }
 //------------------------------------------------------------------------------
@@ -330,7 +330,8 @@ class Process;
 void thread_evaluate(boost::barrier& main_barrier,
                      boost::mutex& shared_mutex,
                      SimulationData& sim,
-                     const Process& p);
+                     const Process& p,
+                     unsigned thread_id);
 //------------------------------------------------------------------------------
 class Process
 {
@@ -364,7 +365,7 @@ public:
         for(unsigned i(0); i < num_threads; ++i)
         {
             threads_data.push_back(new SimulationData(seed + i, cards, decks, def_decks.size(), factors, gamemode, effect));
-            threads.push_back(new boost::thread(thread_evaluate, std::ref(main_barrier), std::ref(shared_mutex), std::ref(*threads_data.back()), std::ref(*this)));
+            threads.push_back(new boost::thread(thread_evaluate, std::ref(main_barrier), std::ref(shared_mutex), std::ref(*threads_data.back()), std::ref(*this), i));
         }
     }
 
@@ -408,7 +409,8 @@ public:
 void thread_evaluate(boost::barrier& main_barrier,
                      boost::mutex& shared_mutex,
                      SimulationData& sim,
-                     const Process& p)
+                     const Process& p,
+                     unsigned thread_id)
 {
     bool use_anp_local{use_anp};
     while(true)
@@ -445,7 +447,7 @@ void thread_evaluate(boost::barrier& main_barrier,
                 ++thread_total; //!
                 unsigned thread_total_local{thread_total}; //!
                 shared_mutex.unlock(); //>>>>
-                if(thread_compare && thread_total_local >= 1 && thread_total_local % 100 == 0)
+                if(thread_compare && thread_id == 0 && thread_total_local > 1)
                 {
                     unsigned score_accum = 0;
                     // Multiple defense decks case: scaling by factors and approximation of a "discrete" number of events.
@@ -463,9 +465,19 @@ void thread_evaluate(boost::barrier& main_barrier,
                     {
                         score_accum = thread_score_local[0];
                     }
-                    // TODO: Don't know what we want to do with this for ANP
-                    if(!use_anp && boost::math::binomial_distribution<>::find_upper_bound_on_p(thread_total_local, score_accum, 0.01) < thread_prev_score)
+                    bool compare_stop(false);
+                    if(use_anp_local)
                     {
+                        // TODO: Fix this solution for ANP
+                        // Get a loose, rather than no, upper bound.
+                        static const double best_possible = 25;
+                        compare_stop = (boost::math::binomial_distribution<>::find_upper_bound_on_p(thread_total_local, score_accum / best_possible, 0.01) * best_possible < thread_prev_score);
+                    }
+                    else
+                    {
+                        compare_stop = (boost::math::binomial_distribution<>::find_upper_bound_on_p(thread_total_local, score_accum, 0.01) < thread_prev_score);
+                    }
+                    if(compare_stop) {
                         shared_mutex.lock(); //<<<<
                         //std::cout << thread_total_local << "\n";
                         thread_compare_stop = true; //!
