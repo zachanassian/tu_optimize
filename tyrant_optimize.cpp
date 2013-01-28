@@ -57,6 +57,15 @@ void print_deck(DeckIface& deck)
         std::cout << "  " << card->m_name << "\n" << std::flush;
     }
 }
+void print_deck_inline(const Card *commander, std::vector<const Card*> cards)
+{
+    std::cout << commander->m_name;
+    for(const Card* card: cards)
+    {
+        std::cout << ", " << card->m_name;
+    }
+    std::cout << "\n";
+}
 //------------------------------------------------------------------------------
 DeckIface* find_deck(const Decks& decks, std::string name)
 {
@@ -512,79 +521,122 @@ void hill_climbing(unsigned num_iterations, DeckIface* d1, Process& proc)
     double current_score = compute_score(results, proc.factors);
     double best_score = current_score;
     // Non-commander cards
-    auto non_commander_cards = boost::join(boost::join(proc.cards.player_assaults, proc.cards.player_structures), proc.cards.player_actions);
+    auto non_commander_cards = boost::join(boost::join(boost::join(std::initializer_list<Card *>{NULL,}, proc.cards.player_assaults), proc.cards.player_structures), proc.cards.player_actions);
     const Card* best_commander = d1->commander;
     std::vector<const Card*> best_cards = d1->cards;
     bool deck_has_been_improved = true;
     bool eval_commander = true;
     double best_possible = use_anp ? 25 : 1;
-    while(deck_has_been_improved && best_score < best_possible)
+    for(unsigned slot_i(0), sentry_slot(0); (deck_has_been_improved || slot_i != sentry_slot) && best_score < best_possible; ++ slot_i)
     {
-        deck_has_been_improved = false;
-        for(unsigned slot_i(0); slot_i < d1->cards.size(); ++slot_i)
+        slot_i %= std::min(10u, static_cast<unsigned>(d1->cards.size() + 1));
+        if(deck_has_been_improved)
         {
-            if(eval_commander && !keep_commander)
-            {
-                for(const Card* commander_candidate: proc.cards.player_commanders)
-                {
-                    // Various checks to check if the card is accepted
-                    assert(commander_candidate->m_type == CardType::commander);
-                    if(commander_candidate == best_commander) { continue; }
-                    if(!suitable_commander(commander_candidate)) { continue; }
-                    // Place it in the deck
-                    d1->commander = commander_candidate;
-                    // Evaluate new deck
-                    auto compare_results = proc.compare(num_iterations, best_score);
-                    current_score = compute_score(compare_results, proc.factors);
-                    // Is it better ?
-                    if(current_score > best_score)
-                    {
-                        // Then update best score/commander, print stuff
-                        best_score = current_score;
-                        best_commander = commander_candidate;
-                        deck_has_been_improved = true;
-                        std::cout << "Deck improved: commander -> " << commander_candidate->m_name << ": ";
-                        print_score_info(compare_results, proc.factors);
-                    }
-                }
-                // Now that all commanders are evaluated, take the best one
-                d1->commander = best_commander;
-                eval_commander = false;
-            }
-            for(const Card* card_candidate: non_commander_cards)
+            sentry_slot = slot_i;
+            deck_has_been_improved = false;
+        }
+        if(eval_commander && !keep_commander)
+        {
+            for(const Card* commander_candidate: proc.cards.player_commanders)
             {
                 // Various checks to check if the card is accepted
-                assert(card_candidate->m_type != CardType::commander);
-                if(card_candidate == best_cards[slot_i]) { continue; }
-                if(!suitable_non_commander(*d1, slot_i, card_candidate)) { continue; }
+                assert(commander_candidate->m_type == CardType::commander);
+                if(commander_candidate == best_commander) { continue; }
+                if(!suitable_commander(commander_candidate)) { continue; }
                 // Place it in the deck
-                d1->cards[slot_i] = card_candidate;
+                d1->commander = commander_candidate;
                 // Evaluate new deck
                 auto compare_results = proc.compare(num_iterations, best_score);
                 current_score = compute_score(compare_results, proc.factors);
                 // Is it better ?
                 if(current_score > best_score)
                 {
-                    // Then update best score/slot, print stuff
+                    // Then update best score/commander, print stuff
                     best_score = current_score;
-                    best_cards[slot_i] = card_candidate;
-                    eval_commander = true;
+                    best_commander = commander_candidate;
                     deck_has_been_improved = true;
-                    std::cout << "Deck improved: slot " << slot_i << " -> " << card_candidate->m_name << ": ";
+                    std::cout << "Deck improved: commander -> " << commander_candidate->m_name << ": ";
                     print_score_info(compare_results, proc.factors);
                 }
             }
-            // Now that all cards are evaluated, take the best one
+            // Now that all commanders are evaluated, take the best one
+            d1->commander = best_commander;
+            eval_commander = false;
+        }
+        for(const Card* card_candidate: non_commander_cards)
+        {
+            if(card_candidate)
+            {
+                // Various checks to check if the card is accepted
+                assert(card_candidate->m_type != CardType::commander);
+                if(slot_i < best_cards.size() && card_candidate == best_cards[slot_i]) { continue; }
+                if(!suitable_non_commander(*d1, slot_i, card_candidate)) { continue; }
+                // Place it in the deck
+                if(slot_i == d1->cards.size())
+                {
+                    d1->cards.emplace_back(card_candidate);
+                }
+                else
+                {
+                    d1->cards[slot_i] = card_candidate;
+                }
+            }
+            else
+            {
+                if(slot_i == best_cards.size()) { continue; }
+                // Remove it from the deck
+                d1->cards.erase(d1->cards.begin() + slot_i);
+            }
+            // Evaluate new deck
+            auto compare_results = proc.compare(num_iterations, best_score);
+            current_score = compute_score(compare_results, proc.factors);
+            // Is it better ?
+            if(current_score > best_score)
+            {
+                // Then update best score/slot, print stuff
+                best_score = current_score;
+                if(slot_i == best_cards.size())
+                {
+                    best_cards.emplace_back(card_candidate);
+                }
+                else if(!card_candidate)
+                {
+                    best_cards.erase(best_cards.begin() + slot_i);
+                }
+                else
+                {
+                    best_cards[slot_i] = card_candidate;
+                }
+                eval_commander = true;
+                deck_has_been_improved = true;
+                std::cout << "Deck improved: slot " << slot_i << " -> " << (card_candidate ? card_candidate->m_name : "-void-") << ": ";
+                print_score_info(compare_results, proc.factors);
+            }
+            if(d1->cards.size() < best_cards.size())
+            {
+                d1->cards.emplace(d1->cards.begin() + slot_i, best_cards[slot_i]);
+            }
+            if(best_score == best_possible) { break; }
+        }
+        // Now that all cards are evaluated, take the best one
+        if(d1->cards.size() == best_cards.size())
+        {
             d1->cards[slot_i] = best_cards[slot_i];
         }
+        else //if(d1->cards.size() > best_cards.size())
+        {
+            d1->cards.pop_back();
+        }
     }
-    std::cout << "Best deck: " << best_score * 100.0 << "%\n";
-    std::cout << best_commander->m_name;
-    for(const Card* card: best_cards)
+    if(use_anp)
     {
-        std::cout << ", " << card->m_name;
+        std::cout << "Best deck: " << best_score << "\n";
     }
-    std::cout << "\n";
+    else
+    {
+        std::cout << "Best deck: " << best_score * 100.0 << "%\n";
+    }
+    print_deck_inline(best_commander, best_cards);
 }
 //------------------------------------------------------------------------------
 void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& proc)
@@ -594,95 +646,109 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
     double current_score = compute_score(results, proc.factors);
     double best_score = current_score;
     // Non-commander cards
-    auto non_commander_cards = boost::join(boost::join(proc.cards.player_assaults, proc.cards.player_structures), proc.cards.player_actions);
+    auto non_commander_cards = boost::join(boost::join(boost::join(std::initializer_list<Card *>{NULL,}, proc.cards.player_assaults), proc.cards.player_structures), proc.cards.player_actions);
     const Card* best_commander = d1->commander;
     std::vector<const Card*> best_cards = d1->cards;
     bool deck_has_been_improved = true;
     bool eval_commander = true;
     double best_possible = use_anp ? 25 : 1;
-    while(deck_has_been_improved && best_score < best_possible)
+    for(unsigned from_slot(0), sentry_slot(0); (deck_has_been_improved || from_slot != sentry_slot) && best_score < best_possible; ++ from_slot)
     {
-        deck_has_been_improved = false;
-        std::set<unsigned> remaining_cards;
-        for(unsigned i = 0; i < best_cards.size(); ++i)
+        from_slot %= std::min(10u, static_cast<unsigned>(d1->cards.size() + 1));
+        if(deck_has_been_improved)
         {
-            remaining_cards.insert(i);
+            sentry_slot = from_slot;
+            deck_has_been_improved = false;
         }
-        while(!remaining_cards.empty())
+        if(eval_commander && !keep_commander)
         {
-            unsigned current_slot(*remaining_cards.begin());
-            remaining_cards.erase(remaining_cards.begin());
-            if(eval_commander && !keep_commander)
-            {
-                for(const Card* commander_candidate: proc.cards.player_commanders)
-                {
-                    if(best_score == best_possible) { break; }
-                    // Various checks to check if the card is accepted
-                    assert(commander_candidate->m_type == CardType::commander);
-                    if(commander_candidate == best_commander) { continue; }
-                    if(!suitable_commander(commander_candidate)) { continue; }
-                    // Place it in the deck
-                    d1->commander = commander_candidate;
-                    // Evaluate new deck
-                    auto compare_results = proc.compare(num_iterations, best_score);
-                    current_score = compute_score(compare_results, proc.factors);
-                    // Is it better ?
-                    if(current_score > best_score)
-                    {
-                        // Then update best score/commander, print stuff
-                        best_score = current_score;
-                        best_commander = commander_candidate;
-                        deck_has_been_improved = true;
-                        std::cout << "Deck improved: commander -> " << commander_candidate->m_name << ": ";
-                        print_score_info(compare_results, proc.factors);
-                    }
-                }
-                // Now that all commanders are evaluated, take the best one
-                d1->commander = best_commander;
-                eval_commander = false;
-            }
-            for(const Card* card_candidate: non_commander_cards)
+            for(const Card* commander_candidate: proc.cards.player_commanders)
             {
                 if(best_score == best_possible) { break; }
                 // Various checks to check if the card is accepted
-                assert(card_candidate->m_type != CardType::commander);
-                for(unsigned slot_i(0); slot_i < d1->cards.size(); ++slot_i)
+                assert(commander_candidate->m_type == CardType::commander);
+                if(commander_candidate == best_commander) { continue; }
+                if(!suitable_commander(commander_candidate)) { continue; }
+                // Place it in the deck
+                d1->commander = commander_candidate;
+                // Evaluate new deck
+                auto compare_results = proc.compare(num_iterations, best_score);
+                current_score = compute_score(compare_results, proc.factors);
+                // Is it better ?
+                if(current_score > best_score)
                 {
-                    // Various checks to check if the card is accepted
-                    if(card_candidate == best_cards[slot_i]) { continue; }
-                    if(!suitable_non_commander(*d1, current_slot, card_candidate)) { continue; }
-                    // Place it in the deck
-                    d1->cards.erase(d1->cards.begin() + current_slot);
-                    d1->cards.insert(d1->cards.begin() + slot_i, card_candidate);
-                    // Evaluate new deck
-                    auto compare_results = proc.compare(num_iterations, best_score);
-                    current_score = compute_score(compare_results, proc.factors);
-                    // Is it better ?
-                    if(current_score > best_score)
-                    {
-                        // Then update best score/slot, print stuff
-                        std::cout << "Deck improved: " << current_slot << " " << best_cards[current_slot]->m_name << " -> " << slot_i << " " << card_candidate->m_name << ": ";
-                        best_score = current_score;
-                        best_cards.erase(best_cards.begin() + current_slot);
-                        best_cards.insert(best_cards.begin() + slot_i, card_candidate);
-                        eval_commander = true;
-                        deck_has_been_improved = true;
-                        print_score_info(compare_results, proc.factors);
-                    }
-                    d1->cards = best_cards;
+                    // Then update best score/commander, print stuff
+                    best_score = current_score;
+                    best_commander = commander_candidate;
+                    deck_has_been_improved = true;
+                    std::cout << "Deck improved: commander -> " << commander_candidate->m_name << ": ";
+                    print_score_info(compare_results, proc.factors);
                 }
             }
-            // Now that all cards are evaluated, take the best one
-            // d1->cards[slot_i] = best_cards[slot_i];
+            // Now that all commanders are evaluated, take the best one
+            d1->commander = best_commander;
+            eval_commander = false;
+        }
+        for(const Card* card_candidate: non_commander_cards)
+        {
+            // Various checks to check if the card is accepted
+            assert(!card_candidate || card_candidate->m_type != CardType::commander);
+            for(unsigned to_slot(0); to_slot < (card_candidate ? d1->cards.size() : 1); ++to_slot)
+            {
+                if(card_candidate)
+                {
+                    // Various checks to check if the card is accepted
+                    if(card_candidate == best_cards[to_slot]) { continue; }
+                    if(!suitable_non_commander(*d1, from_slot, card_candidate)) { continue; }
+                    // Place it in the deck
+                    if(from_slot < d1->cards.size())
+                    {
+                        d1->cards.erase(d1->cards.begin() + from_slot);
+                    }
+                    d1->cards.insert(d1->cards.begin() + to_slot, card_candidate);
+                }
+                else
+                {
+                    if(from_slot == best_cards.size()) { continue; }
+                    // Remove it from the deck
+                    d1->cards.erase(d1->cards.begin() + from_slot);
+                }
+                // Evaluate new deck
+                auto compare_results = proc.compare(num_iterations, best_score);
+                current_score = compute_score(compare_results, proc.factors);
+                // Is it better ?
+                if(current_score > best_score)
+                {
+                    // Then update best score/slot, print stuff
+                    std::cout << "Deck improved: " << from_slot << " " << (from_slot < best_cards.size() ? best_cards[from_slot]->m_name : "-void-") <<
+                        " -> " << (card_candidate ? to_slot : d1->cards.size()) << " " << (card_candidate ? card_candidate->m_name : "-void-") << ": ";
+                    best_score = current_score;
+                    if(from_slot < best_cards.size())
+                    {
+                        best_cards.erase(best_cards.begin() + from_slot);
+                    }
+                    if(card_candidate)
+                    {
+                        best_cards.insert(best_cards.begin() + to_slot, card_candidate);
+                    }
+                    eval_commander = true;
+                    deck_has_been_improved = true;
+                    print_score_info(compare_results, proc.factors);
+                }
+                d1->cards = best_cards;
+            }
+            if(best_score == best_possible) { break; }
         }
     }
-    std::cout << "Best deck: " << best_score * 100.0 << "%\n";
-    std::cout << best_commander->m_name;
-    for(const Card* card: best_cards)
+    if(use_anp)
     {
-        std::cout << ", " << card->m_name;
+        std::cout << "Best deck: " << best_score << "\n";
     }
-    std::cout << "\n";
+    else
+    {
+        std::cout << "Best deck: " << best_score * 100.0 << "%\n";
+    }
+    print_deck_inline(best_commander, best_cards);
 }
 //------------------------------------------------------------------------------
 // Implements iteration over all combination of k elements from n elements.
