@@ -265,6 +265,11 @@ void read_owned_cards(Cards& cards, std::map<unsigned, unsigned>& owned_cards)
     for(boost::tokenizer<boost::char_delimiters_separator<char> >::iterator beg=tok.begin(); beg!=tok.end();++beg)
     {
         std::string name{*beg};
+        auto pos = name.find(',');
+        if(pos != std::string::npos)
+        {
+            name.erase(pos, 1);
+        }
         ++beg;
         assert(beg != tok.end());
         unsigned num{static_cast<unsigned>(atoi((*beg).c_str()))};
