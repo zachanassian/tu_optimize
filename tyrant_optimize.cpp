@@ -527,9 +527,8 @@ void hill_climbing(unsigned num_iterations, DeckIface* d1, Process& proc)
     bool deck_has_been_improved = true;
     bool eval_commander = true;
     double best_possible = use_anp ? 25 : 1;
-    for(unsigned slot_i(0), sentry_slot(0); (deck_has_been_improved || slot_i != sentry_slot) && best_score < best_possible; ++ slot_i)
+    for(unsigned slot_i(0), sentry_slot(0); (deck_has_been_improved || slot_i != sentry_slot) && best_score < best_possible; slot_i = (slot_i + 1) % std::min(10u, d1->cards.size() + 1))
     {
-        slot_i %= std::min(10u, static_cast<unsigned>(d1->cards.size() + 1));
         if(deck_has_been_improved)
         {
             sentry_slot = slot_i;
@@ -652,9 +651,8 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
     bool deck_has_been_improved = true;
     bool eval_commander = true;
     double best_possible = use_anp ? 25 : 1;
-    for(unsigned from_slot(0), sentry_slot(0); (deck_has_been_improved || from_slot != sentry_slot) && best_score < best_possible; ++ from_slot)
+    for(unsigned from_slot(0), sentry_slot(0); (deck_has_been_improved || from_slot != sentry_slot) && best_score < best_possible; from_slot = (from_slot + 1) % std::min(10u, d1->cards.size() + 1))
     {
-        from_slot %= std::min(10u, static_cast<unsigned>(d1->cards.size() + 1));
         if(deck_has_been_improved)
         {
             sentry_slot = from_slot;
