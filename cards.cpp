@@ -44,6 +44,15 @@ void Cards::organize()
     player_actions.clear();
     for(Card* card: cards)
     {
+        auto pos = card->m_name.find(',');
+        if(pos != std::string::npos)
+        {
+            card->m_name.erase(pos, 1);
+        }
+        if(card->m_set == 5002)
+        {
+            card->m_name += '*';
+        }
         cards_by_id[card->m_id] = card;
         // Card available to players
         if(card->m_set != -1)
@@ -72,7 +81,23 @@ void Cards::organize()
                 break;
             }
             }
-            player_cards_by_name[card->m_name] = card;
+            if(player_cards_by_name.find(card->m_name) == player_cards_by_name.end())
+            {
+                player_cards_by_name[card->m_name] = card;
+            }
+        }
+    }
+    for(Card* card: cards)
+    {
+        std::string base_name = card->m_name;
+        if(card->m_set == 5002)
+        {
+            base_name.erase(base_name.size() - 1);
+        }
+        auto card_itr = player_cards_by_name.find(base_name);
+        if(card_itr != player_cards_by_name.end() && card_itr->second != card)
+        {
+            card->m_base_id = card_itr->second->m_id;
         }
     }
 }

@@ -30,6 +30,7 @@ public:
         m_fusion(false),
         m_health(0),
         m_id(0),
+        m_base_id(0),
         m_immobilize(false),
         m_intercept(false),
         m_leech(0),
@@ -87,6 +88,7 @@ public:
     bool m_fusion;
     unsigned m_health;
     unsigned m_id;
+    unsigned m_base_id;  // Cards sharing the same name share a unique base id. (for "unique" check)
     bool m_immobilize;
     bool m_intercept;
     unsigned m_leech;

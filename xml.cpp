@@ -221,16 +221,8 @@ void read_cards(Cards& cards)
                 }
                 Card* c(new Card());
                 c->m_id = id;
+                c->m_base_id = id;
                 c->m_name = name_node->value();
-                auto pos = c->m_name.find(',');
-                if(pos != std::string::npos)
-                {
-                    c->m_name.erase(pos, 1);
-                }
-                if(set == 5002)
-                {
-                    c->m_name += '*';
-                }
                 if(id < 1000)
                 { c->m_type = CardType::assault; }
                 else if(id < 2000)

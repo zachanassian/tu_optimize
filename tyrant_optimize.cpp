@@ -223,7 +223,7 @@ bool suitable_non_commander(DeckIface& deck, unsigned slot, const Card* card)
     {
         for(unsigned i(0); i < deck.cards.size(); ++i)
         {
-            if(i != slot && deck.cards[i]->m_id == card->m_id)
+            if(i != slot && deck.cards[i]->m_base_id == card->m_base_id)
             {
                 return(false);
             }
@@ -747,19 +747,12 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
                 if(current_score > best_score)
                 {
                     // Then update best score/slot, print stuff
+                    std::cout << "Deck improved: " << deck_hash(best_commander, d1->cards) << " " << from_slot << " " << card_id_name(from_slot < best_cards.size() ? best_cards[from_slot] : NULL) <<
+                        " -> " << (card_candidate ? to_slot : d1->cards.size()) << " " << card_id_name(card_candidate) << ": ";
                     best_score = current_score;
-                    if(from_slot < best_cards.size())
-                    {
-                        best_cards.erase(best_cards.begin() + from_slot);
-                    }
-                    if(card_candidate)
-                    {
-                        best_cards.insert(best_cards.begin() + to_slot, card_candidate);
-                    }
+                    best_cards = d1->cards;
                     eval_commander = true;
                     deck_has_been_improved = true;
-                    std::cout << "Deck improved: " << deck_hash(best_commander, best_cards) << " " << from_slot << " " << card_id_name(from_slot < best_cards.size() ? best_cards[from_slot] : NULL) <<
-                        " -> " << (card_candidate ? to_slot : d1->cards.size()) << " " << card_id_name(card_candidate) << ": ";
                     print_score_info(compare_results, proc.factors);
                     print_deck_inline(best_score, best_commander, best_cards);
                 }
