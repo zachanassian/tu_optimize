@@ -58,6 +58,34 @@ void print_deck(DeckIface& deck)
     }
 }
 //------------------------------------------------------------------------------
+std::string deck_hash(const Card* commander, const std::vector<const Card*>& cards)
+{
+    std::string base64= "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    std::stringstream ios;
+    ios << base64[commander->m_id / 64];
+    ios << base64[commander->m_id % 64];
+    for(const Card* card: cards)
+    {
+        ios << base64[card->m_id / 64];
+        ios << base64[card->m_id % 64];
+    }
+    return ios.str();
+}
+//------------------------------------------------------------------------------
+std::string card_id_name(const Card* card)
+{
+    std::stringstream ios;
+    if(card)
+    {
+        ios << "[" << card->m_id << "] " << card->m_name;
+    }
+    else
+    {
+        ios << "-void-";
+    }
+    return ios.str();
+}
+//------------------------------------------------------------------------------
 DeckIface* find_deck(const Decks& decks, std::string name)
 {
     auto it1 = decks.mission_decks_by_name.find(name);
@@ -537,11 +565,11 @@ void hill_climbing(unsigned num_iterations, DeckIface* d1, Process& proc)
     bool deck_has_been_improved = true;
     bool eval_commander = true;
     double best_possible = use_anp ? 25 : 1;
-    for(unsigned slot_i(0), sentry_slot(0); (deck_has_been_improved || slot_i != sentry_slot) && best_score < best_possible; slot_i = (slot_i + 1) % std::min(10u, d1->cards.size() + 1))
+    for(unsigned slot_i(0), dead_slot(0); (deck_has_been_improved || slot_i != dead_slot) && best_score < best_possible; slot_i = (slot_i + 1) % std::min<unsigned>(10, d1->cards.size() + 1))
     {
         if(deck_has_been_improved)
         {
-            sentry_slot = slot_i;
+            dead_slot = slot_i;
             deck_has_been_improved = false;
         }
         if(eval_commander && !keep_commander)
@@ -564,7 +592,7 @@ void hill_climbing(unsigned num_iterations, DeckIface* d1, Process& proc)
                     best_score = current_score;
                     best_commander = commander_candidate;
                     deck_has_been_improved = true;
-                    std::cout << "Deck improved: commander -> " << commander_candidate->m_name << ": ";
+                    std::cout << "Deck improved: " << deck_hash(best_commander, best_cards) << " commander -> " << card_id_name(commander_candidate) << ": ";
                     print_score_info(compare_results, proc.factors);
                     print_deck_inline(best_score, best_commander, best_cards);
                 }
@@ -619,10 +647,11 @@ void hill_climbing(unsigned num_iterations, DeckIface* d1, Process& proc)
                 }
                 eval_commander = true;
                 deck_has_been_improved = true;
-                std::cout << "Deck improved: slot " << slot_i << " -> " << (card_candidate ? card_candidate->m_name : "-void-") << ": ";
+                std::cout << "Deck improved: " << deck_hash(best_commander, best_cards) << " slot " << slot_i << " -> " << card_id_name(card_candidate) << ": ";
                 print_score_info(compare_results, proc.factors);
                 print_deck_inline(best_score, best_commander, best_cards);
             }
+            d1->cards = best_cards;
             if(d1->cards.size() < best_cards.size())
             {
                 d1->cards.emplace(d1->cards.begin() + slot_i, best_cards[slot_i]);
@@ -630,14 +659,7 @@ void hill_climbing(unsigned num_iterations, DeckIface* d1, Process& proc)
             if(best_score == best_possible) { break; }
         }
         // Now that all cards are evaluated, take the best one
-        if(d1->cards.size() == best_cards.size())
-        {
-            d1->cards[slot_i] = best_cards[slot_i];
-        }
-        else //if(d1->cards.size() > best_cards.size())
-        {
-            d1->cards.pop_back();
-        }
+        d1->cards = best_cards;
     }
     std::cout << "Best Deck: ";
     print_deck_inline(best_score, best_commander, best_cards);
@@ -657,11 +679,11 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
     bool deck_has_been_improved = true;
     bool eval_commander = true;
     double best_possible = use_anp ? 25 : 1;
-    for(unsigned from_slot(0), sentry_slot(0); (deck_has_been_improved || from_slot != sentry_slot) && best_score < best_possible; from_slot = (from_slot + 1) % std::min(10u, d1->cards.size() + 1))
+    for(unsigned from_slot(0), dead_slot(0); (deck_has_been_improved || from_slot != dead_slot) && best_score < best_possible; from_slot = (from_slot + 1) % std::min<unsigned>(10, d1->cards.size() + 1))
     {
         if(deck_has_been_improved)
         {
-            sentry_slot = from_slot;
+            dead_slot = from_slot;
             deck_has_been_improved = false;
         }
         if(eval_commander && !keep_commander)
@@ -685,7 +707,7 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
                     best_score = current_score;
                     best_commander = commander_candidate;
                     deck_has_been_improved = true;
-                    std::cout << "Deck improved: commander -> " << commander_candidate->m_name << ": ";
+                    std::cout << "Deck improved: " << deck_hash(best_commander, best_cards) << " commander -> " << card_id_name(commander_candidate) << ": ";
                     print_score_info(compare_results, proc.factors);
                     print_deck_inline(best_score, best_commander, best_cards);
                 }
@@ -725,8 +747,6 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
                 if(current_score > best_score)
                 {
                     // Then update best score/slot, print stuff
-                    std::cout << "Deck improved: " << from_slot << " " << (from_slot < best_cards.size() ? best_cards[from_slot]->m_name : "-void-") <<
-                        " -> " << (card_candidate ? to_slot : d1->cards.size()) << " " << (card_candidate ? card_candidate->m_name : "-void-") << ": ";
                     best_score = current_score;
                     if(from_slot < best_cards.size())
                     {
@@ -738,6 +758,8 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
                     }
                     eval_commander = true;
                     deck_has_been_improved = true;
+                    std::cout << "Deck improved: " << deck_hash(best_commander, best_cards) << " " << from_slot << " " << card_id_name(from_slot < best_cards.size() ? best_cards[from_slot] : NULL) <<
+                        " -> " << (card_candidate ? to_slot : d1->cards.size()) << " " << card_id_name(card_candidate) << ": ";
                     print_score_info(compare_results, proc.factors);
                     print_deck_inline(best_score, best_commander, best_cards);
                 }
@@ -948,6 +970,7 @@ void exhaustive_k(unsigned num_iterations, unsigned var_k, Process& proc)
 enum Operation {
     bruteforce,
     climb,
+    simulate,
     fightonce
 };
 //------------------------------------------------------------------------------
@@ -1013,6 +1036,8 @@ void usage(int argc, char** argv)
     std::cout << "Operations:\n";
     std::cout << "brute <num1> <num2>: find the best combination of <num1> different cards, using up to <num2> battles to evaluate a deck.\n";
     std::cout << "climb <num>: perform hill-climbing starting from the given attack deck, using up to <num> battles to evaluate a deck.\n";
+    std::cout << "sim <num>: simulate <num> battles to evaluate a deck.\n";
+    std::cout << "debug: very verbose output. only one battle. testing purposes only.\n";
 }
 
 int main(int argc, char** argv)
@@ -1144,6 +1169,11 @@ int main(int argc, char** argv)
             todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex+1]), 0u, climb));
             argIndex += 1;
         }
+        else if(strcmp(argv[argIndex], "sim") == 0)
+        {
+             todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex+1]), 0u, simulate));
+             argIndex += 1;
+        }
         else if(strcmp(argv[argIndex], "debug") == 0)
         {
             debug_print = true;
@@ -1192,6 +1222,11 @@ int main(int argc, char** argv)
                 {
                     hill_climbing_ordered(std::get<0>(op), att_deck_ordered.get(), p);
                 }
+                break;
+            }
+            case simulate: {
+                auto results = p.evaluate(std::get<0>(op));
+                print_score_info(results,p.factors);
                 break;
             }
             case fightonce: {

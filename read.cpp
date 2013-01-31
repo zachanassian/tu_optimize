@@ -265,22 +265,38 @@ void read_owned_cards(Cards& cards, std::map<unsigned, unsigned>& owned_cards)
     for(boost::tokenizer<boost::char_delimiters_separator<char> >::iterator beg=tok.begin(); beg!=tok.end();++beg)
     {
         std::string name{*beg};
-        auto pos = name.find(',');
-        if(pos != std::string::npos)
+        Card *card = NULL;
+        if(name[0] == '[')
         {
-            name.erase(pos, 1);
+            auto card_itr = cards.cards_by_id.find(atoi(name.substr(1).c_str()));
+            if(card_itr != cards.cards_by_id.end())
+            {
+                card = card_itr->second;
+            }
+        }
+        else
+        {
+            auto pos = name.find(',');
+            if(pos != std::string::npos)
+            {
+                name.erase(pos, 1);
+            }
+            auto card_itr = cards.player_cards_by_name.find(name);
+            if(card_itr != cards.player_cards_by_name.end())
+            {
+                card = card_itr->second;
+            }
         }
         ++beg;
         assert(beg != tok.end());
         unsigned num{static_cast<unsigned>(atoi((*beg).c_str()))};
-        auto card_itr = cards.player_cards_by_name.find(name);
-        if(card_itr == cards.player_cards_by_name.end())
+        if(card)
         {
-            std::cerr << "Error in file ownedcards.txt, the card \"" << name << "\" does not seem to be a valid card.\n";
+            owned_cards[card->m_id] = num;
         }
         else
         {
-            owned_cards[card_itr->second->m_id] = num;
+            std::cerr << "Error in file ownedcards.txt, the card \"" << name << "\" does not seem to be a valid card.\n";
         }
     }
 }

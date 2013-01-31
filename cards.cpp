@@ -72,23 +72,7 @@ void Cards::organize()
                 break;
             }
             }
-            if(player_cards_by_name.find(card->m_name) != player_cards_by_name.end())
-            {
-                throw std::runtime_error("While trying to insert the card [" + card->m_name + ", id " + to_string(card->m_id) + "] in the player_cards_by_name map: the key already exists [id " + to_string(player_cards_by_name[card->m_name]->m_id) + "].");
-            }
-            else
-            {
-                player_cards_by_name[card->m_name] = card;
-            }
+            player_cards_by_name[card->m_name] = card;
         }
-    }
-    for(const auto& r: replace)
-    {
-        auto replacement = cards_by_id.find(r.second);
-        if(replacement == cards_by_id.end())
-        {
-            throw std::runtime_error("Replacement " + to_string(r.second) + " for " + to_string(r.first) + " doesn't exist.");
-        }
-        cards_by_id[r.first] = replacement->second;
     }
 }

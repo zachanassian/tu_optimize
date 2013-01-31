@@ -202,19 +202,6 @@ void read_cards(Cards& cards)
         {
             xml_node<>* id_node(card->first_node("id"));
             int id(id_node ? atoi(id_node->value()) : -1);
-            // Replacement art card
-            xml_node<>* replace_node(card->first_node("replace"));
-            if(replace_node)
-            {
-                cards.replace[id] = atoi(replace_node->value());
-                continue;
-            }
-            else if(id == 484)
-            {
-                // XXX: hardcode Necrogeddon replace
-                cards.replace[id] = 862;
-                continue;
-            }
             xml_node<>* name_node(card->first_node("name"));
             xml_node<>* attack_node(card->first_node("attack"));
             xml_node<>* health_node(card->first_node("health"));
@@ -418,11 +405,6 @@ void read_missions(Decks& decks, Cards& cards, std::string filename)
                 card_node = card_node->next_sibling())
             {
                 unsigned card_id{static_cast<unsigned>(atoi(card_node->value()))};
-                // Handle the replacement art cards
-                if(cards.replace.find(card_id) != cards.replace.end())
-                {
-                    card_id = cards.replace[card_id];
-                }
                 card_ids.push_back(card_id);
             }
             decks.mission_decks.push_back(DeckRandom{cards, card_ids});
@@ -468,11 +450,6 @@ void read_raids(Decks& decks, Cards& cards, std::string filename)
                     card_node = card_node->next_sibling())
                 {
                     unsigned card_id{static_cast<unsigned>(atoi(card_node->value()))};
-                    // Handle the replacement art cards
-                    if(cards.replace.find(card_id) != cards.replace.end())
-                    {
-                        card_id = cards.replace[card_id];
-                    }
                     always_cards.push_back(cards.by_id(card_id));
                 }
             }
@@ -495,11 +472,6 @@ void read_raids(Decks& decks, Cards& cards, std::string filename)
                         if(card_id == 0 && id == 1)
                         {
                             continue;
-                        }
-                        // Handle the replacement art cards
-                        if(cards.replace.find(card_id) != cards.replace.end())
-                        {
-                            card_id = cards.replace[card_id];
                         }
                         cards_from_pool.push_back(cards.by_id(card_id));
                     }
@@ -558,11 +530,6 @@ void read_quests(Decks& decks, Cards& cards, std::string filename)
                         card_node = card_node->next_sibling())
                     {
                         unsigned card_id{static_cast<unsigned>(atoi(card_node->value()))};
-                        // Handle the replacement art cards
-                        if(cards.replace.find(card_id) != cards.replace.end())
-                        {
-                            card_id = cards.replace[card_id];
-                        }
                         cards_from_pool.push_back(cards.by_id(card_id));
                     }
                     some_cards.push_back(std::make_pair(num_cards_from_pool, cards_from_pool));
