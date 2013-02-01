@@ -116,6 +116,7 @@ DeckIface* find_deck(const Decks& decks, std::string name)
 //------------------------------------------------------------------------------
 std::map<unsigned, unsigned> owned_cards;
 bool use_owned_cards{false};
+bool fixed_len{false};
 
 // No raid rewards from 500 and 1k honor for ancient raids
 // No very hard to get rewards (level >= 150, faction >= 13)
@@ -565,7 +566,7 @@ void hill_climbing(unsigned num_iterations, DeckIface* d1, Process& proc)
     bool deck_has_been_improved = true;
     bool eval_commander = true;
     double best_possible = use_anp ? 25 : 1;
-    for(unsigned slot_i(0), dead_slot(0); (deck_has_been_improved || slot_i != dead_slot) && best_score < best_possible; slot_i = (slot_i + 1) % std::min<unsigned>(10, d1->cards.size() + 1))
+    for(unsigned slot_i(0), dead_slot(0); (deck_has_been_improved || slot_i != dead_slot) && best_score < best_possible; slot_i = (slot_i + 1) % std::min<unsigned>(10, d1->cards.size() + (fixed_len ? 0 : 1)))
     {
         if(deck_has_been_improved)
         {
@@ -621,7 +622,7 @@ void hill_climbing(unsigned num_iterations, DeckIface* d1, Process& proc)
             }
             else
             {
-                if(slot_i == best_cards.size()) { continue; }
+                if(fixed_len || slot_i == best_cards.size() || best_cards.size() == 1) { continue; }
                 // Remove it from the deck
                 d1->cards.erase(d1->cards.begin() + slot_i);
             }
@@ -631,6 +632,8 @@ void hill_climbing(unsigned num_iterations, DeckIface* d1, Process& proc)
             // Is it better ?
             if(current_score > best_score)
             {
+                std::cout << "Deck improved: " << deck_hash(best_commander, best_cards) << " " << slot_i << " " << card_id_name(slot_i < best_cards.size() ? best_cards[slot_i] : NULL) <<
+                    " -> " << card_id_name(card_candidate) << ": ";
                 // Then update best score/slot, print stuff
                 best_score = current_score;
                 if(slot_i == best_cards.size())
@@ -647,7 +650,6 @@ void hill_climbing(unsigned num_iterations, DeckIface* d1, Process& proc)
                 }
                 eval_commander = true;
                 deck_has_been_improved = true;
-                std::cout << "Deck improved: " << deck_hash(best_commander, best_cards) << " slot " << slot_i << " -> " << card_id_name(card_candidate) << ": ";
                 print_score_info(compare_results, proc.factors);
                 print_deck_inline(best_score, best_commander, best_cards);
             }
@@ -679,7 +681,7 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
     bool deck_has_been_improved = true;
     bool eval_commander = true;
     double best_possible = use_anp ? 25 : 1;
-    for(unsigned from_slot(0), dead_slot(0); (deck_has_been_improved || from_slot != dead_slot) && best_score < best_possible; from_slot = (from_slot + 1) % std::min<unsigned>(10, d1->cards.size() + 1))
+    for(unsigned from_slot(0), dead_slot(0); (deck_has_been_improved || from_slot != dead_slot) && best_score < best_possible; from_slot = (from_slot + 1) % std::min<unsigned>(10, d1->cards.size() + (fixed_len ? 0 : 1)))
     {
         if(deck_has_been_improved)
         {
@@ -720,12 +722,12 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
         {
             // Various checks to check if the card is accepted
             assert(!card_candidate || card_candidate->m_type != CardType::commander);
-            for(unsigned to_slot(0); to_slot < (card_candidate ? d1->cards.size() : 1); ++to_slot)
+            for(unsigned to_slot(card_candidate ? 0 : d1->cards.size() - 1); to_slot < d1->cards.size() + (from_slot < d1->cards.size() ? 0 : 1); ++to_slot)
             {
                 if(card_candidate)
                 {
                     // Various checks to check if the card is accepted
-                    if(card_candidate == best_cards[to_slot]) { continue; }
+                    if(to_slot < best_cards.size() && card_candidate == best_cards[to_slot]) { continue; }
                     if(!suitable_non_commander(*d1, from_slot, card_candidate)) { continue; }
                     // Place it in the deck
                     if(from_slot < d1->cards.size())
@@ -736,7 +738,7 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
                 }
                 else
                 {
-                    if(from_slot == best_cards.size()) { continue; }
+                    if(fixed_len || from_slot == best_cards.size() || best_cards.size() == 1) { continue; }
                     // Remove it from the deck
                     d1->cards.erase(d1->cards.begin() + from_slot);
                 }
@@ -1025,6 +1027,7 @@ void usage(int argc, char** argv)
     std::cout << "  -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).\n";
     std::cout << "  -s: use surge (default is fight).\n";
     std::cout << "  -t <num>: set the number of threads, default is 4.\n";
+    std::cout << "  -fixedlen: prevent hill climbing from changing the number of cards.\n";
     std::cout << "  -turnlimit <num>: set the number of turns in a battle, default is 50 (can be used for speedy achievements).\n";
     std::cout << "Operations:\n";
     std::cout << "brute <num1> <num2>: find the best combination of <num1> different cards, using up to <num2> battles to evaluate a deck.\n";
@@ -1146,6 +1149,10 @@ int main(int argc, char** argv)
         {
             num_threads = atoi(argv[argIndex+1]);
             argIndex += 1;
+        }
+        else if(strcmp(argv[argIndex], "-fixedlen") == 0)
+        {
+            fixed_len = true;
         }
         else if(strcmp(argv[argIndex], "-turnlimit") == 0)
         {
