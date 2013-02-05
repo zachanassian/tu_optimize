@@ -750,7 +750,7 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
                 {
                     // Then update best score/slot, print stuff
                     std::cout << "Deck improved: " << deck_hash(best_commander, d1->cards) << " " << from_slot << " " << card_id_name(from_slot < best_cards.size() ? best_cards[from_slot] : NULL) <<
-                        " -> " << (card_candidate ? to_slot : d1->cards.size()) << " " << card_id_name(card_candidate) << ": ";
+                        " -> " << to_slot << " " << card_id_name(card_candidate) << ": ";
                     best_score = current_score;
                     best_cards = d1->cards;
                     eval_commander = true;
@@ -1023,6 +1023,7 @@ void usage(int argc, char** argv)
     std::cout << "  -c: don't try to optimize the commander.\n";
     std::cout << "  -e <effect>: set the battleground effect.\n";
     std::cout << "  -o: restrict hill climbing to the owned cards listed in \"ownedcards.txt\".\n";
+    std::cout << "  -o=<filename>: restrict hill climbing to the owned cards listed in <filename>.\n";
     std::cout << "  -q: quest mode. Removes faction restrictions from defending commanders and automatically sets quest effect.\n";
     std::cout << "  -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).\n";
     std::cout << "  -s: use surge (default is fight).\n";
@@ -1102,7 +1103,12 @@ int main(int argc, char** argv)
         }
         else if(strcmp(argv[argIndex], "-o") == 0)
         {
-            read_owned_cards(cards, owned_cards);
+            read_owned_cards(cards, owned_cards, "ownedcards.txt");
+            use_owned_cards = true;
+        }
+        else if(strncmp(argv[argIndex], "-o=", 3) == 0)
+        {
+            read_owned_cards(cards, owned_cards, argv[argIndex] + 3);
             use_owned_cards = true;
         }
         else if(strcmp(argv[argIndex], "-q") == 0)

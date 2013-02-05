@@ -250,13 +250,13 @@ unsigned read_custom_decks(Cards& cards, std::string filename, std::map<std::str
     return(0);
 }
 
-void read_owned_cards(Cards& cards, std::map<unsigned, unsigned>& owned_cards)
+void read_owned_cards(Cards& cards, std::map<unsigned, unsigned>& owned_cards, const char *filename)
 {
-    std::ifstream owned_file{"ownedcards.txt"};
+    std::ifstream owned_file{filename};
 
     if(!owned_file.good())
     {
-        std::cerr << "Warning: The file 'ownedcards.txt' does not exist. This will result in you not owning any cards.\n";
+        std::cerr << "Warning: The file '" << filename << "' does not exist. This will result in you not owning any cards.\n";
         return;
     }
 
