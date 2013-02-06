@@ -17,6 +17,7 @@ class Field;
 extern bool debug_print;
 extern bool debug_line;
 extern unsigned turn_limit;
+extern bool win_tie;
 
 void fill_skill_table();
 unsigned play(Field* fd);

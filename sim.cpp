@@ -135,6 +135,7 @@ void Hand::reset(std::mt19937& re)
 // the implementation of the attack by an assault card is in the next section;
 // the implementation of the active skills is in the section after that.
 unsigned turn_limit{50};
+bool win_tie{false};
 //------------------------------------------------------------------------------
 inline unsigned opponent(unsigned player)
 {
@@ -489,13 +490,13 @@ unsigned play(Field* fd)
         ++fd->turn;
     }
     // defender wins
-    if(fd->players[0]->commander.m_hp == 0)
+    if(fd->players[0]->commander.m_hp == 0 || (!win_tie && fd->turn > turn_limit))
     {
         _DEBUG_MSG("Defender wins.\n");
         return(0);
     }
     // attacker wins
-    if(fd->players[1]->commander.m_hp == 0)
+    if(fd->players[1]->commander.m_hp == 0 || (win_tie && fd->turn > turn_limit))
     {
         // ANP: Speedy if last_decision + 10 > turn.
         // fd->turn has advanced once past the actual turn the battle has ended.
@@ -508,10 +509,6 @@ unsigned play(Field* fd)
         }
         _DEBUG_MSG("Attacker wins.\n");
         return(10 + (speedy ? 5 : 0) + fd->points_since_last_decision);
-    }
-    if(fd->turn > turn_limit)
-    {
-        return(0);
     }
 
     // Huh? How did we get here?

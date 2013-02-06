@@ -1022,14 +1022,15 @@ void usage(int argc, char** argv)
     std::cout << "  -a: optimize for ANP instead of win rate.\n";
     std::cout << "  -c: don't try to optimize the commander.\n";
     std::cout << "  -e <effect>: set the battleground effect.\n";
+    std::cout << "  -fixedlen: prevent hill climbing from changing the number of cards.\n";
     std::cout << "  -o: restrict hill climbing to the owned cards listed in \"ownedcards.txt\".\n";
     std::cout << "  -o=<filename>: restrict hill climbing to the owned cards listed in <filename>.\n";
     std::cout << "  -q: quest mode. Removes faction restrictions from defending commanders and automatically sets quest effect.\n";
     std::cout << "  -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).\n";
     std::cout << "  -s: use surge (default is fight).\n";
     std::cout << "  -t <num>: set the number of threads, default is 4.\n";
-    std::cout << "  -fixedlen: prevent hill climbing from changing the number of cards.\n";
     std::cout << "  -turnlimit <num>: set the number of turns in a battle, default is 50 (can be used for speedy achievements).\n";
+    std::cout << "  -wintie: attacker wins if turns run out (default is defeated).\n";
     std::cout << "Operations:\n";
     std::cout << "brute <num1> <num2>: find the best combination of <num1> different cards, using up to <num2> battles to evaluate a deck.\n";
     std::cout << "climb <num>: perform hill-climbing starting from the given attack deck, using up to <num> battles to evaluate a deck.\n";
@@ -1101,6 +1102,10 @@ int main(int argc, char** argv)
             effect = static_cast<enum Effect>(x->second);
             argIndex += 1;
         }
+        else if(strcmp(argv[argIndex], "-fixedlen") == 0)
+        {
+            fixed_len = true;
+        }
         else if(strcmp(argv[argIndex], "-o") == 0)
         {
             read_owned_cards(cards, owned_cards, "ownedcards.txt");
@@ -1156,14 +1161,14 @@ int main(int argc, char** argv)
             num_threads = atoi(argv[argIndex+1]);
             argIndex += 1;
         }
-        else if(strcmp(argv[argIndex], "-fixedlen") == 0)
-        {
-            fixed_len = true;
-        }
         else if(strcmp(argv[argIndex], "-turnlimit") == 0)
         {
             turn_limit = atoi(argv[argIndex+1]);
             argIndex += 1;
+        }
+        else if(strcmp(argv[argIndex], "-wintie") == 0)
+        {
+            win_tie = true;
         }
         else if(strcmp(argv[argIndex], "brute") == 0)
         {
