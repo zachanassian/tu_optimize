@@ -593,7 +593,7 @@ void hill_climbing(unsigned num_iterations, DeckIface* d1, Process& proc)
                     best_score = current_score;
                     best_commander = commander_candidate;
                     deck_has_been_improved = true;
-                    std::cout << "Deck improved: " << deck_hash(best_commander, best_cards) << " commander -> " << card_id_name(commander_candidate) << ": ";
+                    std::cout << "Deck improved: " << deck_hash(commander_candidate, best_cards) << " commander -> " << card_id_name(commander_candidate) << ": ";
                     print_score_info(compare_results, proc.factors);
                     print_deck_inline(best_score, best_commander, best_cards);
                 }
@@ -632,32 +632,17 @@ void hill_climbing(unsigned num_iterations, DeckIface* d1, Process& proc)
             // Is it better ?
             if(current_score > best_score)
             {
-                std::cout << "Deck improved: " << deck_hash(best_commander, best_cards) << " " << slot_i << " " << card_id_name(slot_i < best_cards.size() ? best_cards[slot_i] : NULL) <<
+                std::cout << "Deck improved: " << deck_hash(best_commander, d1->cards) << " " << slot_i << " " << card_id_name(slot_i < best_cards.size() ? best_cards[slot_i] : NULL) <<
                     " -> " << card_id_name(card_candidate) << ": ";
                 // Then update best score/slot, print stuff
                 best_score = current_score;
-                if(slot_i == best_cards.size())
-                {
-                    best_cards.emplace_back(card_candidate);
-                }
-                else if(!card_candidate)
-                {
-                    best_cards.erase(best_cards.begin() + slot_i);
-                }
-                else
-                {
-                    best_cards[slot_i] = card_candidate;
-                }
+                best_cards = d1->cards;
                 eval_commander = true;
                 deck_has_been_improved = true;
                 print_score_info(compare_results, proc.factors);
                 print_deck_inline(best_score, best_commander, best_cards);
             }
             d1->cards = best_cards;
-            if(d1->cards.size() < best_cards.size())
-            {
-                d1->cards.emplace(d1->cards.begin() + slot_i, best_cards[slot_i]);
-            }
             if(best_score == best_possible) { break; }
         }
         // Now that all cards are evaluated, take the best one
@@ -709,7 +694,7 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
                     best_score = current_score;
                     best_commander = commander_candidate;
                     deck_has_been_improved = true;
-                    std::cout << "Deck improved: " << deck_hash(best_commander, best_cards) << " commander -> " << card_id_name(commander_candidate) << ": ";
+                    std::cout << "Deck improved: " << deck_hash(commander_candidate, best_cards) << " commander -> " << card_id_name(commander_candidate) << ": ";
                     print_score_info(compare_results, proc.factors);
                     print_deck_inline(best_score, best_commander, best_cards);
                 }
@@ -1030,7 +1015,7 @@ void usage(int argc, char** argv)
     std::cout << "  -s: use surge (default is fight).\n";
     std::cout << "  -t <num>: set the number of threads, default is 4.\n";
     std::cout << "  -turnlimit <num>: set the number of turns in a battle, default is 50 (can be used for speedy achievements).\n";
-    std::cout << "  -wintie: attacker wins if turns run out (default is defeated).\n";
+    std::cout << "  -wintie: attacker wins if turns run out (default is defeated; can be used for def deck simulation).\n";
     std::cout << "Operations:\n";
     std::cout << "brute <num1> <num2>: find the best combination of <num1> different cards, using up to <num2> battles to evaluate a deck.\n";
     std::cout << "climb <num>: perform hill-climbing starting from the given attack deck, using up to <num> battles to evaluate a deck.\n";
