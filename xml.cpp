@@ -246,8 +246,6 @@ void read_cards(Cards& cards)
                     { c->m_antiair = atoi(skill->first_attribute("x")->value()); }
                     if(strcmp(skill->first_attribute("id")->value(), "armored") == 0)
                     { c->m_armored = atoi(skill->first_attribute("x")->value()); }
-                    if(strcmp(skill->first_attribute("id")->value(), "augment") == 0)
-                    { handle_skill<augment>(skill, c); }
                     if(strcmp(skill->first_attribute("id")->value(), "berserk") == 0)
                     {
                         bool attacked(skill->first_attribute("attacked"));
@@ -314,6 +312,8 @@ void read_cards(Cards& cards)
                     { c->m_valor = atoi(skill->first_attribute("x")->value()); }
                     if(strcmp(skill->first_attribute("id")->value(), "wall") == 0)
                     { c->m_wall = true; }
+                    if(strcmp(skill->first_attribute("id")->value(), "augment") == 0)
+                    { handle_skill<augment>(skill, c); }
                     if(strcmp(skill->first_attribute("id")->value(), "backfire") == 0)
                     { handle_skill<backfire>(skill, c); }
                     if(strcmp(skill->first_attribute("id")->value(), "chaos") == 0)

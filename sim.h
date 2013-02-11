@@ -94,8 +94,8 @@ struct CardStatus
     unsigned m_player;
     unsigned m_augmented;
     unsigned m_berserk;
-    bool blitz;
-    bool m_chaos;
+    bool m_blitzing;
+    bool m_chaosed;
     unsigned m_delay;
     bool m_diseased;
     unsigned m_enfeebled;
@@ -116,6 +116,7 @@ struct CardStatus
 
     void set(const Card* card);
     void set(const Card& card);
+    std::string description();
 };
 //------------------------------------------------------------------------------
 // Represents a particular draw from a deck.
