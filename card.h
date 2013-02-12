@@ -59,13 +59,13 @@ public:
     void add_skill(ActiveSkill v1, unsigned v2, Faction v3)
     { m_skills.push_back(std::make_tuple(v1, v2, v3)); }
     void add_played_skill(ActiveSkill v1, unsigned v2, Faction v3)
-    { m_skills_played.push_back(std::make_tuple(v1, v2, v3)); }
+    { m_skills_on_play.push_back(std::make_tuple(v1, v2, v3)); }
     void add_died_skill(ActiveSkill v1, unsigned v2, Faction v3)
-    { m_skills_died.push_back(std::make_tuple(v1, v2, v3)); }
+    { m_skills_on_death.push_back(std::make_tuple(v1, v2, v3)); }
     void add_attacked_skill(ActiveSkill v1, unsigned v2, Faction v3)
-    { m_skills_attacked.push_back(std::make_tuple(v1, v2, v3)); }
+    { m_skills_on_attacked.push_back(std::make_tuple(v1, v2, v3)); }
     void add_kill_skill(ActiveSkill v1, unsigned v2, Faction v3)
-    { m_skills_kill.push_back(std::make_tuple(v1, v2, v3)); }
+    { m_skills_on_kill.push_back(std::make_tuple(v1, v2, v3)); }
 
     unsigned m_antiair;
     unsigned m_armored;
@@ -110,10 +110,10 @@ public:
     unsigned m_valor;
     bool m_wall;
     std::vector<SkillSpec> m_skills;
-    std::vector<SkillSpec> m_skills_played;
-    std::vector<SkillSpec> m_skills_died;
-    std::vector<SkillSpec> m_skills_attacked;
-    std::vector<SkillSpec> m_skills_kill;
+    std::vector<SkillSpec> m_skills_on_play;
+    std::vector<SkillSpec> m_skills_on_death;
+    std::vector<SkillSpec> m_skills_on_attacked;
+    std::vector<SkillSpec> m_skills_on_kill;
     CardType::CardType m_type;
 };
 

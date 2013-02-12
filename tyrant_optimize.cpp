@@ -1020,7 +1020,9 @@ void usage(int argc, char** argv)
     std::cout << "brute <num1> <num2>: find the best combination of <num1> different cards, using up to <num2> battles to evaluate a deck.\n";
     std::cout << "climb <num>: perform hill-climbing starting from the given attack deck, using up to <num> battles to evaluate a deck.\n";
     std::cout << "sim <num>: simulate <num> battles to evaluate a deck.\n";
+#ifndef NDEBUG
     std::cout << "debug: very verbose output. only one battle. testing purposes only.\n";
+#endif
 }
 
 int main(int argc, char** argv)
@@ -1051,7 +1053,19 @@ int main(int argc, char** argv)
         DeckIface* def_deck = find_deck(decks, deck_parsed.first);
         if(def_deck == nullptr)
         {
-            def_deck = hash_to_deck(deck_parsed.first.c_str(), cards);
+            try
+            { def_deck = hash_to_deck(deck_parsed.first.c_str(), cards); }
+            catch(const std::runtime_error& e)
+            {
+                std::cerr << "Error: Deck hash " << deck_parsed.first << ": " << e.what() << std::endl;
+                return(5);
+            }
+            if(def_deck == nullptr)
+            {
+                std::cerr << "Error: Invalid defense deck name/hash " << deck_parsed.first << ". Available decks:" << std::endl;
+                print_available_decks(decks);
+                return(5);
+            }
         }
         def_decks.push_back(def_deck);
         def_decks_factors.push_back(deck_parsed.second);
@@ -1176,6 +1190,11 @@ int main(int argc, char** argv)
             num_threads = 1;
             todo.push_back(std::make_tuple(0u, 0u, fightonce));
         }
+        else
+        {
+            std::cerr << "Error: Unknown option " << argv[argIndex] << std::endl;
+            return(1);
+        }
     }
 
     DeckIface* att_deck{nullptr};
@@ -1186,7 +1205,21 @@ int main(int argc, char** argv)
     }
     else
     {
-        att_deck = hash_to_deck(att_deck_name.c_str(), cards);
+        try
+        { att_deck = hash_to_deck(att_deck_name.c_str(), cards); }
+        catch(const std::runtime_error& e)
+        {
+            std::cerr << "Error: Deck hash " << att_deck_name << ": " << e.what() << std::endl;
+            return(5);
+        }
+        if(att_deck == nullptr)
+        {
+            std::cerr << "Error: Invalid attack deck name/hash " << att_deck_name << ". Available decks:" << std::endl;
+            std::cerr << "Custom decks:" << std::endl;
+            for(auto it: decks.custom_decks)
+            { std::cerr << "  " << it.first << std::endl; }
+            return(5);
+        }
     }
     print_deck(*att_deck);
 

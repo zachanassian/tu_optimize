@@ -19,7 +19,7 @@ std::set<ActiveSkill> helpful_skills{
     /*repair, repair_all, rush, */supply,
 };
 
-std::string cardtype_names[CardType::num_cardtypes]{"action", "assault", "commander", "structure"};
+std::string cardtype_names[CardType::num_cardtypes]{"Action", "Assault", "Commander", "Structure"};
 
 std::string effect_names[Effect::num_effects] = {
     "None",

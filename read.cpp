@@ -7,6 +7,7 @@
 #include <cstring>
 #include <vector>
 #include <fstream>
+#include <iostream>
 
 #include "card.h"
 #include "cards.h"
@@ -20,7 +21,7 @@ const char* base64_chars =
 
 // Converts `pairs' pairs of cards in `hash' to a deck.
 // Stores resulting card IDs in `ids'.
-void hash_to_ids(const char* hash, size_t pairs,
+bool hash_to_ids(const char* hash, size_t pairs,
                  std::vector<unsigned int>& ids)
 {
     unsigned int last_id = 0;
@@ -31,7 +32,7 @@ void hash_to_ids(const char* hash, size_t pairs,
         const char* p1 = strchr(base64_chars, hash[2 * i + 1]);
         if (!p0 || !p1)
         {
-            throw std::runtime_error(hash);
+            return(false);
         }
         size_t index0 = p0 - base64_chars;
         size_t index1 = p1 - base64_chars;
@@ -47,6 +48,7 @@ void hash_to_ids(const char* hash, size_t pairs,
             ids.push_back(last_id);
         }
     }
+    return(true);
 }
 }
 
@@ -55,8 +57,9 @@ void hash_to_ids(const char* hash, size_t pairs,
 DeckIface* hash_to_deck(const char* hash, const Cards& cards)
 {
     std::vector<unsigned int> ids;
+    if(strlen(hash) % 2 > 0) { return(nullptr); }
     size_t pairs = strlen(hash) / 2;
-    hash_to_ids(hash, pairs, ids);
+    if(!hash_to_ids(hash, pairs, ids)) { return(nullptr); }
 
     return new DeckRandom(cards, ids);
 }
