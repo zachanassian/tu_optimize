@@ -1031,7 +1031,8 @@ void usage(int argc, char** argv)
     std::cout << "climb <num>: perform hill-climbing starting from the given attack deck, using up to <num> battles to evaluate a deck.\n";
     std::cout << "sim <num>: simulate <num> battles to evaluate a deck.\n";
 #ifndef NDEBUG
-    std::cout << "debug: very verbose output. only one battle. testing purposes only.\n";
+    std::cout << "debug: testing purpose only. very verbose output. only one battle.\n";
+    std::cout << "debuguntil <min> <max>: testing purpose only. fight until the last fight results in range [<min>, <max>]. recommend to redirect output.\n";
 #endif
 }
 
@@ -1204,6 +1205,8 @@ int main(int argc, char** argv)
         {
             debug_print = true;
             num_threads = 1;
+            // fight until the last battle results in range [min_score, max_score].
+            // E.g., 0 0: until lose; 1 1: until win (non-ANP); 10 25: until win (ANP).
             todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex+1]), (unsigned)atoi(argv[argIndex+2]), fightuntil));
             argIndex += 2;
         }
