@@ -951,7 +951,7 @@ enum Operation {
     bruteforce,
     climb,
     simulate,
-    fightonce
+    fightuntil
 };
 //------------------------------------------------------------------------------
 // void print_raid_deck(DeckRandom& deck)
@@ -1188,7 +1188,14 @@ int main(int argc, char** argv)
         {
             debug_print = true;
             num_threads = 1;
-            todo.push_back(std::make_tuple(0u, 0u, fightonce));
+            todo.push_back(std::make_tuple(0u, 25u, fightuntil));
+        }
+        else if(strcmp(argv[argIndex], "debuguntil") == 0)
+        {
+            debug_print = true;
+            num_threads = 1;
+            todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex+1]), (unsigned)atoi(argv[argIndex+2]), fightuntil));
+            argIndex += 2;
         }
         else
         {
@@ -1258,8 +1265,14 @@ int main(int argc, char** argv)
                 print_score_info(results,p.factors);
                 break;
             }
-            case fightonce: {
-                p.evaluate(1);
+            case fightuntil: {
+                while(1)
+                {
+                    auto results = p.evaluate(1);
+                    print_score_info(results, p.factors);
+                    double score = compute_score(results, p.factors);
+                    if(score >= std::get<0>(op) && score <= std::get<1>(op)) { break; }
+                }
                 break;
             }
             }

@@ -26,13 +26,8 @@ bool debug_line(true);
     {                                                                   \
         if(debug_print)                                                 \
         {                                                               \
-            char* format2 = new char[strlen(format) + (8 + 1)*sizeof(char)]; \
-            if(debug_line) { strcpy(format2, "%i - "); }                \
-            else { strcpy(format2, ""); }                               \
-            strcat(format2, format);                                    \
-            if(debug_line) { printf(format2, __LINE__ , ##args); }      \
-            else { printf(format2, ##args); }                           \
-            delete[] format2;                                           \
+            if(debug_line) { printf("%i - " format, __LINE__ , ##args); }      \
+            else { printf(format, ##args); }                           \
             std::cout << std::flush;                                    \
         }                                                               \
     }
@@ -967,15 +962,12 @@ struct PerformAttack
             if(def_status->m_enfeebled > 0) { desc += "+" + to_string(def_status->m_enfeebled) + "(enfeebled)"; }
             if(def_card.m_flying && att_card.m_antiair > 0) { desc += "+" + to_string(att_card.m_antiair) + "(antiair)"; }
             if(def_status->m_hp == def_card.m_health && att_card.m_burst > 0) { desc += "+" + to_string(att_card.m_burst) + "(burst)"; }
-            if(!desc.empty())
-            {
-                std::string reduced_desc;
-                if(def_card.m_armored > 0) { reduced_desc += to_string(def_card.m_armored) + "(armored)"; }
-                if(def_status->m_protected > 0) { reduced_desc += (reduced_desc.empty() ? "" : "+") + to_string(def_status->m_protected) + "(protected)"; }
-                if(!reduced_desc.empty() && att_card.m_pierce > 0) { reduced_desc += "-" + to_string(att_card.m_pierce) + "(pierce)"; }
-                if(!reduced_desc.empty()) { desc += "-(" + reduced_desc + ")"; }
-                desc += "=" + to_string(modified_damage);
-            }
+            std::string reduced_desc;
+            if(def_card.m_armored > 0) { reduced_desc += to_string(def_card.m_armored) + "(armored)"; }
+            if(def_status->m_protected > 0) { reduced_desc += (reduced_desc.empty() ? "" : "+") + to_string(def_status->m_protected) + "(protected)"; }
+            if(!reduced_desc.empty() && att_card.m_pierce > 0) { reduced_desc += "-" + to_string(att_card.m_pierce) + "(pierce)"; }
+            if(!reduced_desc.empty()) { desc += "-(" + reduced_desc + ")"; }
+            if(!desc.empty()) { desc += "=" + to_string(modified_damage); }
             _DEBUG_MSG("%s attacks %s for %u%s damage\n", status_description(att_status).c_str(), status_description(def_status).c_str(), damage, desc.c_str());
         }
         return(modified_damage);
