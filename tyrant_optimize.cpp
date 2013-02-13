@@ -559,10 +559,14 @@ void hill_climbing(unsigned num_iterations, DeckIface* d1, Process& proc)
     double current_score = compute_score(results, proc.factors);
     double best_score = current_score;
     // Non-commander cards
-    auto non_commander_cards = boost::join(boost::join(boost::join(std::initializer_list<Card *>{NULL,}, proc.cards.player_assaults), proc.cards.player_structures), proc.cards.player_actions);
+    auto non_commander_cards = proc.cards.player_assaults;
+    non_commander_cards.insert(non_commander_cards.end(), proc.cards.player_structures.begin(), proc.cards.player_structures.end());
+    non_commander_cards.insert(non_commander_cards.end(), proc.cards.player_actions.begin(), proc.cards.player_actions.end());
+    if(!fixed_len) { non_commander_cards.insert(non_commander_cards.end(), std::initializer_list<Card *>{NULL,}); }
     const Card* best_commander = d1->commander;
     std::vector<const Card*> best_cards = d1->cards;
     print_deck_inline(best_score, best_commander, best_cards);
+    std::mt19937 re(time(NULL));
     bool deck_has_been_improved = true;
     bool eval_commander = true;
     double best_possible = use_anp ? 25 : 1;
@@ -602,6 +606,7 @@ void hill_climbing(unsigned num_iterations, DeckIface* d1, Process& proc)
             d1->commander = best_commander;
             eval_commander = false;
         }
+        std::shuffle(non_commander_cards.begin(), non_commander_cards.end(), re);
         for(const Card* card_candidate: non_commander_cards)
         {
             if(card_candidate)
@@ -659,10 +664,14 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
     double current_score = compute_score(results, proc.factors);
     double best_score = current_score;
     // Non-commander cards
-    auto non_commander_cards = boost::join(boost::join(boost::join(std::initializer_list<Card *>{NULL,}, proc.cards.player_assaults), proc.cards.player_structures), proc.cards.player_actions);
+    auto non_commander_cards = proc.cards.player_assaults;
+    non_commander_cards.insert(non_commander_cards.end(), proc.cards.player_structures.begin(), proc.cards.player_structures.end());
+    non_commander_cards.insert(non_commander_cards.end(), proc.cards.player_actions.begin(), proc.cards.player_actions.end());
+    if(!fixed_len) { non_commander_cards.insert(non_commander_cards.end(), std::initializer_list<Card *>{NULL,}); }
     const Card* best_commander = d1->commander;
     std::vector<const Card*> best_cards = d1->cards;
     print_deck_inline(best_score, best_commander, best_cards);
+    std::mt19937 re(time(NULL));
     bool deck_has_been_improved = true;
     bool eval_commander = true;
     double best_possible = use_anp ? 25 : 1;
@@ -703,6 +712,7 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
             d1->commander = best_commander;
             eval_commander = false;
         }
+        std::shuffle(non_commander_cards.begin(), non_commander_cards.end(), re);
         for(const Card* card_candidate: non_commander_cards)
         {
             // Various checks to check if the card is accepted

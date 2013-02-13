@@ -20,7 +20,7 @@ std::string to_string(T val)
 }
 //---------------------- Debugging stuff ---------------------------------------
 bool debug_print(false);
-bool debug_line(true);
+bool debug_line(false);
 #ifndef NDEBUG
 #define _DEBUG_MSG(format, args...)                                     \
     {                                                                   \
