@@ -4,10 +4,12 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <stdexcept>
 #include "rapidxml.hpp"
 #include "card.h"
 #include "cards.h"
 #include "deck.h"
+#include "achievement.h"
 #include "tyrant.h"
 //---------------------- $20 cards.xml parsing ---------------------------------
 // Sets: 1 enclave; 2 nexus; 3 blight; 4 purity; 5 homeworld;
@@ -26,6 +28,15 @@ Faction map_to_faction(unsigned i)
            i == 8 ? righteous :
            i == 9 ? raider :
            allfactions);
+}
+
+CardType::CardType map_to_type(unsigned i)
+{
+    return(i == 1 ? CardType::commander :
+           i == 2 ? CardType::assault :
+           i == 4 ? CardType::structure :
+           i == 8 ? CardType::action :
+           CardType::num_cardtypes);
 }
 
 Faction skill_faction(xml_node<>* skill)
@@ -50,75 +61,20 @@ unsigned skill_value(xml_node<>* skill)
     return(value);
 }
 
-template<unsigned>
-struct GlobalSkill
-{
-    enum { type = 99 };
-};
-
-template<> struct GlobalSkill<augment> { enum {type = augment_all}; };
-template<> struct GlobalSkill<chaos> { enum {type = chaos_all}; };
-template<> struct GlobalSkill<cleanse> { enum {type = cleanse_all}; };
-template<> struct GlobalSkill<enfeeble> { enum {type = enfeeble_all}; };
-template<> struct GlobalSkill<freeze> { enum {type = freeze_all}; };
-template<> struct GlobalSkill<heal> { enum {type = heal_all}; };
-template<> struct GlobalSkill<jam> { enum {type = jam_all}; };
-template<> struct GlobalSkill<protect> { enum {type = protect_all}; };
-template<> struct GlobalSkill<rally> { enum {type = rally_all}; };
-template<> struct GlobalSkill<repair> { enum {type = repair_all}; };
-template<> struct GlobalSkill<siege> { enum {type = siege_all}; };
-template<> struct GlobalSkill<strike> { enum {type = strike_all}; };
-template<> struct GlobalSkill<weaken> { enum {type = weaken_all}; };
-
-template<unsigned GlobalSkill>
-bool handle_global_skill(xml_node<>* node, Card* card)
-{
-    bool played(node->first_attribute("played"));
-    bool died(node->first_attribute("died"));
-    bool attacked(node->first_attribute("attacked"));
-    bool kill(node->first_attribute("kill"));
-    if(node->first_attribute("all"))
-    {
-        if(played)
-        {
-            card->add_played_skill(ActiveSkill(GlobalSkill), skill_value(node), skill_faction(node));
-            if(died) {card->add_died_skill(ActiveSkill(GlobalSkill), skill_value(node), skill_faction(node)); }
-        }
-        else if(died) {card->add_died_skill(ActiveSkill(GlobalSkill), skill_value(node), skill_faction(node)); }
-        else if(attacked) {card->add_attacked_skill(ActiveSkill(GlobalSkill), skill_value(node), skill_faction(node)); }
-        else if(kill) {card->add_kill_skill(ActiveSkill(GlobalSkill), skill_value(node), skill_faction(node)); }
-        else {card->add_skill(ActiveSkill(GlobalSkill), skill_value(node), skill_faction(node)); }
-        return(true);
-    }
-    return(false);
-}
-
-template<>
-bool handle_global_skill<99>(xml_node<>* node, Card* card)
-{
-    return(false);
-}
-
-template<unsigned Skill>
+template<Skill skill>
 void handle_skill(xml_node<>* node, Card* card)
 {
+    bool all(node->first_attribute("all"));
     bool played(node->first_attribute("played"));
-    bool died(node->first_attribute("died"));
     bool attacked(node->first_attribute("attacked"));
     bool kill(node->first_attribute("kill"));
-    if(handle_global_skill<GlobalSkill<Skill>::type>(node, card)) {}
-    else
-    {
-        if(played)
-        {
-            card->add_played_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node));
-            if(died) {card->add_died_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node)); }
-        }
-        else if(died) {card->add_died_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node)); }
-        else if(attacked) {card->add_attacked_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node)); }
-        else if(kill) {card->add_kill_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node)); }
-        else {card->add_skill(ActiveSkill(Skill), skill_value(node), skill_faction(node)); }
-    }
+    bool died(node->first_attribute("died"));
+    bool normal(!(played || died || attacked || kill));
+    if(played) { card->add_played_skill(skill, skill_value(node), skill_faction(node), all); }
+    if(attacked) {card->add_attacked_skill(skill, skill_value(node), skill_faction(node), all); }
+    if(kill) {card->add_kill_skill(skill, skill_value(node), skill_faction(node), all); }
+    if(died) {card->add_died_skill(skill, skill_value(node), skill_faction(node), all); }
+    if(normal) {card->add_skill(skill, skill_value(node), skill_faction(node), all); }
 }
 //------------------------------------------------------------------------------
 void load_decks_xml(Decks& decks, Cards& cards)
@@ -148,6 +104,7 @@ void load_decks_xml(Decks& decks, Cards& cards)
         std::cout << "\nException while loading decks from file quests.xml\n";
     }
 }
+
 //------------------------------------------------------------------------------
 void parse_file(const char* filename, std::vector<char>& buffer, xml_document<>& doc)
 {
@@ -223,14 +180,17 @@ void read_cards(Cards& cards)
                 c->m_id = id;
                 c->m_base_id = id;
                 c->m_name = name_node->value();
+                // So far, commanders have attack_node (value == 0)
                 if(id < 1000)
                 { c->m_type = CardType::assault; }
                 else if(id < 2000)
                 { c->m_type = CardType::commander; }
                 else if(id < 3000)
                 { c->m_type = CardType::structure; }
-                else
+                else if(id < 4000)
                 { c->m_type = CardType::action; }
+                else
+                { c->m_type = cost_node ? (attack_node ? CardType::assault : CardType::structure) : (health_node ? CardType::commander : CardType::action); }
                 if(attack_node) { c->m_attack = atoi(attack_node->value()); }
                 if(health_node) { c->m_health = atoi(health_node->value()); }
                 if(cost_node) { c->m_delay = atoi(cost_node->value()); }
@@ -294,8 +254,6 @@ void read_cards(Cards& cards)
                         if(attacked) { c->m_poison_oa = atoi(skill->first_attribute("x")->value()); }
                         else {c->m_poison = atoi(skill->first_attribute("x")->value()); }
                     }
-                    if(strcmp(skill->first_attribute("id")->value(), "recharge") == 0)
-                    { c->m_recharge = true; }
                     if(strcmp(skill->first_attribute("id")->value(), "refresh") == 0)
                     { c->m_refresh = true; }
                     if(strcmp(skill->first_attribute("id")->value(), "regenerate") == 0)
@@ -336,6 +294,8 @@ void read_cards(Cards& cards)
                     { handle_skill<protect>(skill, c); }
                     if(strcmp(skill->first_attribute("id")->value(), "rally") == 0)
                     { handle_skill<rally>(skill, c); }
+                    if(strcmp(skill->first_attribute("id")->value(), "recharge") == 0)
+                    { handle_skill<recharge>(skill, c); }
                     if(strcmp(skill->first_attribute("id")->value(), "repair") == 0)
                     { handle_skill<repair>(skill, c); }
                     if(strcmp(skill->first_attribute("id")->value(), "rush") == 0)
@@ -403,6 +363,8 @@ void read_missions(Decks& decks, Cards& cards, std::string filename)
             DeckRandom* deck = &decks.mission_decks.back();
             decks.mission_decks_by_id[id] = deck;
             decks.mission_decks_by_name[deck_name] = deck;
+            decks.mission_name_by_id[id] = deck_name;
+            decks.mission_id_by_name[deck_name] = id;
         }
     }
 }
@@ -535,4 +497,139 @@ void read_quests(Decks& decks, Cards& cards, std::string filename)
             decks.quest_effects_by_name[deck_name] = battleground_id;
         }
     }
+}
+//------------------------------------------------------------------------------
+extern unsigned turn_limit;
+Comparator get_comparator(xml_node<>* node, Comparator default_comparator)
+{
+    xml_attribute<>* compare(node->first_attribute("compare"));
+    if(!compare) { return default_comparator; }
+    else if(strcmp(compare->value(), "equal") == 0) { return equal; }
+    else if(strcmp(compare->value(), "great_equal") == 0) { return great_equal; }
+    else if(strcmp(compare->value(), "less_equal") == 0) { return less_equal; }
+    else { throw std::runtime_error(std::string("Not implemented: compare=\"") + compare->value() + "\""); }
+}
+
+void read_achievement(Decks& decks, Cards& cards, Achievement& achievement, const char* achievement_id_name, std::string filename/* = "achievements.xml"*/)
+{
+    std::vector<char> buffer;
+    xml_document<> doc;
+    parse_file(filename.c_str(), buffer, doc);
+    xml_node<>* root = doc.first_node();
+
+    if(!root)
+    {
+        throw std::runtime_error("Failed to parse " + filename);
+    }
+
+    std::map<std::string, int> skill_map;
+    for(unsigned i(0); i < Skill::num_skills; ++i)
+    {
+        skill_map[skill_names[i]] = i;
+    }
+
+    for(xml_node<>* achievement_node = root->first_node();
+        achievement_node;
+        achievement_node = achievement_node->next_sibling())
+    {
+        if(strcmp(achievement_node->name(), "achievement") != 0) { continue; }
+        xml_node<>* id_node(achievement_node->first_node("id"));
+        xml_node<>* name_node(achievement_node->first_node("name"));
+        if(!id_node || !name_node || (strcmp(id_node->value(), achievement_id_name) != 0 && strcmp(name_node->value(), achievement_id_name) != 0)) { continue; }
+        std::cout << "Achievement " << id_node->value() << " " << name_node->value() << ": " << achievement_node->first_node("desc")->value() << std::endl;
+        xml_node<>* type_node(achievement_node->first_node("type"));
+        xml_attribute<>* mission_id(type_node ? type_node->first_attribute("mission_id") : NULL);
+        if(!type_node || !mission_id)
+        {
+            throw std::runtime_error("Must be 'mission' type.");
+        }
+        assert(strcmp(type_node->first_attribute("winner")->value(), "1") == 0);
+        if(strcmp(mission_id->value(), "*") != 0)
+        {
+            achievement.mission_condition.init(atoi(mission_id->value()), get_comparator(type_node, equal));
+            std::cout << "  Mission" << achievement.mission_condition.str() << " (" << decks.mission_name_by_id[atoi(mission_id->value())] << ") and win" << std::endl;
+        }
+        for (xml_node<>* req_node = achievement_node->first_node("req");
+            req_node;
+            req_node = req_node->next_sibling("req"))
+        {
+            Comparator comparator = get_comparator(req_node, great_equal);
+            xml_attribute<>* skill_id(req_node->first_attribute("skill_id"));
+            xml_attribute<>* unit_id(req_node->first_attribute("unit_id"));
+            xml_attribute<>* unit_type(req_node->first_attribute("unit_type"));
+            xml_attribute<>* unit_race(req_node->first_attribute("unit_race"));
+            xml_attribute<>* unit_rarity(req_node->first_attribute("unit_rarity"));
+            xml_attribute<>* num_turns(req_node->first_attribute("num_turns"));
+            xml_attribute<>* num_used(req_node->first_attribute("num_used"));
+            xml_attribute<>* num_played(req_node->first_attribute("num_played"));
+            xml_attribute<>* num_killed(req_node->first_attribute("num_killed"));
+            if(num_turns && comparator == less_equal)
+            {
+                turn_limit = atoi(num_turns->value());
+                std::cout << "  Turns <= " << turn_limit << std::endl;
+            }
+            else if(skill_id && num_used)
+            {
+                auto x = skill_map.find(skill_id->value());
+                if(x == skill_map.end())
+                {
+                    throw std::runtime_error(std::string("Unknown skill ") + skill_id->value());
+                }
+                achievement.skill_used[x->second] = achievement.req_counter.size();
+                achievement.req_counter.emplace_back(atoi(num_used->value()), comparator);
+                std::cout << "  Use skills: " << skill_id->value() << achievement.req_counter.back().str() << std::endl;
+            }
+            else if(unit_id && num_played)
+            {
+                achievement.unit_played[atoi(unit_id->value())] = achievement.req_counter.size();
+                achievement.req_counter.emplace_back(atoi(num_played->value()), comparator);
+                std::cout << "  Play units: " << cards.by_id(atoi(unit_id->value()))->m_name << achievement.req_counter.back().str() << std::endl;
+            }
+            else if(unit_type && num_played)
+            {
+                auto i = map_to_type(atoi(unit_type->value()));
+                if(i == CardType::num_cardtypes)
+                {
+                    throw std::runtime_error(std::string("Unknown unit_type ") + unit_type->value());
+                }
+                achievement.unit_type_played[i] = achievement.req_counter.size();
+                achievement.req_counter.emplace_back(atoi(num_played->value()), comparator);
+                std::cout << "  Play units of type: " << cardtype_names[i] << achievement.req_counter.back().str() << std::endl;
+            }
+            else if(unit_race && num_played)
+            {
+                auto i = map_to_faction(atoi(unit_race->value()));
+                if(i == Faction::allfactions)
+                {
+                    throw std::runtime_error(std::string("Invalid unit_race ") + unit_race->value());
+                }
+                achievement.unit_faction_played[i] = achievement.req_counter.size();
+                achievement.req_counter.emplace_back(atoi(num_played->value()), comparator);
+                std::cout << "  Play units of race (faction): " << faction_names[i] << achievement.req_counter.back().str() << std::endl;
+            }
+            else if(unit_rarity && num_played)
+            {
+                achievement.unit_rarity_played[atoi(unit_rarity->value())] = achievement.req_counter.size();
+                achievement.req_counter.emplace_back(atoi(num_played->value()), comparator);
+                std::cout << "  Play units of rarity: " << rarity_names[atoi(unit_rarity->value())] << achievement.req_counter.back().str() << std::endl;
+            }
+            else if(unit_type && num_killed)
+            {
+                auto i = map_to_type(atoi(unit_type->value()));
+                if(i == CardType::num_cardtypes)
+                {
+                    throw std::runtime_error(std::string("Unknown unit_type ") + unit_type->value());
+                }
+                achievement.unit_type_killed[i] = achievement.req_counter.size();
+                achievement.req_counter.emplace_back(atoi(num_killed->value()), comparator);
+                std::cout << "  Kill units of type: " << cardtype_names[i] << achievement.req_counter.back().str() << std::endl;
+            }
+            else
+            {
+                throw std::runtime_error("Not implemented.");
+            }
+        }
+        return;
+    }
+    throw std::runtime_error("No such achievement.");
 }

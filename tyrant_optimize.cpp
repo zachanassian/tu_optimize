@@ -31,6 +31,7 @@
 #include "card.h"
 #include "cards.h"
 #include "deck.h"
+#include "achievement.h"
 #include "read.h"
 #include "sim.h"
 #include "tyrant.h"
@@ -88,11 +89,6 @@ std::string card_id_name(const Card* card)
 //------------------------------------------------------------------------------
 DeckIface* find_deck(const Decks& decks, std::string name)
 {
-    auto it1 = decks.mission_decks_by_name.find(name);
-    if(it1 != decks.mission_decks_by_name.end())
-    {
-        return(it1->second);
-    }
     auto it2 = decks.raid_decks_by_name.find(name);
     if(it2 != decks.raid_decks_by_name.end())
     {
@@ -306,8 +302,9 @@ struct SimulationData
     std::vector<double> factors;
     gamemode_t gamemode;
     enum Effect effect;
+    const Achievement& achievement;
 
-    SimulationData(unsigned seed, const Cards& cards_, const Decks& decks_, unsigned num_def_decks_, std::vector<double> factors_, gamemode_t gamemode_, enum Effect effect_) :
+    SimulationData(unsigned seed, const Cards& cards_, const Decks& decks_, unsigned num_def_decks_, std::vector<double> factors_, gamemode_t gamemode_, enum Effect effect_, const Achievement& achievement_) :
         re(seed),
         cards(cards_),
         decks(decks_),
@@ -316,7 +313,8 @@ struct SimulationData
         def_decks(num_def_decks_),
         factors(factors_),
         gamemode(gamemode_),
-        effect(effect_)
+        effect(effect_),
+        achievement(achievement_)
     {
         for(auto def_deck: def_decks)
         {
@@ -347,7 +345,7 @@ struct SimulationData
         {
             att_hand.reset(re);
             def_hand->reset(re);
-            Field fd(re, cards, att_hand, *def_hand, gamemode, effect);
+            Field fd(re, cards, att_hand, *def_hand, gamemode, effect, achievement);
             unsigned result(play(&fd));
             res.emplace_back(result);
         }
@@ -377,8 +375,9 @@ public:
     std::vector<double> factors;
     gamemode_t gamemode;
     enum Effect effect;
+    Achievement achievement;
 
-    Process(unsigned _num_threads, const Cards& cards_, const Decks& decks_, DeckIface* att_deck_, std::vector<DeckIface*> _def_decks, std::vector<double> _factors, gamemode_t _gamemode, enum Effect _effect) :
+    Process(unsigned _num_threads, const Cards& cards_, const Decks& decks_, DeckIface* att_deck_, std::vector<DeckIface*> _def_decks, std::vector<double> _factors, gamemode_t _gamemode, enum Effect _effect, const Achievement& achievement_) :
         num_threads(_num_threads),
         main_barrier(num_threads+1),
         cards(cards_),
@@ -387,13 +386,14 @@ public:
         def_decks(_def_decks),
         factors(_factors),
         gamemode(_gamemode),
-        effect(_effect)
+        effect(_effect),
+        achievement(achievement_)
     {
         destroy_threads = false;
         unsigned seed(time(0));
         for(unsigned i(0); i < num_threads; ++i)
         {
-            threads_data.push_back(new SimulationData(seed + i, cards, decks, def_decks.size(), factors, gamemode, effect));
+            threads_data.push_back(new SimulationData(seed + i, cards, decks, def_decks.size(), factors, gamemode, effect, achievement));
             threads.push_back(new boost::thread(thread_evaluate, std::ref(main_barrier), std::ref(shared_mutex), std::ref(*threads_data.back()), std::ref(*this), i));
         }
     }
@@ -1005,35 +1005,41 @@ void print_available_decks(const Decks& decks)
 
 void usage(int argc, char** argv)
 {
-    std::cout << "usage: " << argv[0] << " <attack deck> <defense decks list> [optional flags] [brute <num1> <num2>] [climb <num>]\n";
-    std::cout << "\n";
-    std::cout << "<attack deck>: the deck name of a custom deck.\n";
-    std::cout << "<defense decks list>: semicolon separated list of defense decks, syntax:\n";
-    std::cout << "  deckname1[:factor1];deckname2[:factor2];...\n";
-    std::cout << "  where deckname is the name of a mission, raid, or custom deck, and factor is optional. The default factor is 1.\n";
-    std::cout << "  example: \'fear:0.2;slowroll:0.8\' means fear is the defense deck 20% of the time, while slowroll is the defense deck 80% of the time.\n";
-    std::cout << "\n";
-    std::cout << "Flags:\n";
-    std::cout << "  -a: optimize for ANP instead of win rate.\n";
-    std::cout << "  -c: don't try to optimize the commander.\n";
-    std::cout << "  -e <effect>: set the battleground effect.\n";
-    std::cout << "  -fixedlen: prevent hill climbing from changing the number of cards.\n";
-    std::cout << "  -o: restrict hill climbing to the owned cards listed in \"ownedcards.txt\".\n";
-    std::cout << "  -o=<filename>: restrict hill climbing to the owned cards listed in <filename>.\n";
-    std::cout << "  -q: quest mode. Removes faction restrictions from defending commanders and automatically sets quest effect.\n";
-    std::cout << "  -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).\n";
-    std::cout << "  -s: use surge (default is fight).\n";
-    std::cout << "  -t <num>: set the number of threads, default is 4.\n";
-    std::cout << "  -turnlimit <num>: set the number of turns in a battle, default is 50 (can be used for speedy achievements).\n";
-    std::cout << "  -wintie: attacker wins if turns run out (default is defeated; can be used for def deck simulation).\n";
-    std::cout << "Operations:\n";
-    std::cout << "brute <num1> <num2>: find the best combination of <num1> different cards, using up to <num2> battles to evaluate a deck.\n";
-    std::cout << "climb <num>: perform hill-climbing starting from the given attack deck, using up to <num> battles to evaluate a deck.\n";
-    std::cout << "sim <num>: simulate <num> battles to evaluate a deck.\n";
+    std::cout << "usage: " << argv[0] << " Attacker Defender [Flags] [Operations]\n"
+        "\n"
+        "Attacker:\n"
+        "  the deck name/hash of a custom deck.\n"
+        "\n"
+        "Defender:\n"
+        "  semicolon separated list of defense decks, syntax:\n"
+        "  deck1[:factor1];deck2[:factor2];...\n"
+        "  where deck is the name/hash of a mission, raid, or custom deck, and factor is optional. The default factor is 1.\n"
+        "  example: \'fear:0.2;slowroll:0.8\' means fear is the defense deck 20% of the time, while slowroll is the defense deck 80% of the time.\n"
+        "\n"
+        "Flags:\n"
+        "  -a: optimize for ANP instead of win rate.\n"
+        "  -A <achievement>: optimize for the achievement specified by either id or name.\n"
+        "  -c: don't try to optimize the commander.\n"
+        "  -e <effect>: set the battleground effect.\n"
+        "  -fixedlen: prevent hill climbing from changing the number of cards.\n"
+        "  -o: restrict hill climbing to the owned cards listed in \"ownedcards.txt\".\n"
+        "  -o=<filename>: restrict hill climbing to the owned cards listed in <filename>.\n"
+        "  -q: quest mode. automatically sets quest effect.\n"
+        "  -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).\n"
+        "  -s: use surge (default is fight).\n"
+        "  -t <num>: set the number of threads, default is 4.\n"
+        "  -turnlimit <num>: set the number of turns in a battle, default is 50 (can be used for speedy achievements).\n"
+        "  -wintie: attacker wins if turns run out (default is defeated; can be used for def deck simulation).\n"
+        "\n"
+        "Operations:\n"
+        "  brute <num1> <num2>: find the best combination of <num1> different cards, using up to <num2> battles to evaluate a deck.\n"
+        "  climb <num>: perform hill-climbing starting from the given attack deck, using up to <num> battles to evaluate a deck.\n"
+        "  sim <num>: simulate <num> battles to evaluate a deck.\n"
 #ifndef NDEBUG
-    std::cout << "debug: testing purpose only. very verbose output. only one battle.\n";
-    std::cout << "debuguntil <min> <max>: testing purpose only. fight until the last fight results in range [<min>, <max>]. recommend to redirect output.\n";
+        "  debug: testing purpose only. very verbose output. only one battle.\n"
+        "  debuguntil <min> <max>: testing purpose only. fight until the last fight results in range [<min>, <max>]. recommend to redirect output.\n"
 #endif
+        ;
 }
 
 int main(int argc, char** argv)
@@ -1046,6 +1052,7 @@ int main(int argc, char** argv)
     Cards cards;
     read_cards(cards);
     Decks decks;
+    Achievement achievement;
     load_decks_xml(decks, cards);
     load_decks(decks, cards);
     fill_skill_table();
@@ -1056,31 +1063,7 @@ int main(int argc, char** argv)
         return(4);
     }
     std::string att_deck_name{argv[1]};
-    std::vector<DeckIface*> def_decks;
-    std::vector<double> def_decks_factors;
     auto deck_list_parsed = parse_deck_list(argv[2]);
-    for(auto deck_parsed: deck_list_parsed)
-    {
-        DeckIface* def_deck = find_deck(decks, deck_parsed.first);
-        if(def_deck == nullptr)
-        {
-            try
-            { def_deck = hash_to_deck(deck_parsed.first.c_str(), cards); }
-            catch(const std::runtime_error& e)
-            {
-                std::cerr << "Error: Deck hash " << deck_parsed.first << ": " << e.what() << std::endl;
-                return(5);
-            }
-            if(def_deck == nullptr)
-            {
-                std::cerr << "Error: Invalid defense deck name/hash " << deck_parsed.first << ". Available decks:" << std::endl;
-                print_available_decks(decks);
-                return(5);
-            }
-        }
-        def_decks.push_back(def_deck);
-        def_decks_factors.push_back(deck_parsed.second);
-    }
 
     enum Effect effect = Effect::none;
     std::map<std::string, int> effect_map;
@@ -1095,6 +1078,19 @@ int main(int argc, char** argv)
         if(strcmp(argv[argIndex], "-a") == 0)
         {
             use_anp = true;
+        }
+        else if(strcmp(argv[argIndex], "-A") == 0)
+        {
+            try
+            {
+                read_achievement(decks, cards, achievement, argv[argIndex + 1]);
+            }
+            catch(const std::runtime_error& e)
+            {
+                std::cerr << "Error: Achievement " << argv[argIndex + 1] << ": " << e.what() << std::endl;
+                return(1);
+            }
+            argIndex += 1;
         }
         else if(strcmp(argv[argIndex], "-c") == 0)
         {
@@ -1128,18 +1124,6 @@ int main(int argc, char** argv)
         }
         else if(strcmp(argv[argIndex], "-q") == 0)
         {
-            // Strip faction restrictions from commanders of all defending decks
-            // The assumption is that the attacking deck won't use these commanders.
-            // If the attacking deck does, its commander will receive this modification as well.
-            for(auto def_deck: def_decks)
-            {
-                // Can't directly use def_deck->commander, as it is const.
-                unsigned commander_id(def_deck->commander->m_id);
-                for(auto& skill: cards.cards_by_id[commander_id]->m_skills)
-                {
-                    skill = std::make_tuple(std::get<0>(skill), std::get<1>(skill), allfactions);
-                }
-            }
             // Set quest effect:
             for(auto deck_parsed: deck_list_parsed)
             {
@@ -1182,17 +1166,17 @@ int main(int argc, char** argv)
         }
         else if(strcmp(argv[argIndex], "brute") == 0)
         {
-            todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex+1]), (unsigned)atoi(argv[argIndex+2]), bruteforce));
+            todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex + 1]), (unsigned)atoi(argv[argIndex + 2]), bruteforce));
             argIndex += 2;
         }
         else if(strcmp(argv[argIndex], "climb") == 0)
         {
-            todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex+1]), 0u, climb));
+            todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex + 1]), 0u, climb));
             argIndex += 1;
         }
         else if(strcmp(argv[argIndex], "sim") == 0)
         {
-             todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex+1]), 0u, simulate));
+             todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex + 1]), 0u, simulate));
              argIndex += 1;
         }
         else if(strcmp(argv[argIndex], "debug") == 0)
@@ -1207,7 +1191,7 @@ int main(int argc, char** argv)
             num_threads = 1;
             // fight until the last battle results in range [min_score, max_score].
             // E.g., 0 0: until lose; 1 1: until win (non-ANP); 10 25: until win (ANP).
-            todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex+1]), (unsigned)atoi(argv[argIndex+2]), fightuntil));
+            todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex + 1]), (unsigned)atoi(argv[argIndex + 2]), fightuntil));
             argIndex += 2;
         }
         else
@@ -1241,7 +1225,45 @@ int main(int argc, char** argv)
             return(5);
         }
     }
-    print_deck(*att_deck);
+
+    std::vector<DeckIface*> def_decks;
+    std::vector<double> def_decks_factors;
+    for(auto deck_parsed: deck_list_parsed)
+    {
+        DeckIface* def_deck{nullptr};
+        auto it1 = decks.mission_decks_by_name.find(deck_parsed.first);
+        if(it1 != decks.mission_decks_by_name.end())
+        {
+            if(!achievement.mission_condition.check(decks.mission_id_by_name[deck_parsed.first]))
+            {
+                std::cerr << "Error: Wrong mission [" << deck_parsed.first << "] for achievement." << std::endl;
+                return(1);
+            }
+            def_deck = it1->second;
+        }
+        if(def_deck == nullptr)
+        {
+            def_deck = find_deck(decks, deck_parsed.first);
+        }
+        if(def_deck == nullptr)
+        {
+            try
+            { def_deck = hash_to_deck(deck_parsed.first.c_str(), cards); }
+            catch(const std::runtime_error& e)
+            {
+                std::cerr << "Error: Deck hash " << deck_parsed.first << ": " << e.what() << std::endl;
+                return(5);
+            }
+            if(def_deck == nullptr)
+            {
+                std::cerr << "Error: Invalid defense deck name/hash " << deck_parsed.first << ". Available decks:" << std::endl;
+                print_available_decks(decks);
+                return(5);
+            }
+        }
+        def_decks.push_back(def_deck);
+        def_decks_factors.push_back(deck_parsed.second);
+    }
 
     std::shared_ptr<DeckOrdered> att_deck_ordered;
     if(ordered)
@@ -1250,8 +1272,9 @@ int main(int argc, char** argv)
     }
 
     modify_cards(cards, effect);
+    print_deck(*att_deck);
 
-    Process p(num_threads, cards, decks, ordered ? att_deck_ordered.get() : att_deck, def_decks, def_decks_factors, gamemode, effect);
+    Process p(num_threads, cards, decks, ordered ? att_deck_ordered.get() : att_deck, def_decks, def_decks_factors, gamemode, effect, achievement);
     {
         //ScopeClock timer;
         for(auto op: todo)

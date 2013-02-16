@@ -2,24 +2,40 @@
 
 #include <string>
 
-const std::string faction_names[num_factions] =
+const std::string faction_names[Faction::num_factions] =
 { "", "bloodthirsty", "imperial", "raider", "righteous", "xeno" };
 
-std::string skill_names[num_skills] =
-{"augment", "augment_all", "backfire", "chaos", "chaos_all", "cleanse", "cleanse_all", "enfeeble", "enfeeble_all",
- "freeze", "freeze_all", "heal", "heal_all", "infuse", "jam", "jam_all",
- "mimic", "protect", "protect_all", "rally", "rally_all", "repair", "repair_all", "rush", "shock",
- "siege", "siege_all", "strike", "strike_all", "summon", "supply",
- "temporary_split",
- "trigger_regen",
- "weaken", "weaken_all"};
-
-std::set<ActiveSkill> helpful_skills{
-    augment, augment_all, cleanse, cleanse_all, heal, heal_all, protect, protect_all, rally, rally_all,
-    /*repair, repair_all, rush, */supply,
+std::string skill_names[Skill::num_skills] =
+{
+    // Activation (including Destroyed):
+    "augment", "backfire", "chaos", "cleanse", "enfeeble",
+    "freeze", "heal", "infuse", "jam",
+    "mimic", "protect", "rally", "recharge", "repair", "rush", "shock",
+    "siege", "strike", "summon", "supply",
+    "temporary_split",
+    "trigger_regen",
+    "weaken",
+    // Combat-Modifier:
+    "antiair", "burst", "fear", "flurry", "pierce", "swipe", "valor",
+    // Damage-Dependant:
+    "berserk", "crush", "disease", "immobilize", "leech", "poison", "siphon",
+    // Defensive:
+    "armored", "counter", "emulate", "evade", "flying", "intercept", "payback", "refresh", "regenerate", "tribute", "wall",
+    // Triggered:
+    "blitz",
+    // Static (ignored):
+    /* "blizzard", "fusion", "mist", */
+    // Misc:
+    "0",
 };
 
-std::string cardtype_names[CardType::num_cardtypes]{"Action", "Assault", "Commander", "Structure"};
+std::set<Skill> helpful_skills{
+    augment, cleanse, heal, protect, rally, repair, rush, supply,
+};
+
+std::string cardtype_names[CardType::num_cardtypes]{"Commander", "Assault", "Structure", "Action", };
+
+std::string rarity_names[5]{"", "common", "uncommon", "rare", "legendary", };
 
 std::string effect_names[Effect::num_effects] = {
     "None",

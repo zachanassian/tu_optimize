@@ -40,7 +40,6 @@ public:
         m_poison(0),
         m_poison_oa(0),
         m_rarity(1),
-        m_recharge(false),
         m_refresh(false),
         m_regenerate(0),
         m_set(0),
@@ -56,16 +55,16 @@ public:
     {
     }
 
-    void add_skill(ActiveSkill v1, unsigned v2, Faction v3)
-    { m_skills.push_back(std::make_tuple(v1, v2, v3)); }
-    void add_played_skill(ActiveSkill v1, unsigned v2, Faction v3)
-    { m_skills_on_play.push_back(std::make_tuple(v1, v2, v3)); }
-    void add_died_skill(ActiveSkill v1, unsigned v2, Faction v3)
-    { m_skills_on_death.push_back(std::make_tuple(v1, v2, v3)); }
-    void add_attacked_skill(ActiveSkill v1, unsigned v2, Faction v3)
-    { m_skills_on_attacked.push_back(std::make_tuple(v1, v2, v3)); }
-    void add_kill_skill(ActiveSkill v1, unsigned v2, Faction v3)
-    { m_skills_on_kill.push_back(std::make_tuple(v1, v2, v3)); }
+    void add_skill(Skill v1, unsigned v2, Faction v3, bool v4)
+    { m_skills.push_back(std::make_tuple(v1, v2, v3, v4)); }
+    void add_played_skill(Skill v1, unsigned v2, Faction v3, bool v4)
+    { m_skills_on_play.push_back(std::make_tuple(v1, v2, v3, v4)); }
+    void add_died_skill(Skill v1, unsigned v2, Faction v3, bool v4)
+    { m_skills_on_death.push_back(std::make_tuple(v1, v2, v3, v4)); }
+    void add_attacked_skill(Skill v1, unsigned v2, Faction v3, bool v4)
+    { m_skills_on_attacked.push_back(std::make_tuple(v1, v2, v3, v4)); }
+    void add_kill_skill(Skill v1, unsigned v2, Faction v3, bool v4)
+    { m_skills_on_kill.push_back(std::make_tuple(v1, v2, v3, v4)); }
 
     unsigned m_antiair;
     unsigned m_armored;
@@ -98,7 +97,6 @@ public:
     unsigned m_poison;
     unsigned m_poison_oa;
     unsigned m_rarity;
-    bool m_recharge;
     bool m_refresh;
     unsigned m_regenerate;
     int m_set;

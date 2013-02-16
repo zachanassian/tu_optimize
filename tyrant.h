@@ -17,28 +17,43 @@ enum Faction
 };
 extern const std::string faction_names[num_factions];
 
-enum ActiveSkill
-{augment, augment_all, backfire, chaos, chaos_all, cleanse, cleanse_all, enfeeble, enfeeble_all,
- freeze, freeze_all, heal, heal_all, infuse, jam, jam_all,
- mimic, protect, protect_all, rally, rally_all, repair, repair_all, rush, shock,
- siege, siege_all, strike, strike_all, summon, supply,
- temporary_split, // not actually a skill; handles Clone Project/Experiment
- trigger_regen, // not actually a skill; handles regeneration after strike/siege
- weaken, weaken_all, num_skills};
+enum Skill
+{
+    // Activation (including Destroyed):
+    augment, backfire, chaos, cleanse, enfeeble, freeze, heal, infuse, jam,
+    mimic, protect, rally, recharge, repair, rush, shock, siege, strike, summon, supply,
+    temporary_split, // not actually a skill; handles Clone Project/Experiment
+    trigger_regen, // not actually a skill; handles regeneration after strike/siege
+    weaken, 
+    // Combat-Modifier:
+    antiair, burst, fear, flurry, pierce, swipe, valor,
+    // Damage-Dependant:
+    berserk, crush, disease, immobilize, leech, poison, siphon,
+    // Defensive:
+    armored, counter, emulate, evade, flying, intercept, payback, refresh, regenerate, tribute, wall,
+    // Triggered:
+    blitz,
+    // Static, ignored:
+    /* blizzard, fusion, mist, */
+    // Misc:
+    attack,
+    num_skills};
 extern std::string skill_names[num_skills];
-extern std::set<ActiveSkill> helpful_skills;
+extern std::set<Skill> helpful_skills;
 
 namespace CardType {
 enum CardType {
-    action,
-    assault,
     commander,
+    assault,
     structure,
+    action,
     num_cardtypes
 };
 }
 
 extern std::string cardtype_names[CardType::num_cardtypes];
+
+extern std::string rarity_names[5];
 
 enum Effect {
     none,
@@ -83,13 +98,7 @@ template<>
 struct skillTriggersRegen<strike> { typedef true_ T; };
 
 template<>
-struct skillTriggersRegen<strike_all> { typedef true_ T; };
-
-template<>
 struct skillTriggersRegen<siege> { typedef true_ T; };
-
-template<>
-struct skillTriggersRegen<siege_all> { typedef true_ T; };
 
 enum SkillSourceType
 {
@@ -100,6 +109,6 @@ enum SkillSourceType
     source_chaos
 };
 
-typedef std::tuple<ActiveSkill, unsigned, Faction> SkillSpec;
+typedef std::tuple<Skill, unsigned, Faction, bool /* All */> SkillSpec;
 
 #endif

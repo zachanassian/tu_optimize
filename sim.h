@@ -13,6 +13,7 @@ class Card;
 class Cards;
 class DeckIface;
 class Field;
+class Achievement;
 
 extern bool debug_print;
 extern bool debug_line;
@@ -110,6 +111,8 @@ struct CardStatus
     unsigned m_rallied;
     unsigned m_weakened;
     bool m_temporary_split;
+    bool m_summoned; // is this card summoned?
+    bool m_attacked; // has this card attacked in the turn?
 
     CardStatus() {}
     CardStatus(const Card* card);
@@ -158,6 +161,7 @@ public:
     unsigned turn;
     gamemode_t gamemode;
     const enum Effect effect;
+    const Achievement& achievement;
     // With the introduction of on death skills, a single skill can trigger arbitrary many skills.
     // They are stored in this, and cleared after all have been performed.
     std::deque<std::tuple<CardStatus*, SkillSpec> > skill_queue;
@@ -180,15 +184,17 @@ public:
     unsigned points_since_last_decision;
 
     unsigned fusion_count;
+    std::vector<unsigned> achievement_counter;
 
-    Field(std::mt19937& re_, const Cards& cards_, Hand& hand1, Hand& hand2, gamemode_t _gamemode, enum Effect _effect) :
+    Field(std::mt19937& re_, const Cards& cards_, Hand& hand1, Hand& hand2, gamemode_t gamemode_, enum Effect effect_, const Achievement& achievement_) :
         end{false},
         re(re_),
         cards(cards_),
         players{{&hand1, &hand2}},
         turn(1),
-        gamemode(_gamemode),
-        effect(_effect)
+        gamemode(gamemode_),
+        effect(effect_),
+        achievement(achievement_)
     {
     }
 
@@ -207,6 +213,22 @@ public:
     {
         assert(v.size() > 0);
         return(v[this->rand(0, v.size() - 1)]);
+    }
+
+    template <class T>
+    inline void inc_counter(T& container, unsigned key)
+    {
+        auto x = container.find(key);
+        if(x != container.end())
+        {
+            ++ achievement_counter[x->second];
+#if 0
+            if(achievement.req_counter[x->second].predict_monoinc(achievement_counter[x->second]) < 0)
+            {
+                end = true;
+            }
+#endif
+        }
     }
 };
 
