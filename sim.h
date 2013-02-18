@@ -11,7 +11,7 @@
 
 class Card;
 class Cards;
-class DeckIface;
+class Deck;
 class Field;
 class Achievement;
 
@@ -128,7 +128,7 @@ class Hand
 {
 public:
 
-    Hand(DeckIface* deck_) :
+    Hand(Deck* deck_) :
         deck(deck_),
         assaults(15),
         structures(15)
@@ -137,7 +137,7 @@ public:
 
     void reset(std::mt19937& re);
 
-    DeckIface* deck;
+    Deck* deck;
     CardStatus commander;
     Storage<CardStatus> assaults;
     Storage<CardStatus> structures;

@@ -1,6 +1,7 @@
 #include "deck.h"
 
 #include <boost/range/algorithm_ext/insert.hpp>
+#include <sstream>
 #include <stdexcept>
 
 #include "card.h"
@@ -25,23 +26,26 @@ void partial_shuffle(RandomAccessIterator first, RandomAccessIterator middle,
     }
 }
 
-namespace boost
+//------------------------------------------------------------------------------
+std::string deck_hash(const Card* commander, const std::vector<const Card*>& cards)
 {
-namespace range
-{
-template<typename Range, typename UniformRandomNumberGenerator>
-void shuffle(Range& range, UniformRandomNumberGenerator&& rand)
-{
-    std::shuffle(boost::begin(range), boost::end(range), rand);
+    std::string base64= "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    std::stringstream ios;
+    ios << base64[commander->m_id / 64];
+    ios << base64[commander->m_id % 64];
+    for(const Card* card: cards)
+    {
+        ios << base64[card->m_id / 64];
+        ios << base64[card->m_id % 64];
+    }
+    return ios.str();
 }
-} // namespace range
-using range::shuffle;
-} // namespace boost
-
 namespace range = boost::range;
 
-DeckRandom::DeckRandom(const Cards& all_cards, const std::vector<std::string>& names)
+void Deck::set(const Cards& all_cards, const std::vector<std::string>& names)
 {
+    commander = nullptr;
+    strategy = DeckStrategy::random;
     for(auto name: names)
     {
         auto card_it(all_cards.player_cards_by_name.find(name));
@@ -75,8 +79,10 @@ DeckRandom::DeckRandom(const Cards& all_cards, const std::vector<std::string>& n
     }
 }
 
-DeckRandom::DeckRandom(const Cards& all_cards, const std::vector<unsigned>& ids)
+void Deck::set(const Cards& all_cards, const std::vector<unsigned>& ids)
 {
+    commander = nullptr;
+    strategy = DeckStrategy::random;
     for(auto id: ids)
     {
         const Card* card{all_cards.by_id(id)};
@@ -102,66 +108,73 @@ DeckRandom::DeckRandom(const Cards& all_cards, const std::vector<unsigned>& ids)
     }
 }
 
-DeckIface* DeckRandom::clone() const
+std::string Deck::short_description() const
 {
-    return(new DeckRandom(*this));
+    std::stringstream ios;
+    ios << decktype_names[decktype];
+    if(id > 0) { ios << " " << id; }
+    if(!name.empty()) { ios << " \"" << name << "\""; }
+    return ios.str();
 }
 
-const Card* DeckRandom::get_commander()
+std::string Deck::long_description() const
 {
-    return(commander);
-}
-
-const Card* DeckRandom::next()
-{
-    if(!shuffled_cards.empty())
+    std::stringstream ios;
+    ios << short_description();
+    ios << ":";
+    if(raid_cards.empty()) { ios << " " << deck_hash(commander, cards); }
+    ios << std::endl;
+    if(commander)
     {
-        const Card* card = shuffled_cards.front();
-        shuffled_cards.pop_front();
-        return(card);
+        ios << commander->m_name << "\n";
     }
     else
     {
-        return(nullptr);
+        ios << "No commander\n";
     }
-}
-
-void DeckRandom::shuffle(std::mt19937& re)
-{
-    shuffled_cards.clear();
-    boost::insert(shuffled_cards, shuffled_cards.end(), cards);
-    for(auto& card_pool: raid_cards)
+    if(!raid_cards.empty())
     {
-        assert(card_pool.first <= card_pool.second.size());
-        partial_shuffle(card_pool.second.begin(), card_pool.second.begin() + card_pool.first, card_pool.second.end(), re);
-        shuffled_cards.insert(shuffled_cards.end(), card_pool.second.begin(), card_pool.second.begin() + card_pool.first);
+        ios << "Always include:\n";
     }
-    boost::shuffle(shuffled_cards, re);
+    for(const Card* card: cards)
+    {
+        ios << "  " << card->m_name << std::endl;
+    }
+    for(auto& pool: raid_cards)
+    {
+        ios << pool.first << " from:\n";
+        for(auto& card: pool.second)
+        {
+            ios << "  " << card->m_name << "\n";
+        }
+    }
+    return ios.str();
 }
 
-void DeckRandom::place_at_bottom(const Card* card)
+Deck* Deck::clone() const
 {
-    shuffled_cards.push_back(card);
-}
-
-DeckOrdered* DeckOrdered::clone() const
-{
-    return(new DeckOrdered(*this));
+    return(new Deck(*this));
 }
 
 
-const Card* DeckOrdered::get_commander()
+const Card* Deck::get_commander()
 {
     return(commander);
 }
 
-const Card* DeckOrdered::next()
+const Card* Deck::next()
 {
     if(shuffled_cards.empty())
     {
         return(nullptr);
     }
-    else
+    else if(strategy == DeckStrategy::random)
+    {
+        const Card* card = shuffled_cards.front();
+        shuffled_cards.pop_front();
+        return(card);
+    }
+    else if(strategy == DeckStrategy::ordered)
     {
         auto cardIter = std::min_element(shuffled_cards.begin(), shuffled_cards.begin() + std::min<unsigned>(3u, shuffled_cards.size()), [this](const Card* card1, const Card* card2) -> bool
                                          {
@@ -169,7 +182,7 @@ const Card* DeckOrdered::next()
                                              if(!card1_order->second.empty())
                                              {
                                                  auto card2_order = order.find(card2->m_id);
-                                                 if(!card1_order->second.empty())
+                                                 if(!card2_order->second.empty())
                                                  {
                                                      return(*card1_order->second.begin() < *card2_order->second.begin());
                                                  }
@@ -192,23 +205,43 @@ const Card* DeckOrdered::next()
         }
         return(card);
     }
+    throw std::runtime_error("Unknown strategy for deck.");
 }
 
-void DeckOrdered::shuffle(std::mt19937& re)
+void Deck::shuffle(std::mt19937& re)
 {
-    unsigned i = 0;
-    order.clear();
-    for(auto card: cards)
-    {
-        order[card->m_id].push_back(i);
-        ++i;
-    }
     shuffled_cards.clear();
-    range::insert(shuffled_cards, shuffled_cards.end(), cards);
+    boost::insert(shuffled_cards, shuffled_cards.end(), cards);
+    if(!raid_cards.empty())
+    {
+        if(strategy != DeckStrategy::random)
+        {
+            throw std::runtime_error("Support only random strategy for raid/quest deck.");
+        }
+        for(auto& card_pool: raid_cards)
+        {
+            assert(card_pool.first <= card_pool.second.size());
+            partial_shuffle(card_pool.second.begin(), card_pool.second.begin() + card_pool.first, card_pool.second.end(), re);
+            shuffled_cards.insert(shuffled_cards.end(), card_pool.second.begin(), card_pool.second.begin() + card_pool.first);
+        }
+    }
+    if(strategy == DeckStrategy::ordered)
+    {
+        unsigned i = 0;
+        order.clear();
+        for(auto card: cards)
+        {
+            order[card->m_id].push_back(i);
+            ++i;
+        }
+        shuffled_cards.clear();
+        range::insert(shuffled_cards, shuffled_cards.end(), cards);
+    }
     std::shuffle(shuffled_cards.begin(), shuffled_cards.end(), re);
 }
 
-void DeckOrdered::place_at_bottom(const Card* card)
+void Deck::place_at_bottom(const Card* card)
 {
     shuffled_cards.push_back(card);
 }
+

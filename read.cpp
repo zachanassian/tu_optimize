@@ -54,14 +54,16 @@ bool hash_to_ids(const char* hash, size_t pairs,
 
 // Constructs and returns a deck from `hash'.
 // The caller is responsible for freeing the deck.
-DeckIface* hash_to_deck(const char* hash, const Cards& cards)
+Deck* hash_to_deck(const char* hash, const Cards& cards)
 {
     std::vector<unsigned int> ids;
     if(strlen(hash) % 2 > 0) { return(nullptr); }
     size_t pairs = strlen(hash) / 2;
     if(!hash_to_ids(hash, pairs, ids)) { return(nullptr); }
 
-    return new DeckRandom(cards, ids);
+    Deck* deck = new Deck{};
+    deck->set(cards, ids);
+    return deck;
 }
 
 void load_decks(Decks& decks, Cards& cards)
@@ -142,7 +144,7 @@ template<typename Iterator, typename Functor, typename Token> Iterator read_toke
 // Error codes:
 // 2 -> file not readable
 // 3 -> error while parsing file
-unsigned read_custom_decks(Cards& cards, std::string filename, std::map<std::string, DeckIface*>& custom_decks)
+unsigned read_custom_decks(Cards& cards, std::string filename, std::map<std::string, Deck*>& custom_decks)
 {
     std::ifstream decks_file(filename.c_str());
     if(!decks_file.is_open())
@@ -239,7 +241,9 @@ unsigned read_custom_decks(Cards& cards, std::string filename, std::map<std::str
                 }
                 if(deck_name)
                 {
-                    custom_decks.insert({*deck_name, new DeckRandom{cards, card_ids}});
+                    Deck* deck = new Deck{DeckType::custom_deck, 0, *deck_name};
+                    deck->set(cards, card_ids);
+                    custom_decks.insert({*deck_name, deck});
                 }
             }
         }

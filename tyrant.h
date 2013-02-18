@@ -55,6 +55,19 @@ extern std::string cardtype_names[CardType::num_cardtypes];
 
 extern std::string rarity_names[5];
 
+namespace DeckType {
+enum DeckType {
+    deck,
+    mission,
+    raid,
+    quest,
+    custom_deck,
+    num_decktypes
+};
+}
+
+extern std::string decktype_names[DeckType::num_decktypes];
+
 enum Effect {
     none,
     time_surge,
@@ -109,6 +122,6 @@ enum SkillSourceType
     source_chaos
 };
 
-typedef std::tuple<Skill, unsigned, Faction, bool /* All */> SkillSpec;
+typedef std::tuple<Skill, unsigned, Faction, bool /* all */> SkillSpec;
 
 #endif

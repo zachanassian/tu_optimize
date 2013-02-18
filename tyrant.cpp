@@ -37,6 +37,8 @@ std::string cardtype_names[CardType::num_cardtypes]{"Commander", "Assault", "Str
 
 std::string rarity_names[5]{"", "common", "uncommon", "rare", "legendary", };
 
+std::string decktype_names[DeckType::num_decktypes]{"Deck", "Mission", "Raid", "Quest", "Custom Deck", };
+
 std::string effect_names[Effect::num_effects] = {
     "None",
     "Time Surge",

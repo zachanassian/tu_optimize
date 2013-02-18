@@ -158,7 +158,7 @@ void read_cards(Cards& cards)
         if(strcmp(card->name(), "unit") == 0)
         {
             xml_node<>* id_node(card->first_node("id"));
-            int id(id_node ? atoi(id_node->value()) : -1);
+            unsigned id(id_node ? atoi(id_node->value()) : 0);
             xml_node<>* name_node(card->first_node("name"));
             xml_node<>* attack_node(card->first_node("attack"));
             xml_node<>* health_node(card->first_node("health"));
@@ -346,7 +346,8 @@ void read_missions(Decks& decks, Cards& cards, std::string filename)
         {
             std::vector<unsigned> card_ids;
             xml_node<>* id_node(mission_node->first_node("id"));
-            int id(id_node ? atoi(id_node->value()) : -1);
+            assert(id_node);
+            unsigned id(id_node ? atoi(id_node->value()) : 0);
             xml_node<>* name_node(mission_node->first_node("name"));
             std::string deck_name{name_node->value()};
             xml_node<>* commander_node(mission_node->first_node("commander"));
@@ -359,8 +360,9 @@ void read_missions(Decks& decks, Cards& cards, std::string filename)
                 unsigned card_id{static_cast<unsigned>(atoi(card_node->value()))};
                 card_ids.push_back(card_id);
             }
-            decks.mission_decks.push_back(DeckRandom{cards, card_ids});
-            DeckRandom* deck = &decks.mission_decks.back();
+            decks.mission_decks.push_back(Deck{DeckType::mission, id, deck_name});
+            Deck* deck = &decks.mission_decks.back();
+            deck->set(cards, card_ids);
             decks.mission_decks_by_id[id] = deck;
             decks.mission_decks_by_name[deck_name] = deck;
             decks.mission_name_by_id[id] = deck_name;
@@ -390,7 +392,8 @@ void read_raids(Decks& decks, Cards& cards, std::string filename)
             std::vector<const Card*> always_cards;
             std::vector<std::pair<unsigned, std::vector<const Card*> > > some_cards;
             xml_node<>* id_node(raid_node->first_node("id"));
-            int id(id_node ? atoi(id_node->value()) : -1);
+            assert(id_node);
+            unsigned id(id_node ? atoi(id_node->value()) : 0);
             xml_node<>* name_node(raid_node->first_node("name"));
             std::string deck_name{name_node->value()};
             xml_node<>* commander_node(raid_node->first_node("commander"));
@@ -432,8 +435,9 @@ void read_raids(Decks& decks, Cards& cards, std::string filename)
                     some_cards.push_back(std::make_pair(num_cards_from_pool, cards_from_pool));
                 }
             }
-            decks.raid_decks.push_back(DeckRandom{commander_card, always_cards, some_cards});
-            DeckRandom* deck = &decks.raid_decks.back();
+            decks.raid_decks.push_back(Deck{DeckType::raid, id, deck_name});
+            Deck* deck = &decks.raid_decks.back();
+            deck->set(commander_card, always_cards, some_cards);
             decks.raid_decks_by_id[id] = deck;
             decks.raid_decks_by_name[deck_name] = deck;
         }
@@ -463,7 +467,8 @@ void read_quests(Decks& decks, Cards& cards, std::string filename)
         {
             std::vector<std::pair<unsigned, std::vector<const Card*> > > some_cards;
             xml_node<>* id_node(quest_node->first_node("id"));
-            int id(id_node ? atoi(id_node->value()) : -1);
+            assert(id_node);
+            unsigned id(id_node ? atoi(id_node->value()) : 0);
             std::string deck_name{"Step " + std::string{id_node->value()}};
             xml_node<>* commander_node(quest_node->first_node("commander"));
             const Card* commander_card{cards.by_id(atoi(commander_node->value()))};
@@ -489,8 +494,9 @@ void read_quests(Decks& decks, Cards& cards, std::string filename)
                     some_cards.push_back(std::make_pair(num_cards_from_pool, cards_from_pool));
                 }
             }
-            decks.quest_decks.push_back(DeckRandom{commander_card, always_cards, some_cards});
-            DeckRandom* deck = &decks.quest_decks.back();
+            decks.quest_decks.push_back(Deck{DeckType::quest, id, deck_name});
+            Deck* deck = &decks.quest_decks.back();
+            deck->set(commander_card, always_cards, some_cards);
             decks.quest_decks_by_id[id] = deck;
             decks.quest_effects_by_id[id] = battleground_id;
             decks.quest_decks_by_name[deck_name] = deck;
@@ -536,6 +542,8 @@ void read_achievement(Decks& decks, Cards& cards, Achievement& achievement, cons
         xml_node<>* id_node(achievement_node->first_node("id"));
         xml_node<>* name_node(achievement_node->first_node("name"));
         if(!id_node || !name_node || (strcmp(id_node->value(), achievement_id_name) != 0 && strcmp(name_node->value(), achievement_id_name) != 0)) { continue; }
+        achievement.id = atoi(id_node->value());
+        achievement.name = name_node->value();
         std::cout << "Achievement " << id_node->value() << " " << name_node->value() << ": " << achievement_node->first_node("desc")->value() << std::endl;
         xml_node<>* type_node(achievement_node->first_node("type"));
         xml_attribute<>* mission_id(type_node ? type_node->first_attribute("mission_id") : NULL);

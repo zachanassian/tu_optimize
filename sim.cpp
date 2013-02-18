@@ -1030,7 +1030,9 @@ struct PerformAttack
     template<enum CardType::CardType cardtype>
     void op()
     {
-        att_dmg = calculate_attack_damage<cardtype>();
+        unsigned pre_modifier_dmg = attack_power(att_status);
+        if(pre_modifier_dmg == 0) { return; }
+        modify_attack_damage<cardtype>(pre_modifier_dmg);
         // Evaluation order:
         // assaults only: fly check
         // assaults only: immobilize
@@ -1087,19 +1089,17 @@ struct PerformAttack
     }
 
     template<enum CardType::CardType>
-    unsigned calculate_attack_damage()
+    void modify_attack_damage(unsigned pre_modifier_dmg)
     {
         const Card& att_card(*att_status->m_card);
         const Card& def_card(*def_status->m_card);
         assert(att_card.m_type == CardType::assault);
-        // pre modifier damage
-        unsigned damage(attack_power(att_status));
-        if(damage == 0) { return(0); }
+        assert(pre_modifier_dmg > 0);
         unsigned valor_damage{att_card.m_valor && skill_activate<valor>(fd, att_status, nullptr) ? att_card.m_valor : 0};
         unsigned antiair_damage{att_card.m_antiair > 0 && skill_activate<antiair>(fd, att_status, def_status) ? att_card.m_antiair : 0};
         unsigned burst_damage{att_card.m_burst > 0 && skill_activate<burst>(fd, att_status, def_status) ? att_card.m_burst : 0};
-        unsigned modified_damage = safe_minus(
-                damage // pre-modifier damage
+        att_dmg = safe_minus(
+                pre_modifier_dmg
                 + valor_damage
                 + def_status->m_enfeebled // enfeeble
                 + antiair_damage
@@ -1123,10 +1123,9 @@ struct PerformAttack
             if(def_status->m_protected > 0) { reduced_desc += (reduced_desc.empty() ? "" : "+") + to_string(def_status->m_protected) + "(protected)"; }
             if(!reduced_desc.empty() && att_card.m_pierce > 0) { reduced_desc += "-" + to_string(att_card.m_pierce) + "(pierce)"; }
             if(!reduced_desc.empty()) { desc += "-(" + reduced_desc + ")"; }
-            if(!desc.empty()) { desc += "=" + to_string(modified_damage); }
-            _DEBUG_MSG("%s attacks %s for %u%s damage\n", status_description(att_status).c_str(), status_description(def_status).c_str(), damage, desc.c_str());
+            if(!desc.empty()) { desc += "=" + to_string(att_dmg); }
+            _DEBUG_MSG("%s attacks %s for %u%s damage\n", status_description(att_status).c_str(), status_description(def_status).c_str(), pre_modifier_dmg, desc.c_str());
         }
-        return(modified_damage);
     }
 
     template<enum CardType::CardType>

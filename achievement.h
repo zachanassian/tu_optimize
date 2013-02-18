@@ -71,6 +71,8 @@ struct Achievement
     std::map<unsigned, unsigned> unit_faction_played;
     std::map<unsigned, unsigned> unit_rarity_played;
     std::map<unsigned, unsigned> unit_type_killed;
+
+    Achievement() : id(0) {}
 };
 
 #endif

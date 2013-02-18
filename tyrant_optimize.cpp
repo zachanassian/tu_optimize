@@ -42,37 +42,6 @@ namespace { bool use_anp{false}; }
 
 using namespace std::placeholders;
 //------------------------------------------------------------------------------
-void print_deck(DeckIface& deck)
-{
-    std::cout << "Deck:" << std::endl;
-    if(deck.commander)
-    {
-        std::cout << deck.commander->m_name << "\n";
-    }
-    else
-    {
-        std::cout << "No commander\n";
-    }
-    for(const Card* card: deck.cards)
-    {
-        std::cout << "  " << card->m_name << "\n" << std::flush;
-    }
-}
-//------------------------------------------------------------------------------
-std::string deck_hash(const Card* commander, const std::vector<const Card*>& cards)
-{
-    std::string base64= "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    std::stringstream ios;
-    ios << base64[commander->m_id / 64];
-    ios << base64[commander->m_id % 64];
-    for(const Card* card: cards)
-    {
-        ios << base64[card->m_id / 64];
-        ios << base64[card->m_id % 64];
-    }
-    return ios.str();
-}
-//------------------------------------------------------------------------------
 std::string card_id_name(const Card* card)
 {
     std::stringstream ios;
@@ -87,8 +56,13 @@ std::string card_id_name(const Card* card)
     return ios.str();
 }
 //------------------------------------------------------------------------------
-DeckIface* find_deck(const Decks& decks, std::string name)
+Deck* find_deck(const Decks& decks, const Cards& cards, std::string name)
 {
+    auto it1 = decks.mission_decks_by_name.find(name);
+    if(it1 != decks.mission_decks_by_name.end())
+    {
+        return(it1->second);
+    }
     auto it2 = decks.raid_decks_by_name.find(name);
     if(it2 != decks.raid_decks_by_name.end())
     {
@@ -104,7 +78,7 @@ DeckIface* find_deck(const Decks& decks, std::string name)
     {
         return(it3->second);
     }
-    return(nullptr);
+    return(hash_to_deck(name.c_str(), cards));
 }
 //---------------------- $80 deck optimization ---------------------------------
 //------------------------------------------------------------------------------
@@ -187,7 +161,7 @@ std::set<unsigned> top_commanders{
         1225, // Yuletta
         };
 //------------------------------------------------------------------------------
-bool suitable_non_commander(DeckIface& deck, unsigned slot, const Card* card)
+bool suitable_non_commander(const Deck& deck, unsigned slot, const Card* card)
 {
     assert(card->m_type != CardType::commander);
     if(use_owned_cards)
@@ -295,9 +269,9 @@ struct SimulationData
     std::mt19937 re;
     const Cards& cards;
     const Decks& decks;
-    std::shared_ptr<DeckIface> att_deck;
+    std::shared_ptr<Deck> att_deck;
     Hand att_hand;
-    std::vector<std::shared_ptr<DeckIface> > def_decks;
+    std::vector<std::shared_ptr<Deck> > def_decks;
     std::vector<Hand*> def_hands;
     std::vector<double> factors;
     gamemode_t gamemode;
@@ -327,7 +301,7 @@ struct SimulationData
         for(auto hand: def_hands) { delete(hand); }
     }
 
-    void set_decks(const DeckIface* const att_deck_, std::vector<DeckIface*> const & def_decks_)
+    void set_decks(const Deck* const att_deck_, std::vector<Deck*> const & def_decks_)
     {
         att_deck.reset(att_deck_->clone());
         att_hand.deck = att_deck.get();
@@ -370,14 +344,14 @@ public:
     boost::mutex shared_mutex;
     const Cards& cards;
     const Decks& decks;
-    DeckIface* att_deck;
-    const std::vector<DeckIface*> def_decks;
+    Deck* att_deck;
+    const std::vector<Deck*> def_decks;
     std::vector<double> factors;
     gamemode_t gamemode;
     enum Effect effect;
     Achievement achievement;
 
-    Process(unsigned _num_threads, const Cards& cards_, const Decks& decks_, DeckIface* att_deck_, std::vector<DeckIface*> _def_decks, std::vector<double> _factors, gamemode_t _gamemode, enum Effect _effect, const Achievement& achievement_) :
+    Process(unsigned _num_threads, const Cards& cards_, const Decks& decks_, Deck* att_deck_, std::vector<Deck*> _def_decks, std::vector<double> _factors, gamemode_t _gamemode, enum Effect _effect, const Achievement& achievement_) :
         num_threads(_num_threads),
         main_barrier(num_threads+1),
         cards(cards_),
@@ -552,7 +526,7 @@ void print_deck_inline(const double score, const Card *commander, std::vector<co
     std::cout << std::endl;
 }
 //------------------------------------------------------------------------------
-void hill_climbing(unsigned num_iterations, DeckIface* d1, Process& proc)
+void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc)
 {
     auto results = proc.evaluate(num_iterations);
     print_score_info(results, proc.factors);
@@ -653,11 +627,11 @@ void hill_climbing(unsigned num_iterations, DeckIface* d1, Process& proc)
         // Now that all cards are evaluated, take the best one
         d1->cards = best_cards;
     }
-    std::cout << "Best Deck: ";
+    std::cout << "Optimized Deck: ";
     print_deck_inline(best_score, best_commander, best_cards);
 }
 //------------------------------------------------------------------------------
-void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& proc)
+void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc)
 {
     auto results = proc.evaluate(num_iterations);
     print_score_info(results, proc.factors);
@@ -758,7 +732,7 @@ void hill_climbing_ordered(unsigned num_iterations, DeckOrdered* d1, Process& pr
             if(best_score == best_possible) { break; }
         }
     }
-    std::cout << "Best Deck: ";
+    std::cout << "Optimized Deck: ";
     print_deck_inline(best_score, best_commander, best_cards);
 }
 //------------------------------------------------------------------------------
@@ -825,7 +799,7 @@ private:
 };
 //------------------------------------------------------------------------------
 static unsigned total_num_combinations_test(0);
-inline void try_all_ratio_combinations(unsigned deck_size, unsigned var_k, unsigned num_iterations, const std::vector<unsigned>& card_indices, std::vector<const Card*>& cards, const Card* commander, Process& proc, double& best_score, boost::optional<DeckRandom>& best_deck)
+inline void try_all_ratio_combinations(unsigned deck_size, unsigned var_k, unsigned num_iterations, const std::vector<unsigned>& card_indices, std::vector<const Card*>& cards, const Card* commander, Process& proc, double& best_score, boost::optional<Deck>& best_deck)
 {
     assert(card_indices.size() > 0);
     assert(card_indices.size() <= deck_size);
@@ -858,8 +832,9 @@ inline void try_all_ratio_combinations(unsigned deck_size, unsigned var_k, unsig
         std::vector<const Card*> deck_cards = unique_cards;
         std::vector<const Card*> combined_cards(num_cards_to_combine, cards_to_combine[0]);
         deck_cards.insert(deck_cards.end(), combined_cards.begin(), combined_cards.end());
-        DeckRandom deck(commander, deck_cards);
-        (*dynamic_cast<DeckRandom*>(proc.att_deck)) = deck;
+        Deck deck{};
+        deck.set(commander, deck_cards);
+        (*dynamic_cast<Deck*>(proc.att_deck)) = deck;
         auto new_results = proc.compare(num_iterations, best_score);
         double new_score = compute_score(new_results, proc.factors);
         if(new_score > best_score)
@@ -897,7 +872,8 @@ inline void try_all_ratio_combinations(unsigned deck_size, unsigned var_k, unsig
             //std::cout << "\n" << std::flush;
             //std::cout << std::flush;
             assert(deck_cards.size() == deck_size);
-            DeckRandom deck(commander, deck_cards);
+            Deck deck{};
+            deck.set(commander, deck_cards);
             *proc.att_deck = deck;
             auto new_results = proc.compare(num_iterations, best_score);
             double new_score = compute_score(new_results, proc.factors);
@@ -934,13 +910,13 @@ void exhaustive_k(unsigned num_iterations, unsigned var_k, Process& proc)
     const std::vector<unsigned>& indices = cardIndices.getIndices();
     bool finished(false);
     double best_score{0};
-    boost::optional<DeckRandom> best_deck;
-    unsigned num_cards = ((DeckRandom*)proc.att_deck)->cards.size();
+    boost::optional<Deck> best_deck;
+    unsigned num_cards = ((Deck*)proc.att_deck)->cards.size();
     while(!finished)
     {
         if(keep_commander)
         {
-            try_all_ratio_combinations(num_cards, var_k, num_iterations, indices, ass_structs, ((DeckRandom*)proc.att_deck)->commander, proc, best_score, best_deck);
+            try_all_ratio_combinations(num_cards, var_k, num_iterations, indices, ass_structs, ((Deck*)proc.att_deck)->commander, proc, best_score, best_deck);
         }
         else
         {
@@ -964,42 +940,19 @@ enum Operation {
     fightuntil
 };
 //------------------------------------------------------------------------------
-// void print_raid_deck(DeckRandom& deck)
-// {
-//         std::cout << "--------------- Raid ---------------\n";
-//         std::cout << "Commander:\n";
-//         std::cout << "  " << deck.m_commander->m_name << "\n";
-//         std::cout << "Always include:\n";
-//         for(auto& card: deck.m_cards)
-//         {
-//             std::cout << "  " << card->m_name << "\n";
-//         }
-//         for(auto& pool: deck.m_raid_cards)
-//         {
-//             std::cout << pool.first << " from:\n";
-//             for(auto& card: pool.second)
-//             {
-//                 std::cout << "  " << card->m_name << "\n";
-//             }
-//         }
-// }
-//------------------------------------------------------------------------------
-void print_available_decks(const Decks& decks)
+void print_available_decks(const Decks& decks, bool allow_card_pool)
 {
-    std::cout << "Mission decks:\n";
-    for(auto it: decks.mission_decks_by_name)
+    std::cout << "Available decks: (use double-quoted name)" << std::endl;
+    std::cout << "(All missions, omitted because the list is too long.)" << std::endl;
+#if 0
+    for(auto it: boost::join(boost::join(boost::join(decks.mission_decks_by_name, decks.raid_decks_by_name), decks.quest_decks_by_name), decks.custom_decks))
+#endif
+    for(auto it: boost::join(boost::join(decks.raid_decks_by_name, decks.quest_decks_by_name), decks.custom_decks))
     {
-        std::cout << "  " << it.first << "\n";
-    }
-    std::cout << "Raid decks:\n";
-    for(auto it: decks.raid_decks_by_name)
-    {
-        std::cout << "  " << it.first << "\n";
-    }
-    std::cout << "Custom decks:\n";
-    for(auto it: decks.custom_decks)
-    {
-        std::cout << "  " << it.first << "\n";
+        if(allow_card_pool || it.second->raid_cards.empty())
+        {
+            std::cout << it.second->short_description() << "\n";
+        }
     }
 }
 
@@ -1059,7 +1012,7 @@ int main(int argc, char** argv)
 
     if(argc <= 2)
     {
-        print_available_decks(decks);
+        print_available_decks(decks, true);
         return(4);
     }
     std::string att_deck_name{argv[1]};
@@ -1201,80 +1154,81 @@ int main(int argc, char** argv)
         }
     }
 
-    DeckIface* att_deck{nullptr};
-    auto custom_deck_it = decks.custom_decks.find(att_deck_name);
-    if(custom_deck_it != decks.custom_decks.end())
-    {
-        att_deck = custom_deck_it->second;
-    }
-    else
-    {
-        try
-        { att_deck = hash_to_deck(att_deck_name.c_str(), cards); }
-        catch(const std::runtime_error& e)
-        {
-            std::cerr << "Error: Deck hash " << att_deck_name << ": " << e.what() << std::endl;
-            return(5);
-        }
-        if(att_deck == nullptr)
-        {
-            std::cerr << "Error: Invalid attack deck name/hash " << att_deck_name << ". Available decks:" << std::endl;
-            std::cerr << "Custom decks:" << std::endl;
-            for(auto it: decks.custom_decks)
-            { std::cerr << "  " << it.first << std::endl; }
-            return(5);
-        }
-    }
+    modify_cards(cards, effect);
 
-    std::vector<DeckIface*> def_decks;
+    Deck* att_deck{nullptr};
+    try
+    {
+        att_deck = find_deck(decks, cards, att_deck_name);
+    }
+    catch(const std::runtime_error& e)
+    {
+        std::cerr << "Error: Deck hash " << att_deck_name << ": " << e.what() << std::endl;
+        return(5);
+    }
+    if(att_deck == nullptr)
+    {
+        std::cerr << "Error: Invalid attack deck name/hash " << att_deck_name << ".\n";
+    }
+    else if(!att_deck->raid_cards.empty())
+    {
+        std::cerr << "Error: Invalid attack deck " << att_deck_name << ": has optional cards.\n";
+        att_deck = nullptr;
+    }
+    if(att_deck == nullptr)
+    {
+        print_available_decks(decks, false);
+        return(5);
+    }
+    if(ordered)
+    {
+        if(att_deck == nullptr)
+            std::cerr << "No!" << std::endl;
+        att_deck->strategy = DeckStrategy::ordered;
+    }
+    std::cout << "Attacker:" << std::endl;
+    std::cout << att_deck->long_description() << std::endl;
+
+    std::cout << "Defender:" << std::endl;
+    std::vector<Deck*> def_decks;
     std::vector<double> def_decks_factors;
     for(auto deck_parsed: deck_list_parsed)
     {
-        DeckIface* def_deck{nullptr};
-        auto it1 = decks.mission_decks_by_name.find(deck_parsed.first);
-        if(it1 != decks.mission_decks_by_name.end())
+        Deck* def_deck{nullptr};
+        try
         {
-            if(!achievement.mission_condition.check(decks.mission_id_by_name[deck_parsed.first]))
-            {
-                std::cerr << "Error: Wrong mission [" << deck_parsed.first << "] for achievement." << std::endl;
-                return(1);
-            }
-            def_deck = it1->second;
+            def_deck = find_deck(decks, cards, deck_parsed.first);
+        }
+        catch(const std::runtime_error& e)
+        {
+            std::cerr << "Error: Deck hash " << deck_parsed.first << ": " << e.what() << std::endl;
+            return(5);
         }
         if(def_deck == nullptr)
         {
-            def_deck = find_deck(decks, deck_parsed.first);
-        }
-        if(def_deck == nullptr)
-        {
-            try
-            { def_deck = hash_to_deck(deck_parsed.first.c_str(), cards); }
-            catch(const std::runtime_error& e)
-            {
-                std::cerr << "Error: Deck hash " << deck_parsed.first << ": " << e.what() << std::endl;
-                return(5);
-            }
-            if(def_deck == nullptr)
-            {
-                std::cerr << "Error: Invalid defense deck name/hash " << deck_parsed.first << ". Available decks:" << std::endl;
-                print_available_decks(decks);
-                return(5);
-            }
+            std::cerr << "Error: Invalid defense deck name/hash " << deck_parsed.first << ".\n";
+            print_available_decks(decks, true);
+            return(5);
         }
         def_decks.push_back(def_deck);
         def_decks_factors.push_back(deck_parsed.second);
+        std::cout << def_deck->long_description() << std::endl;
+        if(achievement.id > 0)
+        {
+            if(def_deck->decktype != DeckType::mission)
+            {
+                std::cerr << "Error: Defender must be mission for achievement." << std::endl;
+                return(1);
+            }
+            if(!achievement.mission_condition.check(def_deck->id))
+            {
+                std::cerr << "Error: Wrong mission [" << deck_parsed.first << "] for achievement: " << achievement.mission_condition.str() << "." << std::endl;
+                return(1);
+            }
+        }
     }
 
-    std::shared_ptr<DeckOrdered> att_deck_ordered;
-    if(ordered)
-    {
-        att_deck_ordered = std::make_shared<DeckOrdered>(*att_deck);
-    }
-
-    modify_cards(cards, effect);
-    print_deck(*att_deck);
-
-    Process p(num_threads, cards, decks, ordered ? att_deck_ordered.get() : att_deck, def_decks, def_decks_factors, gamemode, effect, achievement);
+    Process p(num_threads, cards, decks, att_deck, def_decks, def_decks_factors, gamemode, effect, achievement);
     {
         //ScopeClock timer;
         for(auto op: todo)
@@ -1292,7 +1246,7 @@ int main(int argc, char** argv)
                 }
                 else
                 {
-                    hill_climbing_ordered(std::get<0>(op), att_deck_ordered.get(), p);
+                    hill_climbing_ordered(std::get<0>(op), att_deck, p);
                 }
                 break;
             }

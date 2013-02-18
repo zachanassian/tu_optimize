@@ -6,91 +6,77 @@
 #include <map>
 #include <random>
 #include <vector>
+#include "tyrant.h"
 
 class Card;
 class Cards;
+
+std::string deck_hash(const Card* commander, const std::vector<const Card*>& cards);
 
 //---------------------- $30 Deck: a commander + a sequence of cards -----------
 // Can be shuffled.
 // Implementations: random player and raid decks, ordered player decks.
 //------------------------------------------------------------------------------
-struct DeckIface
+namespace DeckStrategy
 {
+enum DeckStrategy
+{
+    random,
+    ordered,
+    num_deckstrategies
+};
+}
+//------------------------------------------------------------------------------
+// No support for ordered raid decks
+struct Deck
+{
+    DeckType::DeckType decktype;
+    unsigned id;
+    std::string name;
+    DeckStrategy::DeckStrategy strategy;
+
     const Card* commander;
     std::vector<const Card*> cards;
 
-    DeckIface() :
-        commander{nullptr}
-    {}
-
-    DeckIface(const Card* commander_,
-              std::vector<const Card*> cards_) :
-        commander(commander_),
-        cards(std::begin(cards_), std::end(cards_))
-    {}
-    ;
-    virtual ~DeckIface() {};
-    virtual DeckIface* clone() const = 0;
-    virtual const Card* get_commander() = 0;
-    virtual const Card* next() = 0;
-    virtual void shuffle(std::mt19937& re) = 0;
-    // Special case for recharge (behemoth raid's ability).
-    virtual void place_at_bottom(const Card*) = 0;
-};
-//------------------------------------------------------------------------------
-struct DeckRandom : DeckIface
-{
-    std::vector<std::pair<unsigned, std::vector<const Card*> > > raid_cards;
-    std::deque<const Card*> shuffled_cards;
-
-    DeckRandom(
-        const Card* commander_,
-        const std::vector<const Card*>& cards_,
-        std::vector<std::pair<unsigned, std::vector<const Card*> > > raid_cards_ =
-        std::vector<std::pair<unsigned, std::vector<const Card*> > >()) :
-        DeckIface(commander_, cards_),
-        raid_cards(raid_cards_)
-    {
-    }
-
-    DeckRandom(const DeckIface& other) :
-        DeckIface(other)
-    {
-    }
-
-    DeckRandom(const Cards& all_cards, const std::vector<std::string>& names);
-    DeckRandom(const Cards& all_cards, const std::vector<unsigned>& ids);
-
-    ~DeckRandom() {}
-
-    virtual DeckIface* clone() const;
-    const Card* get_commander();
-    const Card* next();
-    void shuffle(std::mt19937& re);
-    void place_at_bottom(const Card* card);
-};
-//------------------------------------------------------------------------------
-// No support for ordered raid decks
-struct DeckOrdered : DeckIface
-{
     std::deque<const Card*> shuffled_cards;
     // card id -> card order
     std::map<unsigned, std::list<unsigned> > order;
+    std::vector<std::pair<unsigned, std::vector<const Card*> > > raid_cards;
 
-    DeckOrdered(const Card* commander_, std::vector<const Card*> cards_) :
-        DeckIface(commander_, cards_),
-        shuffled_cards(cards.begin(), cards.end())
+    Deck(
+        DeckType::DeckType decktype_ = DeckType::deck,
+        unsigned id_ = 0,
+        std::string name_ = "",
+        DeckStrategy::DeckStrategy strategy_ = DeckStrategy::random) :
+        decktype(decktype_),
+        id(id_),
+        name(name_),
+        strategy(strategy_),
+        commander(nullptr)
     {
     }
 
-    DeckOrdered(const DeckIface& other) :
-        DeckIface(other)
+    ~Deck() {}
+
+    void set(
+        const Card* commander_,
+        const std::vector<const Card*>& cards_,
+        std::vector<std::pair<unsigned, std::vector<const Card*> > > raid_cards_ =
+        std::vector<std::pair<unsigned, std::vector<const Card*> > >())
     {
+        commander = commander_;
+//        cards = cards_;
+//        raid_cards = raid_cards_;
+        cards = std::vector<const Card*>(std::begin(cards_), std::end(cards_));
+        raid_cards = std::vector<std::pair<unsigned, std::vector<const Card*> > >(raid_cards_);
     }
 
-    ~DeckOrdered() {}
+    void set(const Cards& all_cards, const std::vector<std::string>& names);
+    void set(const Cards& all_cards, const std::vector<unsigned>& ids);
 
-    virtual DeckOrdered* clone() const;
+    Deck* clone() const;
+    std::string short_description() const;
+    std::string long_description() const;
     const Card* get_commander();
     const Card* next();
     void shuffle(std::mt19937& re);
@@ -100,18 +86,18 @@ struct DeckOrdered : DeckIface
 // + also the custom decks
 struct Decks
 {
-    std::map<std::string, DeckIface*> custom_decks;
-    std::list<DeckRandom> mission_decks;
-    std::map<unsigned, DeckRandom*> mission_decks_by_id;
-    std::map<std::string, DeckRandom*> mission_decks_by_name;
+    std::map<std::string, Deck*> custom_decks;
+    std::list<Deck> mission_decks;
+    std::map<unsigned, Deck*> mission_decks_by_id;
+    std::map<std::string, Deck*> mission_decks_by_name;
     std::map<unsigned, std::string> mission_name_by_id;
     std::map<std::string, unsigned> mission_id_by_name;
-    std::list<DeckRandom> raid_decks;
-    std::map<unsigned, DeckRandom*> raid_decks_by_id;
-    std::map<std::string, DeckRandom*> raid_decks_by_name;
-    std::list<DeckRandom> quest_decks;
-    std::map<unsigned, DeckRandom*> quest_decks_by_id;
-    std::map<std::string, DeckRandom*> quest_decks_by_name;
+    std::list<Deck> raid_decks;
+    std::map<unsigned, Deck*> raid_decks_by_id;
+    std::map<std::string, Deck*> raid_decks_by_name;
+    std::list<Deck> quest_decks;
+    std::map<unsigned, Deck*> quest_decks_by_id;
+    std::map<std::string, Deck*> quest_decks_by_name;
     std::map<unsigned, unsigned> quest_effects_by_id;
     std::map<std::string, unsigned> quest_effects_by_name;
 
