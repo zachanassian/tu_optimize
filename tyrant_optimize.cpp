@@ -557,7 +557,7 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc)
             {
                 // Various checks to check if the card is accepted
                 assert(commander_candidate->m_type == CardType::commander);
-                if(commander_candidate == best_commander) { continue; }
+                if(commander_candidate->m_base_id == best_commander->m_base_id) { continue; }
                 if(!suitable_commander(commander_candidate)) { continue; }
                 // Place it in the deck
                 d1->commander = commander_candidate;
@@ -587,7 +587,7 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc)
             {
                 // Various checks to check if the card is accepted
                 assert(card_candidate->m_type != CardType::commander);
-                if(slot_i < best_cards.size() && card_candidate == best_cards[slot_i]) { continue; }
+                if(slot_i < best_cards.size() && card_candidate->m_base_id == best_cards[slot_i]->m_base_id) { continue; }
                 if(!suitable_non_commander(*d1, slot_i, card_candidate)) { continue; }
                 // Place it in the deck
                 if(slot_i == d1->cards.size())
@@ -663,7 +663,7 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc)
                 if(best_score == best_possible) { break; }
                 // Various checks to check if the card is accepted
                 assert(commander_candidate->m_type == CardType::commander);
-                if(commander_candidate == best_commander) { continue; }
+                if(commander_candidate->m_base_id == best_commander->m_base_id) { continue; }
                 if(!suitable_commander(commander_candidate)) { continue; }
                 // Place it in the deck
                 d1->commander = commander_candidate;
@@ -696,7 +696,7 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc)
                 if(card_candidate)
                 {
                     // Various checks to check if the card is accepted
-                    if(to_slot < best_cards.size() && card_candidate == best_cards[to_slot]) { continue; }
+                    if(to_slot < best_cards.size() && card_candidate->m_base_id == best_cards[to_slot]->m_base_id) { continue; }
                     if(!suitable_non_commander(*d1, from_slot, card_candidate)) { continue; }
                     // Place it in the deck
                     if(from_slot < d1->cards.size())
@@ -1080,13 +1080,13 @@ int main(int argc, char** argv)
             // Set quest effect:
             for(auto deck_parsed: deck_list_parsed)
             {
-                auto effect_id = decks.quest_effects_by_name.find(deck_parsed.first);
-                if(effect_id == decks.quest_effects_by_name.end())
+                auto deck_it = decks.quest_decks_by_name.find(deck_parsed.first);
+                if(deck_it == decks.quest_decks_by_name.end() || deck_it->second->effect == Effect::none)
                 {
                     std::cout << "WARNING: The deck '" << deck_parsed.first << "' has no battleground effect! Are you sure it's a quest deck?\n";
                     continue;
                 }
-                enum Effect this_effect = static_cast<enum Effect>(effect_id->second);
+                enum Effect this_effect = deck_it->second->effect;
                 if(effect != Effect::none && this_effect != effect)
                 {
                     std::cout << "ERROR: Inconsistent effects! Had " << effect << ", now have " << this_effect << "\n";

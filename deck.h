@@ -34,6 +34,7 @@ struct Deck
     unsigned id;
     std::string name;
     DeckStrategy::DeckStrategy strategy;
+    Effect effect; // for quests
 
     const Card* commander;
     std::vector<const Card*> cards;
@@ -52,6 +53,7 @@ struct Deck
         id(id_),
         name(name_),
         strategy(strategy_),
+        effect(Effect::none),
         commander(nullptr)
     {
     }
@@ -90,16 +92,12 @@ struct Decks
     std::list<Deck> mission_decks;
     std::map<unsigned, Deck*> mission_decks_by_id;
     std::map<std::string, Deck*> mission_decks_by_name;
-    std::map<unsigned, std::string> mission_name_by_id;
-    std::map<std::string, unsigned> mission_id_by_name;
     std::list<Deck> raid_decks;
     std::map<unsigned, Deck*> raid_decks_by_id;
     std::map<std::string, Deck*> raid_decks_by_name;
     std::list<Deck> quest_decks;
     std::map<unsigned, Deck*> quest_decks_by_id;
     std::map<std::string, Deck*> quest_decks_by_name;
-    std::map<unsigned, unsigned> quest_effects_by_id;
-    std::map<std::string, unsigned> quest_effects_by_name;
 
     ~Decks()
     {

@@ -124,6 +124,10 @@ std::string Deck::long_description() const
     ios << ":";
     if(raid_cards.empty()) { ios << " " << deck_hash(commander, cards); }
     ios << std::endl;
+    if(effect != Effect::none)
+    {
+        ios << "Effect: " << effect_names[effect] << "\n";
+    }
     if(commander)
     {
         ios << commander->m_name << "\n";
@@ -132,7 +136,7 @@ std::string Deck::long_description() const
     {
         ios << "No commander\n";
     }
-    if(!raid_cards.empty())
+    if(!cards.empty() && !raid_cards.empty())
     {
         ios << "Always include:\n";
     }

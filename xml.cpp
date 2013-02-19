@@ -365,8 +365,6 @@ void read_missions(Decks& decks, Cards& cards, std::string filename)
             deck->set(cards, card_ids);
             decks.mission_decks_by_id[id] = deck;
             decks.mission_decks_by_name[deck_name] = deck;
-            decks.mission_name_by_id[id] = deck_name;
-            decks.mission_id_by_name[deck_name] = id;
         }
     }
 }
@@ -496,11 +494,10 @@ void read_quests(Decks& decks, Cards& cards, std::string filename)
             }
             decks.quest_decks.push_back(Deck{DeckType::quest, id, deck_name});
             Deck* deck = &decks.quest_decks.back();
+            deck->effect = static_cast<enum Effect>(battleground_id);
             deck->set(commander_card, always_cards, some_cards);
             decks.quest_decks_by_id[id] = deck;
-            decks.quest_effects_by_id[id] = battleground_id;
             decks.quest_decks_by_name[deck_name] = deck;
-            decks.quest_effects_by_name[deck_name] = battleground_id;
         }
     }
 }
@@ -555,7 +552,7 @@ void read_achievement(Decks& decks, Cards& cards, Achievement& achievement, cons
         if(strcmp(mission_id->value(), "*") != 0)
         {
             achievement.mission_condition.init(atoi(mission_id->value()), get_comparator(type_node, equal));
-            std::cout << "  Mission" << achievement.mission_condition.str() << " (" << decks.mission_name_by_id[atoi(mission_id->value())] << ") and win" << std::endl;
+            std::cout << "  Mission" << achievement.mission_condition.str() << " (" << decks.mission_decks_by_id[atoi(mission_id->value())]->name << ") and win" << std::endl;
         }
         for (xml_node<>* req_node = achievement_node->first_node("req");
             req_node;

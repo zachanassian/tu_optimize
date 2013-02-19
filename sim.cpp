@@ -231,6 +231,7 @@ std::string CardStatus::description()
     if(m_enfeebled > 0) { desc += ", enfeebled " + to_string(m_enfeebled); }
     if(m_poisoned > 0) { desc += ", poisoned " + to_string(m_poisoned); }
     if(m_protected > 0) { desc += ", protected " + to_string(m_protected); }
+//    if(m_attacked) { desc += ", attacked"; }
     desc += "]";
     return(desc);
 }
@@ -1441,7 +1442,7 @@ inline bool skill_predicate<temporary_split>(Field* fd, CardStatus* c)
 
 template<>
 inline bool skill_predicate<weaken>(Field* fd, CardStatus* c)
-{ return(!c->m_immobilized && attack_power(c) > 0 && can_act(fd, c)); }
+{ return(!c->m_immobilized && !c->m_attacked && attack_power(c) > 0 && can_act(fd, c)); }
 
 template<unsigned skill_id>
 inline void perform_skill(Field* fd, CardStatus* c, unsigned v)
