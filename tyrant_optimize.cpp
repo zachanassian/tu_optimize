@@ -58,25 +58,10 @@ std::string card_id_name(const Card* card)
 //------------------------------------------------------------------------------
 Deck* find_deck(const Decks& decks, const Cards& cards, std::string name)
 {
-    auto it1 = decks.mission_decks_by_name.find(name);
-    if(it1 != decks.mission_decks_by_name.end())
+    auto it = decks.by_name.find(name);
+    if(it != decks.by_name.end())
     {
-        return(it1->second);
-    }
-    auto it2 = decks.raid_decks_by_name.find(name);
-    if(it2 != decks.raid_decks_by_name.end())
-    {
-        return(it2->second);
-    }
-    auto it4 = decks.quest_decks_by_name.find(name);
-    if(it4 != decks.quest_decks_by_name.end())
-    {
-        return(it4->second);
-    }
-    auto it3 = decks.custom_decks.find(name);
-    if(it3 != decks.custom_decks.end())
-    {
-        return(it3->second);
+        return(it->second);
     }
     return(hash_to_deck(name.c_str(), cards));
 }
@@ -944,14 +929,11 @@ void print_available_decks(const Decks& decks, bool allow_card_pool)
 {
     std::cout << "Available decks: (use double-quoted name)" << std::endl;
     std::cout << "(All missions, omitted because the list is too long.)" << std::endl;
-#if 0
-    for(auto it: boost::join(boost::join(boost::join(decks.mission_decks_by_name, decks.raid_decks_by_name), decks.quest_decks_by_name), decks.custom_decks))
-#endif
-    for(auto it: boost::join(boost::join(decks.raid_decks_by_name, decks.quest_decks_by_name), decks.custom_decks))
+    for(auto& deck: decks.decks)
     {
-        if(allow_card_pool || it.second->raid_cards.empty())
+        if(deck.decktype != DeckType::mission && (allow_card_pool || deck.raid_cards.empty()))
         {
-            std::cout << it.second->short_description() << "\n";
+            std::cout << deck.short_description() << "\n";
         }
     }
 }
@@ -973,11 +955,10 @@ void usage(int argc, char** argv)
         "  -a: optimize for ANP instead of win rate.\n"
         "  -A <achievement>: optimize for the achievement specified by either id or name.\n"
         "  -c: don't try to optimize the commander.\n"
-        "  -e <effect>: set the battleground effect.\n"
+        "  -e <effect>: set the battleground effect. effect is automatically set for quests.\n"
         "  -fixedlen: prevent hill climbing from changing the number of cards.\n"
         "  -o: restrict hill climbing to the owned cards listed in \"ownedcards.txt\".\n"
         "  -o=<filename>: restrict hill climbing to the owned cards listed in <filename>.\n"
-        "  -q: quest mode. automatically sets quest effect.\n"
         "  -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).\n"
         "  -s: use surge (default is fight).\n"
         "  -t <num>: set the number of threads, default is 4.\n"
@@ -1075,26 +1056,6 @@ int main(int argc, char** argv)
             read_owned_cards(cards, owned_cards, argv[argIndex] + 3);
             use_owned_cards = true;
         }
-        else if(strcmp(argv[argIndex], "-q") == 0)
-        {
-            // Set quest effect:
-            for(auto deck_parsed: deck_list_parsed)
-            {
-                auto deck_it = decks.quest_decks_by_name.find(deck_parsed.first);
-                if(deck_it == decks.quest_decks_by_name.end() || deck_it->second->effect == Effect::none)
-                {
-                    std::cout << "WARNING: The deck '" << deck_parsed.first << "' has no battleground effect! Are you sure it's a quest deck?\n";
-                    continue;
-                }
-                enum Effect this_effect = deck_it->second->effect;
-                if(effect != Effect::none && this_effect != effect)
-                {
-                    std::cout << "ERROR: Inconsistent effects! Had " << effect << ", now have " << this_effect << "\n";
-                    return(7);
-                }
-                effect = this_effect;
-            }
-        }
         else if(strcmp(argv[argIndex], "-r") == 0)
         {
             ordered = true;
@@ -1154,8 +1115,6 @@ int main(int argc, char** argv)
         }
     }
 
-    modify_cards(cards, effect);
-
     Deck* att_deck{nullptr};
     try
     {
@@ -1186,10 +1145,12 @@ int main(int argc, char** argv)
             std::cerr << "No!" << std::endl;
         att_deck->strategy = DeckStrategy::ordered;
     }
-    std::cout << "Attacker:" << std::endl;
-    std::cout << att_deck->long_description() << std::endl;
 
-    std::cout << "Defender:" << std::endl;
+    boost::optional<Effect> quest_effect;
+    if(effect != Effect::none)
+    {
+        quest_effect = effect;
+    }
     std::vector<Deck*> def_decks;
     std::vector<double> def_decks_factors;
     for(auto deck_parsed: deck_list_parsed)
@@ -1210,9 +1171,6 @@ int main(int argc, char** argv)
             print_available_decks(decks, true);
             return(5);
         }
-        def_decks.push_back(def_deck);
-        def_decks_factors.push_back(deck_parsed.second);
-        std::cout << def_deck->long_description() << std::endl;
         if(achievement.id > 0)
         {
             if(def_deck->decktype != DeckType::mission)
@@ -1222,10 +1180,33 @@ int main(int argc, char** argv)
             }
             if(!achievement.mission_condition.check(def_deck->id))
             {
-                std::cerr << "Error: Wrong mission [" << deck_parsed.first << "] for achievement: " << achievement.mission_condition.str() << "." << std::endl;
+                std::cerr << "Error: Wrong mission [" << deck_parsed.first << "] for achievement." << std::endl;
                 return(1);
             }
         }
+        // Set quest effect:
+        Effect this_effect = def_deck->effect;
+        if(this_effect != Effect::none)
+        {
+            if(quest_effect && *quest_effect != this_effect)
+            {
+                std::cout << "ERROR: Inconsistent effects: " << effect_names[*quest_effect] << " and " << effect_names[this_effect] << ".\n";
+                return(7);
+            }
+            quest_effect = this_effect;
+        }
+        def_decks.push_back(def_deck);
+        def_decks_factors.push_back(deck_parsed.second);
+    }
+
+    effect = quest_effect.get_value_or(effect);
+    modify_cards(cards, effect);
+    std::cout << "Attacker:" << std::endl;
+    std::cout << att_deck->long_description() << std::endl;
+    std::cout << "Defender:" << std::endl;
+    for(auto def_deck: def_decks)
+    {
+        std::cout << def_deck->long_description() << std::endl;
     }
 
     Process p(num_threads, cards, decks, att_deck, def_decks, def_decks_factors, gamemode, effect, achievement);

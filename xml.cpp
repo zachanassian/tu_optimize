@@ -77,7 +77,7 @@ void handle_skill(xml_node<>* node, Card* card)
     if(normal) {card->add_skill(skill, skill_value(node), skill_faction(node), all); }
 }
 //------------------------------------------------------------------------------
-void load_decks_xml(Decks& decks, Cards& cards)
+void load_decks_xml(Decks& decks, const Cards& cards)
 {
     try
     {
@@ -158,6 +158,7 @@ void read_cards(Cards& cards)
         if(strcmp(card->name(), "unit") == 0)
         {
             xml_node<>* id_node(card->first_node("id"));
+            assert(id_node);
             unsigned id(id_node ? atoi(id_node->value()) : 0);
             xml_node<>* name_node(card->first_node("name"));
             xml_node<>* attack_node(card->first_node("attack"));
@@ -326,50 +327,51 @@ void read_cards(Cards& cards)
     // std::cout << "nb mission cards: " << cards.mission_cards.size() << "\n";
 }
 //------------------------------------------------------------------------------
-void read_missions(Decks& decks, Cards& cards, std::string filename)
+Deck* read_deck(Decks& decks, const Cards& cards, xml_node<>* node, DeckType::DeckType decktype, unsigned id, std::string& deck_name)
 {
-    std::vector<char> buffer;
-    xml_document<> doc;
-    parse_file(filename.c_str(), buffer, doc);
-    xml_node<>* root = doc.first_node();
-
-    if(!root)
+    xml_node<>* commander_node(node->first_node("commander"));
+    const Card* commander_card{cards.by_id(atoi(commander_node->value()))};
+    xml_node<>* deck_node(node->first_node("deck"));
+    xml_node<>* always_node{deck_node->first_node("always_include")};
+    std::vector<const Card*> always_cards;
+    for(xml_node<>* card_node = (always_node ? always_node : deck_node)->first_node("card");
+            card_node;
+            card_node = card_node->next_sibling("card"))
     {
-        return;
+        unsigned card_id{static_cast<unsigned>(atoi(card_node->value()))};
+        always_cards.push_back(cards.by_id(card_id));
     }
-
-    for(xml_node<>* mission_node = root->first_node();
-        mission_node;
-        mission_node = mission_node->next_sibling())
+    std::vector<std::pair<unsigned, std::vector<const Card*> > > some_cards;
+    for(xml_node<>* pool_node = deck_node->first_node("card_pool");
+            pool_node;
+            pool_node = pool_node->next_sibling("card_pool"))
     {
-        if(strcmp(mission_node->name(), "mission") == 0)
-        {
-            std::vector<unsigned> card_ids;
-            xml_node<>* id_node(mission_node->first_node("id"));
-            assert(id_node);
-            unsigned id(id_node ? atoi(id_node->value()) : 0);
-            xml_node<>* name_node(mission_node->first_node("name"));
-            std::string deck_name{name_node->value()};
-            xml_node<>* commander_node(mission_node->first_node("commander"));
-            card_ids.push_back(atoi(commander_node->value()));
-            xml_node<>* deck_node(mission_node->first_node("deck"));
-            for(xml_node<>* card_node = deck_node->first_node();
+        unsigned num_cards_from_pool{static_cast<unsigned>(atoi(pool_node->first_attribute("amount")->value()))};
+        std::vector<const Card*> cards_from_pool;
+
+        for(xml_node<>* card_node = pool_node->first_node("card");
                 card_node;
-                card_node = card_node->next_sibling())
+                card_node = card_node->next_sibling("card"))
+        {
+            unsigned card_id{static_cast<unsigned>(atoi(card_node->value()))};
+            // Special case Arctis Vanguard id 0 because of stray ` character.
+            // Don't continue on other raids because I want to be notified of other errors.
+            if(card_id == 0 && decktype == DeckType::raid && id == 1)
             {
-                unsigned card_id{static_cast<unsigned>(atoi(card_node->value()))};
-                card_ids.push_back(card_id);
+                continue;
             }
-            decks.mission_decks.push_back(Deck{DeckType::mission, id, deck_name});
-            Deck* deck = &decks.mission_decks.back();
-            deck->set(cards, card_ids);
-            decks.mission_decks_by_id[id] = deck;
-            decks.mission_decks_by_name[deck_name] = deck;
+            cards_from_pool.push_back(cards.by_id(card_id));
         }
+        some_cards.push_back(std::make_pair(num_cards_from_pool, cards_from_pool));
     }
+    decks.decks.push_back(Deck{decktype, id, deck_name});
+    Deck* deck = &decks.decks.back();
+    deck->set(commander_card, always_cards, some_cards);
+    decks.by_name[deck_name] = deck;
+    return deck;
 }
 //------------------------------------------------------------------------------
-void read_raids(Decks& decks, Cards& cards, std::string filename)
+void read_missions(Decks& decks, const Cards& cards, std::string filename)
 {
     std::vector<char> buffer;
     xml_document<> doc;
@@ -381,68 +383,47 @@ void read_raids(Decks& decks, Cards& cards, std::string filename)
         return;
     }
 
-    for(xml_node<>* raid_node = root->first_node();
-        raid_node;
-        raid_node = raid_node->next_sibling())
+    for(xml_node<>* mission_node = root->first_node("mission");
+        mission_node;
+        mission_node = mission_node->next_sibling("mission"))
     {
-        if(strcmp(raid_node->name(), "raid") == 0)
-        {
-            std::vector<const Card*> always_cards;
-            std::vector<std::pair<unsigned, std::vector<const Card*> > > some_cards;
-            xml_node<>* id_node(raid_node->first_node("id"));
-            assert(id_node);
-            unsigned id(id_node ? atoi(id_node->value()) : 0);
-            xml_node<>* name_node(raid_node->first_node("name"));
-            std::string deck_name{name_node->value()};
-            xml_node<>* commander_node(raid_node->first_node("commander"));
-            const Card* commander_card{cards.by_id(atoi(commander_node->value()))};
-            xml_node<>* deck_node(raid_node->first_node("deck"));
-            xml_node<>* always_node{deck_node->first_node("always_include")};
-            if(always_node)
-            {
-                for(xml_node<>* card_node = always_node->first_node();
-                    card_node;
-                    card_node = card_node->next_sibling())
-                {
-                    unsigned card_id{static_cast<unsigned>(atoi(card_node->value()))};
-                    always_cards.push_back(cards.by_id(card_id));
-                }
-            }
-            for(xml_node<>* pool_node = always_node->next_sibling();
-                pool_node;
-                pool_node = pool_node->next_sibling())
-            {
-                if(strcmp(pool_node->name(), "card_pool") == 0)
-                {
-                    unsigned num_cards_from_pool{static_cast<unsigned>(atoi(pool_node->first_attribute("amount")->value()))};
-                    std::vector<const Card*> cards_from_pool;
-
-                    for(xml_node<>* card_node = pool_node->first_node();
-                        card_node;
-                        card_node = card_node->next_sibling())
-                    {
-                        unsigned card_id{static_cast<unsigned>(atoi(card_node->value()))};
-                        // Special case Arctis Vanguard id 0 because of stray ` character.
-                        // Don't continue on other raids because I want to be notified of other errors.
-                        if(card_id == 0 && id == 1)
-                        {
-                            continue;
-                        }
-                        cards_from_pool.push_back(cards.by_id(card_id));
-                    }
-                    some_cards.push_back(std::make_pair(num_cards_from_pool, cards_from_pool));
-                }
-            }
-            decks.raid_decks.push_back(Deck{DeckType::raid, id, deck_name});
-            Deck* deck = &decks.raid_decks.back();
-            deck->set(commander_card, always_cards, some_cards);
-            decks.raid_decks_by_id[id] = deck;
-            decks.raid_decks_by_name[deck_name] = deck;
-        }
+        std::vector<unsigned> card_ids;
+        xml_node<>* id_node(mission_node->first_node("id"));
+        assert(id_node);
+        unsigned id(id_node ? atoi(id_node->value()) : 0);
+        xml_node<>* name_node(mission_node->first_node("name"));
+        std::string deck_name{name_node->value()};
+        read_deck(decks, cards, mission_node, DeckType::mission, id, deck_name);
+        decks.mission_names_by_id[id] = deck_name;
     }
 }
 //------------------------------------------------------------------------------
-void read_quests(Decks& decks, Cards& cards, std::string filename)
+void read_raids(Decks& decks, const Cards& cards, std::string filename)
+{
+    std::vector<char> buffer;
+    xml_document<> doc;
+    parse_file(filename.c_str(), buffer, doc);
+    xml_node<>* root = doc.first_node();
+
+    if(!root)
+    {
+        return;
+    }
+
+    for(xml_node<>* raid_node = root->first_node("raid");
+        raid_node;
+        raid_node = raid_node->next_sibling("raid"))
+    {
+        xml_node<>* id_node(raid_node->first_node("id"));
+        assert(id_node);
+        unsigned id(id_node ? atoi(id_node->value()) : 0);
+        xml_node<>* name_node(raid_node->first_node("name"));
+        std::string deck_name{name_node->value()};
+        read_deck(decks, cards, raid_node, DeckType::raid, id, deck_name);
+    }
+}
+//------------------------------------------------------------------------------
+void read_quests(Decks& decks, const Cards& cards, std::string filename)
 {
     std::vector<char> buffer;
     xml_document<> doc;
@@ -457,48 +438,18 @@ void read_quests(Decks& decks, Cards& cards, std::string filename)
     // Seems always_cards is empty for all quests.
     std::vector<const Card*> always_cards;
 
-    for(xml_node<>* quest_node = root->first_node();
+    for(xml_node<>* quest_node = root->first_node("step");
         quest_node;
-        quest_node = quest_node->next_sibling())
+        quest_node = quest_node->next_sibling("step"))
     {
-        if(strcmp(quest_node->name(), "step") == 0)
-        {
-            std::vector<std::pair<unsigned, std::vector<const Card*> > > some_cards;
-            xml_node<>* id_node(quest_node->first_node("id"));
-            assert(id_node);
-            unsigned id(id_node ? atoi(id_node->value()) : 0);
-            std::string deck_name{"Step " + std::string{id_node->value()}};
-            xml_node<>* commander_node(quest_node->first_node("commander"));
-            const Card* commander_card{cards.by_id(atoi(commander_node->value()))};
-            xml_node<>* battleground_id_node(quest_node->first_node("battleground_id"));
-            int battleground_id(battleground_id_node ? atoi(battleground_id_node->value()) : -1);
-            xml_node<>* deck_node(quest_node->first_node("deck"));
-            for(xml_node<>* pool_node = deck_node->first_node("card_pool");
-                pool_node;
-                pool_node = pool_node->next_sibling())
-            {
-                if(strcmp(pool_node->name(), "card_pool") == 0)
-                {
-                    unsigned num_cards_from_pool{static_cast<unsigned>(atoi(pool_node->first_attribute("amount")->value()))};
-                    std::vector<const Card*> cards_from_pool;
-
-                    for(xml_node<>* card_node = pool_node->first_node();
-                        card_node;
-                        card_node = card_node->next_sibling())
-                    {
-                        unsigned card_id{static_cast<unsigned>(atoi(card_node->value()))};
-                        cards_from_pool.push_back(cards.by_id(card_id));
-                    }
-                    some_cards.push_back(std::make_pair(num_cards_from_pool, cards_from_pool));
-                }
-            }
-            decks.quest_decks.push_back(Deck{DeckType::quest, id, deck_name});
-            Deck* deck = &decks.quest_decks.back();
-            deck->effect = static_cast<enum Effect>(battleground_id);
-            deck->set(commander_card, always_cards, some_cards);
-            decks.quest_decks_by_id[id] = deck;
-            decks.quest_decks_by_name[deck_name] = deck;
-        }
+        xml_node<>* id_node(quest_node->first_node("id"));
+        assert(id_node);
+        unsigned id(id_node ? atoi(id_node->value()) : 0);
+        std::string deck_name{"Step " + std::string{id_node->value()}};
+        xml_node<>* battleground_id_node(quest_node->first_node("battleground_id"));
+        int battleground_id(battleground_id_node ? atoi(battleground_id_node->value()) : -1);
+        Deck* deck = read_deck(decks, cards, quest_node, DeckType::quest, id, deck_name);
+        deck->effect = static_cast<enum Effect>(battleground_id);
     }
 }
 //------------------------------------------------------------------------------
@@ -513,7 +464,7 @@ Comparator get_comparator(xml_node<>* node, Comparator default_comparator)
     else { throw std::runtime_error(std::string("Not implemented: compare=\"") + compare->value() + "\""); }
 }
 
-void read_achievement(Decks& decks, Cards& cards, Achievement& achievement, const char* achievement_id_name, std::string filename/* = "achievements.xml"*/)
+void read_achievement(Decks& decks, const Cards& cards, Achievement& achievement, const char* achievement_id_name, std::string filename/* = "achievements.xml"*/)
 {
     std::vector<char> buffer;
     xml_document<> doc;
@@ -552,7 +503,7 @@ void read_achievement(Decks& decks, Cards& cards, Achievement& achievement, cons
         if(strcmp(mission_id->value(), "*") != 0)
         {
             achievement.mission_condition.init(atoi(mission_id->value()), get_comparator(type_node, equal));
-            std::cout << "  Mission" << achievement.mission_condition.str() << " (" << decks.mission_decks_by_id[atoi(mission_id->value())]->name << ") and win" << std::endl;
+            std::cout << "  Mission" << achievement.mission_condition.str() << " (" << decks.mission_names_by_id[atoi(mission_id->value())] << ") and win" << std::endl;
         }
         for (xml_node<>* req_node = achievement_node->first_node("req");
             req_node;

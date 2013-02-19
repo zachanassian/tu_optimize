@@ -72,7 +72,7 @@ void load_decks(Decks& decks, Cards& cards)
     {
         try
         {
-            read_custom_decks(cards, std::string{"Custom.txt"}, decks.custom_decks);
+            read_custom_decks(decks, cards, "Custom.txt");
         }
         catch(const std::runtime_error& e)
         {
@@ -144,7 +144,7 @@ template<typename Iterator, typename Functor, typename Token> Iterator read_toke
 // Error codes:
 // 2 -> file not readable
 // 3 -> error while parsing file
-unsigned read_custom_decks(Cards& cards, std::string filename, std::map<std::string, Deck*>& custom_decks)
+unsigned read_custom_decks(Decks& decks, Cards& cards, std::string filename)
 {
     std::ifstream decks_file(filename.c_str());
     if(!decks_file.is_open())
@@ -184,6 +184,11 @@ unsigned read_custom_decks(Cards& cards, std::string filename, std::map<std::str
                 {
                     std::cerr << "Error in file " << filename << " at line " << num_line << ", could not read the deck name.\n";
                     continue;
+                }
+                auto deck_iter = decks.by_name.find(*deck_name);
+                if(deck_iter != decks.by_name.end())
+                {
+                    std::cerr << "Warning in file " << filename << " at line " << num_line << ", name conflicts, overrides " << deck_iter->second->short_description() << std::endl;
                 }
                 ++token_iter;
                 for(; token_iter != deck_tokens.end(); ++token_iter)
@@ -239,12 +244,10 @@ unsigned read_custom_decks(Cards& cards, std::string filename, std::map<std::str
                         std::cerr << "Error in file " << filename << " at line " << num_line << " while parsing card " << card_spec << " in deck " << deck_name << "\n";
                     }
                 }
-                if(deck_name)
-                {
-                    Deck* deck = new Deck{DeckType::custom_deck, 0, *deck_name};
-                    deck->set(cards, card_ids);
-                    custom_decks.insert({*deck_name, deck});
-                }
+                decks.decks.push_back(Deck{DeckType::custom_deck, num_line, *deck_name});
+                Deck* deck = &decks.decks.back();
+                deck->set(cards, card_ids);
+                decks.by_name[*deck_name] = deck;
             }
         }
     }

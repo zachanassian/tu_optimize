@@ -88,24 +88,9 @@ struct Deck
 // + also the custom decks
 struct Decks
 {
-    std::map<std::string, Deck*> custom_decks;
-    std::list<Deck> mission_decks;
-    std::map<unsigned, Deck*> mission_decks_by_id;
-    std::map<std::string, Deck*> mission_decks_by_name;
-    std::list<Deck> raid_decks;
-    std::map<unsigned, Deck*> raid_decks_by_id;
-    std::map<std::string, Deck*> raid_decks_by_name;
-    std::list<Deck> quest_decks;
-    std::map<unsigned, Deck*> quest_decks_by_id;
-    std::map<std::string, Deck*> quest_decks_by_name;
-
-    ~Decks()
-    {
-        for(auto& obj: custom_decks)
-        {
-            delete(obj.second);
-        }
-    }
+    std::list<Deck> decks;
+    std::map<std::string, Deck*> by_name;
+    std::map<unsigned, std::string> mission_names_by_id;
 };
 
 #endif
