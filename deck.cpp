@@ -33,10 +33,37 @@ std::string deck_hash(const Card* commander, const std::vector<const Card*>& car
     std::stringstream ios;
     ios << base64[commander->m_id / 64];
     ios << base64[commander->m_id % 64];
+    unsigned last_id = 0;
+    unsigned num_repeat = 0;
     for(const Card* card: cards)
     {
-        ios << base64[card->m_id / 64];
-        ios << base64[card->m_id % 64];
+        unsigned card_id(card->m_id);
+        if(card_id == last_id)
+        {
+            ++ num_repeat;
+        }
+        else
+        {
+            if(num_repeat > 1)
+            {
+                ios << base64[(num_repeat + 4000) / 64];
+                ios << base64[(num_repeat + 4000) % 64];
+            }
+            last_id = card_id;
+            num_repeat = 1;
+            if(card_id > 4000)
+            {
+                ios << '-';
+                card_id -= 4000;
+            }
+            ios << base64[card_id / 64];
+            ios << base64[card_id % 64];
+        }
+    }
+    if(num_repeat > 1)
+    {
+        ios << base64[(num_repeat + 4000) / 64];
+        ios << base64[(num_repeat + 4000) % 64];
     }
     return ios.str();
 }

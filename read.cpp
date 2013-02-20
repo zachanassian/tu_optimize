@@ -19,27 +19,39 @@ const char* base64_chars =
     "abcdefghijklmnopqrstuvwxyz"
     "0123456789+/";
 
-// Converts `pairs' pairs of cards in `hash' to a deck.
+// Converts cards in `hash' to a deck.
 // Stores resulting card IDs in `ids'.
-bool hash_to_ids(const char* hash, size_t pairs,
-                 std::vector<unsigned int>& ids)
+bool hash_to_ids(const char* hash, std::vector<unsigned int>& ids)
 {
     unsigned int last_id = 0;
+    const char* pc = hash;
 
-    for (size_t i = 0; i < pairs; ++i)
+    while(*pc)
     {
-        const char* p0 = strchr(base64_chars, hash[2 * i]);
-        const char* p1 = strchr(base64_chars, hash[2 * i + 1]);
+        unsigned id_plus = 0;
+        if(*pc == '-')
+        {
+            ++ pc;
+            id_plus = 4000;
+        }
+        if(!*pc || !*(pc + 1))
+        {
+            return(false);
+        }
+        const char* p0 = strchr(base64_chars, *pc);
+        const char* p1 = strchr(base64_chars, *(pc + 1));
         if (!p0 || !p1)
         {
             return(false);
         }
+        pc += 2;
         size_t index0 = p0 - base64_chars;
         size_t index1 = p1 - base64_chars;
         unsigned int id = (index0 << 6) + index1;
 
-        if (id < 4000)
+        if (id < 4001)
         {
+            id += id_plus;
             ids.push_back(id);
             last_id = id;
         }
@@ -57,9 +69,7 @@ bool hash_to_ids(const char* hash, size_t pairs,
 Deck* hash_to_deck(const char* hash, const Cards& cards)
 {
     std::vector<unsigned int> ids;
-    if(strlen(hash) % 2 > 0) { return(nullptr); }
-    size_t pairs = strlen(hash) / 2;
-    if(!hash_to_ids(hash, pairs, ids)) { return(nullptr); }
+    if(!hash_to_ids(hash, ids)) { return(nullptr); }
 
     Deck* deck = new Deck{};
     deck->set(cards, ids);
@@ -70,14 +80,7 @@ void load_decks(Decks& decks, Cards& cards)
 {
     if(boost::filesystem::exists("Custom.txt"))
     {
-        try
-        {
-            read_custom_decks(decks, cards, "Custom.txt");
-        }
-        catch(const std::runtime_error& e)
-        {
-            std::cerr << "Exception while loading custom decks: " << e.what() << "\n";
-        }
+        read_custom_decks(decks, cards, "Custom.txt");
     }
 }
 
@@ -243,9 +246,14 @@ unsigned read_custom_decks(Decks& decks, Cards& cards, std::string filename)
             decks.by_name[deck_name] = deck;
         }
     }
-    catch (std::ifstream::failure e)
+    catch (std::exception& e)
     {
-        std::cerr << "Exception while parsing the custom deck file " << filename << " (badbit is set): " << e.what() << ".\n";
+        std::cerr << "Exception while parsing the custom deck file " << filename;
+        if(num_line > 0)
+        {
+            std::cerr << " at line " << num_line;
+        }
+        std::cerr << ": " << e.what() << ".\n";
         return(3);
     }
     return(0);
