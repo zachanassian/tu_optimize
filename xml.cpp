@@ -131,7 +131,7 @@ void parse_file(const char* filename, std::vector<char>& buffer, xml_document<>&
     }
     catch(rapidxml::parse_error& e)
     {
-        std::cout << "Parse error exception.\n";
+        std::cerr << "Parse error exception.\n";
         std::cout << e.what();
         throw(e);
     }

@@ -2,12 +2,12 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/optional.hpp>
 #include <boost/tokenizer.hpp>
 #include <cstring>
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <exception>
 
 #include "card.h"
 #include "cards.h"
@@ -76,7 +76,7 @@ void load_decks(Decks& decks, Cards& cards)
         }
         catch(const std::runtime_error& e)
         {
-            std::cout << "Exception while loading custom decks: " << e.what() << "\n";
+            std::cerr << "Exception while loading custom decks: " << e.what() << "\n";
         }
     }
 }
@@ -128,7 +128,7 @@ template<typename Iterator, typename Functor> Iterator recede_until(Iterator it,
     return(it_beg);
 }
 
-template<typename Iterator, typename Functor, typename Token> Iterator read_token(Iterator it, Iterator it_end, Functor f, boost::optional<Token>& token)
+template<typename Iterator, typename Functor, typename Token> Iterator read_token(Iterator it, Iterator it_end, Functor f, Token& token)
 {
     Iterator token_start = advance_until(it, it_end, [](const char& c){return(c != ' ');});
     Iterator token_end_after_spaces = advance_until(token_start, it_end, f);
@@ -136,9 +136,42 @@ template<typename Iterator, typename Functor, typename Token> Iterator read_toke
     {
         Iterator token_end = recede_until(token_end_after_spaces, token_start, [](const char& c){return(c != ' ');});
         token = boost::lexical_cast<Token>(std::string{token_start, token_end});
-        return(token_end_after_spaces);
     }
     return(token_end_after_spaces);
+}
+
+void parse_card_spec(Cards& cards, std::string& card_spec, unsigned& card_id, unsigned& card_num)
+{
+    auto card_spec_iter = card_spec.begin();
+    card_id = 0;
+    card_num = 1;
+    std::string card_name;
+    card_spec_iter = read_token(card_spec_iter, card_spec.end(), [](char c){return(c=='#' || c=='(' || c=='\r');}, card_name);
+    if(card_name.empty())
+    {
+        throw std::runtime_error("no card name");
+    }
+    // If card name is not found, try find card id quoted in '[]' in name, ignoring other characters.
+    auto card_it = cards.player_cards_by_name.find(card_name);
+    auto card_id_iter = advance_until(card_name.begin(), card_name.end(), [](char c){return(c=='[');});
+    if(card_it != cards.player_cards_by_name.end())
+    {
+        card_id = card_it->second->m_id;
+    }
+    else if(card_id_iter != card_name.end())
+    {
+        ++ card_id_iter;
+        card_id_iter = read_token(card_id_iter, card_name.end(), [](char c){return(c==']');}, card_id);
+    }
+    if(card_spec_iter != card_spec.end() && (*card_spec_iter == '#' || *card_spec_iter == '('))
+    {
+        ++card_spec_iter;
+        card_spec_iter = read_token(card_spec_iter, card_spec.end(), [](char c){return(c < '0' || c > '9');}, card_num);
+    }
+    if(card_id == 0)
+    {
+        throw std::runtime_error("card not found");
+    }
 }
 
 // Error codes:
@@ -146,10 +179,10 @@ template<typename Iterator, typename Functor, typename Token> Iterator read_toke
 // 3 -> error while parsing file
 unsigned read_custom_decks(Decks& decks, Cards& cards, std::string filename)
 {
-    std::ifstream decks_file(filename.c_str());
+    std::ifstream decks_file(filename);
     if(!decks_file.is_open())
     {
-        std::cerr << "File " << filename << " could not be opened\n";
+        std::cerr << "Error: Custom deck file " << filename << " could not be opened\n";
         return(2);
     }
     unsigned num_line(0);
@@ -162,99 +195,57 @@ unsigned read_custom_decks(Decks& decks, Cards& cards, std::string filename)
             std::string deck_string;
             getline(decks_file, deck_string);
             ++num_line;
-            if(deck_string.size() > 0)
+            if(deck_string.size() == 0 || strncmp(deck_string.c_str(), "//", 2) == 0)
             {
-                if(strncmp(deck_string.c_str(), "//", 2) == 0)
-                {
-                    continue;
-                }
-                boost::tokenizer<boost::char_delimiters_separator<char> > deck_tokens{deck_string, boost::char_delimiters_separator<char>{false, ":,", ""}};
-                auto token_iter = deck_tokens.begin();
-                boost::optional<std::string> deck_name;
-                if(token_iter != deck_tokens.end())
-                {
-                    read_token(token_iter->begin(), token_iter->end(), [](char c){return(false);}, deck_name);
-                    if(!deck_name || (*deck_name).size() == 0)
-                    {
-                        std::cerr << "Error in file " << filename << " at line " << num_line << ", could not read the deck name.\n";
-                        continue;
-                    }
-                }
-                else
-                {
-                    std::cerr << "Error in file " << filename << " at line " << num_line << ", could not read the deck name.\n";
-                    continue;
-                }
-                auto deck_iter = decks.by_name.find(*deck_name);
-                if(deck_iter != decks.by_name.end())
-                {
-                    std::cerr << "Warning in file " << filename << " at line " << num_line << ", name conflicts, overrides " << deck_iter->second->short_description() << std::endl;
-                }
-                ++token_iter;
-                for(; token_iter != deck_tokens.end(); ++token_iter)
-                {
-                    std::string card_spec(*token_iter);
-                    try
-                    {
-                        auto card_spec_iter = card_spec.begin();
-                        boost::optional<std::string> card_name;
-                        card_spec_iter = read_token(card_spec_iter, card_spec.end(), [](char c){return(c=='[' || c=='#' || c=='\r');}, card_name);
-                        if(!card_name)
-                        {
-                            std::cerr << "Error in file " << filename << " at line " << num_line << " while parsing card " << card_spec << " in deck " << deck_name << "\n";
-                            break;
-                        }
-                        else
-                        {
-                            boost::optional<unsigned> card_id;
-                            if(*card_spec_iter == '[')
-                            {
-                                ++card_spec_iter;
-                                card_spec_iter = read_token(card_spec_iter, card_spec.end(), [](char c){return(c==']');}, card_id);
-                                card_spec_iter = advance_until(card_spec_iter, card_spec.end(), [](char c){return(c!=' ');});
-                            }
-                            boost::optional<unsigned> card_num;
-                            if(*card_spec_iter == '#')
-                            {
-                                ++card_spec_iter;
-                                card_spec_iter = read_token(card_spec_iter, card_spec.end(), [](char c){return(c < '0' || c > '9');}, card_num);
-                            }
-                            unsigned resolved_id{card_id ? *card_id : 0};
-                            if(resolved_id == 0)
-                            {
-                                auto card_it = cards.player_cards_by_name.find(*card_name);
-                                if(card_it != cards.player_cards_by_name.end())
-                                {
-                                    resolved_id = card_it->second->m_id;
-                                }
-                                else
-                                {
-                                    std::cerr << "Error in file " << filename << " at line " << num_line << " while parsing card " << card_spec << " in deck " << *deck_name << ": card not found\n";
-                                    break;
-                                }
-                            }
-                            for(unsigned i(0); i < (card_num ? *card_num : 1); ++i)
-                            {
-                                card_ids.push_back(resolved_id);
-                            }
-                        }
-                    }
-                    catch(boost::bad_lexical_cast e)
-                    {
-                        std::cerr << "Error in file " << filename << " at line " << num_line << " while parsing card " << card_spec << " in deck " << deck_name << "\n";
-                    }
-                }
-                decks.decks.push_back(Deck{DeckType::custom_deck, num_line, *deck_name});
-                Deck* deck = &decks.decks.back();
-                deck->set(cards, card_ids);
-                decks.by_name[*deck_name] = deck;
+                continue;
             }
+            boost::tokenizer<boost::char_delimiters_separator<char> > deck_tokens{deck_string, boost::char_delimiters_separator<char>{false, ":,", ""}};
+            auto token_iter = deck_tokens.begin();
+            std::string deck_name;
+            if(token_iter == deck_tokens.end())
+            {
+                std::cerr << "Error in custom deck file " << filename << " at line " << num_line << ", could not read the deck name.\n";
+                continue;
+            }
+            read_token(token_iter->begin(), token_iter->end(), [](char c){return(false);}, deck_name);
+            if(deck_name.empty())
+            {
+                std::cerr << "Error in custom deck file " << filename << " at line " << num_line << ", could not read the deck name.\n";
+                continue;
+            }
+            auto deck_iter = decks.by_name.find(deck_name);
+            if(deck_iter != decks.by_name.end())
+            {
+                std::cerr << "Warning in custom deck file " << filename << " at line " << num_line << ", name conflicts, overrides " << deck_iter->second->short_description() << std::endl;
+            }
+            ++token_iter;
+            for(; token_iter != deck_tokens.end(); ++token_iter)
+            {
+                std::string card_spec(*token_iter);
+                try
+                {
+                    unsigned card_id{0};
+                    unsigned card_num{1};
+                    parse_card_spec(cards, card_spec, card_id, card_num);
+                    for(unsigned i(0); i < card_num; ++i)
+                    {
+                        card_ids.push_back(card_id);
+                    }
+                }
+                catch(std::exception& e)
+                {
+                    std::cerr << "Error in custom deck file " << filename << " at line " << num_line << " while parsing card '" << card_spec << "' in deck " << deck_name << ": " << e.what() << "\n";
+                }
+            }
+            decks.decks.push_back(Deck{DeckType::custom_deck, num_line, deck_name});
+            Deck* deck = &decks.decks.back();
+            deck->set(cards, card_ids);
+            decks.by_name[deck_name] = deck;
         }
     }
     catch (std::ifstream::failure e)
     {
-        std::cerr << "Exception while parsing the file " << filename << " (badbit is set).\n";
-        e.what();
+        std::cerr << "Exception while parsing the custom deck file " << filename << " (badbit is set): " << e.what() << ".\n";
         return(3);
     }
     return(0);
@@ -263,50 +254,37 @@ unsigned read_custom_decks(Decks& decks, Cards& cards, std::string filename)
 void read_owned_cards(Cards& cards, std::map<unsigned, unsigned>& owned_cards, const char *filename)
 {
     std::ifstream owned_file{filename};
-
     if(!owned_file.good())
     {
-        std::cerr << "Warning: The file '" << filename << "' does not exist. This will result in you not owning any cards.\n";
+        std::cerr << "Warning: Owned cards file '" << filename << "' does not exist.\n";
         return;
     }
-
-    std::string owned_str{(std::istreambuf_iterator<char>(owned_file)), std::istreambuf_iterator<char>()};
-    boost::tokenizer<boost::char_delimiters_separator<char> > tok{owned_str, boost::char_delimiters_separator<char>{false, "()\n", ""}};
-    for(boost::tokenizer<boost::char_delimiters_separator<char> >::iterator beg=tok.begin(); beg!=tok.end();++beg)
+    unsigned num_line(0);
+    while(owned_file && !owned_file.eof())
     {
-        std::string name{*beg};
-        Card *card = NULL;
-        if(name[0] == '[')
+        std::string card_spec;
+        getline(owned_file, card_spec);
+        ++num_line;
+        if(card_spec.size() == 0 || strncmp(card_spec.c_str(), "//", 2) == 0)
         {
-            auto card_itr = cards.cards_by_id.find(atoi(name.substr(1).c_str()));
-            if(card_itr != cards.cards_by_id.end())
-            {
-                card = card_itr->second;
-            }
+            continue;
         }
-        else
+        try
         {
-            auto pos = name.find(',');
+            // Remove ',' from card names
+            auto pos = card_spec.find(',');
             if(pos != std::string::npos)
             {
-                name.erase(pos, 1);
+                card_spec.erase(pos, 1);
             }
-            auto card_itr = cards.player_cards_by_name.find(name);
-            if(card_itr != cards.player_cards_by_name.end())
-            {
-                card = card_itr->second;
-            }
+            unsigned card_id{0};
+            unsigned card_num{1};
+            parse_card_spec(cards, card_spec, card_id, card_num);
+            owned_cards[card_id] = card_num;
         }
-        ++beg;
-        assert(beg != tok.end());
-        unsigned num{static_cast<unsigned>(atoi((*beg).c_str()))};
-        if(card)
+        catch(std::exception& e)
         {
-            owned_cards[card->m_id] = num;
-        }
-        else
-        {
-            std::cerr << "Error in file ownedcards.txt, the card \"" << name << "\" does not seem to be a valid card.\n";
+            std::cerr << "Error in owned cards file " << filename << " at line " << num_line << " while parsing card '" << card_spec << "': " << e.what() << "\n";
         }
     }
 }

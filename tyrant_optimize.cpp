@@ -1141,8 +1141,6 @@ int main(int argc, char** argv)
     }
     if(ordered)
     {
-        if(att_deck == nullptr)
-            std::cerr << "No!" << std::endl;
         att_deck->strategy = DeckStrategy::ordered;
     }
 
@@ -1190,7 +1188,7 @@ int main(int argc, char** argv)
         {
             if(quest_effect && *quest_effect != this_effect)
             {
-                std::cout << "ERROR: Inconsistent effects: " << effect_names[*quest_effect] << " and " << effect_names[this_effect] << ".\n";
+                std::cerr << "Error: Inconsistent effects: " << effect_names[*quest_effect] << " and " << effect_names[this_effect] << ".\n";
                 return(7);
             }
             quest_effect = this_effect;

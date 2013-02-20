@@ -1671,7 +1671,7 @@ inline std::vector<CardStatus*>& skill_targets_allied_structure(Field* fd, CardS
 template<unsigned skill>
 std::vector<CardStatus*>& skill_targets(Field* fd, CardStatus* src_status)
 {
-    std::cout << "skill_targets: Error: no specialization for " << skill_names[skill] << "\n";
+    std::cerr << "skill_targets: Error: no specialization for " << skill_names[skill] << "\n";
     throw;
 }
 
