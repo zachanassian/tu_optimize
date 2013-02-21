@@ -622,10 +622,14 @@ unsigned play(Field* fd)
             // Evaluate skills
             evaluate_skills(fd, &current_status, current_status.m_card->m_skills);
             // Attack
-            if(!current_status.m_immobilized && current_status.m_hp > 0)
+            if(!fd->end && !current_status.m_immobilized && current_status.m_hp > 0)
             {
                 attack_phase(fd);
             }
+        }
+        if(fd->end)
+        {
+            break;
         }
         _DEBUG_MSG("TURN %u ends for %s\n", fd->turn, status_description(&fd->tap->commander).c_str());
         std::swap(fd->tapi, fd->tipi);
@@ -642,7 +646,7 @@ unsigned play(Field* fd)
         print_achievement_results(fd);
     }
     // defender wins
-    if(fd->players[0]->commander.m_hp == 0 || (!win_tie && fd->turn > turn_limit))
+    if(fd->players[0]->commander.m_hp == 0)
     {
         _DEBUG_MSG("Defender wins.\n");
         return(0);
@@ -654,7 +658,7 @@ unsigned play(Field* fd)
         return(0);
     }
     // attacker wins
-    if((fd->players[1]->commander.m_hp == 0 || (win_tie && fd->turn > turn_limit)))
+    if(fd->players[1]->commander.m_hp == 0)
     {
         // ANP: Speedy if last_decision + 10 > turn.
         // fd->turn has advanced once past the actual turn the battle has ended.
@@ -667,6 +671,11 @@ unsigned play(Field* fd)
         }
         _DEBUG_MSG("Attacker wins.\n");
         return(10 + (speedy ? 5 : 0) + fd->points_since_last_decision);
+    }
+    if (fd->turn > turn_limit)
+    {
+        _DEBUG_MSG("Stall after %u turns.\n", turn_limit);
+        return(win_tie ? 1 : 0);
     }
 
     // Huh? How did we get here?
@@ -1062,6 +1071,11 @@ struct PerformAttack
             if(skill_activate<attack>(fd, att_status, def_status))
             {
                 attack_damage<cardtype>();
+                if(fd->end)
+                {
+                    // Commander dies?
+                    return;
+                }
             }
             siphon_poison_disease<cardtype>();
             on_kill<cardtype>();
