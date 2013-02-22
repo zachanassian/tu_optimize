@@ -7,24 +7,24 @@ const std::string faction_names[Faction::num_factions] =
 
 std::string skill_names[Skill::num_skills] =
 {
-    // Activation (including Destroyed):
-    "augment", "backfire", "chaos", "cleanse", "enfeeble",
-    "freeze", "heal", "infuse", "jam",
-    "mimic", "protect", "rally", "recharge", "repair", "rush", "shock",
-    "siege", "strike", "summon", "supply",
+    // Activation (Including Destroyed):
+    "Augment", "Backfire", "Chaos", "Cleanse", "Enfeeble",
+    "Freeze", "Heal", "Infuse", "Jam",
+    "Mimic", "Protect", "Rally", "Recharge", "Repair", "Rush", "Shock",
+    "Siege", "Strike", "Summon", "Supply",
     "temporary_split",
     "trigger_regen",
-    "weaken",
+    "Weaken",
     // Combat-Modifier:
-    "antiair", "burst", "fear", "flurry", "pierce", "swipe", "valor",
+    "Antiair", "Burst", "Fear", "Flurry", "Pierce", "Swipe", "Valor",
     // Damage-Dependant:
-    "berserk", "crush", "disease", "immobilize", "leech", "poison", "siphon",
+    "Berserk", "Crush", "Disease", "Immobilize", "Leech", "Poison", "Siphon",
     // Defensive:
-    "armored", "counter", "emulate", "evade", "flying", "intercept", "payback", "refresh", "regenerate", "tribute", "wall",
+    "Armored", "Counter", "Emulate", "Evade", "Flying", "Intercept", "Payback", "Refresh", "Regenerate", "Tribute", "Wall",
     // Triggered:
-    "blitz",
-    // Static (ignored):
-    /* "blizzard", "fusion", "mist", */
+    "Blitz", "Legion",
+    // Static (Ignored):
+    /* "Blizzard", "Fusion", "Mist", */
     // Misc:
     "0",
 };

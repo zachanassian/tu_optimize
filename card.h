@@ -12,6 +12,7 @@ public:
         m_antiair(0),
         m_armored(0),
         m_attack(0),
+        m_base_id(0),
         m_berserk(0),
         m_berserk_oa(0),
         m_blitz(false),
@@ -30,10 +31,10 @@ public:
         m_fusion(false),
         m_health(0),
         m_id(0),
-        m_base_id(0),
         m_immobilize(false),
         m_intercept(false),
         m_leech(0),
+        m_legion(0),
         m_name(""),
         m_payback(false),
         m_pierce(0),
@@ -69,6 +70,7 @@ public:
     unsigned m_antiair;
     unsigned m_armored;
     unsigned m_attack;
+    unsigned m_base_id;  // Cards sharing the same name share a unique base id. (for "unique" check)
     unsigned m_berserk;
     unsigned m_berserk_oa;
     bool m_blitz;
@@ -87,10 +89,10 @@ public:
     bool m_fusion;
     unsigned m_health;
     unsigned m_id;
-    unsigned m_base_id;  // Cards sharing the same name share a unique base id. (for "unique" check)
     bool m_immobilize;
     bool m_intercept;
     unsigned m_leech;
+    unsigned m_legion;
     std::string m_name;
     bool m_payback;
     unsigned m_pierce;

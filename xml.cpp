@@ -245,6 +245,8 @@ void read_cards(Cards& cards)
                     { c->m_intercept = true; }
                     if(strcmp(skill->first_attribute("id")->value(), "leech") == 0)
                     { c->m_leech = atoi(skill->first_attribute("x")->value()); }
+                    if(strcmp(skill->first_attribute("id")->value(), "legion") == 0)
+                    { c->m_legion = atoi(skill->first_attribute("x")->value()); }
                     if(strcmp(skill->first_attribute("id")->value(), "payback") == 0)
                     { c->m_payback = true; }
                     if(strcmp(skill->first_attribute("id")->value(), "pierce") == 0)

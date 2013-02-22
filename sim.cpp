@@ -362,6 +362,7 @@ void evaluate_skills(Field* fd, CardStatus* status, const std::vector<SkillSpec>
         if(fd->end) { break; }
     }
 }
+bool check_and_perform_blitz(Field* fd, CardStatus* src_status);
 struct PlayCard
 {
     const Card* card;
@@ -461,10 +462,7 @@ void PlayCard::setStorage<CardType::action>()
 template <>
 void PlayCard::blitz<CardType::assault>()
 {
-    if(card->m_blitz && fd->tip->assaults.size() > status->m_index && fd->tip->assaults[status->m_index].m_hp > 0 && fd->tip->assaults[status->m_index].m_delay == 0)
-    {
-        status->m_blitzing = true;
-    }
+    check_and_perform_blitz(fd, status);
 }
 // assault
 template <>
@@ -567,6 +565,7 @@ unsigned play(Field* fd)
                 break;
             }
         }
+
         // Evaluate commander
         fd->current_phase = Field::commander_phase;
         evaluate_skills(fd, &fd->tap->commander, fd->tap->commander.m_card->m_skills);
@@ -871,7 +870,7 @@ void check_regeneration(Field* fd)
         CardStatus& status = *fd->killed_with_regen[i];
         if(skill_activate<regenerate>(fd, &status, nullptr))
         {
-            _DEBUG_MSG("%s regenerates, hp 0 -> %u\n", status_description(&status).c_str(), status.m_card->m_health);
+            _DEBUG_MSG("%s regenerates with %u health\n", status_description(&status).c_str(), status.m_card->m_health);
             add_hp(fd, &status, status.m_card->m_regenerate);
         }
     }
@@ -1054,7 +1053,7 @@ struct PerformAttack
         // check regeneration
         if(att_dmg > 0 && def_status->m_card->m_flying && skill_activate<flying>(fd, def_status, att_status))
         {
-            _DEBUG_MSG("%s dodges with flying\n", status_description(def_status).c_str());
+            _DEBUG_MSG("%s dodges with Flying\n", status_description(def_status).c_str());
             return;
         }
 
@@ -1273,6 +1272,18 @@ void PerformAttack::crush_leech<CardType::assault>()
 }
 
 // General attack phase by the currently evaluated assault, taking into accounts exotic stuff such as flurry,swipe,etc.
+void attack_commander(Field* fd, CardStatus* att_status)
+{
+    CardStatus* def_status{select_first_enemy_wall(fd)}; // defending wall
+    if(def_status != nullptr)
+    {
+        PerformAttack{fd, att_status, def_status}.op<CardType::structure>();
+    }
+    else
+    {
+        PerformAttack{fd, att_status, &fd->tip->commander}.op<CardType::commander>();
+    }
+}
 void attack_phase(Field* fd)
 {
     CardStatus* att_status(&fd->tap->assaults[fd->current_ci]); // attacking card
@@ -1281,7 +1292,7 @@ void attack_phase(Field* fd)
     unsigned num_attacks(1);
     if(att_status->m_card->m_flurry > 0 && skill_activate<flurry>(fd, att_status, nullptr))
     {
-        _DEBUG_MSG("%s activates flurry\n", status_description(att_status).c_str());
+        _DEBUG_MSG("%s activates Flurry\n", status_description(att_status).c_str());
         num_attacks += att_status->m_card->m_flurry;
     }
     for(unsigned attack_index(0); attack_index < num_attacks && !att_status->m_jammed && !att_status->m_frozen && att_status->m_hp > 0 && fd->tip->commander.m_hp > 0; ++attack_index)
@@ -1289,6 +1300,8 @@ void attack_phase(Field* fd)
         // 3 possibilities:
         // - 1. attack against the assault in front
         // - 2. swipe attack the assault in front and adjacent assaults if any
+        //      * Attack Commander/wall if opposing Assault is already dead before Swipe finishes (Swipe will attempt to attack the third Assault)
+        //        See http://www.kongregate.com/forums/65-tyrant/topics/289416?page=22#posts-6861970
         // - 3. attack against the commander or walls (if there is no assault or if the attacker has the fear attribute)
         // Check if attack mode is 1. or 2. (there is a living assault card in front, and no fear)
         if(alive_assault(def_assaults, fd->current_ci) && !(att_status->m_card->m_fear && skill_activate<fear>(fd, att_status, nullptr)))
@@ -1302,19 +1315,27 @@ void attack_phase(Field* fd)
             else
             {
                 // perform_skill_swipe
-                _DEBUG_MSG("%s swipes\n", status_description(att_status).c_str());
+                _DEBUG_MSG("%s activates Swipe\n", status_description(att_status).c_str());
                 // attack the card on the left
                 if(fd->current_ci > 0 && alive_assault(def_assaults, fd->current_ci - 1))
                 {
                     PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci-1]}.op<CardType::assault>();
                 }
+                if(fd->end)
+                { return; }
                 // stille alive? attack the card in front
-                if(fd->tip->commander.m_hp > 0 && att_status->m_hp > 0 && alive_assault(def_assaults, fd->current_ci))
+                if(att_status->m_hp > 0 && alive_assault(def_assaults, fd->current_ci))
                 {
                     PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci]}.op<CardType::assault>();
                 }
+                else
+                {
+                    attack_commander(fd, att_status);
+                }
+                if(fd->end)
+                { return; }
                 // still alive? attack the card on the right
-                if(fd->tip->commander.m_hp > 0 && att_status->m_hp > 0 && alive_assault(def_assaults, fd->current_ci + 1))
+                if(!fd->end && att_status->m_hp > 0 && alive_assault(def_assaults, fd->current_ci + 1))
                 {
                     PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci+1]}.op<CardType::assault>();
                 }
@@ -1323,15 +1344,7 @@ void attack_phase(Field* fd)
         // attack mode 3.
         else
         {
-            CardStatus* def_status{select_first_enemy_wall(fd)}; // defending wall
-            if(def_status != nullptr)
-            {
-                PerformAttack{fd, att_status, def_status}.op<CardType::structure>();
-            }
-            else
-            {
-                PerformAttack{fd, att_status, &fd->tip->commander}.op<CardType::commander>();
-            }
+            attack_commander(fd, att_status);
         }
     }
 }
@@ -1804,12 +1817,23 @@ bool check_and_perform_skill(Field* fd, CardStatus* src_status, CardStatus* dst_
     return(false);
 }
 
+bool check_and_perform_blitz(Field* fd, CardStatus* src_status)
+{
+    if(skill_activate<blitz>(fd, src_status, nullptr))
+    {
+        _DEBUG_MSG("%s activates Blitz opposing %s\n", status_description(src_status).c_str(), status_description(&fd->tip->assaults[src_status->m_index]).c_str());
+        src_status->m_blitzing = true;
+        return(true);
+    }
+    return(false);
+}
+
 bool check_and_perform_recharge(Field* fd, CardStatus* src_status)
 {
     if(skill_activate<recharge>(fd, src_status, nullptr))
     {
         // perform_skill_recharge
-        _DEBUG_MSG("%s recharges\n", status_description(src_status).c_str());
+        _DEBUG_MSG("%s activates Recharge\n", status_description(src_status).c_str());
         fd->tap->deck->place_at_bottom(src_status->m_card);
         return(true);
     }
@@ -1972,9 +1996,9 @@ void perform_summon(Field* fd, CardStatus* src_status, const SkillSpec& s)
         card_status.m_summoned = true;
         _DEBUG_MSG("Summon %s %u [%s]\n", cardtype_names[summoned->m_type].c_str(), card_status.m_index, card_description(fd, summoned).c_str());
         prepend_skills(fd, &card_status);
-        if(card_status.m_card->m_blitz && skill_activate<blitz>(fd, src_status, nullptr))
+        if(card_status.m_card->m_blitz)
         {
-            card_status.m_blitzing = true;
+            check_and_perform_blitz(fd, &card_status);
         }
         if(summoned->m_type == CardType::assault)
         {
@@ -2028,18 +2052,17 @@ void perform_mimic(Field* fd, CardStatus* src_status, const SkillSpec& s)
     }
     for(auto skill: c->m_card->m_skills)
     {
-        if(src_status && src_status->m_card->m_type == CardType::assault && src_status->m_hp == 0)
+        if(src_status->m_card->m_type == CardType::assault && src_status->m_hp == 0)
         { break; }
-        if(std::get<0>(skill) != mimic &&
-                (std::get<0>(skill) != supply || (src_status && src_status->m_card->m_type == CardType::assault)))
-        {
-            SkillSpec mimic_s(std::get<0>(skill), std::get<1>(skill), allfactions, std::get<3>(skill));
-            _DEBUG_MSG("Evaluating mimiced %s skill %s\n", status_description(c).c_str(), skill_description(fd, skill).c_str());
-            fd->skill_queue.emplace_back(src_status, src_status && src_status->m_augmented > 0 ? augmented_skill(src_status, mimic_s) : mimic_s);
-            resolve_skill(fd);
-            if(fd->end) { break; }
-            check_regeneration(fd);
-        }
+        if(std::get<0>(skill) == mimic ||
+                (std::get<0>(skill) == supply && src_status->m_card->m_type != CardType::assault))
+        { continue; }
+        SkillSpec mimic_s(std::get<0>(skill), std::get<1>(skill), allfactions, std::get<3>(skill));
+        _DEBUG_MSG("Evaluating mimiced %s skill %s\n", status_description(c).c_str(), skill_description(fd, skill).c_str());
+        fd->skill_queue.emplace_back(src_status, src_status->m_augmented > 0 ? augmented_skill(src_status, mimic_s) : mimic_s);
+        resolve_skill(fd);
+        if(fd->end) { break; }
+        check_regeneration(fd);
     }
 }
 //------------------------------------------------------------------------------

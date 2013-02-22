@@ -32,7 +32,7 @@ enum Skill
     // Defensive:
     armored, counter, emulate, evade, flying, intercept, payback, refresh, regenerate, tribute, wall,
     // Triggered:
-    blitz,
+    blitz, legion,
     // Static, ignored:
     /* blizzard, fusion, mist, */
     // Misc:
