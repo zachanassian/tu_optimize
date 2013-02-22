@@ -462,7 +462,10 @@ void PlayCard::setStorage<CardType::action>()
 template <>
 void PlayCard::blitz<CardType::assault>()
 {
-    check_and_perform_blitz(fd, status);
+    if(status->m_card->m_blitz)
+    {
+        check_and_perform_blitz(fd, status);
+    }
 }
 // assault
 template <>
@@ -659,11 +662,8 @@ unsigned play(Field* fd)
     // attacker wins
     if(fd->players[1]->commander.m_hp == 0)
     {
-        // ANP: Speedy if last_decision + 10 > turn.
-        // fd->turn has advanced once past the actual turn the battle has ended.
-        // So we were speedy if last_decision + 10 > (fd->turn - 1),
-        // or, equivalently, if last_decision + 10 >= fd->turn.
-        bool speedy = fd->last_decision_turn + 10 >= fd->turn;
+        // ANP: Speedy if turn < last_decision + 10.
+        bool speedy = fd->turn < fd->last_decision_turn + 10;
         if(fd->points_since_last_decision > 10)
         {
             fd->points_since_last_decision = 10;
@@ -1003,7 +1003,7 @@ inline bool alive_assault(Storage<CardStatus>& assaults, unsigned index)
     return(assaults.size() > index && assaults[index].m_hp > 0);
 }
 
-void remove_commander_hp(Field* fd, CardStatus& status, unsigned dmg)
+void remove_commander_hp(Field* fd, CardStatus& status, unsigned dmg, bool count_points)
 {
     assert(status.m_hp > 0);
     assert(status.m_card->m_type == CardType::commander);
@@ -1011,7 +1011,7 @@ void remove_commander_hp(Field* fd, CardStatus& status, unsigned dmg)
     status.m_hp = safe_minus(status.m_hp, dmg);
     // ANP: If commander is enemy's, player gets points equal to damage.
     // Points are awarded for overkill, so it is correct to simply add dmg.
-    if(status.m_player == 1)
+    if(count_points && status.m_player == 1)
     {
         fd->points_since_last_decision += dmg;
     }
@@ -1203,7 +1203,7 @@ void PerformAttack::immobilize<CardType::assault>()
 template<>
 void PerformAttack::attack_damage<CardType::commander>()
 {
-    remove_commander_hp(fd, *def_status, att_dmg);
+    remove_commander_hp(fd, *def_status, att_dmg, true);
 }
 
 template<>
@@ -1261,7 +1261,7 @@ void PerformAttack::crush_leech<CardType::assault>()
         else
         {
             _DEBUG_MSG("%s crushes %s for %u damage\n", status_description(att_status).c_str(), status_description(&fd->tip->commander).c_str(), att_status->m_card->m_crush);
-            remove_commander_hp(fd, fd->tip->commander, att_status->m_card->m_crush);
+            remove_commander_hp(fd, fd->tip->commander, att_status->m_card->m_crush, true);
         }
     }
     if(att_status->m_card->m_leech > 0 && skill_activate<leech>(fd, att_status, nullptr))
@@ -1484,8 +1484,8 @@ inline void perform_skill<augment>(Field* fd, CardStatus* c, unsigned v)
 template<>
 inline void perform_skill<backfire>(Field* fd, CardStatus* c, unsigned v)
 {
-    // TODO backfire damage counts in ANP?
-    remove_commander_hp(fd, *c, v);
+    // backfire damage not count in ANP.
+    remove_commander_hp(fd, *c, v, false);
 }
 
 template<>
@@ -1568,7 +1568,8 @@ inline void perform_skill<rush>(Field* fd, CardStatus* c, unsigned v)
 template<>
 inline void perform_skill<shock>(Field* fd, CardStatus* c, unsigned v)
 {
-    remove_commander_hp(fd, *c, v);
+    // shock damage counts in ANP. (if attacker ever has the skill)
+    remove_commander_hp(fd, *c, v, true);
 }
 
 template<>
