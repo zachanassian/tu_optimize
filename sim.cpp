@@ -495,6 +495,7 @@ void PlayCard::onPlaySkills<CardType::action>()
 }
 //------------------------------------------------------------------------------
 void turn_start_phase(Field* fd);
+void evaluate_legion(Field* fd);
 void prepend_on_death(Field* fd);
 bool check_and_perform_refresh(Field* fd, CardStatus* src_status);
 // return value : (raid points) -> attacker wins, 0 -> defender wins
@@ -568,6 +569,10 @@ unsigned play(Field* fd)
                 break;
             }
         }
+
+        // Evaluate Legion skill
+        fd->current_phase = Field::legion_phase;
+        evaluate_legion(fd);
 
         // Evaluate commander
         fd->current_phase = Field::commander_phase;
@@ -684,6 +689,8 @@ unsigned play(Field* fd)
 
 // For the active player, delay == 0 or blitzing; for the inactive player, delay <= 1.
 inline bool can_act(Field* fd, CardStatus* c) { return(c->m_hp > 0 && !c->m_jammed && !c->m_frozen && (fd->tapi == c->m_player ? c->m_delay == 0 || c->m_blitzing : c->m_delay <= 1)); }
+// Can be healed / repaired
+inline bool can_be_healed(CardStatus* c) { return(c->m_hp > 0 && c->m_hp < c->m_card->m_health && !c->m_diseased); }
 
 // Check if a skill actually activated.
 template<Skill>
@@ -754,6 +761,10 @@ inline bool skill_check<leech>(Field* fd, CardStatus* c, CardStatus* ref)
 }
 
 template<>
+inline bool skill_check<legion>(Field* fd, CardStatus* c, CardStatus* ref)
+{ return(can_be_healed(c) || (!c->m_immobilized && can_act(fd, c))); }
+
+template<>
 inline bool skill_check<payback>(Field* fd, CardStatus* c, CardStatus* ref)
 {
     // Never payback allied units (chaosed).
@@ -768,9 +779,7 @@ inline bool skill_check<recharge>(Field* fd, CardStatus* c, CardStatus* ref)
 
 template<>
 inline bool skill_check<refresh>(Field* fd, CardStatus* c, CardStatus* ref)
-{
-    return(c->m_hp < c->m_card->m_health && !c->m_diseased);
-}
+{ return(can_be_healed(c)); }
 
 template<>
 inline bool skill_check<regenerate>(Field* fd, CardStatus* c, CardStatus* ref)
@@ -978,6 +987,40 @@ void turn_start_phase(Field* fd)
     resolve_skill(fd);
     // Regen from poison
     check_regeneration(fd);
+}
+void evaluate_legion(Field* fd)
+{
+    // Not subject to Mimic / Emulate / Augment
+    // Not affected by Jam / Freeze
+    // Legion-rally effect is prevented by Immobilize
+    // Honor Infused faction
+    auto& assaults = fd->tap->assaults;
+    for(fd->current_ci = 0; fd->current_ci < assaults.size(); ++fd->current_ci)
+    {
+        CardStatus* status(&assaults[fd->current_ci]);
+        if(status->m_card->m_legion > 0)
+        {
+            unsigned legion_size{0};
+            legion_size += status->m_index > 0 && assaults[status->m_index - 1].m_hp > 0 && assaults[status->m_index - 1].m_faction == status->m_faction;
+            legion_size += status->m_index + 1 < assaults.size() && assaults[status->m_index + 1].m_hp > 0 && assaults[status->m_index + 1].m_faction == status->m_faction;
+            if(legion_size > 0 && skill_activate<legion>(fd, status, nullptr))
+            {
+                unsigned legion_value = status->m_card->m_legion * legion_size;
+                bool do_heal = can_be_healed(status);
+                bool do_rally = !status->m_immobilized && can_act(fd, status);
+                _DEBUG_MSG("%s activates Legion %u, %s%s%s by %u\n", status_description(status).c_str(), status->m_card->m_legion,
+                        do_heal ? "healed" : "", do_heal && do_rally ? " and " : "", do_rally ? "rallied" : "", legion_value);
+                if(do_heal)
+                {
+                    add_hp(fd, status, legion_value);
+                }
+                if(do_rally)
+                {
+                    status->m_rallied += legion_value;
+                }
+            }
+        }
+    }
 }
 //---------------------- $50 attack by assault card implementation -------------
 // Counter damage dealt to the attacker (att) by defender (def)
@@ -1419,7 +1462,7 @@ inline bool skill_predicate<freeze>(Field* fd, CardStatus* c)
 
 template<>
 inline bool skill_predicate<heal>(Field* fd, CardStatus* c)
-{ return(c->m_hp > 0 && c->m_hp < c->m_card->m_health && !c->m_diseased); }
+{ return(can_be_healed(c)); }
 
 template<>
 inline bool skill_predicate<infuse>(Field* fd, CardStatus* c)
@@ -1443,7 +1486,7 @@ inline bool skill_predicate<rally>(Field* fd, CardStatus* c)
 
 template<>
 inline bool skill_predicate<repair>(Field* fd, CardStatus* c)
-{ return(c->m_hp > 0 && c->m_hp < c->m_card->m_health); }
+{ return(can_be_healed(c)); }
 
 template<>
 inline bool skill_predicate<rush>(Field* fd, CardStatus* c)
@@ -1459,7 +1502,7 @@ inline bool skill_predicate<strike>(Field* fd, CardStatus* c)
 
 template<>
 inline bool skill_predicate<supply>(Field* fd, CardStatus* c)
-{ return(c->m_hp > 0 && c->m_hp < c->m_card->m_health && !c->m_diseased); }
+{ return(can_be_healed(c)); }
 
 template<>
 inline bool skill_predicate<temporary_split>(Field* fd, CardStatus* c)

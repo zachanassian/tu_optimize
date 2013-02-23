@@ -170,6 +170,7 @@ public:
     enum phase
     {
         playcard_phase,
+        legion_phase,
         commander_phase,
         structures_phase,
         assaults_phase
