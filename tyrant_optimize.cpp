@@ -38,7 +38,10 @@
 #include "xml.h"
 //#include "timer.hpp"
 
-namespace { bool use_anp{false}; }
+namespace {
+    bool use_anp{false};
+    gamemode_t gamemode{fight};
+}
 
 using namespace std::placeholders;
 //------------------------------------------------------------------------------
@@ -401,6 +404,7 @@ void thread_evaluate(boost::barrier& main_barrier,
                      unsigned thread_id)
 {
     bool use_anp_local{use_anp};
+    gamemode_t gamemode_local{gamemode};
     while(true)
     {
         main_barrier.wait();
@@ -458,7 +462,7 @@ void thread_evaluate(boost::barrier& main_barrier,
                     {
                         // TODO: Fix this solution for ANP
                         // Get a loose, rather than no, upper bound.
-                        static const double best_possible = 25;
+                        double best_possible = gamemode_local == surge ? 45 : 25;
                         compare_stop = (boost::math::binomial_distribution<>::find_upper_bound_on_p(thread_total_local, score_accum / best_possible, 0.01) * best_possible < thread_prev_score);
                     }
                     else
@@ -528,7 +532,7 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc)
     std::mt19937 re(time(NULL));
     bool deck_has_been_improved = true;
     bool eval_commander = true;
-    double best_possible = use_anp ? 25 : 1;
+    double best_possible = use_anp ? (gamemode == surge ? 45 : 25) : 1;
     for(unsigned slot_i(0), dead_slot(0); (deck_has_been_improved || slot_i != dead_slot) && best_score < best_possible; slot_i = (slot_i + 1) % std::min<unsigned>(10, d1->cards.size() + (fixed_len ? 0 : 1)))
     {
         if(deck_has_been_improved)
@@ -633,7 +637,7 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc)
     std::mt19937 re(time(NULL));
     bool deck_has_been_improved = true;
     bool eval_commander = true;
-    double best_possible = use_anp ? 25 : 1;
+    double best_possible = use_anp ? (gamemode == surge ? 45 : 25) : 1;
     for(unsigned from_slot(0), dead_slot(0); (deck_has_been_improved || from_slot != dead_slot) && best_score < best_possible; from_slot = (from_slot + 1) % std::min<unsigned>(10, d1->cards.size() + (fixed_len ? 0 : 1)))
     {
         if(deck_has_been_improved)
@@ -981,7 +985,6 @@ int main(int argc, char** argv)
     if(argc == 1) { usage(argc, argv); return(0); }
     debug_print = getenv("DEBUG_PRINT");
     unsigned num_threads = (debug_print || getenv("DEBUG")) ? 1 : 4;
-    gamemode_t gamemode = fight;
     bool ordered = false;
     Cards cards;
     read_cards(cards);
@@ -1097,7 +1100,7 @@ int main(int argc, char** argv)
         {
             debug_print = true;
             num_threads = 1;
-            todo.push_back(std::make_tuple(0u, 25u, fightuntil));
+            todo.push_back(std::make_tuple(0u, 45u, fightuntil));
         }
         else if(strcmp(argv[argIndex], "debuguntil") == 0)
         {

@@ -674,7 +674,7 @@ unsigned play(Field* fd)
             fd->points_since_last_decision = 10;
         }
         _DEBUG_MSG("Attacker wins.\n");
-        return(10 + (speedy ? 5 : 0) + fd->points_since_last_decision);
+        return(10 + (speedy ? 5 : 0) + (fd->gamemode == surge ? 20 : 0) + fd->points_since_last_decision);
     }
     if (fd->turn > turn_limit)
     {
