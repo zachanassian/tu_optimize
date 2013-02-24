@@ -16,7 +16,7 @@ std::string skill_names[Skill::num_skills] =
     "trigger_regen",
     "Weaken",
     // Combat-Modifier:
-    "Antiair", "Burst", "Fear", "Flurry", "Pierce", "Swipe", "Valor",
+    "AntiAir", "Burst", "Fear", "Flurry", "Pierce", "Swipe", "Valor",
     // Damage-Dependant:
     "Berserk", "Crush", "Disease", "Immobilize", "Leech", "Poison", "Siphon",
     // Defensive:
