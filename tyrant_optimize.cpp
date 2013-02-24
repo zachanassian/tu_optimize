@@ -1207,7 +1207,14 @@ int main(int argc, char** argv)
     std::cout << "Defender:" << std::endl;
     for(auto def_deck: def_decks)
     {
-        std::cout << def_deck->long_description() << std::endl;
+        if(def_decks.size() > 2)
+        {
+            std::cout << def_deck->short_description() << std::endl;
+        }
+        else
+        {
+            std::cout << def_deck->long_description() << std::endl;
+        }
     }
 
     Process p(num_threads, cards, decks, att_deck, def_decks, def_decks_factors, gamemode, effect, achievement);
