@@ -1914,23 +1914,18 @@ void perform_targetted_hostile_fast(Field* fd, CardStatus* src_status, const Ski
     {
         index_start = index_end = get_target_hostile_index(fd, src_status, selection_array_size);
     }
-    unsigned payback_count(0);
     for(unsigned s_index(index_start); s_index <= index_end; ++s_index)
     {
         CardStatus* c(fd->selection_array[s_index]);
         if(check_and_perform_skill<skill_id>(fd, src_status, c, s, true))
         {
-            if(c->m_card->m_payback && skill_activate<payback>(fd, c, src_status))
+            // Payback
+            if(c->m_card->m_payback && skill_predicate<skill_id>(fd, src_status) && skill_activate<payback>(fd, c, src_status))
             {
-                _DEBUG_MSG("%s paybacks.\n", status_description(c).c_str());
-                ++payback_count;
+                _DEBUG_MSG("%s paybacks (%s %u) on %s\n", status_description(c).c_str(), skill_names[skill_id].c_str(), std::get<1>(s), status_description(src_status).c_str());
+                perform_skill<skill_id>(fd, src_status, std::get<1>(s));
             }
         }
-    }
-    for(unsigned i(0); i < payback_count && skill_predicate<skill_id>(fd, src_status); ++i)
-    {
-        _DEBUG_MSG("Payback (%s %u) on %s\n", skill_names[skill_id].c_str(), std::get<1>(s), status_description(src_status).c_str());
-        perform_skill<skill_id>(fd, src_status, std::get<1>(s));
     }
     maybeTriggerRegen<typename skillTriggersRegen<skill_id>::T>(fd);
     prepend_on_death(fd);
