@@ -788,6 +788,10 @@ inline bool skill_check<regenerate>(Field* fd, CardStatus* c, CardStatus* ref)
 }
 
 template<>
+inline bool skill_check<siphon>(Field* fd, CardStatus* c, CardStatus* ref)
+{ return(can_be_healed(&fd->players[c->m_player]->commander)); }
+
+template<>
 inline bool skill_check<tribute>(Field* fd, CardStatus* c, CardStatus* ref)
 { return(ref->m_card->m_type == CardType::assault && ref != c && ref->m_hp > 0 && fd->flip()); }
 
