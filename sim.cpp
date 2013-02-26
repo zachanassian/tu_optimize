@@ -1010,7 +1010,7 @@ void evaluate_legion(Field* fd)
             {
                 unsigned legion_value = status->m_card->m_legion * legion_size;
                 bool do_heal = can_be_healed(status);
-                bool do_rally = !status->m_immobilized && c->m_hp > 0 && (fd->tapi == c->m_player ? c->m_delay == 0 || c->m_blitzing : c->m_delay <= 1);
+                bool do_rally = !status->m_immobilized && status->m_hp > 0 && (fd->tapi == status->m_player ? status->m_delay == 0 || status->m_blitzing : status->m_delay <= 1);
                 _DEBUG_MSG("%s activates Legion %u, %s%s%s by %u\n", status_description(status).c_str(), status->m_card->m_legion,
                         do_heal ? "healed" : "", do_heal && do_rally ? " and " : "", do_rally ? "rallied" : "", legion_value);
                 if(do_heal)
