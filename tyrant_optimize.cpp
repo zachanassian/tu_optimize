@@ -1202,19 +1202,10 @@ int main(int argc, char** argv)
 
     effect = quest_effect.get_value_or(effect);
     modify_cards(cards, effect);
-    std::cout << "Attacker:" << std::endl;
-    std::cout << att_deck->long_description() << std::endl;
-    std::cout << "Defender:" << std::endl;
+    std::cout << "Attacker: " << (debug_print ? att_deck->long_description() : att_deck->short_description()) << std::endl;
     for(auto def_deck: def_decks)
     {
-        if(def_decks.size() > 2)
-        {
-            std::cout << def_deck->short_description() << std::endl;
-        }
-        else
-        {
-            std::cout << def_deck->long_description() << std::endl;
-        }
+        std::cout << "Defender: " << (debug_print ? def_deck->long_description() : def_deck->short_description()) << std::endl;
     }
 
     Process p(num_threads, cards, decks, att_deck, def_decks, def_decks_factors, gamemode, effect, achievement);

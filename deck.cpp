@@ -141,16 +141,14 @@ std::string Deck::short_description() const
     ios << decktype_names[decktype];
     if(id > 0) { ios << " " << id; }
     if(!name.empty()) { ios << " \"" << name << "\""; }
+    if(raid_cards.empty()) { ios << ": " << deck_hash(commander, cards); }
     return ios.str();
 }
 
 std::string Deck::long_description() const
 {
     std::stringstream ios;
-    ios << short_description();
-    ios << ":";
-    if(raid_cards.empty()) { ios << " " << deck_hash(commander, cards); }
-    ios << std::endl;
+    ios << short_description() << std::endl;
     if(effect != Effect::none)
     {
         ios << "Effect: " << effect_names[effect] << "\n";
