@@ -1083,10 +1083,8 @@ struct PerformAttack
     {}
 
     template<enum CardType::CardType cardtype>
-    void op()
+    void op(unsigned pre_modifier_dmg)
     {
-        unsigned pre_modifier_dmg = attack_power(att_status);
-        if(pre_modifier_dmg == 0) { return; }
         modify_attack_damage<cardtype>(pre_modifier_dmg);
         // Evaluation order:
         // assaults only: fly check
@@ -1113,14 +1111,11 @@ struct PerformAttack
         if(att_dmg > 0)
         {
             immobilize<cardtype>();
-            if(skill_activate<attack>(fd, att_status, def_status))
+            attack_damage<cardtype>();
+            if(fd->end)
             {
-                attack_damage<cardtype>();
-                if(fd->end)
-                {
-                    // Commander dies?
-                    return;
-                }
+                // Commander dies?
+                return;
             }
             siphon_poison_disease<cardtype>();
             on_kill<cardtype>();
@@ -1318,16 +1313,16 @@ void PerformAttack::crush_leech<CardType::assault>()
 }
 
 // General attack phase by the currently evaluated assault, taking into accounts exotic stuff such as flurry,swipe,etc.
-void attack_commander(Field* fd, CardStatus* att_status)
+void attack_commander(Field* fd, CardStatus* att_status, unsigned pre_modifier_dmg)
 {
     CardStatus* def_status{select_first_enemy_wall(fd)}; // defending wall
     if(def_status != nullptr)
     {
-        PerformAttack{fd, att_status, def_status}.op<CardType::structure>();
+        PerformAttack{fd, att_status, def_status}.op<CardType::structure>(pre_modifier_dmg);
     }
     else
     {
-        PerformAttack{fd, att_status, &fd->tip->commander}.op<CardType::commander>();
+        PerformAttack{fd, att_status, &fd->tip->commander}.op<CardType::commander>(pre_modifier_dmg);
     }
 }
 void attack_phase(Field* fd)
@@ -1335,6 +1330,9 @@ void attack_phase(Field* fd)
     CardStatus* att_status(&fd->tap->assaults[fd->current_ci]); // attacking card
     Storage<CardStatus>& def_assaults(fd->tip->assaults);
     att_status->m_attacked = true;
+    unsigned pre_modifier_dmg = attack_power(att_status);
+    if(pre_modifier_dmg == 0) { return; }
+    skill_activate<attack>(fd, att_status, nullptr);
     unsigned num_attacks(1);
     if(att_status->m_card->m_flurry > 0 && skill_activate<flurry>(fd, att_status, nullptr))
     {
@@ -1355,7 +1353,7 @@ void attack_phase(Field* fd)
             // attack mode 1.
             if(!(att_status->m_card->m_swipe && skill_activate<swipe>(fd, att_status, nullptr)))
             {
-                PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci]}.op<CardType::assault>();
+                PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci]}.op<CardType::assault>(pre_modifier_dmg);
             }
             // attack mode 2.
             else
@@ -1365,32 +1363,32 @@ void attack_phase(Field* fd)
                 // attack the card on the left
                 if(fd->current_ci > 0 && alive_assault(def_assaults, fd->current_ci - 1))
                 {
-                    PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci-1]}.op<CardType::assault>();
+                    PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci-1]}.op<CardType::assault>(pre_modifier_dmg);
                 }
                 if(fd->end)
                 { return; }
                 // stille alive? attack the card in front
                 if(att_status->m_hp > 0 && alive_assault(def_assaults, fd->current_ci))
                 {
-                    PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci]}.op<CardType::assault>();
+                    PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci]}.op<CardType::assault>(pre_modifier_dmg);
                 }
                 else
                 {
-                    attack_commander(fd, att_status);
+                    attack_commander(fd, att_status, pre_modifier_dmg);
                 }
                 if(fd->end)
                 { return; }
                 // still alive? attack the card on the right
                 if(!fd->end && att_status->m_hp > 0 && alive_assault(def_assaults, fd->current_ci + 1))
                 {
-                    PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci+1]}.op<CardType::assault>();
+                    PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci+1]}.op<CardType::assault>(pre_modifier_dmg);
                 }
             }
         }
         // attack mode 3.
         else
         {
-            attack_commander(fd, att_status);
+            attack_commander(fd, att_status, pre_modifier_dmg);
         }
     }
 }
