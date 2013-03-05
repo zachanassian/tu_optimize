@@ -517,6 +517,9 @@ unsigned play(Field* fd)
     unsigned p0_size = fd->players[0]->deck->cards.size();
     fd->last_decision_turn = p0_size * 2 - (surge ? 2 : 3);
 
+    // Count commander as played for achievements (not count in type / faction / rarity requirements)
+    fd->inc_counter(fd->achievement.unit_played, fd->players[0]->commander.m_card->m_id);
+
     // Shuffle deck
     while(fd->turn <= turn_limit && !fd->end)
     {
