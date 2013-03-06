@@ -412,7 +412,7 @@ struct PlayCard
             fd->inc_counter(fd->achievement.unit_faction_played, card->m_faction);
             fd->inc_counter(fd->achievement.unit_rarity_played, card->m_rarity);
         }
-        _DEBUG_MSG("%s plays %s %u [%s]\n", status_description(&fd->tap->commander).c_str(), cardtype_names[type].c_str(), storage->size() - 1, card_description(fd, card).c_str());
+        _DEBUG_MSG("%s plays %s %u [%s]\n", status_description(&fd->tap->commander).c_str(), cardtype_names[type].c_str(), static_cast<unsigned>(storage->size() - 1), card_description(fd, card).c_str());
     }
 
     // all except assault: noop
