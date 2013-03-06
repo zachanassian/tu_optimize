@@ -1097,6 +1097,7 @@ struct PerformAttack
     template<enum CardType::CardType cardtype>
     void op(unsigned pre_modifier_dmg)
     {
+        count_achievement<attack>(fd, att_status);
         modify_attack_damage<cardtype>(pre_modifier_dmg);
         // Evaluation order:
         // assaults only: fly check
@@ -1382,7 +1383,6 @@ void attack_phase(Field* fd)
     att_status->m_attacked = true;
     unsigned pre_modifier_dmg = attack_power(att_status);
     if(pre_modifier_dmg == 0) { return; }
-    count_achievement<attack>(fd, att_status);
     unsigned num_attacks(1);
     if(att_status->m_card->m_flurry > 0 && skill_check<flurry>(fd, att_status, nullptr))
     {
