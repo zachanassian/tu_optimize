@@ -980,6 +980,15 @@ void print_available_decks(const Decks& decks, bool allow_card_pool)
         }
     }
 }
+//------------------------------------------------------------------------------
+void print_available_effects()
+{
+    std::cout << "Available effects:" << std::endl;
+    for(int i(1); i < Effect::num_effects; ++ i)
+    {
+        std::cout << i << " \"" << effect_names[i] << "\"" << std::endl;
+    }
+}
 
 void usage(int argc, char** argv)
 {
@@ -1046,6 +1055,9 @@ int main(int argc, char** argv)
     for(unsigned i(0); i < Effect::num_effects; ++i)
     {
         effect_map[effect_names[i]] = i;
+        std::stringstream ss;
+        ss << i;
+        effect_map[ss.str()] = i;
     }
 
     std::vector<std::tuple<unsigned, unsigned, Operation> > todo;
@@ -1078,7 +1090,8 @@ int main(int argc, char** argv)
             auto x = effect_map.find(arg_effect);
             if(x == effect_map.end())
             {
-                std::cout << "The effect '" << arg_effect << "' was not found.\n";
+                std::cout << "The effect '" << arg_effect << "' was not found. ";
+                print_available_effects();
                 return(6);
             }
             effect = static_cast<enum Effect>(x->second);
@@ -1239,6 +1252,10 @@ int main(int argc, char** argv)
     for(auto def_deck: def_decks)
     {
         std::cout << "Defender: " << (debug_print ? def_deck->long_description() : def_deck->short_description()) << std::endl;
+    }
+    if(effect != Effect::none)
+    {
+        std::cout << "Effect: " << effect_names[effect] << std::endl;
     }
 
     Process p(num_threads, cards, decks, att_deck, def_decks, def_decks_factors, gamemode, effect, achievement);

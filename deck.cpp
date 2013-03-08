@@ -139,7 +139,7 @@ std::string Deck::short_description() const
 {
     std::stringstream ios;
     ios << decktype_names[decktype];
-    if(id > 0) { ios << " " << id; }
+    if(id > 0) { ios << " #" << id; }
     if(!name.empty()) { ios << " \"" << name << "\""; }
     if(raid_cards.empty()) { ios << ": " << deck_hash(commander, cards); }
     return ios.str();

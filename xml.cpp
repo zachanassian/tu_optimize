@@ -371,6 +371,9 @@ Deck* read_deck(Decks& decks, const Cards& cards, xml_node<>* node, DeckType::De
     Deck* deck = &decks.decks.back();
     deck->set(commander_card, always_cards, some_cards);
     decks.by_name[deck_name] = deck;
+    std::stringstream alt_name;
+    alt_name << decktype_names[decktype] << " #" << id;
+    decks.by_name[alt_name.str()] = deck;
     return deck;
 }
 //------------------------------------------------------------------------------
