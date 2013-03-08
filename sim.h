@@ -23,6 +23,13 @@ extern bool win_tie;
 void fill_skill_table();
 unsigned play(Field* fd);
 void modify_cards(Cards& cards, enum Effect effect);
+//---------------------- Represent Simulation Results ----------------------------
+// TODO enrich Results and make play() return Results
+struct Results
+{
+    unsigned wins = 0;
+    unsigned points = 0;
+};
 // Pool-based indexed storage.
 //---------------------- Pool-based indexed storage ----------------------------
 template<typename T>

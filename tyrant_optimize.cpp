@@ -209,40 +209,18 @@ bool suitable_commander(const Card* card)
     return(true);
 }
 //------------------------------------------------------------------------------
-double compute_efficiency(const std::pair<std::vector<unsigned> , unsigned>& results)
+double compute_score(const std::pair<std::vector<Results> , unsigned>& results, std::vector<double>& factors)
 {
-    if(results.second == 0) { return(0.); }
     double sum{0.};
     for(unsigned index(0); index < results.first.size(); ++index)
     {
-        sum += (double)results.second / results.first[index];
+        sum += (use_anp ? results.first[index].points : results.first[index].wins) * factors[index];
     }
-    return(results.first.size() / sum);
-}
-//------------------------------------------------------------------------------
-bool use_efficiency{false};
-double compute_score(const std::pair<std::vector<unsigned> , unsigned>& results, std::vector<double>& factors)
-{
-    double score{0.};
-    if(use_efficiency)
-    {
-        score = compute_efficiency(results);
-    }
-    else
-    {
-        if(results.second == 0) { score = 0.; }
-        double sum{0.};
-        for(unsigned index(0); index < results.first.size(); ++index)
-        {
-            sum += results.first[index] * factors[index];
-        }
-        score = sum / std::accumulate(factors.begin(), factors.end(), 0.) / (double)results.second;
-    }
-    return(score);
+    return(sum / std::accumulate(factors.begin(), factors.end(), 0.) / (double)results.second);
 }
 //------------------------------------------------------------------------------
 volatile unsigned thread_num_iterations{0}; // written by threads
-std::vector<unsigned> thread_score; // written by threads
+std::vector<Results> thread_results; // written by threads
 volatile unsigned thread_total{0}; // written by threads
 volatile double thread_prev_score{0.0};
 volatile bool thread_compare{false};
@@ -368,23 +346,23 @@ public:
         for(auto data: threads_data) { delete(data); }
     }
 
-    std::pair<std::vector<unsigned> , unsigned> evaluate(unsigned num_iterations)
+    std::pair<std::vector<Results> , unsigned> evaluate(unsigned num_iterations)
     {
         thread_num_iterations = num_iterations;
-        thread_score = std::vector<unsigned>(def_decks.size(), 0u);
+        thread_results = std::vector<Results>(def_decks.size());
         thread_total = 0;
         thread_compare = false;
         // unlock all the threads
         main_barrier.wait();
         // wait for the threads
         main_barrier.wait();
-        return(std::make_pair(thread_score, thread_total));
+        return(std::make_pair(thread_results, thread_total));
     }
 
-    std::pair<std::vector<unsigned> , unsigned> compare(unsigned num_iterations, double prev_score)
+    std::pair<std::vector<Results> , unsigned> compare(unsigned num_iterations, double prev_score)
     {
         thread_num_iterations = num_iterations;
-        thread_score = std::vector<unsigned>(def_decks.size(), 0u);
+        thread_results = std::vector<Results>(def_decks.size());
         thread_total = 0;
         thread_prev_score = prev_score;
         thread_compare = true;
@@ -393,7 +371,7 @@ public:
         main_barrier.wait();
         // wait for the threads
         main_barrier.wait();
-        return(std::make_pair(thread_score, thread_total));
+        return(std::make_pair(thread_results, thread_total));
     }
 };
 //------------------------------------------------------------------------------
@@ -425,16 +403,15 @@ void thread_evaluate(boost::barrier& main_barrier,
                 shared_mutex.unlock(); //>>>>
                 std::vector<unsigned> result{sim.evaluate()};
                 shared_mutex.lock(); //<<<<
-                std::vector<unsigned> thread_score_local(thread_score.size(), 0); //!
+                std::vector<unsigned> thread_score_local(thread_results.size(), 0u); //!
                 for(unsigned index(0); index < result.size(); ++index)
                 {
-                    // If not using ANP and we won, just count 1 win, not points.
-                    if(!use_anp_local && result[index] != 0)
+                    if (result[index] > 0)
                     {
-                        result[index] = 1;
+                        thread_results[index].wins += 1; //!
+                        thread_results[index].points += result[index]; //!
                     }
-                    thread_score[index] += result[index]; //!
-                    thread_score_local[index] = thread_score[index]; // !
+                    thread_score_local[index] = (use_anp_local ? thread_results[index].points : thread_results[index].wins); // !
                 }
                 ++thread_total; //!
                 unsigned thread_total_local{thread_total}; //!
@@ -481,20 +458,63 @@ void thread_evaluate(boost::barrier& main_barrier,
     }
 }
 //------------------------------------------------------------------------------
-void print_score_info(const std::pair<std::vector<unsigned> , unsigned>& results, std::vector<double>& factors)
+void print_score_info(const std::pair<std::vector<Results> , unsigned>& results, std::vector<double>& factors)
 {
     if(use_anp)
     {
-        std::cout << "ANP: " << compute_score(results, factors) << std::endl;
-        return;
+        std::cout << "ANP: " << compute_score(results, factors);
+        if(results.first.size() > 1)
+        {
+            std::cout << " (";
+            for(auto val: results.first)
+            {
+                std::cout << static_cast<double>(val.points) / results.second << " ";
+            }
+            std::cout << "reps.)";
+        }
+        std::cout << std::endl;
     }
+    else
+    {
+        std::cout << "win%: " << compute_score(results, factors) * 100.0 << " (";
+        for(auto val: results.first)
+        {
+            std::cout << val.wins << " ";
+        }
+        std::cout << "out of " << results.second << ")" << std::endl;
+    }
+}
+//------------------------------------------------------------------------------
+void print_results(const std::pair<std::vector<Results> , unsigned>& results, std::vector<double>& factors)
+{
+    double wins(0.);
+    double points(0.);
+    for(unsigned index(0); index < results.first.size(); ++index)
+    {
+        wins += results.first[index].wins * factors[index];
+        points += results.first[index].points * factors[index];
+    }
+    wins /= std::accumulate(factors.begin(), factors.end(), 0.) * (double)results.second;
+    points /= std::accumulate(factors.begin(), factors.end(), 0.) * (double)results.second;
 
-    std::cout << "win%: " << compute_score(results, factors) * 100.0 << " (";
+    std::cout << "win%: " << wins * 100.0 << " (";
     for(auto val: results.first)
     {
-        std::cout << val << " ";
+        std::cout << val.wins << " ";
     }
-    std::cout << "out of " << results.second << ")\n" << std::flush;
+    std::cout << "out of " << results.second << ")" << std::endl;
+
+    std::cout << "ANP: " << points;
+    if(results.first.size() > 1)
+    {
+        std::cout << " (";
+        for(auto val: results.first)
+        {
+            std::cout << static_cast<double>(val.points) / results.second << " ";
+        }
+        std::cout << "reps.)";
+    }
+    std::cout << std::endl;
 }
 //------------------------------------------------------------------------------
 void print_deck_inline(const double score, const Card *commander, std::vector<const Card*> cards)
@@ -508,9 +528,28 @@ void print_deck_inline(const double score, const Card *commander, std::vector<co
         std::cout << score * 100.0 << "%: ";
     }
     std::cout << commander->m_name;
+    std::string last_name;
+    unsigned num_repeat(0);
     for(const Card* card: cards)
     {
-        std::cout << ", " << card->m_name;
+        if(card->m_name == last_name)
+        {
+            ++ num_repeat;
+        }
+        else
+        {
+            if(num_repeat > 1)
+            {
+                std::cout << " #" << num_repeat;
+            }
+            std::cout << ", " << card->m_name;
+            last_name = card->m_name;
+            num_repeat = 1;
+        }
+    }
+    if(num_repeat > 1)
+    {
+        std::cout << " #" << num_repeat;
     }
     std::cout << std::endl;
 }
@@ -1232,7 +1271,7 @@ int main(int argc, char** argv)
             }
             case simulate: {
                 auto results = p.evaluate(std::get<0>(op));
-                print_score_info(results,p.factors);
+                print_results(results, p.factors);
                 break;
             }
             case fightuntil: {
