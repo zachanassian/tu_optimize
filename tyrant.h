@@ -1,6 +1,8 @@
 #ifndef TYRANT_H_INCLUDED
 #define TYRANT_H_INCLUDED
 
+#define TYRANT_OPTIMIZER_VERSION "1.0.0"
+
 #include <string>
 #include <set>
 #include <tuple>

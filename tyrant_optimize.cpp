@@ -1044,6 +1044,11 @@ int main(int argc, char** argv)
 
     if(argc <= 2)
     {
+        if(strcmp(argv[1], "-version") == 0)
+        {
+            std::cout << "Tyrant Optimizer " << TYRANT_OPTIMIZER_VERSION << std::endl;
+            return(0);
+        }
         print_available_decks(decks, true);
         return(4);
     }
