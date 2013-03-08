@@ -1186,11 +1186,6 @@ int main(int argc, char** argv)
         att_deck->strategy = DeckStrategy::ordered;
     }
 
-    boost::optional<Effect> quest_effect;
-    if(effect != Effect::none)
-    {
-        quest_effect = effect;
-    }
     std::vector<Deck*> def_decks;
     std::vector<double> def_decks_factors;
     for(auto deck_parsed: deck_list_parsed)
@@ -1228,18 +1223,17 @@ int main(int argc, char** argv)
         Effect this_effect = def_deck->effect;
         if(this_effect != Effect::none)
         {
-            if(quest_effect && *quest_effect != this_effect)
+            if(effect != Effect::none && effect != this_effect)
             {
-                std::cerr << "Error: Inconsistent effects: " << effect_names[*quest_effect] << " and " << effect_names[this_effect] << ".\n";
+                std::cerr << "Error: Inconsistent effects: " << effect_names[effect] << " and " << effect_names[this_effect] << ".\n";
                 return(7);
             }
-            quest_effect = this_effect;
+            effect = this_effect;
         }
         def_decks.push_back(def_deck);
         def_decks_factors.push_back(deck_parsed.second);
     }
 
-    effect = quest_effect.get_value_or(effect);
     modify_cards(cards, effect);
     std::cout << "Attacker: " << (debug_print ? att_deck->long_description() : att_deck->short_description()) << std::endl;
     for(auto def_deck: def_decks)
