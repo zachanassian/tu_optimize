@@ -527,6 +527,7 @@ void read_achievement(Decks& decks, const Cards& cards, Achievement& achievement
             xml_attribute<>* num_used(req_node->first_attribute("num_used"));
             xml_attribute<>* num_played(req_node->first_attribute("num_played"));
             xml_attribute<>* num_killed(req_node->first_attribute("num_killed"));
+            xml_attribute<>* damage(req_node->first_attribute("damage"));
             if(num_turns && comparator == less_equal)
             {
                 turn_limit = atoi(num_turns->value());
@@ -587,6 +588,12 @@ void read_achievement(Decks& decks, const Cards& cards, Achievement& achievement
                 achievement.unit_type_killed[i] = achievement.req_counter.size();
                 achievement.req_counter.emplace_back(atoi(num_killed->value()), comparator);
                 std::cout << "  Kill units of type: " << cardtype_names[i] << achievement.req_counter.back().str() << std::endl;
+            }
+            else if(damage)
+            {
+                achievement.misc_req[AchievementMiscReq::damage] = achievement.req_counter.size();
+                achievement.req_counter.emplace_back(atoi(damage->value()), comparator);
+                std::cout << "  " << achievement_misc_req_names[AchievementMiscReq::damage] << achievement.req_counter.back().str() << std::endl;
             }
             else
             {

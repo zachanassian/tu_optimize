@@ -95,6 +95,14 @@ enum Effect {
 
 extern std::string effect_names[Effect::num_effects];
 
+enum AchievementMiscReq
+{
+    damage,
+    num_achievement_misc_reqs
+};
+
+extern std::string achievement_misc_req_names[num_achievement_misc_reqs];
+
 enum gamemode_t
 {
     fight,

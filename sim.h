@@ -238,6 +238,22 @@ public:
 #endif
         }
     }
+
+    template <class T>
+    inline void update_max_counter(T& container, unsigned key, unsigned value)
+    {
+        auto x = container.find(key);
+        if(x != container.end() && achievement_counter[x->second] < value)
+        {
+            achievement_counter[x->second] = value;
+#if 0
+            if(achievement.req_counter[x->second].predict_monoinc(achievement_counter[x->second]) < 0)
+            {
+                end = true;
+            }
+#endif
+        }
+    }
 };
 
 #endif

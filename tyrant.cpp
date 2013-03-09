@@ -60,3 +60,7 @@ std::string effect_names[Effect::num_effects] = {
     "Toxic",
     "Haunt",
 };
+
+std::string achievement_misc_req_names[AchievementMiscReq::num_achievement_misc_reqs] = {
+    "Damage",
+};
