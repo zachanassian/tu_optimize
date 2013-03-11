@@ -301,6 +301,10 @@ void prepend_on_death(Field* fd)
 {
     for(auto status: boost::adaptors::reverse(fd->killed_with_on_death))
     {
+        if(status->m_jammed)
+        {
+            continue;
+        }
         for(auto& skill: boost::adaptors::reverse(status->m_card->m_skills_on_death))
         {
             _DEBUG_MSG("On death skill pushed in front: %s\n", skill_description(fd, skill).c_str());
