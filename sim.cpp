@@ -290,7 +290,6 @@ void Hand::reset(std::mt19937& re)
 // the implementation of the attack by an assault card is in the next section;
 // the implementation of the active skills is in the section after that.
 unsigned turn_limit{50};
-bool win_tie{false};
 //------------------------------------------------------------------------------
 inline unsigned opponent(unsigned player)
 {
@@ -507,7 +506,7 @@ void evaluate_legion(Field* fd);
 void prepend_on_death(Field* fd);
 bool check_and_perform_refresh(Field* fd, CardStatus* src_status);
 // return value : (raid points) -> attacker wins, 0 -> defender wins
-unsigned play(Field* fd)
+Results<unsigned> play(Field* fd)
 {
     fd->players[0]->commander.m_player = 0;
     fd->players[1]->commander.m_player = 1;
@@ -671,13 +670,13 @@ unsigned play(Field* fd)
     if(fd->players[0]->commander.m_hp == 0)
     {
         _DEBUG_MSG("Defender wins.\n");
-        return(0);
+        return {0, 0, 1, 0};
     }
     // achievement: assuming winner='1'
     if (!made_achievement)
     {
         _DEBUG_MSG("Achievement fails.\n");
-        return(0);
+        return {0, 0, 1, 0};
     }
     // attacker wins
     if(fd->players[1]->commander.m_hp == 0)
@@ -689,17 +688,17 @@ unsigned play(Field* fd)
             fd->points_since_last_decision = 10;
         }
         _DEBUG_MSG("Attacker wins.\n");
-        return(10 + (speedy ? 5 : 0) + (fd->gamemode == surge ? 20 : 0) + fd->points_since_last_decision);
+        return {1, 0, 0, 10 + (speedy ? 5 : 0) + (fd->gamemode == surge ? 20 : 0) + fd->points_since_last_decision};
     }
     if (fd->turn > turn_limit)
     {
         _DEBUG_MSG("Stall after %u turns.\n", turn_limit);
-        return(win_tie ? 1 : 0);
+        return {0, 1, 0, 0};
     }
 
     // Huh? How did we get here?
     assert(false);
-    return 0;
+    return {0, 0, 0, 0};
 }
 
 // For the active player, delay == 0 or blitzing; for the inactive player, delay <= 1.

@@ -18,18 +18,29 @@ class Achievement;
 extern bool debug_print;
 extern bool debug_line;
 extern unsigned turn_limit;
-extern bool win_tie;
 
-void fill_skill_table();
-unsigned play(Field* fd);
-void modify_cards(Cards& cards, enum Effect effect);
 //---------------------- Represent Simulation Results ----------------------------
-// TODO enrich Results and make play() return Results
+template<typename result_type>
 struct Results
 {
-    unsigned wins = 0;
-    unsigned points = 0;
+    result_type wins;
+    result_type draws;
+    result_type losses;
+    result_type points;
+    template<typename other_result_type>
+    Results& operator+=(const Results<other_result_type>& other)
+    {
+        wins += other.wins;
+        draws += other.draws;
+        losses += other.losses;
+        points += other.points;
+        return *this;
+    }
 };
+
+void fill_skill_table();
+Results<unsigned> play(Field* fd);
+void modify_cards(Cards& cards, enum Effect effect);
 // Pool-based indexed storage.
 //---------------------- Pool-based indexed storage ----------------------------
 template<typename T>
