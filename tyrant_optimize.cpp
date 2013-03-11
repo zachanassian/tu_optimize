@@ -1031,6 +1031,11 @@ void usage(int argc, char** argv)
 int main(int argc, char** argv)
 {
     if(argc == 1) { usage(argc, argv); return(0); }
+    if(argc <= 2 && strcmp(argv[1], "-version") == 0)
+    {
+        std::cout << "Tyrant Optimizer " << TYRANT_OPTIMIZER_VERSION << std::endl;
+        return(0);
+    }
     debug_print = getenv("DEBUG_PRINT");
     unsigned num_threads = (debug_print || getenv("DEBUG")) ? 1 : 4;
     bool ordered = false;
@@ -1044,11 +1049,6 @@ int main(int argc, char** argv)
 
     if(argc <= 2)
     {
-        if(strcmp(argv[1], "-version") == 0)
-        {
-            std::cout << "Tyrant Optimizer " << TYRANT_OPTIMIZER_VERSION << std::endl;
-            return(0);
-        }
         print_available_decks(decks, true);
         return(4);
     }

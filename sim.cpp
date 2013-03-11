@@ -2212,56 +2212,33 @@ void fill_skill_table()
 //------------------------------------------------------------------------------
 // Utility functions for modify_cards.
 
-// Adds the skill "<new_skill> <all> <magnitude>" to all assaults,
-// except those who have any instance of <new_skill>.
-inline void assaults_gain_skill_if_have_not(Cards& cards, Skill new_skill, unsigned magnitude, bool all)
+// Adds the skill "<new_skill> <all> <magnitude>" to all cards of cardtype.
+// If the card has an instance of <new_skill> in its skill list and replace_instance==true, the new skill replaces it.
+// If the card has no instance of <new_skill> in its skill list, the new skill is added on to the end.
+template<enum CardType::CardType cardtype>
+inline void cards_gain_skill(Cards& cards, Skill new_skill, unsigned magnitude, bool all, bool replace_instance)
 {
     for(Card* card: cards.cards)
     {
-        if(card->m_type != CardType::assault)
+        if(card->m_type != cardtype)
         {
             continue;
         }
 
-        bool conflict(false);
+        bool do_add_skill(true);
         for(auto& skill: card->m_skills)
         {
             if(std::get<0>(skill) == new_skill)
             {
-                conflict = true;
+                if(replace_instance)
+                {
+                    skill = std::make_tuple(new_skill, magnitude, allfactions, all);
+                }
+                do_add_skill = false;
             }
         }
 
-        if(!conflict)
-        {
-            card->add_skill(new_skill, magnitude, allfactions, all);
-        }
-    }
-}
-// Adds the skill "<new_skill> <all> <magnitude>" to all commanders.
-// If the commander has an instance of <new_skill> in its skill list,
-// the new skill replaces it.
-// Otherwise, the new skill is added on to the end.
-inline void commanders_gain_skill(Cards& cards, Skill new_skill, unsigned magnitude, bool all)
-{
-    for(Card* card: cards.cards)
-    {
-        if(card->m_type != CardType::commander)
-        {
-            continue;
-        }
-
-        bool replaced(false);
-        for(auto& skill: card->m_skills)
-        {
-            if(std::get<0>(skill) == new_skill)
-            {
-                skill = std::make_tuple(new_skill, magnitude, allfactions, all);
-                replaced = true;
-            }
-        }
-
-        if(!replaced)
+        if(do_add_skill)
         {
             card->add_skill(new_skill, magnitude, allfactions, all);
         }
@@ -2275,7 +2252,7 @@ void modify_cards(Cards& cards, enum Effect effect)
         case Effect::none:
             break;
         case Effect::time_surge:
-            commanders_gain_skill(cards, rush, 1, false);
+            cards_gain_skill<CardType::commander>(cards, rush, 1, false, false);
             break;
         case Effect::copycat:
             // Do nothing; this is implemented in perform_mimic
@@ -2314,20 +2291,20 @@ void modify_cards(Cards& cards, enum Effect effect)
             // Do nothing; these are implemented in the temporary_split skill
             break;
         case Effect::friendly_fire:
-            commanders_gain_skill(cards, chaos, 0, true);
-            assaults_gain_skill_if_have_not(cards, strike, 1, false);
+            cards_gain_skill<CardType::assault>(cards, strike, 1, false, false);
+            cards_gain_skill<CardType::commander>(cards, chaos, 0, true, false);
             break;
         case Effect::genesis:
             // Do nothing; this is implemented in play
             break;
         case Effect::decrepit:
-            commanders_gain_skill(cards, enfeeble, 1, true);
+            cards_gain_skill<CardType::commander>(cards, enfeeble, 1, true, true);
             break;
         case Effect::forcefield:
-            commanders_gain_skill(cards, protect, 1, true);
+            cards_gain_skill<CardType::commander>(cards, protect, 1, true, true);
             break;
         case Effect::chilling_touch:
-            commanders_gain_skill(cards, freeze, 0, false);
+            cards_gain_skill<CardType::commander>(cards, freeze, 0, false, false);
             break;
         case Effect::toxic:
             // Do nothing; this is implemented in PlayCard::fieldEffects
