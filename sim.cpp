@@ -1274,7 +1274,7 @@ struct PerformAttack
         for(auto& oa_skill: def_status->m_card->m_skills_on_attacked)
         {
             _DEBUG_MSG("Evaluating %s skill %s on attacked\n", status_description(def_status).c_str(), skill_description(fd, oa_skill).c_str());
-            fd->skill_queue.emplace_back(def_status, oa_skill);
+            fd->skill_queue.emplace_back(def_status, def_status->m_augmented > 0 ? augmented_skill(def_status, oa_skill) : oa_skill);
             resolve_skill(fd);
             if(fd->end) { break; }
         }
