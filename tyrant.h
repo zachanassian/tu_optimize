@@ -97,7 +97,11 @@ extern std::string effect_names[Effect::num_effects];
 
 enum AchievementMiscReq
 {
-    damage,
+    unit_with_flying_killed,  // 104 Sky Control
+    skill_activated,  // 105 Brute Strength
+    turns,  // all "Speedy" and "Slow"
+    damage,  // 168 SMASH!; 183 Rally Free Zone
+    com_total,  // 169 Overkill; 170 EXTREME Overkill!!!
     num_achievement_misc_reqs
 };
 

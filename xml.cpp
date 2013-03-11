@@ -527,13 +527,11 @@ void read_achievement(Decks& decks, const Cards& cards, Achievement& achievement
             xml_attribute<>* num_used(req_node->first_attribute("num_used"));
             xml_attribute<>* num_played(req_node->first_attribute("num_played"));
             xml_attribute<>* num_killed(req_node->first_attribute("num_killed"));
+            xml_attribute<>* num_killed_with(req_node->first_attribute("num_killed_with"));
             xml_attribute<>* damage(req_node->first_attribute("damage"));
-            if(num_turns && comparator == less_equal)
-            {
-                turn_limit = atoi(num_turns->value());
-                std::cout << "  Turns <= " << turn_limit << std::endl;
-            }
-            else if(skill_id && num_used)
+            xml_attribute<>* com_total(req_node->first_attribute("com_total"));
+            xml_attribute<>* only(req_node->first_attribute("only"));
+            if(skill_id && num_used)
             {
                 auto x = skill_map.find(skill_id->value());
                 if(x == skill_map.end())
@@ -566,7 +564,7 @@ void read_achievement(Decks& decks, const Cards& cards, Achievement& achievement
                 auto i = map_to_faction(atoi(unit_race->value()));
                 if(i == Faction::allfactions)
                 {
-                    throw std::runtime_error(std::string("Invalid unit_race ") + unit_race->value());
+                    throw std::runtime_error(std::string("Unknown unit_race ") + unit_race->value());
                 }
                 achievement.unit_faction_played[i] = achievement.req_counter.size();
                 achievement.req_counter.emplace_back(atoi(num_played->value()), comparator);
@@ -589,11 +587,39 @@ void read_achievement(Decks& decks, const Cards& cards, Achievement& achievement
                 achievement.req_counter.emplace_back(atoi(num_killed->value()), comparator);
                 std::cout << "  Kill units of type: " << cardtype_names[i] << achievement.req_counter.back().str() << std::endl;
             }
+            else if(num_killed_with && skill_id && strcmp(skill_id->value(), "flying") == 0)
+            {
+                achievement.misc_req[AchievementMiscReq::unit_with_flying_killed] = achievement.req_counter.size();
+                achievement.req_counter.emplace_back(atoi(num_killed_with->value()), comparator);
+                std::cout << "  " << achievement_misc_req_names[AchievementMiscReq::unit_with_flying_killed] << achievement.req_counter.back().str() << std::endl;
+            }
+            else if(only && skill_id && strcmp(skill_id->value(), "0") == 0)
+            {
+                achievement.misc_req[AchievementMiscReq::skill_activated] = achievement.req_counter.size();
+                achievement.req_counter.emplace_back(0, equal);
+                std::cout << "  " << achievement_misc_req_names[AchievementMiscReq::skill_activated] << achievement.req_counter.back().str() << std::endl;
+            }
+            else if(num_turns)
+            {
+                if(comparator == less_equal)
+                {
+                    turn_limit = atoi(num_turns->value());
+                }
+                achievement.misc_req[AchievementMiscReq::turns] = achievement.req_counter.size();
+                achievement.req_counter.emplace_back(atoi(num_turns->value()), comparator);
+                std::cout << "  " << achievement_misc_req_names[AchievementMiscReq::turns] << achievement.req_counter.back().str() << std::endl;
+            }
             else if(damage)
             {
                 achievement.misc_req[AchievementMiscReq::damage] = achievement.req_counter.size();
                 achievement.req_counter.emplace_back(atoi(damage->value()), comparator);
                 std::cout << "  " << achievement_misc_req_names[AchievementMiscReq::damage] << achievement.req_counter.back().str() << std::endl;
+            }
+            else if(com_total)
+            {
+                achievement.misc_req[AchievementMiscReq::com_total] = achievement.req_counter.size();
+                achievement.req_counter.emplace_back(atoi(com_total->value()), comparator);
+                std::cout << "  " << achievement_misc_req_names[AchievementMiscReq::com_total] << achievement.req_counter.back().str() << std::endl;
             }
             else
             {

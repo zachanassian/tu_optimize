@@ -235,12 +235,22 @@ public:
     }
 
     template <class T>
-    inline void inc_counter(T& container, unsigned key)
+    inline void set_counter(T& container, unsigned key, unsigned value)
     {
         auto x = container.find(key);
         if(x != container.end())
         {
-            ++ achievement_counter[x->second];
+            achievement_counter[x->second] = value;
+        }
+    }
+
+    template <class T>
+    inline void inc_counter(T& container, unsigned key, unsigned value = 1)
+    {
+        auto x = container.find(key);
+        if(x != container.end())
+        {
+            achievement_counter[x->second] += value;
 #if 0
             if(achievement.req_counter[x->second].predict_monoinc(achievement_counter[x->second]) < 0)
             {

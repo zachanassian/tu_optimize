@@ -527,7 +527,7 @@ Results<unsigned> play(Field* fd)
     // Count commander as played for achievements (not count in type / faction / rarity requirements)
     fd->inc_counter(fd->achievement.unit_played, fd->players[0]->commander.m_card->m_id);
 
-    // Shuffle deck
+    fd->set_counter(fd->achievement.misc_req, AchievementMiscReq::turns, 1);
     while(fd->turn <= turn_limit && !fd->end)
     {
         fd->current_phase = Field::playcard_phase;
@@ -656,6 +656,7 @@ Results<unsigned> play(Field* fd)
         std::swap(fd->tapi, fd->tipi);
         std::swap(fd->tap, fd->tip);
         ++fd->turn;
+        fd->inc_counter(fd->achievement.misc_req, AchievementMiscReq::turns);
     }
     bool made_achievement = true;
     for(unsigned i(0); made_achievement && i < fd->achievement.req_counter.size(); ++i)
@@ -827,6 +828,10 @@ inline bool count_achievement(Field* fd, const CardStatus* c)
     if(c->m_player == 0)
     {
         fd->inc_counter(fd->achievement.skill_used, skill_id);
+        if(skill_id != Skill::attack)
+        {
+            fd->inc_counter(fd->achievement.misc_req, AchievementMiscReq::skill_activated);
+        }
     }
     return(true);
 }
@@ -842,9 +847,16 @@ void remove_hp(Field* fd, CardStatus& status, unsigned dmg)
     if(status.m_hp == 0)
     {
         _DEBUG_MSG("%s dies\n", status_description(&status).c_str());
-        if(status.m_player == 1 && !status.m_summoned)
+        if(status.m_player == 1)
         {
-            fd->inc_counter(fd->achievement.unit_type_killed, status.m_card->m_type);
+            if(!status.m_summoned)
+            {
+                fd->inc_counter(fd->achievement.unit_type_killed, status.m_card->m_type);
+            }
+            if(status.m_card->m_flying)
+            {
+                fd->inc_counter(fd->achievement.misc_req, AchievementMiscReq::unit_with_flying_killed);
+            }
         }
         if(status.m_card->m_skills_on_death.size() > 0)
         {
@@ -1079,6 +1091,7 @@ void remove_commander_hp(Field* fd, CardStatus& status, unsigned dmg, bool count
     if(count_points && status.m_player == 1)
     {
         fd->points_since_last_decision += dmg;
+        fd->inc_counter(fd->achievement.misc_req, AchievementMiscReq::com_total, dmg);
     }
     if(status.m_hp == 0)
     {

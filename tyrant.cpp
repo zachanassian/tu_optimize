@@ -62,5 +62,9 @@ std::string effect_names[Effect::num_effects] = {
 };
 
 std::string achievement_misc_req_names[AchievementMiscReq::num_achievement_misc_reqs] = {
+    "Kill units with skill: flying",
+    "Skill activated: (any)",
+    "Turns",
     "Damage",
+    "Total damage to the enemy Commander"
 };
