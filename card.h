@@ -46,6 +46,7 @@ public:
         m_set(0),
         m_siphon(0),
         m_split(false),
+        m_stun(false),
         m_swipe(false),
         m_tribute(false),
         m_unique(false),
@@ -104,6 +105,7 @@ public:
     int m_set;
     unsigned m_siphon;
     bool m_split;
+    bool m_stun;
     bool m_swipe;
     bool m_tribute;
     bool m_unique;

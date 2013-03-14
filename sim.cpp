@@ -57,6 +57,7 @@ CardStatus::CardStatus(const Card* card) :
     m_poisoned(0),
     m_protected(0),
     m_rallied(0),
+    m_stunned(0),
     m_weakened(0),
     m_temporary_split(false),
     m_summoned(false),
@@ -92,6 +93,7 @@ inline void CardStatus::set(const Card& card)
     m_protected = 0;
     m_rallied = 0;
     m_weakened = 0;
+    m_stunned = 0;
     m_temporary_split = false;
     m_summoned = false;
     m_attacked = false;
@@ -231,6 +233,7 @@ std::string CardStatus::description()
     if(m_enfeebled > 0) { desc += ", enfeebled " + to_string(m_enfeebled); }
     if(m_poisoned > 0) { desc += ", poisoned " + to_string(m_poisoned); }
     if(m_protected > 0) { desc += ", protected " + to_string(m_protected); }
+    if(m_stunned > 0) { desc += ", stunned " + to_string(m_stunned); }
 //    if(m_attacked) { desc += ", attacked"; }
     desc += "]";
     return(desc);
@@ -643,7 +646,7 @@ Results<unsigned> play(Field* fd)
             // Evaluate skills
             evaluate_skills(fd, &current_status, current_status.m_card->m_skills);
             // Attack
-            if(!fd->end && !current_status.m_immobilized && current_status.m_hp > 0)
+            if(!fd->end && !current_status.m_immobilized && !current_status.m_stunned && current_status.m_hp > 0)
             {
                 attack_phase(fd);
             }
@@ -979,6 +982,7 @@ void turn_start_phase(Field* fd)
             status.m_immobilized = false;
             status.m_jammed = false;
             status.m_rallied = 0;
+            if(status.m_stunned > 0) { -- status.m_stunned; }
             status.m_weakened = 0;
             status.m_temporary_split = false;
             status.m_attacked = false;
@@ -1268,6 +1272,13 @@ struct PerformAttack
     template<enum CardType::CardType cardtype>
     void on_attacked()
     {
+        if(att_status->m_card->m_type == CardType::assault && def_status->m_card->m_stun)
+        {
+            count_achievement<stun>(fd, def_status);
+            // perform_skill_stun
+            _DEBUG_MSG("%s stuns %s\n", status_description(def_status).c_str(), status_description(att_status).c_str());
+            att_status->m_stunned = 2;
+        }
         if(def_status->m_card->m_poison_oa > att_status->m_poisoned && skill_check<poison>(fd, def_status, att_status))
         {
             count_achievement<poison>(fd, def_status);
@@ -1414,7 +1425,7 @@ void attack_phase(Field* fd)
         _DEBUG_MSG("%s activates Flurry\n", status_description(att_status).c_str());
         num_attacks += att_status->m_card->m_flurry;
     }
-    for(unsigned attack_index(0); attack_index < num_attacks && !att_status->m_jammed && !att_status->m_frozen && att_status->m_hp > 0 && fd->tip->commander.m_hp > 0; ++attack_index)
+    for(unsigned attack_index(0); attack_index < num_attacks && !att_status->m_jammed && !att_status->m_stunned && !att_status->m_frozen && att_status->m_hp > 0 && fd->tip->commander.m_hp > 0; ++attack_index)
     {
         // 3 possibilities:
         // - 1. attack against the assault in front
@@ -1443,7 +1454,7 @@ void attack_phase(Field* fd)
                 if(fd->end)
                 { return; }
                 // stille alive? attack the card in front
-                if(att_status->m_hp > 0 && alive_assault(def_assaults, fd->current_ci))
+                if(att_status->m_hp > 0 && !att_status->m_stunned && alive_assault(def_assaults, fd->current_ci))
                 {
                     PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci]}.op<CardType::assault>(pre_modifier_dmg);
                 }
@@ -1454,7 +1465,7 @@ void attack_phase(Field* fd)
                 if(fd->end)
                 { return; }
                 // still alive? attack the card on the right
-                if(!fd->end && att_status->m_hp > 0 && alive_assault(def_assaults, fd->current_ci + 1))
+                if(!fd->end && att_status->m_hp > 0 && !att_status->m_stunned && alive_assault(def_assaults, fd->current_ci + 1))
                 {
                     PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci+1]}.op<CardType::assault>(pre_modifier_dmg);
                 }
@@ -1558,7 +1569,7 @@ inline bool skill_predicate<protect>(Field* fd, CardStatus* c)
 
 template<>
 inline bool skill_predicate<rally>(Field* fd, CardStatus* c)
-{ return(!c->m_immobilized && !c->m_attacked && can_act(fd, c)); }
+{ return(!c->m_immobilized && !c->m_stunned && !c->m_attacked && can_act(fd, c)); }
 
 template<>
 inline bool skill_predicate<repair>(Field* fd, CardStatus* c)
@@ -1588,7 +1599,7 @@ inline bool skill_predicate<temporary_split>(Field* fd, CardStatus* c)
 
 template<>
 inline bool skill_predicate<weaken>(Field* fd, CardStatus* c)
-{ return(!c->m_immobilized && !c->m_attacked && attack_power(c) > 0 && can_act(fd, c)); }
+{ return(!c->m_immobilized && !c->m_stunned && !c->m_attacked && attack_power(c) > 0 && can_act(fd, c)); }
 
 template<unsigned skill_id>
 inline void perform_skill(Field* fd, CardStatus* c, unsigned v)
@@ -1627,6 +1638,7 @@ inline void perform_skill<cleanse>(Field* fd, CardStatus* c, unsigned v)
     c->m_immobilized = false;
     c->m_jammed = false;
     c->m_poisoned = 0;
+    c->m_stunned = 0;
 }
 
 template<>

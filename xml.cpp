@@ -266,6 +266,8 @@ void read_cards(Cards& cards)
                     { c->m_siphon = atoi(skill->first_attribute("x")->value()); }
                     if(strcmp(skill->first_attribute("id")->value(), "split") == 0)
                     { c->m_split = true; }
+                    if(strcmp(skill->first_attribute("id")->value(), "stun") == 0)
+                    { c->m_stun = true; }
                     if(strcmp(skill->first_attribute("id")->value(), "swipe") == 0)
                     { c->m_swipe = true; }
                     if(strcmp(skill->first_attribute("id")->value(), "tribute") == 0)

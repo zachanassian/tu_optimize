@@ -32,7 +32,7 @@ enum Skill
     // Damage-Dependant:
     berserk, crush, disease, immobilize, leech, poison, siphon,
     // Defensive:
-    armored, counter, emulate, evade, flying, intercept, payback, refresh, regenerate, tribute, wall,
+    armored, counter, emulate, evade, flying, intercept, payback, refresh, regenerate, stun, tribute, wall,
     // Triggered:
     blitz, legion,
     // Static, ignored:
