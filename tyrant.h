@@ -21,6 +21,8 @@ extern const std::string faction_names[num_factions];
 
 enum Skill
 {
+    // Attack:
+    attack,
     // Activation (including Destroyed):
     augment, backfire, chaos, cleanse, enfeeble, freeze, heal, infuse, jam,
     mimic, protect, rally, recharge, repair, rush, shock, siege, strike, summon, supply,
@@ -37,11 +39,21 @@ enum Skill
     blitz, legion,
     // Static, ignored:
     /* blizzard, fusion, mist, */
-    // Misc:
-    attack,
-    num_skills};
+    num_skills
+};
 extern std::string skill_names[num_skills];
 extern std::set<Skill> helpful_skills;
+
+enum SkillActivationModifier
+{
+    on_act,
+    on_play,
+    on_attacked,
+    on_kill,
+    on_death,
+    num_skill_activation_modifiers
+};
+extern std::string skill_activation_modifier_names[num_skill_activation_modifiers];
 
 namespace CardType {
 enum CardType {
@@ -136,6 +148,6 @@ enum SkillSourceType
     source_chaos
 };
 
-typedef std::tuple<Skill, unsigned, Faction, bool /* all */> SkillSpec;
+typedef std::tuple<Skill, unsigned, Faction, bool /* all */, SkillActivationModifier> SkillSpec;
 
 #endif

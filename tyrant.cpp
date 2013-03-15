@@ -7,6 +7,8 @@ const std::string faction_names[Faction::num_factions] =
 
 std::string skill_names[Skill::num_skills] =
 {
+    // Attack:
+    "0",
     // Activation (Including Destroyed):
     "Augment", "Backfire", "Chaos", "Cleanse", "Enfeeble",
     "Freeze", "Heal", "Infuse", "Jam",
@@ -25,13 +27,13 @@ std::string skill_names[Skill::num_skills] =
     "Blitz", "Legion",
     // Static (Ignored):
     /* "Blizzard", "Fusion", "Mist", */
-    // Misc:
-    "0",
 };
 
 std::set<Skill> helpful_skills{
     augment, cleanse, heal, protect, rally, repair, rush, supply,
 };
+
+std::string skill_activation_modifier_names[num_skill_activation_modifiers] = {"", "Play", "Attacked", "Kill", "Death", };
 
 std::string cardtype_names[CardType::num_cardtypes]{"Commander", "Assault", "Structure", "Action", };
 
