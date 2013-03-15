@@ -191,6 +191,8 @@ void read_cards(Cards& cards)
                 { c->m_type = CardType::structure; }
                 else if(id < 4000)
                 { c->m_type = CardType::action; }
+                else if(id < 5000)
+                { c->m_type = CardType::assault; }
                 else
                 { c->m_type = cost_node ? (attack_node ? CardType::assault : CardType::structure) : (health_node ? CardType::commander : CardType::action); }
                 if(attack_node) { c->m_attack = atoi(attack_node->value()); }
