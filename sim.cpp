@@ -61,7 +61,7 @@ CardStatus::CardStatus(const Card* card) :
     m_weakened(0),
     m_temporary_split(false),
     m_summoned(false),
-    m_attacked(false)
+    m_step(CardStep::none)
 {
 }
 
@@ -96,7 +96,7 @@ inline void CardStatus::set(const Card& card)
     m_stunned = 0;
     m_temporary_split = false;
     m_summoned = false;
-    m_attacked = false;
+    m_step = CardStep::none;
 }
 //------------------------------------------------------------------------------
 inline unsigned safe_minus(unsigned x, unsigned y)
@@ -235,7 +235,7 @@ std::string CardStatus::description()
     if(m_poisoned > 0) { desc += ", poisoned " + to_string(m_poisoned); }
     if(m_protected > 0) { desc += ", protected " + to_string(m_protected); }
     if(m_stunned > 0) { desc += ", stunned " + to_string(m_stunned); }
-//    if(m_attacked) { desc += ", attacked"; }
+//    if(m_step != CardStep::none) { desc += ", Step " + to_string(static_cast<int>(m_step)); }
     desc += "]";
     return(desc);
 }
@@ -326,7 +326,10 @@ void resolve_skill(Field* fd)
         auto& status(std::get<0>(skill_instance));
         auto& skill(std::get<1>(skill_instance));
         fd->skill_queue.pop_front();
-        skill_table[std::get<0>(skill)](fd, status, skill);
+        if(!status || !status->m_jammed)
+        {
+            skill_table[std::get<0>(skill)](fd, status, skill);
+        }
     }
 }
 //------------------------------------------------------------------------------
@@ -505,9 +508,18 @@ void PlayCard::onPlaySkills<CardType::action>()
     }
 }
 //------------------------------------------------------------------------------
+inline bool is_attacking_or_has_attacked(CardStatus* c) { return(c->m_step >= CardStep::attacking); }
+inline bool is_attacking(CardStatus* c) { return(c->m_step == CardStep::attacking); }
+inline bool has_attacked(CardStatus* c) { return(c->m_step == CardStep::attacked); }
+// Can act by the end of next turn
+inline bool can_act(Field* fd, CardStatus* c) { return(c->m_hp > 0 && !c->m_jammed && !c->m_frozen && (fd->tapi == c->m_player ? c->m_delay == 0 || c->m_blitzing : c->m_delay <= 1)); }
+// Can attack by the end of next turn
+inline bool can_attack(Field* fd, CardStatus* c) { return(can_act(fd, c) && !c->m_immobilized && !c->m_stunned); }
+// Can be healed / repaired
+inline bool can_be_healed(CardStatus* c) { return(c->m_hp > 0 && c->m_hp < c->m_card->m_health && !c->m_diseased); }
+//------------------------------------------------------------------------------
 void turn_start_phase(Field* fd);
 void evaluate_legion(Field* fd);
-void prepend_on_death(Field* fd);
 bool check_and_perform_refresh(Field* fd, CardStatus* src_status);
 // return value : (raid points) -> attacker wins, 0 -> defender wins
 Results<unsigned> play(Field* fd)
@@ -616,7 +628,7 @@ Results<unsigned> play(Field* fd)
         {
             // ca: current assault
             CardStatus& current_status(fd->tap->assaults[fd->current_ci]);
-            if((current_status.m_delay > 0 && !current_status.m_blitzing) || current_status.m_hp == 0 || current_status.m_jammed || current_status.m_frozen)
+            if(!can_act(fd, &current_status))
             {
                 //_DEBUG_MSG("! Assault %u (%s) hp: %u, jammed %u\n", card_index, current_status.m_card->m_name.c_str(), current_status.m_hp, current_status.m_jammed);
                 continue;
@@ -649,8 +661,10 @@ Results<unsigned> play(Field* fd)
             // Attack
             if(!fd->end && !current_status.m_immobilized && !current_status.m_stunned && current_status.m_hp > 0)
             {
+                current_status.m_step = CardStep::attacking;
                 attack_phase(fd);
             }
+            current_status.m_step = CardStep::attacked;
         }
         if(fd->end)
         {
@@ -705,11 +719,6 @@ Results<unsigned> play(Field* fd)
     assert(false);
     return {0, 0, 0, 0};
 }
-
-// Can act by the end of next turn
-inline bool can_act(Field* fd, CardStatus* c) { return(c->m_hp > 0 && !c->m_jammed && !c->m_frozen && (fd->tapi == c->m_player ? c->m_delay == 0 || c->m_blitzing : c->m_delay <= 1)); }
-// Can be healed / repaired
-inline bool can_be_healed(CardStatus* c) { return(c->m_hp > 0 && c->m_hp < c->m_card->m_health && !c->m_diseased); }
 
 // Check if a skill actually proc'ed.
 template<Skill>
@@ -986,7 +995,7 @@ void turn_start_phase(Field* fd)
             if(status.m_stunned > 0) { -- status.m_stunned; }
             status.m_weakened = 0;
             status.m_temporary_split = false;
-            status.m_attacked = false;
+            status.m_step = CardStep::none;
             if(status.m_card->m_refresh)
             {
                 check_and_perform_refresh(fd, &status);
@@ -1416,7 +1425,6 @@ void attack_phase(Field* fd)
 {
     CardStatus* att_status(&fd->tap->assaults[fd->current_ci]); // attacking card
     Storage<CardStatus>& def_assaults(fd->tip->assaults);
-    att_status->m_attacked = true;
     unsigned pre_modifier_dmg = attack_power(att_status);
     if(pre_modifier_dmg == 0) { return; }
     unsigned num_attacks(1);
@@ -1426,7 +1434,7 @@ void attack_phase(Field* fd)
         _DEBUG_MSG("%s activates Flurry\n", status_description(att_status).c_str());
         num_attacks += att_status->m_card->m_flurry;
     }
-    for(unsigned attack_index(0); attack_index < num_attacks && !att_status->m_jammed && !att_status->m_stunned && !att_status->m_frozen && att_status->m_hp > 0 && fd->tip->commander.m_hp > 0; ++attack_index)
+    for(unsigned attack_index(0); attack_index < num_attacks && can_attack(fd, att_status) && fd->tip->commander.m_hp > 0; ++attack_index)
     {
         // 3 possibilities:
         // - 1. attack against the assault in front
@@ -1455,7 +1463,7 @@ void attack_phase(Field* fd)
                 if(fd->end)
                 { return; }
                 // stille alive? attack the card in front
-                if(att_status->m_hp > 0 && !att_status->m_stunned && alive_assault(def_assaults, fd->current_ci))
+                if(can_attack(fd, att_status) && alive_assault(def_assaults, fd->current_ci))
                 {
                     PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci]}.op<CardType::assault>(pre_modifier_dmg);
                 }
@@ -1466,7 +1474,7 @@ void attack_phase(Field* fd)
                 if(fd->end)
                 { return; }
                 // still alive? attack the card on the right
-                if(!fd->end && att_status->m_hp > 0 && !att_status->m_stunned && alive_assault(def_assaults, fd->current_ci + 1))
+                if(!fd->end && can_attack(fd, att_status) && alive_assault(def_assaults, fd->current_ci + 1))
                 {
                     PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci+1]}.op<CardType::assault>(pre_modifier_dmg);
                 }
@@ -1512,7 +1520,7 @@ inline bool skill_predicate(Field* fd, CardStatus* c, const SkillSpec& s)
 template<>
 inline bool skill_predicate<augment>(Field* fd, CardStatus* c, const SkillSpec& s)
 {
-    if(!c->m_attacked && can_act(fd, c))
+    if(can_act(fd, c) && !is_attacking_or_has_attacked(c))
     {
         for(auto& s: c->m_card->m_skills)
         {
@@ -1525,7 +1533,10 @@ inline bool skill_predicate<augment>(Field* fd, CardStatus* c, const SkillSpec& 
 
 template<>
 inline bool skill_predicate<chaos>(Field* fd, CardStatus* c, const SkillSpec& s)
-{ return(!c->m_chaosed && can_act(fd, c)); }
+{
+    const auto& mod = std::get<4>(s);
+    return(!c->m_chaosed && can_act(fd, c) && !(mod == on_attacked && is_attacking_or_has_attacked(c)) && !(mod == on_death && has_attacked(c)));
+}
 
 template<>
 inline bool skill_predicate<cleanse>(Field* fd, CardStatus* c, const SkillSpec& s)
@@ -1535,8 +1546,10 @@ inline bool skill_predicate<cleanse>(Field* fd, CardStatus* c, const SkillSpec& 
                c->m_diseased ||
                c->m_enfeebled > 0 ||
                (c->m_frozen && c->m_delay == 0) ||
+               c->m_immobilized ||
                c->m_jammed ||
-               c->m_poisoned
+               c->m_poisoned ||
+               c->m_stunned
                ));
 }
 
@@ -1558,7 +1571,10 @@ inline bool skill_predicate<infuse>(Field* fd, CardStatus* c, const SkillSpec& s
 
 template<>
 inline bool skill_predicate<jam>(Field* fd, CardStatus* c, const SkillSpec& s)
-{ return(can_act(fd, c)); }
+{
+    const auto& mod = std::get<4>(s);
+    return(can_act(fd, c) && !(mod == on_attacked && is_attacking_or_has_attacked(c)) && !(mod == on_death && has_attacked(c)));
+}
 
 template<>
 inline bool skill_predicate<mimic>(Field* fd, CardStatus* c, const SkillSpec& s)
@@ -1570,7 +1586,7 @@ inline bool skill_predicate<protect>(Field* fd, CardStatus* c, const SkillSpec& 
 
 template<>
 inline bool skill_predicate<rally>(Field* fd, CardStatus* c, const SkillSpec& s)
-{ return(!c->m_immobilized && !c->m_stunned && !c->m_attacked && can_act(fd, c)); }
+{ return(can_attack(fd, c) && !is_attacking_or_has_attacked(c)); }
 
 template<>
 inline bool skill_predicate<repair>(Field* fd, CardStatus* c, const SkillSpec& s)
@@ -1600,7 +1616,10 @@ inline bool skill_predicate<temporary_split>(Field* fd, CardStatus* c, const Ski
 
 template<>
 inline bool skill_predicate<weaken>(Field* fd, CardStatus* c, const SkillSpec& s)
-{ return(!c->m_immobilized && !c->m_stunned && !c->m_attacked && attack_power(c) > 0 && can_act(fd, c)); }
+{
+    const auto& mod = std::get<4>(s);
+    return(can_attack(fd, c) && attack_power(c) > 0 && !((mod == on_attacked || mod == on_death) && is_attacking_or_has_attacked(c)));
+}
 
 template<unsigned skill_id>
 inline void perform_skill(Field* fd, CardStatus* c, unsigned v)

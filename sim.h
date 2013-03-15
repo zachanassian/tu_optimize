@@ -106,6 +106,13 @@ public:
     boost::pool<> m_pool;
 };
 //------------------------------------------------------------------------------
+enum class CardStep
+{
+    none,
+    attacking,
+    attacked,
+};
+//------------------------------------------------------------------------------
 struct CardStatus
 {
     const Card* m_card;
@@ -131,7 +138,7 @@ struct CardStatus
     unsigned m_weakened;
     bool m_temporary_split;
     bool m_summoned; // is this card summoned?
-    bool m_attacked; // has this card attacked in the turn?
+    CardStep m_step;
 
     CardStatus() {}
     CardStatus(const Card* card);
