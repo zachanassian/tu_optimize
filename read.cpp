@@ -143,11 +143,13 @@ template<typename Iterator, typename Functor, typename Token> Iterator read_toke
     return(token_end_after_spaces);
 }
 
-void parse_card_spec(Cards& cards, std::string& card_spec, unsigned& card_id, unsigned& card_num)
+// num_sign = 0 if card_num is "N"; = +1 if "+N"; = -1 if "-N"
+void parse_card_spec(Cards& cards, std::string& card_spec, unsigned& card_id, unsigned& card_num, signed& num_sign)
 {
     auto card_spec_iter = card_spec.begin();
     card_id = 0;
     card_num = 1;
+    num_sign = 0;
     std::string card_name;
     card_spec_iter = read_token(card_spec_iter, card_spec.end(), [](char c){return(c=='#' || c=='(' || c=='\r');}, card_name);
     if(card_name.empty())
@@ -169,6 +171,19 @@ void parse_card_spec(Cards& cards, std::string& card_spec, unsigned& card_id, un
     if(card_spec_iter != card_spec.end() && (*card_spec_iter == '#' || *card_spec_iter == '('))
     {
         ++card_spec_iter;
+        if(card_spec_iter != card_spec.end())
+        {
+           if(*card_spec_iter == '+')
+           {
+               num_sign = +1;
+               ++card_spec_iter;
+           }
+           else if(*card_spec_iter == '-')
+           {
+               num_sign = -1;
+               ++card_spec_iter;
+           }
+        }
         card_spec_iter = read_token(card_spec_iter, card_spec.end(), [](char c){return(c < '0' || c > '9');}, card_num);
     }
     if(card_id == 0)
@@ -229,7 +244,9 @@ unsigned read_custom_decks(Decks& decks, Cards& cards, std::string filename)
                 {
                     unsigned card_id{0};
                     unsigned card_num{1};
-                    parse_card_spec(cards, card_spec, card_id, card_num);
+                    signed num_sign{0};
+                    parse_card_spec(cards, card_spec, card_id, card_num, num_sign);
+                    assert(num_sign == 0);
                     for(unsigned i(0); i < card_num; ++i)
                     {
                         card_ids.push_back(card_id);
@@ -287,8 +304,20 @@ void read_owned_cards(Cards& cards, std::map<unsigned, unsigned>& owned_cards, c
             }
             unsigned card_id{0};
             unsigned card_num{1};
-            parse_card_spec(cards, card_spec, card_id, card_num);
-            owned_cards[card_id] = card_num;
+            signed num_sign{0};
+            parse_card_spec(cards, card_spec, card_id, card_num, num_sign);
+            if(num_sign == 0)
+            {
+                owned_cards[card_id] = card_num;
+            }
+            else if(num_sign > 0)
+            {
+                owned_cards[card_id] += card_num;
+            }
+            else if(num_sign < 0)
+            {
+                owned_cards[card_id] = owned_cards[card_id] > card_num ? owned_cards[card_id] - card_num : 0;
+            }
         }
         catch(std::exception& e)
         {
