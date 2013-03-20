@@ -396,8 +396,8 @@ struct PlayCard
     {
         setStorage<type>();
         placeCard<type>();
-        onPlaySkills<type>();
         blitz<type>();
+        onPlaySkills<type>();
         fieldEffects<type>();
         return(true);
     }
