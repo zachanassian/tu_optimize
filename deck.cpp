@@ -1,11 +1,13 @@
 #include "deck.h"
 
 #include <boost/range/algorithm_ext/insert.hpp>
+#include <boost/tokenizer.hpp>
 #include <sstream>
 #include <stdexcept>
 
 #include "card.h"
 #include "cards.h"
+#include "read.h"
 
 template<class RandomAccessIterator, class UniformRandomNumberGenerator>
 void partial_shuffle(RandomAccessIterator first, RandomAccessIterator middle,
@@ -67,6 +69,84 @@ std::string deck_hash(const Card* commander, const std::vector<const Card*>& car
     }
     return ios.str();
 }
+//------------------------------------------------------------------------------
+namespace {
+const char* base64_chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "abcdefghijklmnopqrstuvwxyz"
+    "0123456789+/";
+
+// Converts cards in `hash' to a deck.
+// Stores resulting card IDs in `ids'.
+void hash_to_ids(const char* hash, std::vector<unsigned int>& ids)
+{
+    unsigned int last_id = 0;
+    const char* pc = hash;
+
+    while(*pc)
+    {
+        unsigned id_plus = 0;
+        if(*pc == '-')
+        {
+            ++ pc;
+            id_plus = 4000;
+        }
+        if(!*pc || !*(pc + 1))
+        {
+            throw std::runtime_error("Invalid hash length");
+        }
+        const char* p0 = strchr(base64_chars, *pc);
+        const char* p1 = strchr(base64_chars, *(pc + 1));
+        if (!p0 || !p1)
+        {
+            throw std::runtime_error("Invalid hash character");
+        }
+        pc += 2;
+        size_t index0 = p0 - base64_chars;
+        size_t index1 = p1 - base64_chars;
+        unsigned int id = (index0 << 6) + index1;
+
+        if (id < 4001)
+        {
+            id += id_plus;
+            ids.push_back(id);
+            last_id = id;
+        }
+        else for (unsigned int j = 0; j < id - 4001; ++j)
+        {
+            ids.push_back(last_id);
+        }
+    }
+}
+} // end of namespace
+
+void namelist_to_ids(const Cards& all_cards, const std::string& deck_string, std::vector<unsigned>& ids)
+{
+    boost::tokenizer<boost::char_delimiters_separator<char> > deck_tokens{deck_string, boost::char_delimiters_separator<char>{false, ":,", ""}};
+    auto token_iter = deck_tokens.begin();
+    for(; token_iter != deck_tokens.end(); ++token_iter)
+    {
+        std::string card_spec(*token_iter);
+        unsigned card_id{0};
+        unsigned card_num{1};
+        signed num_sign{0};
+        try
+        {
+            parse_card_spec(all_cards, card_spec, card_id, card_num, num_sign);
+            assert(num_sign == 0);
+            for(unsigned i(0); i < card_num; ++i)
+            {
+                ids.push_back(card_id);
+            }
+        }
+        catch(std::exception& e)
+        {
+            std::cerr << "Ignore card: " << e.what() << std::endl;
+            continue;
+        }
+    }
+}
+
 namespace range = boost::range;
 
 void Deck::set(const Cards& all_cards, const std::vector<unsigned>& ids)
@@ -98,13 +178,73 @@ void Deck::set(const Cards& all_cards, const std::vector<unsigned>& ids)
     }
 }
 
+void Deck::set(const Cards& all_cards, const std::string& deck_string_)
+{
+    deck_string = deck_string_;
+}
+
+void Deck::resolve(const Cards& all_cards)
+{
+    if(commander == nullptr)
+    {
+        std::vector<unsigned int> ids;
+        if(deck_string.find_first_of(":,") == std::string::npos)
+        {
+            try
+            {
+                hash_to_ids(deck_string.c_str(), ids);
+            }
+            catch(std::exception& e)
+            {
+                std::cerr << "Error while resolving " << short_description() << ": " << e.what() << std::endl;
+                throw;
+            }
+        }
+        else
+        {
+            boost::tokenizer<boost::char_delimiters_separator<char> > deck_tokens{deck_string, boost::char_delimiters_separator<char>{false, ":,", ""}};
+            auto token_iter = deck_tokens.begin();
+            for(; token_iter != deck_tokens.end(); ++token_iter)
+            {
+                std::string card_spec(*token_iter);
+                unsigned card_id{0};
+                unsigned card_num{1};
+                signed num_sign{0};
+                try
+                {
+                    parse_card_spec(all_cards, card_spec, card_id, card_num, num_sign);
+                    assert(num_sign == 0);
+                    for(unsigned i(0); i < card_num; ++i)
+                    {
+                        ids.push_back(card_id);
+                    }
+                }
+                catch(std::exception& e)
+                {
+                    std::cerr << "Warning while resolving " << short_description() << ": " << e.what() << std::endl;
+                    continue;
+                }
+            }
+        }
+        set(all_cards, ids);
+        deck_string.clear();
+    }
+}
+
 std::string Deck::short_description() const
 {
     std::stringstream ios;
     ios << decktype_names[decktype];
     if(id > 0) { ios << " #" << id; }
     if(!name.empty()) { ios << " \"" << name << "\""; }
-    if(raid_cards.empty()) { ios << ": " << deck_hash(commander, cards); }
+    if(deck_string.empty())
+    {
+        if(raid_cards.empty()) { ios << ": " << deck_hash(commander, cards); }
+    }
+    else
+    {
+        ios << ": " << deck_string;
+    }
     return ios.str();
 }
 

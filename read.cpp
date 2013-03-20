@@ -13,91 +13,6 @@
 #include "cards.h"
 #include "deck.h"
 
-namespace {
-const char* base64_chars =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    "abcdefghijklmnopqrstuvwxyz"
-    "0123456789+/";
-
-// Converts cards in `hash' to a deck.
-// Stores resulting card IDs in `ids'.
-void hash_to_ids(const char* hash, std::vector<unsigned int>& ids)
-{
-    unsigned int last_id = 0;
-    const char* pc = hash;
-
-    while(*pc)
-    {
-        unsigned id_plus = 0;
-        if(*pc == '-')
-        {
-            ++ pc;
-            id_plus = 4000;
-        }
-        if(!*pc || !*(pc + 1))
-        {
-            throw std::runtime_error("Invalid hash length");
-        }
-        const char* p0 = strchr(base64_chars, *pc);
-        const char* p1 = strchr(base64_chars, *(pc + 1));
-        if (!p0 || !p1)
-        {
-            throw std::runtime_error("Invalid hash character");
-        }
-        pc += 2;
-        size_t index0 = p0 - base64_chars;
-        size_t index1 = p1 - base64_chars;
-        unsigned int id = (index0 << 6) + index1;
-
-        if (id < 4001)
-        {
-            id += id_plus;
-            ids.push_back(id);
-            last_id = id;
-        }
-        else for (unsigned int j = 0; j < id - 4001; ++j)
-        {
-            ids.push_back(last_id);
-        }
-    }
-}
-} // end of namespace
-
-void parse_card_spec(const Cards& cards, std::string& card_spec, unsigned& card_id, unsigned& card_num, signed& num_sign);
-void namelist_to_ids(const Cards& all_cards, const std::string& deck_string, std::vector<unsigned>& ids)
-{
-    boost::tokenizer<boost::char_delimiters_separator<char> > deck_tokens{deck_string, boost::char_delimiters_separator<char>{false, ":,", ""}};
-    auto token_iter = deck_tokens.begin();
-    for(; token_iter != deck_tokens.end(); ++token_iter)
-    {
-        std::string card_spec(*token_iter);
-        unsigned card_id{0};
-        unsigned card_num{1};
-        signed num_sign{0};
-        parse_card_spec(all_cards, card_spec, card_id, card_num, num_sign);
-        assert(num_sign == 0);
-        for(unsigned i(0); i < card_num; ++i)
-        {
-            ids.push_back(card_id);
-        }
-    }
-}
-
-// Convert `str' (either hash or name list) to ids.
-std::vector<unsigned int> deck_string_to_ids(const Cards& cards, const std::string &str)
-{
-    std::vector<unsigned int> ids;
-    if(str.find_first_of(":,") == std::string::npos)
-    {
-        hash_to_ids(str.c_str(), ids);
-    }
-    else
-    {
-        namelist_to_ids(cards, str, ids);
-    }
-    return(ids);
-}
-
 void load_decks(Decks& decks, Cards& cards)
 {
     if(boost::filesystem::exists("Custom.txt"))
@@ -179,8 +94,15 @@ void parse_card_spec(const Cards& cards, std::string& card_spec, unsigned& card_
         throw std::runtime_error("no card name");
     }
     // If card name is not found, try find card id quoted in '[]' in name, ignoring other characters.
-    auto card_it = cards.player_cards_by_name.find(card_name);
-    auto card_id_iter = advance_until(card_name.begin(), card_name.end(), [](char c){return(c=='[');});
+    std::string simple_name{simplify_name(card_name)};
+    auto abbr_it = cards.player_cards_abbr.find(simple_name);
+    if(abbr_it != cards.player_cards_abbr.end())
+    {
+        std::cout << "Recognize abbreviation " << card_name << ": " << abbr_it->second << std::endl;
+        simple_name = simplify_name(abbr_it->second);
+    }
+    auto card_it = cards.player_cards_by_name.find(simple_name);
+    auto card_id_iter = advance_until(simple_name.begin(), simple_name.end(), [](char c){return(c=='[');});
     if(card_it != cards.player_cards_by_name.end())
     {
         card_id = card_it->second->m_id;
@@ -188,7 +110,7 @@ void parse_card_spec(const Cards& cards, std::string& card_spec, unsigned& card_
     else if(card_id_iter != card_name.end())
     {
         ++ card_id_iter;
-        card_id_iter = read_token(card_id_iter, card_name.end(), [](char c){return(c==']');}, card_id);
+        card_id_iter = read_token(card_id_iter, simple_name.end(), [](char c){return(c==']');}, card_id);
     }
     if(card_spec_iter != card_spec.end() && (*card_spec_iter == '#' || *card_spec_iter == '('))
     {
@@ -210,9 +132,66 @@ void parse_card_spec(const Cards& cards, std::string& card_spec, unsigned& card_
     }
     if(card_id == 0)
     {
-        throw std::runtime_error("Card not found: " + card_name);
+        throw std::runtime_error("Unknown card: " + card_name);
     }
 }
+
+unsigned read_card_abbrs(Cards& cards, const std::string& filename)
+{
+    if(!boost::filesystem::exists(filename))
+    {
+        return(0);
+    }
+    std::ifstream abbr_file(filename);
+    if(!abbr_file.is_open())
+    {
+        std::cerr << "Error: Card abbreviation file " << filename << " could not be opened\n";
+        return(2);
+    }
+    unsigned num_line(0);
+    abbr_file.exceptions(std::ifstream::badbit);
+    try
+    {
+        while(abbr_file && !abbr_file.eof())
+        {
+            std::string abbr_string;
+            getline(abbr_file, abbr_string);
+            ++num_line;
+            if(abbr_string.size() == 0 || strncmp(abbr_string.c_str(), "//", 2) == 0)
+            {
+                continue;
+            }
+            std::string abbr_name;
+            auto abbr_string_iter = read_token(abbr_string.begin(), abbr_string.end(), [](char c){return(strchr(":", c));}, abbr_name);
+            if(abbr_string_iter == abbr_string.end() || abbr_name.empty())
+            {
+                std::cerr << "Error in custom deck file " << filename << " at line " << num_line << ", could not read the deck name.\n";
+                continue;
+            }
+            abbr_string_iter = advance_until(abbr_string_iter + 1, abbr_string.end(), [](const char& c){return(c != ' ');});
+            if(cards.player_cards_by_name.find(abbr_name) != cards.player_cards_by_name.end())
+            {
+                std::cerr << "Warning in card abbreviation file " << filename << " at line " << num_line << ": ignored because the name has been used by an existing card." << std::endl;
+            }
+            else
+            {
+                cards.player_cards_abbr[abbr_name] = std::string{abbr_string_iter, abbr_string.end()};
+            }
+        }
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << "Exception while parsing the card abbreviation file " << filename;
+        if(num_line > 0)
+        {
+            std::cerr << " at line " << num_line;
+        }
+        std::cerr << ": " << e.what() << ".\n";
+        return(3);
+    }
+    return(0);
+}
+
 
 // Error codes:
 // 2 -> file not readable
@@ -245,23 +224,19 @@ unsigned read_custom_decks(Decks& decks, Cards& cards, std::string filename)
                 std::cerr << "Error in custom deck file " << filename << " at line " << num_line << ", could not read the deck name.\n";
                 continue;
             }
+            deck_string_iter = advance_until(deck_string_iter + 1, deck_string.end(), [](const char& c){return(c != ' ');});
             auto deck_iter = decks.by_name.find(deck_name);
             if(deck_iter != decks.by_name.end())
             {
                 std::cerr << "Warning in custom deck file " << filename << " at line " << num_line << ", name conflicts, overrides " << deck_iter->second->short_description() << std::endl;
             }
             decks.decks.push_back(Deck{DeckType::custom_deck, num_line, deck_name});
-            try
-            {
-                Deck* deck = &decks.decks.back();
-                deck->set(cards, deck_string_to_ids(cards, std::string{deck_string_iter, deck_string.end()}));
-                decks.by_name[deck_name] = deck;
-            }
-            catch(std::exception& e)
-            {
-                std::cerr << "Error in custom deck file " << filename << " at line " << num_line << ": Deck " << deck_name << ": " << e.what() << std::endl;
-                decks.decks.pop_back();
-            }
+            Deck* deck = &decks.decks.back();
+            deck->set(cards, std::string{deck_string_iter, deck_string.end()});
+            decks.by_name[deck_name] = deck;
+            std::stringstream alt_name;
+            alt_name << decktype_names[deck->decktype] << " #" << deck->id;
+            decks.by_name[alt_name.str()] = deck;
         }
     }
     catch (std::exception& e)
@@ -297,12 +272,6 @@ void read_owned_cards(Cards& cards, std::map<unsigned, unsigned>& owned_cards, c
         }
         try
         {
-            // Remove ',' from card names
-            auto pos = card_spec.find(',');
-            if(pos != std::string::npos)
-            {
-                card_spec.erase(pos, 1);
-            }
             unsigned card_id{0};
             unsigned card_num{1};
             signed num_sign{0};

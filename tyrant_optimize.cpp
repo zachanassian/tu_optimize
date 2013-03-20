@@ -60,16 +60,18 @@ std::string card_id_name(const Card* card)
     return ios.str();
 }
 //------------------------------------------------------------------------------
-Deck* find_deck(const Decks& decks, const Cards& cards, std::string name)
+Deck* find_deck(Decks& decks, const Cards& cards, std::string deck_name)
 {
-    auto it = decks.by_name.find(name);
+    auto it = decks.by_name.find(deck_name);
     if(it != decks.by_name.end())
     {
+        it->second->resolve(cards);
         return(it->second);
     }
-    std::vector<unsigned int> ids{deck_string_to_ids(cards, name)};
-    Deck* deck{new Deck()};
-    deck->set(cards, ids);
+    decks.decks.push_back(Deck{});
+    Deck* deck = &decks.decks.back();
+    deck->set(cards, deck_name);
+    deck->resolve(cards);
     return(deck);
 }
 //---------------------- $80 deck optimization ---------------------------------
@@ -1080,6 +1082,7 @@ int main(int argc, char** argv)
     bool ordered = false;
     Cards cards;
     read_cards(cards);
+    read_card_abbrs(cards, "cardabbrs.txt");
     Decks decks;
     Achievement achievement;
     load_decks_xml(decks, cards);
@@ -1221,7 +1224,7 @@ int main(int argc, char** argv)
     }
     catch(const std::runtime_error& e)
     {
-        std::cerr << "Error: Deck hash " << att_deck_name << ": " << e.what() << std::endl;
+        std::cerr << "Error: Deck " << att_deck_name << ": " << e.what() << std::endl;
         return(5);
     }
     if(att_deck == nullptr)
@@ -1254,7 +1257,7 @@ int main(int argc, char** argv)
         }
         catch(const std::runtime_error& e)
         {
-            std::cerr << "Error: Deck hash " << deck_parsed.first << ": " << e.what() << std::endl;
+            std::cerr << "Error: Deck " << deck_parsed.first << ": " << e.what() << std::endl;
             return(5);
         }
         if(def_deck == nullptr)

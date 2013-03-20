@@ -19,8 +19,11 @@ struct Cards
     std::vector<Card*> player_assaults;
     std::vector<Card*> player_structures;
     std::vector<Card*> player_actions;
+    std::map<std::string, std::string> player_cards_abbr;
     const Card * by_id(unsigned id) const;
     void organize();
 };
+
+std::string simplify_name(const std::string& card_name);
 
 #endif

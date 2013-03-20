@@ -44,6 +44,8 @@ struct Deck
     std::map<unsigned, std::list<unsigned> > order;
     std::vector<std::pair<unsigned, std::vector<const Card*> > > raid_cards;
 
+    std::string deck_string;
+
     Deck(
         DeckType::DeckType decktype_ = DeckType::deck,
         unsigned id_ = 0,
@@ -72,6 +74,8 @@ struct Deck
     }
 
     void set(const Cards& all_cards, const std::vector<unsigned>& ids);
+    void set(const Cards& all_cards, const std::string& deck_string_);
+    void resolve(const Cards& all_cards);
 
     Deck* clone() const;
     std::string short_description() const;
@@ -88,6 +92,7 @@ struct Decks
     std::list<Deck> decks;
     std::map<std::string, Deck*> by_name;
     std::map<unsigned, std::string> mission_names_by_id;
+    std::map<std::string, std::string> custom_decks;
 };
 
 #endif
