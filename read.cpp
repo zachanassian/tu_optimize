@@ -21,7 +21,7 @@ const char* base64_chars =
 
 // Converts cards in `hash' to a deck.
 // Stores resulting card IDs in `ids'.
-bool hash_to_ids(const char* hash, std::vector<unsigned int>& ids)
+void hash_to_ids(const char* hash, std::vector<unsigned int>& ids)
 {
     unsigned int last_id = 0;
     const char* pc = hash;
@@ -36,13 +36,13 @@ bool hash_to_ids(const char* hash, std::vector<unsigned int>& ids)
         }
         if(!*pc || !*(pc + 1))
         {
-            return(false);
+            throw std::runtime_error("Invalid hash length");
         }
         const char* p0 = strchr(base64_chars, *pc);
         const char* p1 = strchr(base64_chars, *(pc + 1));
         if (!p0 || !p1)
         {
-            return(false);
+            throw std::runtime_error("Invalid hash character");
         }
         pc += 2;
         size_t index0 = p0 - base64_chars;
@@ -60,20 +60,42 @@ bool hash_to_ids(const char* hash, std::vector<unsigned int>& ids)
             ids.push_back(last_id);
         }
     }
-    return(true);
 }
+} // end of namespace
+
+void parse_card_spec(const Cards& cards, std::string& card_spec, unsigned& card_id, unsigned& card_num, signed& num_sign);
+void namelist_to_ids(const Cards& all_cards, const std::string& deck_string, std::vector<unsigned>& ids)
+{
+    boost::tokenizer<boost::char_delimiters_separator<char> > deck_tokens{deck_string, boost::char_delimiters_separator<char>{false, ":,", ""}};
+    auto token_iter = deck_tokens.begin();
+    for(; token_iter != deck_tokens.end(); ++token_iter)
+    {
+        std::string card_spec(*token_iter);
+        unsigned card_id{0};
+        unsigned card_num{1};
+        signed num_sign{0};
+        parse_card_spec(all_cards, card_spec, card_id, card_num, num_sign);
+        assert(num_sign == 0);
+        for(unsigned i(0); i < card_num; ++i)
+        {
+            ids.push_back(card_id);
+        }
+    }
 }
 
-// Constructs and returns a deck from `hash'.
-// The caller is responsible for freeing the deck.
-Deck* hash_to_deck(const char* hash, const Cards& cards)
+// Convert `str' (either hash or name list) to ids.
+std::vector<unsigned int> deck_string_to_ids(const Cards& cards, const std::string &str)
 {
     std::vector<unsigned int> ids;
-    if(!hash_to_ids(hash, ids)) { return(nullptr); }
-
-    Deck* deck = new Deck{};
-    deck->set(cards, ids);
-    return deck;
+    if(str.find_first_of(":,") == std::string::npos)
+    {
+        hash_to_ids(str.c_str(), ids);
+    }
+    else
+    {
+        namelist_to_ids(cards, str, ids);
+    }
+    return(ids);
 }
 
 void load_decks(Decks& decks, Cards& cards)
@@ -144,7 +166,7 @@ template<typename Iterator, typename Functor, typename Token> Iterator read_toke
 }
 
 // num_sign = 0 if card_num is "N"; = +1 if "+N"; = -1 if "-N"
-void parse_card_spec(Cards& cards, std::string& card_spec, unsigned& card_id, unsigned& card_num, signed& num_sign)
+void parse_card_spec(const Cards& cards, std::string& card_spec, unsigned& card_id, unsigned& card_num, signed& num_sign)
 {
     auto card_spec_iter = card_spec.begin();
     card_id = 0;
@@ -188,7 +210,7 @@ void parse_card_spec(Cards& cards, std::string& card_spec, unsigned& card_id, un
     }
     if(card_id == 0)
     {
-        throw std::runtime_error("card not found");
+        throw std::runtime_error("Card not found: " + card_name);
     }
 }
 
@@ -209,7 +231,6 @@ unsigned read_custom_decks(Decks& decks, Cards& cards, std::string filename)
     {
         while(decks_file && !decks_file.eof())
         {
-            std::vector<unsigned> card_ids;
             std::string deck_string;
             getline(decks_file, deck_string);
             ++num_line;
@@ -217,16 +238,9 @@ unsigned read_custom_decks(Decks& decks, Cards& cards, std::string filename)
             {
                 continue;
             }
-            boost::tokenizer<boost::char_delimiters_separator<char> > deck_tokens{deck_string, boost::char_delimiters_separator<char>{false, ":,", ""}};
-            auto token_iter = deck_tokens.begin();
             std::string deck_name;
-            if(token_iter == deck_tokens.end())
-            {
-                std::cerr << "Error in custom deck file " << filename << " at line " << num_line << ", could not read the deck name.\n";
-                continue;
-            }
-            read_token(token_iter->begin(), token_iter->end(), [](char c){return(false);}, deck_name);
-            if(deck_name.empty())
+            auto deck_string_iter = read_token(deck_string.begin(), deck_string.end(), [](char c){return(strchr(":,", c));}, deck_name);
+            if(deck_string_iter == deck_string.end() || deck_name.empty())
             {
                 std::cerr << "Error in custom deck file " << filename << " at line " << num_line << ", could not read the deck name.\n";
                 continue;
@@ -236,31 +250,18 @@ unsigned read_custom_decks(Decks& decks, Cards& cards, std::string filename)
             {
                 std::cerr << "Warning in custom deck file " << filename << " at line " << num_line << ", name conflicts, overrides " << deck_iter->second->short_description() << std::endl;
             }
-            ++token_iter;
-            for(; token_iter != deck_tokens.end(); ++token_iter)
-            {
-                std::string card_spec(*token_iter);
-                try
-                {
-                    unsigned card_id{0};
-                    unsigned card_num{1};
-                    signed num_sign{0};
-                    parse_card_spec(cards, card_spec, card_id, card_num, num_sign);
-                    assert(num_sign == 0);
-                    for(unsigned i(0); i < card_num; ++i)
-                    {
-                        card_ids.push_back(card_id);
-                    }
-                }
-                catch(std::exception& e)
-                {
-                    std::cerr << "Error in custom deck file " << filename << " at line " << num_line << " while parsing card '" << card_spec << "' in deck " << deck_name << ": " << e.what() << "\n";
-                }
-            }
             decks.decks.push_back(Deck{DeckType::custom_deck, num_line, deck_name});
-            Deck* deck = &decks.decks.back();
-            deck->set(cards, card_ids);
-            decks.by_name[deck_name] = deck;
+            try
+            {
+                Deck* deck = &decks.decks.back();
+                deck->set(cards, deck_string_to_ids(cards, std::string{deck_string_iter, deck_string.end()}));
+                decks.by_name[deck_name] = deck;
+            }
+            catch(std::exception& e)
+            {
+                std::cerr << "Error in custom deck file " << filename << " at line " << num_line << ": Deck " << deck_name << ": " << e.what() << std::endl;
+                decks.decks.pop_back();
+            }
         }
     }
     catch (std::exception& e)

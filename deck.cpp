@@ -69,43 +69,6 @@ std::string deck_hash(const Card* commander, const std::vector<const Card*>& car
 }
 namespace range = boost::range;
 
-void Deck::set(const Cards& all_cards, const std::vector<std::string>& names)
-{
-    commander = nullptr;
-    strategy = DeckStrategy::random;
-    for(auto name: names)
-    {
-        auto card_it(all_cards.player_cards_by_name.find(name));
-        if(card_it == all_cards.player_cards_by_name.end())
-        {
-            throw std::runtime_error("While constructing a deck: the card " + name + " was not found.");
-        }
-        else
-        {
-            const Card* card{card_it->second};
-            if(card->m_type == CardType::commander)
-            {
-                if(commander == nullptr)
-                {
-                    commander = card;
-                }
-                else
-                {
-                    throw std::runtime_error("While constructing a deck: two commanders detected (" + name + " and " + commander->m_name + ")");
-                }
-            }
-            else
-            {
-                cards.emplace_back(card);
-            }
-        }
-    }
-    if(commander == nullptr)
-    {
-        throw std::runtime_error("While constructing a deck: no commander found");
-    }
-}
-
 void Deck::set(const Cards& all_cards, const std::vector<unsigned>& ids)
 {
     commander = nullptr;

@@ -67,13 +67,10 @@ struct Deck
         std::vector<std::pair<unsigned, std::vector<const Card*> > >())
     {
         commander = commander_;
-//        cards = cards_;
-//        raid_cards = raid_cards_;
         cards = std::vector<const Card*>(std::begin(cards_), std::end(cards_));
         raid_cards = std::vector<std::pair<unsigned, std::vector<const Card*> > >(raid_cards_);
     }
 
-    void set(const Cards& all_cards, const std::vector<std::string>& names);
     void set(const Cards& all_cards, const std::vector<unsigned>& ids);
 
     Deck* clone() const;

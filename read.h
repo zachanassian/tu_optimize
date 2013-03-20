@@ -9,7 +9,7 @@ class Cards;
 class Decks;
 class Deck;
 
-Deck* hash_to_deck(const char* hash, const Cards& cards);
+std::vector<unsigned int> deck_string_to_ids(const Cards& cards, const std::string &str);
 void load_decks(Decks& decks, Cards& cards);
 std::vector<std::pair<std::string, double> > parse_deck_list(std::string list_string);
 unsigned read_custom_decks(Decks& decks, Cards& cards, std::string filename);

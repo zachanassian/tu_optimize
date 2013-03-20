@@ -67,7 +67,10 @@ Deck* find_deck(const Decks& decks, const Cards& cards, std::string name)
     {
         return(it->second);
     }
-    return(hash_to_deck(name.c_str(), cards));
+    std::vector<unsigned int> ids{deck_string_to_ids(cards, name)};
+    Deck* deck{new Deck()};
+    deck->set(cards, ids);
+    return(deck);
 }
 //---------------------- $80 deck optimization ---------------------------------
 //------------------------------------------------------------------------------
@@ -1031,12 +1034,12 @@ void usage(int argc, char** argv)
     std::cout << "usage: " << argv[0] << " Attacker Defender [Flags] [Operations]\n"
         "\n"
         "Attacker:\n"
-        "  the deck name/hash of a custom deck.\n"
+        "  the name/hash/cards of a custom deck.\n"
         "\n"
         "Defender:\n"
         "  semicolon separated list of defense decks, syntax:\n"
         "  deck1[:factor1];deck2[:factor2];...\n"
-        "  where deck is the name/hash of a mission, raid, or custom deck, and factor is optional. The default factor is 1.\n"
+        "  where deck is the name/hash/cards of a mission, raid, quest or custom deck, and factor is optional. The default factor is 1.\n"
         "  example: \'fear:0.2;slowroll:0.8\' means fear is the defense deck 20% of the time, while slowroll is the defense deck 80% of the time.\n"
         "\n"
         "Flags:\n"
