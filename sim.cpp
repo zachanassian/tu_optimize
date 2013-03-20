@@ -816,6 +816,10 @@ inline bool skill_check<siphon>(Field* fd, CardStatus* c, CardStatus* ref)
 { return(can_be_healed(&fd->players[c->m_player]->commander)); }
 
 template<>
+inline bool skill_check<stun>(Field* fd, CardStatus* c, CardStatus* ref)
+{ return(ref->m_card->m_type == CardType::assault); }
+
+template<>
 inline bool skill_check<tribute>(Field* fd, CardStatus* c, CardStatus* ref)
 { return(ref->m_card->m_type == CardType::assault && ref != c && ref->m_hp > 0 && fd->flip()); }
 
@@ -1128,11 +1132,11 @@ struct PerformAttack
         fd(fd_), att_status(att_status_), def_status(def_status_), att_dmg(0), killed_by_attack(false)
     {}
 
-    template<enum CardType::CardType cardtype>
+    template<enum CardType::CardType def_cardtype>
     void op(unsigned pre_modifier_dmg)
     {
         count_achievement<attack>(fd, att_status);
-        modify_attack_damage<cardtype>(pre_modifier_dmg);
+        modify_attack_damage<def_cardtype>(pre_modifier_dmg);
         if(att_status->m_player == 0)
         {
             fd->update_max_counter(fd->achievement.misc_req, AchievementMiscReq::damage, att_dmg);
@@ -1162,34 +1166,44 @@ struct PerformAttack
         }
         if(att_dmg > 0)
         {
-            immobilize<cardtype>();
-            attack_damage<cardtype>();
+            immobilize<def_cardtype>();
+            attack_damage<def_cardtype>();
             if(fd->end)
             {
                 // Commander dies?
                 return;
             }
-            siphon_poison_disease<cardtype>();
-            on_kill<cardtype>();
+            siphon_poison_disease<def_cardtype>();
+            on_kill<def_cardtype>();
         }
-        on_attacked<cardtype>();
-        if(att_status->m_hp > 0 && def_status->m_card->m_counter > 0 && skill_check<counter>(fd, def_status, att_status))
-        {
-            count_achievement<counter>(fd, def_status);
-            // perform_skill_counter
-            unsigned counter_dmg(counter_damage(att_status, def_status));
-            _DEBUG_MSG("%s takes %u counter damage from %s\n", status_description(att_status).c_str(), counter_dmg, status_description(def_status).c_str());
-            remove_hp(fd, *att_status, counter_dmg);
-        }
+        on_attacked<def_cardtype>();
         if(att_dmg > 0)
         {
-            if(att_status->m_hp > 0 && att_status->m_card->m_berserk > 0 && skill_check<berserk>(fd, att_status, nullptr))
+            if(att_status->m_hp > 0)
             {
-                count_achievement<berserk>(fd, att_status);
-                // perform_skill_berserk
-                att_status->m_berserk += att_status->m_card->m_berserk;
+               if(def_status->m_card->m_stun && skill_check<stun>(fd, def_status, att_status))
+                {
+                    count_achievement<stun>(fd, def_status);
+                    // perform_skill_stun
+                    _DEBUG_MSG("%s stuns %s\n", status_description(def_status).c_str(), status_description(att_status).c_str());
+                    att_status->m_stunned = 2;
+                }
+                if(def_status->m_card->m_counter > 0 && skill_check<counter>(fd, def_status, att_status))
+                {
+                    count_achievement<counter>(fd, def_status);
+                    // perform_skill_counter
+                    unsigned counter_dmg(counter_damage(att_status, def_status));
+                    _DEBUG_MSG("%s takes %u counter damage from %s\n", status_description(att_status).c_str(), counter_dmg, status_description(def_status).c_str());
+                    remove_hp(fd, *att_status, counter_dmg);
+                }
+                if(att_status->m_card->m_berserk > 0 && skill_check<berserk>(fd, att_status, nullptr))
+                {
+                    count_achievement<berserk>(fd, att_status);
+                    // perform_skill_berserk
+                    att_status->m_berserk += att_status->m_card->m_berserk;
+                }
             }
-            crush_leech<cardtype>();
+            crush_leech<def_cardtype>();
         }
 
         prepend_on_death(fd);
@@ -1279,16 +1293,9 @@ struct PerformAttack
     template<enum CardType::CardType>
     void on_kill() {}
 
-    template<enum CardType::CardType cardtype>
+    template<enum CardType::CardType def_cardtype>
     void on_attacked()
     {
-        if(att_status->m_card->m_type == CardType::assault && def_status->m_card->m_stun)
-        {
-            count_achievement<stun>(fd, def_status);
-            // perform_skill_stun
-            _DEBUG_MSG("%s stuns %s\n", status_description(def_status).c_str(), status_description(att_status).c_str());
-            att_status->m_stunned = 2;
-        }
         if(def_status->m_card->m_poison_oa > att_status->m_poisoned && skill_check<poison>(fd, def_status, att_status))
         {
             count_achievement<poison>(fd, def_status);
