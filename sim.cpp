@@ -60,7 +60,8 @@ CardStatus::CardStatus(const Card* card) :
     m_stunned(0),
     m_weakened(0),
     m_temporary_split(false),
-    m_summoned(false),
+    m_is_summoned(false),
+    m_has_regenerated(false),
     m_step(CardStep::none)
 {
 }
@@ -95,7 +96,8 @@ inline void CardStatus::set(const Card& card)
     m_weakened = 0;
     m_stunned = 0;
     m_temporary_split = false;
-    m_summoned = false;
+    m_is_summoned = false;
+    m_has_regenerated = false;
     m_step = CardStep::none;
 }
 //------------------------------------------------------------------------------
@@ -641,7 +643,7 @@ Results<unsigned> play(Field* fd)
                 status_split.set(current_status.m_card);
                 status_split.m_index = fd->tap->assaults.size() - 1;
                 status_split.m_player = fd->tapi;
-                status_split.m_summoned = true;
+                status_split.m_is_summoned = true;
                 _DEBUG_MSG("%s splits %s\n", status_description(&current_status).c_str(), status_description(&status_split).c_str());
                 for(auto& skill: status_split.m_card->m_skills_on_play)
                 {
@@ -864,9 +866,9 @@ void remove_hp(Field* fd, CardStatus& status, unsigned dmg)
     if(status.m_hp == 0)
     {
         _DEBUG_MSG("%s dies\n", status_description(&status).c_str());
-        if(status.m_player == 1)
+        if(status.m_player == 1 && !status.m_has_regenerated)
         {
-            if(!status.m_summoned)
+            if(!status.m_is_summoned)
             {
                 fd->inc_counter(fd->achievement.unit_type_killed, status.m_card->m_type);
             }
@@ -921,6 +923,7 @@ void check_regeneration(Field* fd)
             count_achievement<regenerate>(fd, status);
             _DEBUG_MSG("%s regenerates with %u health\n", status_description(status).c_str(), status->m_card->m_health);
             add_hp(fd, status, status->m_card->m_regenerate);
+            status->m_has_regenerated = true;
         }
     }
     fd->killed_with_regen.clear();
@@ -2162,7 +2165,7 @@ void perform_summon(Field* fd, CardStatus* src_status, const SkillSpec& s)
         card_status.set(summoned);
         card_status.m_index = storage->size() - 1;
         card_status.m_player = player;
-        card_status.m_summoned = true;
+        card_status.m_is_summoned = true;
         _DEBUG_MSG("%s Summon %s %u [%s]\n", status_description(src_status).c_str(), cardtype_names[summoned->m_type].c_str(), card_status.m_index, card_description(fd, summoned).c_str());
         prepend_skills(fd, &card_status);
         if(card_status.m_card->m_blitz)
