@@ -188,7 +188,7 @@ bool suitable_non_commander(const Deck& deck, unsigned slot, const Card* card)
     {
         for(unsigned i(0); i < deck.cards.size(); ++i)
         {
-            if(i != slot && deck.cards[i]->m_name == card->m_name)
+            if(i != slot && deck.cards[i]->m_base_id == card->m_base_id)
             {
                 return(false);
             }
