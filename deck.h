@@ -23,6 +23,7 @@ enum DeckStrategy
 {
     random,
     ordered,
+    exact_ordered,
     num_deckstrategies
 };
 }

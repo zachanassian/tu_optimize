@@ -1079,7 +1079,8 @@ int main(int argc, char** argv)
     }
     debug_print = getenv("DEBUG_PRINT");
     unsigned num_threads = (debug_print || getenv("DEBUG")) ? 1 : 4;
-    bool ordered = false;
+    DeckStrategy::DeckStrategy att_strategy(DeckStrategy::random);
+    DeckStrategy::DeckStrategy def_strategy(DeckStrategy::random);
     Cards cards;
     read_cards(cards);
     read_card_abbrs(cards, "cardabbrs.txt");
@@ -1158,11 +1159,23 @@ int main(int argc, char** argv)
             read_owned_cards(cards, owned_cards, argv[argIndex] + 3);
             use_owned_cards = true;
         }
-        else if(strcmp(argv[argIndex], "-r") == 0)
+        else if(strcmp(argv[argIndex], "-r") == 0 || strcmp(argv[argIndex], "ordered") == 0)
         {
-            ordered = true;
+            att_strategy = DeckStrategy::ordered;
         }
-        else if(strcmp(argv[argIndex], "-s") == 0)
+        else if(strcmp(argv[argIndex], "exact-ordered") == 0)
+        {
+            att_strategy = DeckStrategy::exact_ordered;
+        }
+        else if(strcmp(argv[argIndex], "defender:ordered") == 0)
+        {
+            def_strategy = DeckStrategy::ordered;
+        }
+        else if(strcmp(argv[argIndex], "defender:exact-ordered") == 0)
+        {
+            def_strategy = DeckStrategy::exact_ordered;
+        }
+        else if(strcmp(argv[argIndex], "-s") == 0 || strcmp(argv[argIndex], "surge") == 0)
         {
             gamemode = surge;
         }
@@ -1241,10 +1254,7 @@ int main(int argc, char** argv)
         print_available_decks(decks, false);
         return(5);
     }
-    if(ordered)
-    {
-        att_deck->strategy = DeckStrategy::ordered;
-    }
+    att_deck->strategy = att_strategy;
 
     std::vector<Deck*> def_decks;
     std::vector<double> def_decks_factors;
@@ -1290,6 +1300,7 @@ int main(int argc, char** argv)
             }
             effect = this_effect;
         }
+        def_deck->strategy = def_strategy;
         def_decks.push_back(def_deck);
         def_decks_factors.push_back(deck_parsed.second);
     }
@@ -1317,7 +1328,7 @@ int main(int argc, char** argv)
                 break;
             }
             case climb: {
-                if(!ordered)
+                if(att_strategy == DeckStrategy::random)
                 {
                     hill_climbing(std::get<0>(op), att_deck, p);
                 }

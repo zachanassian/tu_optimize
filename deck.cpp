@@ -300,7 +300,7 @@ const Card* Deck::next()
     {
         return(nullptr);
     }
-    else if(strategy == DeckStrategy::random)
+    else if(strategy == DeckStrategy::random || strategy == DeckStrategy::exact_ordered)
     {
         const Card* card = shuffled_cards.front();
         shuffled_cards.pop_front();
@@ -366,10 +366,11 @@ void Deck::shuffle(std::mt19937& re)
             order[card->m_id].push_back(i);
             ++i;
         }
-        shuffled_cards.clear();
-        range::insert(shuffled_cards, shuffled_cards.end(), cards);
     }
-    std::shuffle(shuffled_cards.begin(), shuffled_cards.end(), re);
+    if(strategy != DeckStrategy::exact_ordered)
+    {
+        std::shuffle(shuffled_cards.begin(), shuffled_cards.end(), re);
+    }
 }
 
 void Deck::place_at_bottom(const Card* card)
