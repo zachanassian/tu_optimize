@@ -540,7 +540,7 @@ Results<unsigned> play(Field* fd)
     // ANP: Last decision point is second-to-last card played.
     fd->points_since_last_decision = 0;
     unsigned p0_size = fd->players[0]->deck->cards.size();
-    fd->last_decision_turn = p0_size * 2 - (surge ? 2 : 3);
+    fd->last_decision_turn = p0_size * 2 - (fd->gamemode == surge ? 2 : 3);
 
     // Count commander as played for achievements (not count in type / faction / rarity requirements)
     fd->inc_counter(fd->achievement.unit_played, fd->players[0]->commander.m_card->m_id);
