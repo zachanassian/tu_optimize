@@ -2212,7 +2212,7 @@ void perform_mimic(Field* fd, CardStatus* src_status, const SkillSpec& s)
     {
         return; 
     }
-    CardStatus* c(fd->selection_array[get_target_hostile_index(fd, src_status, selection_array_size)]);
+    CardStatus* c(fd->selection_array[fd->effect == Effect::copycat ? fd->rand(0, selection_array_size - 1) : get_target_hostile_index(fd, src_status, selection_array_size)]);
     // evade check for mimic
     // individual skills are subject to evade checks too,
     // but resolve_skill will handle those.
