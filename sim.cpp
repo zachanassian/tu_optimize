@@ -1136,8 +1136,10 @@ struct PerformAttack
     {}
 
     template<enum CardType::CardType def_cardtype>
-    void op(unsigned pre_modifier_dmg)
+    void op()
     {
+        unsigned pre_modifier_dmg = attack_power(att_status);
+        if(pre_modifier_dmg == 0) { return; }
         count_achievement<attack>(fd, att_status);
         modify_attack_damage<def_cardtype>(pre_modifier_dmg);
         if(att_status->m_player == 0)
@@ -1419,24 +1421,23 @@ void PerformAttack::crush_leech<CardType::assault>()
 }
 
 // General attack phase by the currently evaluated assault, taking into accounts exotic stuff such as flurry,swipe,etc.
-void attack_commander(Field* fd, CardStatus* att_status, unsigned pre_modifier_dmg)
+void attack_commander(Field* fd, CardStatus* att_status)
 {
     CardStatus* def_status{select_first_enemy_wall(fd)}; // defending wall
     if(def_status != nullptr)
     {
-        PerformAttack{fd, att_status, def_status}.op<CardType::structure>(pre_modifier_dmg);
+        PerformAttack{fd, att_status, def_status}.op<CardType::structure>();
     }
     else
     {
-        PerformAttack{fd, att_status, &fd->tip->commander}.op<CardType::commander>(pre_modifier_dmg);
+        PerformAttack{fd, att_status, &fd->tip->commander}.op<CardType::commander>();
     }
 }
 void attack_phase(Field* fd)
 {
     CardStatus* att_status(&fd->tap->assaults[fd->current_ci]); // attacking card
     Storage<CardStatus>& def_assaults(fd->tip->assaults);
-    unsigned pre_modifier_dmg = attack_power(att_status);
-    if(pre_modifier_dmg == 0) { return; }
+    if(attack_power(att_status) == 0) { return; }
     unsigned num_attacks(1);
     if(att_status->m_card->m_flurry > 0 && skill_check<flurry>(fd, att_status, nullptr))
     {
@@ -1458,7 +1459,7 @@ void attack_phase(Field* fd)
             // attack mode 1.
             if(!(att_status->m_card->m_swipe && skill_check<swipe>(fd, att_status, nullptr) && count_achievement<swipe>(fd, att_status)))
             {
-                PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci]}.op<CardType::assault>(pre_modifier_dmg);
+                PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci]}.op<CardType::assault>();
             }
             // attack mode 2.
             else
@@ -1468,32 +1469,32 @@ void attack_phase(Field* fd)
                 // attack the card on the left
                 if(fd->current_ci > 0 && alive_assault(def_assaults, fd->current_ci - 1))
                 {
-                    PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci-1]}.op<CardType::assault>(pre_modifier_dmg);
+                    PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci-1]}.op<CardType::assault>();
                 }
                 if(fd->end)
                 { return; }
                 // stille alive? attack the card in front
                 if(can_attack(fd, att_status) && alive_assault(def_assaults, fd->current_ci))
                 {
-                    PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci]}.op<CardType::assault>(pre_modifier_dmg);
+                    PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci]}.op<CardType::assault>();
                 }
                 else
                 {
-                    attack_commander(fd, att_status, pre_modifier_dmg);
+                    attack_commander(fd, att_status);
                 }
                 if(fd->end)
                 { return; }
                 // still alive? attack the card on the right
                 if(!fd->end && can_attack(fd, att_status) && alive_assault(def_assaults, fd->current_ci + 1))
                 {
-                    PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci+1]}.op<CardType::assault>(pre_modifier_dmg);
+                    PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci+1]}.op<CardType::assault>();
                 }
             }
         }
         // attack mode 3.
         else
         {
-            attack_commander(fd, att_status, pre_modifier_dmg);
+            attack_commander(fd, att_status);
         }
     }
 }
