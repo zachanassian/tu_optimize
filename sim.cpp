@@ -722,6 +722,15 @@ Results<unsigned> play(Field* fd)
     return {0, 0, 0, 0};
 }
 
+// Roll a coin in case an Activation skill has 50% chance to proc.
+template<Skill>
+inline bool skill_roll(Field* fd)
+{ return(true); }
+
+template<>
+inline bool skill_roll<jam>(Field* fd)
+{ return(fd->flip()); }
+
 // Check if a skill actually proc'ed.
 template<Skill>
 inline bool skill_check(Field* fd, CardStatus* c, CardStatus* ref)
@@ -757,31 +766,19 @@ inline bool skill_check<disease>(Field* fd, CardStatus* c, CardStatus* ref)
 template<>
 inline bool skill_check<evade>(Field* fd, CardStatus* c, CardStatus* ref)
 {
-    return(c->m_player != ref->m_player && fd->flip());
-}
-
-template<>
-inline bool skill_check<flurry>(Field* fd, CardStatus* c, CardStatus* ref)
-{
-    return(fd->flip());
+    return(c->m_player != ref->m_player);
 }
 
 template<>
 inline bool skill_check<flying>(Field* fd, CardStatus* c, CardStatus* ref)
 {
-    return(!ref->m_card->m_flying && !ref->m_card->m_antiair > 0 && (fd->effect == Effect::high_skies || fd->flip()));
+    return(!ref->m_card->m_flying && !ref->m_card->m_antiair > 0);
 }
 
 template<>
 inline bool skill_check<immobilize>(Field* fd, CardStatus* c, CardStatus* ref)
 {
-    return(!ref->m_immobilized && can_act(fd, ref) && fd->flip());
-}
-
-template<>
-inline bool skill_check<jam>(Field* fd, CardStatus* c, CardStatus* ref)
-{
-    return(fd->flip());
+    return(!ref->m_immobilized && can_act(fd, ref));
 }
 
 template<>
@@ -794,13 +791,7 @@ template<>
 inline bool skill_check<payback>(Field* fd, CardStatus* c, CardStatus* ref)
 {
     // Never payback allied units (chaosed).
-    return(ref->m_card->m_type == CardType::assault && c->m_player != ref->m_player && ref->m_hp > 0 && fd->flip());
-}
-
-template<>
-inline bool skill_check<recharge>(Field* fd, CardStatus* c, CardStatus* ref)
-{
-    return(fd->flip());
+    return(ref->m_card->m_type == CardType::assault && c->m_player != ref->m_player && ref->m_hp > 0);
 }
 
 template<>
@@ -810,20 +801,26 @@ inline bool skill_check<refresh>(Field* fd, CardStatus* c, CardStatus* ref)
 template<>
 inline bool skill_check<regenerate>(Field* fd, CardStatus* c, CardStatus* ref)
 {
-    return(c->m_hp == 0 && !c->m_diseased && fd->flip());
+    return(c->m_hp == 0 && !c->m_diseased);
 }
 
 template<>
 inline bool skill_check<siphon>(Field* fd, CardStatus* c, CardStatus* ref)
-{ return(can_be_healed(&fd->players[c->m_player]->commander)); }
+{
+    return(can_be_healed(&fd->players[c->m_player]->commander));
+}
 
 template<>
 inline bool skill_check<stun>(Field* fd, CardStatus* c, CardStatus* ref)
-{ return(ref->m_card->m_type == CardType::assault); }
+{
+    return(ref->m_card->m_type == CardType::assault);
+}
 
 template<>
 inline bool skill_check<tribute>(Field* fd, CardStatus* c, CardStatus* ref)
-{ return(ref->m_card->m_type == CardType::assault && ref != c && ref->m_hp > 0 && fd->flip()); }
+{
+    return(ref->m_card->m_type == CardType::assault && ref != c && ref->m_hp > 0);
+}
 
 template<>
 inline bool skill_check<valor>(Field* fd, CardStatus* c, CardStatus* ref)
@@ -918,7 +915,7 @@ void check_regeneration(Field* fd)
     for(unsigned i(0); i < fd->killed_with_regen.size(); ++i)
     {
         CardStatus* status = fd->killed_with_regen[i];
-        if(skill_check<regenerate>(fd, status, nullptr))
+        if(fd->flip() && skill_check<regenerate>(fd, status, nullptr))
         {
             count_achievement<regenerate>(fd, status);
             _DEBUG_MSG("%s regenerates with %u health\n", status_description(status).c_str(), status->m_card->m_health);
@@ -1156,7 +1153,7 @@ struct PerformAttack
         // counter, berserk
         // assaults only: (crush, leech if still alive)
         // check regeneration
-        if(att_dmg > 0 && def_status->m_card->m_flying && skill_check<flying>(fd, def_status, att_status))
+        if(att_dmg > 0 && def_status->m_card->m_flying && (fd->effect == Effect::high_skies || fd->flip()) && skill_check<flying>(fd, def_status, att_status))
         {
             count_achievement<flying>(fd, def_status);
             _DEBUG_MSG("%s dodges with Flying\n", status_description(def_status).c_str());
@@ -1337,7 +1334,7 @@ struct PerformAttack
 template<>
 void PerformAttack::immobilize<CardType::assault>()
 {
-    if(att_status->m_card->m_immobilize && skill_check<Skill::immobilize>(fd, att_status, def_status))
+    if(att_status->m_card->m_immobilize && fd->flip() && skill_check<Skill::immobilize>(fd, att_status, def_status))
     {
         count_achievement<Skill::immobilize>(fd, att_status);
         _DEBUG_MSG("%s immobilizes %s\n", status_description(att_status).c_str(), status_description(def_status).c_str());
@@ -1440,7 +1437,7 @@ void attack_phase(Field* fd)
     Storage<CardStatus>& def_assaults(fd->tip->assaults);
     if(attack_power(att_status) == 0) { return; }
     unsigned num_attacks(1);
-    if(att_status->m_card->m_flurry > 0 && skill_check<flurry>(fd, att_status, nullptr))
+    if(att_status->m_card->m_flurry > 0 && fd->flip() && skill_check<flurry>(fd, att_status, nullptr))
     {
         count_achievement<flurry>(fd, att_status);
         _DEBUG_MSG("%s activates Flurry\n", status_description(att_status).c_str());
@@ -1968,7 +1965,7 @@ bool check_and_perform_skill(Field* fd, CardStatus* src_status, CardStatus* dst_
 {
     if(skill_check<skill_id>(fd, src_status, dst_status))
     {
-        if(is_evadable && dst_status->m_card->m_evade && skill_check<evade>(fd, dst_status, src_status))
+        if(is_evadable && dst_status->m_card->m_evade && fd->flip() && skill_check<evade>(fd, dst_status, src_status))
         {
             count_achievement<evade>(fd, dst_status);
             _DEBUG_MSG("%s %s (%u) on %s but it evades\n", status_description(src_status).c_str(), skill_names[skill_id].c_str(), std::get<1>(s), status_description(dst_status).c_str());
@@ -1999,7 +1996,7 @@ bool check_and_perform_blitz(Field* fd, CardStatus* src_status)
 
 bool check_and_perform_recharge(Field* fd, CardStatus* src_status)
 {
-    if(skill_check<recharge>(fd, src_status, nullptr))
+    if(fd->flip() && skill_check<recharge>(fd, src_status, nullptr))
     {
         count_achievement<recharge>(fd, src_status);
         _DEBUG_MSG("%s activates Recharge\n", status_description(src_status).c_str());
@@ -2037,18 +2034,26 @@ void perform_targetted_hostile_fast(Field* fd, CardStatus* src_status, const Ski
     }
     else
     {
+        if(!skill_roll<skill_id>(fd))
+        {
+            return;
+        }
         index_start = index_end = get_target_hostile_index(fd, src_status, selection_array_size);
     }
     bool is_count_achievement(true);
     for(unsigned s_index(index_start); s_index <= index_end; ++s_index)
     {
+        if(std::get<3>(s) && !skill_roll<skill_id>(fd))
+        {
+            continue;
+        }
         CardStatus* c(fd->selection_array[s_index]);
         if(check_and_perform_skill<skill_id>(fd, src_status, c, s, true, is_count_achievement))
         {
             // Count at most once even targeting "All"
             is_count_achievement = false;
             // Payback
-            if(c->m_card->m_payback && skill_predicate<skill_id>(fd, src_status, s) && skill_check<payback>(fd, c, src_status) && skill_check<skill_id>(fd, src_status, c))
+            if(c->m_card->m_payback && skill_predicate<skill_id>(fd, src_status, s) && fd->flip() && skill_check<payback>(fd, c, src_status) && skill_roll<skill_id>(fd) && skill_check<skill_id>(fd, src_status, c))
             {
                 count_achievement<payback>(fd, c);
                 _DEBUG_MSG("%s paybacks (%s %u) on %s\n", status_description(c).c_str(), skill_names[skill_id].c_str(), std::get<1>(s), status_description(src_status).c_str());
@@ -2078,13 +2083,18 @@ void perform_targetted_allied_fast(Field* fd, CardStatus* src_status, const Skil
     bool is_count_achievement(true);
     for(unsigned s_index(index_start); s_index <= index_end; ++s_index)
     {
+        // So far no friendly activation skill needs to roll 50% but check it for completeness.
+        if(!skill_roll<skill_id>(fd))
+        {
+            continue;
+        }
         CardStatus* c(fd->selection_array[s_index]);
         if(check_and_perform_skill<skill_id>(fd, src_status, c, s, false, is_count_achievement))
         {
             // Count at most once even targeting "All"
             is_count_achievement = false;
             // Tribute
-            if(c->m_card->m_tribute && skill_predicate<skill_id>(fd, src_status, s) && skill_check<tribute>(fd, c, src_status))
+            if(c->m_card->m_tribute && skill_predicate<skill_id>(fd, src_status, s) && fd->flip() && skill_check<tribute>(fd, c, src_status))
             {
                 count_achievement<tribute>(fd, c);
                 _DEBUG_MSG("Tribute (%s %u) on %s\n", skill_names[skill_id].c_str(), std::get<1>(s), status_description(src_status).c_str());
@@ -2218,7 +2228,7 @@ void perform_mimic(Field* fd, CardStatus* src_status, const SkillSpec& s)
     // evade check for mimic
     // individual skills are subject to evade checks too,
     // but resolve_skill will handle those.
-    if(c->m_card->m_evade && skill_check<evade>(fd, c, src_status))
+    if(c->m_card->m_evade && fd->flip() && skill_check<evade>(fd, c, src_status))
     {
         count_achievement<evade>(fd, c);
         _DEBUG_MSG("%s %s on %s but it evades\n", status_description(src_status).c_str(), skill_names[std::get<0>(s)].c_str(), status_description(c).c_str());
