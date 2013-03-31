@@ -558,7 +558,7 @@ void print_results(const std::pair<std::vector<Results<unsigned>> , unsigned>& r
     std::cout << std::endl;
 }
 //------------------------------------------------------------------------------
-void print_deck_inline(const double score, const Card *commander, std::vector<const Card*> cards)
+void print_deck_inline(const double score, const Card *commander, std::vector<const Card*> cards, bool is_ordered)
 {
     if(use_anp)
     {
@@ -569,6 +569,10 @@ void print_deck_inline(const double score, const Card *commander, std::vector<co
         std::cout << score * 100.0 << "%: ";
     }
     std::cout << commander->m_name;
+    if(!is_ordered)
+    {
+        std::sort(cards.begin(), cards.end(), [](const Card* a, const Card* b) { return a->m_id < b->m_id; });
+    }
     std::string last_name;
     unsigned num_repeat(0);
     for(const Card* card: cards)
@@ -608,7 +612,7 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc)
     if(!fixed_len) { non_commander_cards.insert(non_commander_cards.end(), std::initializer_list<Card *>{NULL,}); }
     const Card* best_commander = d1->commander;
     std::vector<const Card*> best_cards = d1->cards;
-    print_deck_inline(best_score, best_commander, best_cards);
+    print_deck_inline(best_score, best_commander, best_cards, false);
     std::mt19937 re(time(NULL));
     bool deck_has_been_improved = true;
     bool eval_commander = true;
@@ -640,9 +644,9 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc)
                     best_score = current_score;
                     best_commander = commander_candidate;
                     deck_has_been_improved = true;
-                    std::cout << "Deck improved: " << deck_hash(commander_candidate, best_cards) << " commander -> " << card_id_name(commander_candidate) << ": ";
+                    std::cout << "Deck improved: " << deck_hash(commander_candidate, best_cards, false) << " commander -> " << card_id_name(commander_candidate) << ": ";
                     print_score_info(compare_results, proc.factors);
-                    print_deck_inline(best_score, best_commander, best_cards);
+                    print_deck_inline(best_score, best_commander, best_cards, false);
                 }
             }
             // Now that all commanders are evaluated, take the best one
@@ -680,7 +684,7 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc)
             // Is it better ?
             if(current_score > best_score)
             {
-                std::cout << "Deck improved: " << deck_hash(best_commander, d1->cards) << " " << slot_i << " " << card_id_name(slot_i < best_cards.size() ? best_cards[slot_i] : NULL) <<
+                std::cout << "Deck improved: " << deck_hash(best_commander, d1->cards, false) << " " << card_id_name(slot_i < best_cards.size() ? best_cards[slot_i] : NULL) <<
                     " -> " << card_id_name(card_candidate) << ": ";
                 // Then update best score/slot, print stuff
                 best_score = current_score;
@@ -688,7 +692,7 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc)
                 eval_commander = true;
                 deck_has_been_improved = true;
                 print_score_info(compare_results, proc.factors);
-                print_deck_inline(best_score, best_commander, best_cards);
+                print_deck_inline(best_score, best_commander, best_cards, false);
             }
             d1->cards = best_cards;
             if(best_score == best_possible) { break; }
@@ -697,7 +701,7 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc)
         d1->cards = best_cards;
     }
     std::cout << "Optimized Deck: ";
-    print_deck_inline(best_score, best_commander, best_cards);
+    print_deck_inline(best_score, best_commander, best_cards, false);
 }
 //------------------------------------------------------------------------------
 void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc)
@@ -713,7 +717,7 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc)
     if(!fixed_len) { non_commander_cards.insert(non_commander_cards.end(), std::initializer_list<Card *>{NULL,}); }
     const Card* best_commander = d1->commander;
     std::vector<const Card*> best_cards = d1->cards;
-    print_deck_inline(best_score, best_commander, best_cards);
+    print_deck_inline(best_score, best_commander, best_cards, true);
     std::mt19937 re(time(NULL));
     bool deck_has_been_improved = true;
     bool eval_commander = true;
@@ -746,9 +750,9 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc)
                     best_score = current_score;
                     best_commander = commander_candidate;
                     deck_has_been_improved = true;
-                    std::cout << "Deck improved: " << deck_hash(commander_candidate, best_cards) << " commander -> " << card_id_name(commander_candidate) << ": ";
+                    std::cout << "Deck improved: " << deck_hash(commander_candidate, best_cards, true) << " commander -> " << card_id_name(commander_candidate) << ": ";
                     print_score_info(compare_results, proc.factors);
-                    print_deck_inline(best_score, best_commander, best_cards);
+                    print_deck_inline(best_score, best_commander, best_cards, true);
                 }
             }
             // Now that all commanders are evaluated, take the best one
@@ -787,14 +791,14 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc)
                 if(current_score > best_score)
                 {
                     // Then update best score/slot, print stuff
-                    std::cout << "Deck improved: " << deck_hash(best_commander, d1->cards) << " " << from_slot << " " << card_id_name(from_slot < best_cards.size() ? best_cards[from_slot] : NULL) <<
+                    std::cout << "Deck improved: " << deck_hash(best_commander, d1->cards, true) << " " << from_slot << " " << card_id_name(from_slot < best_cards.size() ? best_cards[from_slot] : NULL) <<
                         " -> " << to_slot << " " << card_id_name(card_candidate) << ": ";
                     best_score = current_score;
                     best_cards = d1->cards;
                     eval_commander = true;
                     deck_has_been_improved = true;
                     print_score_info(compare_results, proc.factors);
-                    print_deck_inline(best_score, best_commander, best_cards);
+                    print_deck_inline(best_score, best_commander, best_cards, true);
                 }
                 d1->cards = best_cards;
             }
@@ -802,7 +806,7 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc)
         }
     }
     std::cout << "Optimized Deck: ";
-    print_deck_inline(best_score, best_commander, best_cards);
+    print_deck_inline(best_score, best_commander, best_cards, true);
 }
 //------------------------------------------------------------------------------
 // Implements iteration over all combination of k elements from n elements.
@@ -911,7 +915,7 @@ inline void try_all_ratio_combinations(unsigned deck_size, unsigned var_k, unsig
             best_score = new_score;
             best_deck = deck;
             print_score_info(new_results, proc.factors);
-            print_deck_inline(best_score, commander, deck_cards);
+            print_deck_inline(best_score, commander, deck_cards, false);
         }
         //++num;
         // num_cards = num_cards_to_combine ...
@@ -951,7 +955,7 @@ inline void try_all_ratio_combinations(unsigned deck_size, unsigned var_k, unsig
                 best_score = new_score;
                 best_deck = deck;
                 print_score_info(new_results, proc.factors);
-                print_deck_inline(best_score, commander, deck_cards);
+                print_deck_inline(best_score, commander, deck_cards, false);
             }
             ++total_num_combinations_test;
             finished = cardAmounts.next();

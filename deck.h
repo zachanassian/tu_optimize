@@ -11,7 +11,7 @@
 class Card;
 class Cards;
 
-std::string deck_hash(const Card* commander, const std::vector<const Card*>& cards);
+std::string deck_hash(const Card* commander, std::vector<const Card*> cards, bool is_ordered);
 
 //---------------------- $30 Deck: a commander + a sequence of cards -----------
 // Can be shuffled.

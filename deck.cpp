@@ -29,12 +29,16 @@ void partial_shuffle(RandomAccessIterator first, RandomAccessIterator middle,
 }
 
 //------------------------------------------------------------------------------
-std::string deck_hash(const Card* commander, const std::vector<const Card*>& cards)
+std::string deck_hash(const Card* commander, std::vector<const Card*> cards, bool is_ordered)
 {
     std::string base64= "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     std::stringstream ios;
     ios << base64[commander->m_id / 64];
     ios << base64[commander->m_id % 64];
+    if(!is_ordered)
+    {
+        std::sort(cards.begin(), cards.end(), [](const Card* a, const Card* b) { return a->m_id < b->m_id; });
+    }
     unsigned last_id = 0;
     unsigned num_repeat = 0;
     for(const Card* card: cards)
@@ -239,7 +243,7 @@ std::string Deck::short_description() const
     if(!name.empty()) { ios << " \"" << name << "\""; }
     if(deck_string.empty())
     {
-        if(raid_cards.empty()) { ios << ": " << deck_hash(commander, cards); }
+        if(raid_cards.empty()) { ios << ": " << deck_hash(commander, cards, strategy == DeckStrategy::ordered || strategy == DeckStrategy::exact_ordered); }
     }
     else
     {
