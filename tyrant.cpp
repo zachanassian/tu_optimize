@@ -33,7 +33,7 @@ std::set<Skill> helpful_skills{
     augment, cleanse, heal, protect, rally, repair, rush, supply,
 };
 
-std::string skill_activation_modifier_names[num_skill_activation_modifiers] = {"", "Play", "Attacked", "Kill", "Death", };
+std::string skill_activation_modifier_names[SkillMod::num_skill_activation_modifiers] = {"", " on Play", " on Attacked", " on Kill", " on Death", };
 
 std::string cardtype_names[CardType::num_cardtypes]{"Commander", "Assault", "Structure", "Action", };
 
