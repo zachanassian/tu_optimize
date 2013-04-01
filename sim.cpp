@@ -2053,7 +2053,7 @@ void perform_targetted_hostile_fast(Field* fd, CardStatus* src_status, const Ski
             // Count at most once even targeting "All"
             is_count_achievement = false;
             // Payback
-            if(c->m_card->m_payback && skill_predicate<skill_id>(fd, src_status, s) && fd->flip() && skill_check<payback>(fd, c, src_status) && skill_roll<skill_id>(fd) && skill_check<skill_id>(fd, src_status, c))
+            if(c->m_card->m_payback && skill_predicate<skill_id>(fd, src_status, s) && fd->flip() && skill_check<payback>(fd, c, src_status) && skill_check<skill_id>(fd, src_status, c))
             {
                 count_achievement<payback>(fd, c);
                 _DEBUG_MSG("%s paybacks (%s %u) on %s\n", status_description(c).c_str(), skill_names[skill_id].c_str(), std::get<1>(s), status_description(src_status).c_str());
