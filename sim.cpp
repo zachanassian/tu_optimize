@@ -1139,13 +1139,9 @@ struct PerformAttack
         unsigned pre_modifier_dmg = attack_power(att_status);
         if(pre_modifier_dmg == 0) { return; }
         count_achievement<attack>(fd, att_status);
-        modify_attack_damage<def_cardtype>(pre_modifier_dmg);
-        if(att_status->m_player == 0)
-        {
-            fd->update_max_counter(fd->achievement.misc_req, AchievementMiscReq::damage, att_dmg);
-        }
         // Evaluation order:
         // assaults only: fly check
+        // modify damage
         // assaults only: immobilize
         // deal damage
         // assaults only: (siphon, poison, disease, on_kill)
@@ -1153,11 +1149,17 @@ struct PerformAttack
         // counter, berserk
         // assaults only: (crush, leech if still alive)
         // check regeneration
-        if(att_dmg > 0 && def_status->m_card->m_flying && (fd->effect == Effect::high_skies || fd->flip()) && skill_check<flying>(fd, def_status, att_status))
+        if(def_status->m_card->m_flying && (fd->effect == Effect::high_skies || fd->flip()) && skill_check<flying>(fd, def_status, att_status))
         {
             count_achievement<flying>(fd, def_status);
-            _DEBUG_MSG("%s dodges with Flying\n", status_description(def_status).c_str());
+            _DEBUG_MSG("%s attacks %s but it dodges with Flying\n", status_description(att_status).c_str(), status_description(def_status).c_str());
             return;
+        }
+
+        modify_attack_damage<def_cardtype>(pre_modifier_dmg);
+        if(att_status->m_player == 0)
+        {
+            fd->update_max_counter(fd->achievement.misc_req, AchievementMiscReq::damage, att_dmg);
         }
 
         // If Impenetrable, prevent attack damage against walls,
