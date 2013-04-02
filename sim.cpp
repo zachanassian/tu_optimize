@@ -2376,7 +2376,7 @@ void modify_cards(Cards& cards, enum Effect effect)
             break;
         case Effect::friendly_fire:
             cards_gain_skill<CardType::assault>(cards, strike, 1, false, false);
-            cards_gain_skill<CardType::commander>(cards, chaos, 0, true, false);
+            cards_gain_skill<CardType::commander>(cards, chaos, 0, true, true);
             break;
         case Effect::genesis:
             // Do nothing; this is implemented in play
