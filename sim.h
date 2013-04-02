@@ -138,7 +138,6 @@ struct CardStatus
     unsigned m_weakened;
     bool m_temporary_split;
     bool m_is_summoned; // is this card summoned (or split)?
-    bool m_has_regenerated; // has this card regenerated?
     CardStep m_step;
 
     CardStatus() {}

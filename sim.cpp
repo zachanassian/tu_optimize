@@ -61,7 +61,6 @@ CardStatus::CardStatus(const Card* card) :
     m_weakened(0),
     m_temporary_split(false),
     m_is_summoned(false),
-    m_has_regenerated(false),
     m_step(CardStep::none)
 {
 }
@@ -97,7 +96,6 @@ inline void CardStatus::set(const Card& card)
     m_stunned = 0;
     m_temporary_split = false;
     m_is_summoned = false;
-    m_has_regenerated = false;
     m_step = CardStep::none;
 }
 //------------------------------------------------------------------------------
@@ -857,6 +855,20 @@ inline bool count_achievement(Field* fd, const CardStatus* c)
 //------------------------------------------------------------------------------
 // All the stuff that happens at the beginning of a turn, before a card is played
 // returns true iff the card died.
+inline void count_killed_achievements(Field* fd, const CardStatus* status)
+{
+    if(status->m_player == 1)
+    {
+        if(!status->m_is_summoned)
+        {
+            fd->inc_counter(fd->achievement.unit_type_killed, status->m_card->m_type);
+        }
+        if(status->m_card->m_flying)
+        {
+            fd->inc_counter(fd->achievement.misc_req, AchievementMiscReq::unit_with_flying_killed);
+        }
+    }
+}
 void remove_hp(Field* fd, CardStatus& status, unsigned dmg)
 {
     assert(status.m_hp > 0);
@@ -865,17 +877,6 @@ void remove_hp(Field* fd, CardStatus& status, unsigned dmg)
     if(status.m_hp == 0)
     {
         _DEBUG_MSG("%s dies\n", status_description(&status).c_str());
-        if(status.m_player == 1 && !status.m_has_regenerated)
-        {
-            if(!status.m_is_summoned)
-            {
-                fd->inc_counter(fd->achievement.unit_type_killed, status.m_card->m_type);
-            }
-            if(status.m_card->m_flying)
-            {
-                fd->inc_counter(fd->achievement.misc_req, AchievementMiscReq::unit_with_flying_killed);
-            }
-        }
         if(status.m_card->m_skills_on_death.size() > 0)
         {
             fd->killed_with_on_death.push_back(&status);
@@ -883,6 +884,10 @@ void remove_hp(Field* fd, CardStatus& status, unsigned dmg)
         if(status.m_card->m_regenerate > 0)
         {
             fd->killed_with_regen.push_back(&status);
+        }
+        else
+        {
+            count_killed_achievements(fd, &status);
         }
     }
 }
@@ -922,7 +927,10 @@ void check_regeneration(Field* fd)
             count_achievement<regenerate>(fd, status);
             _DEBUG_MSG("%s regenerates with %u health\n", status_description(status).c_str(), status->m_card->m_health);
             add_hp(fd, status, status->m_card->m_regenerate);
-            status->m_has_regenerated = true;
+        }
+        else
+        {
+            count_killed_achievements(fd, status);
         }
     }
     fd->killed_with_regen.clear();
