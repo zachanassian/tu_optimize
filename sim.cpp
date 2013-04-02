@@ -778,7 +778,7 @@ inline bool skill_check<flying>(Field* fd, CardStatus* c, CardStatus* ref)
 template<>
 inline bool skill_check<immobilize>(Field* fd, CardStatus* c, CardStatus* ref)
 {
-    return(!ref->m_immobilized && is_active(ref) && can_act(ref));
+    return(!ref->m_immobilized && !is_jammed(ref) && is_active_next_turn(ref));
 }
 
 template<>
