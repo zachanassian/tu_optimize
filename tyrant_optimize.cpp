@@ -1136,6 +1136,10 @@ int main(int argc, char** argv)
         {
             keep_commander = true;
         }
+        else if(strcmp(argv[argIndex], "tournament") == 0)
+        {
+            gamemode = tournament;
+        }
         else if(strcmp(argv[argIndex], "-e") == 0)
         {
             std::string arg_effect(argv[argIndex + 1]);
