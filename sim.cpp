@@ -632,6 +632,7 @@ Results<unsigned> play(Field* fd)
             if(!is_active(&current_status) || !can_act(&current_status))
             {
                 //_DEBUG_MSG("! Assault %u (%s) hp: %u, jammed %u\n", card_index, current_status.m_card->m_name.c_str(), current_status.m_hp, current_status.m_jammed);
+                current_status.m_step = CardStep::attacked;
                 continue;
             }
             // Special case: check for split (tartarus swarm raid, or clone battlefield effects)
