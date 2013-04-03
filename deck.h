@@ -80,7 +80,7 @@ struct Deck
 
     Deck* clone() const;
     std::string short_description() const;
-    std::string long_description() const;
+    std::string long_description(const Cards& all_cards) const;
     const Card* get_commander();
     const Card* next();
     void shuffle(std::mt19937& re);

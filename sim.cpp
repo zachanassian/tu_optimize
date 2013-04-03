@@ -108,12 +108,12 @@ inline int attack_power(CardStatus* att)
     return(safe_minus(att->m_card->m_attack + att->m_berserk + att->m_rallied, att->m_weakened));
 }
 //------------------------------------------------------------------------------
-std::string skill_description(Field* fd, const SkillSpec& s)
+std::string skill_description(const Cards& cards, const SkillSpec& s)
 {
     switch(std::get<0>(s))
     {
     case summon:
-        return(skill_names[std::get<0>(s)] + " " + fd->cards.by_id(std::get<1>(s))->m_name.c_str());
+        return(skill_names[std::get<0>(s)] + " " + cards.by_id(std::get<1>(s))->m_name.c_str());
     default:
         return(skill_names[std::get<0>(s)] +
            (std::get<3>(s) ? " all" : "") +
@@ -123,7 +123,7 @@ std::string skill_description(Field* fd, const SkillSpec& s)
     }
 }
 //------------------------------------------------------------------------------
-std::string card_description(Field* fd, const Card* c)
+std::string card_description(const Cards& cards, const Card* c)
 {
     std::string desc;
     desc = c->m_name;
@@ -175,14 +175,14 @@ std::string card_description(Field* fd, const Card* c)
     if(c->m_tribute) { desc += ", tribute"; }
     if(c->m_valor > 0) { desc += ", valor " + to_string(c->m_valor); }
     if(c->m_wall) { desc += ", wall"; }
-    for(auto& skill: c->m_skills) { desc += ", " + skill_description(fd, skill); }
-    for(auto& skill: c->m_skills_on_play) { desc += ", " + skill_description(fd, skill); }
-    for(auto& skill: c->m_skills_on_kill) { desc += ", " + skill_description(fd, skill); }
+    for(auto& skill: c->m_skills) { desc += ", " + skill_description(cards, skill); }
+    for(auto& skill: c->m_skills_on_play) { desc += ", " + skill_description(cards, skill); }
+    for(auto& skill: c->m_skills_on_kill) { desc += ", " + skill_description(cards, skill); }
     if(c->m_berserk_oa > 0) { desc += ", berserk " + to_string(c->m_berserk_oa); }
     if(c->m_disease_oa) { desc += ", disease on Attacked"; }
     if(c->m_poison_oa > 0) { desc += ", poison " + to_string(c->m_poison_oa) + " on Attacked"; }
-    for(auto& skill: c->m_skills_on_attacked) { desc += ", " + skill_description(fd, skill); }
-    for(auto& skill: c->m_skills_on_death) { desc += ", " + skill_description(fd, skill); }
+    for(auto& skill: c->m_skills_on_attacked) { desc += ", " + skill_description(cards, skill); }
+    for(auto& skill: c->m_skills_on_death) { desc += ", " + skill_description(cards, skill); }
     return(desc);
 }
 //------------------------------------------------------------------------------
@@ -310,7 +310,7 @@ void prepend_on_death(Field* fd)
         }
         for(auto& skill: boost::adaptors::reverse(status->m_card->m_skills_on_death))
         {
-            _DEBUG_MSG("On death skill pushed in front: %s\n", skill_description(fd, skill).c_str());
+            _DEBUG_MSG("On death skill pushed in front: %s\n", skill_description(fd->cards, skill).c_str());
             fd->skill_queue.emplace_front(status, skill);
         }
     }
@@ -366,7 +366,7 @@ void evaluate_skills(Field* fd, CardStatus* status, const std::vector<SkillSpec>
     assert(fd->skill_queue.size() == 0);
     for(auto& skill: skills)
     {
-//        _DEBUG_MSG("Evaluating %s skill %s\n", status_description(status).c_str(), skill_description(fd, skill).c_str());
+//        _DEBUG_MSG("Evaluating %s skill %s\n", status_description(status).c_str(), skill_description(fd->cards, skill).c_str());
         bool fusion_active = status->m_card->m_fusion && status->m_player == fd->tapi && fd->fusion_count >= 3;
         auto& augmented_s = status->m_augmented > 0 ? augmented_skill(status, skill) : skill;
         auto& fusioned_s = fusion_active ? fusioned_skill(augmented_s) : augmented_s;
@@ -426,7 +426,7 @@ struct PlayCard
             fd->inc_counter(fd->achievement.unit_faction_played, card->m_faction);
             fd->inc_counter(fd->achievement.unit_rarity_played, card->m_rarity);
         }
-        _DEBUG_MSG("%s plays %s %u [%s]\n", status_description(&fd->tap->commander).c_str(), cardtype_names[type].c_str(), static_cast<unsigned>(storage->size() - 1), card_description(fd, card).c_str());
+        _DEBUG_MSG("%s plays %s %u [%s]\n", status_description(&fd->tap->commander).c_str(), cardtype_names[type].c_str(), static_cast<unsigned>(storage->size() - 1), card_description(fd->cards, card).c_str());
     }
 
     // all except assault: noop
@@ -447,7 +447,7 @@ struct PlayCard
     {
         for(auto& skill: card->m_skills_on_play)
         {
-//            _DEBUG_MSG("Evaluating %s skill %s\n", status_description(status).c_str(), skill_description(fd, skill).c_str());
+//            _DEBUG_MSG("Evaluating %s skill %s\n", status_description(status).c_str(), skill_description(fd->cards, skill).c_str());
             fd->skill_queue.emplace_back(status, skill);
             resolve_skill(fd);
             if(fd->end) { break; }
@@ -501,7 +501,7 @@ void PlayCard::onPlaySkills<CardType::action>()
 {
     for(auto& skill: card->m_skills)
     {
-//        _DEBUG_MSG("Evaluating %s skill %s\n", status_description(status).c_str(), skill_description(fd, skill).c_str());
+//        _DEBUG_MSG("Evaluating %s skill %s\n", status_description(status).c_str(), skill_description(fd->cards, skill).c_str());
         fd->skill_queue.emplace_back(status, skill);
         resolve_skill(fd);
         if(fd->end) { break; }
@@ -646,7 +646,7 @@ Results<unsigned> play(Field* fd)
                 _DEBUG_MSG("%s splits %s\n", status_description(&current_status).c_str(), status_description(&status_split).c_str());
                 for(auto& skill: status_split.m_card->m_skills_on_play)
                 {
-//                    _DEBUG_MSG("Evaluating %s skill %s\n", status_description(&current_status).c_str(), skill_description(fd, skill).c_str());
+//                    _DEBUG_MSG("Evaluating %s skill %s\n", status_description(&current_status).c_str(), skill_description(fd->cards, skill).c_str());
                     fd->skill_queue.emplace_back(&status_split, skill);
                     resolve_skill(fd);
                     if(fd->end) { break; }
@@ -1332,7 +1332,7 @@ struct PerformAttack
         }
         for(auto& oa_skill: def_status->m_card->m_skills_on_attacked)
         {
-//            _DEBUG_MSG("Evaluating %s skill %s\n", status_description(def_status).c_str(), skill_description(fd, oa_skill).c_str());
+//            _DEBUG_MSG("Evaluating %s skill %s\n", status_description(def_status).c_str(), skill_description(fd->cards, oa_skill).c_str());
             fd->skill_queue.emplace_back(def_status, def_status->m_augmented > 0 ? augmented_skill(def_status, oa_skill) : oa_skill);
             resolve_skill(fd);
             if(fd->end) { break; }
@@ -1395,7 +1395,7 @@ void PerformAttack::on_kill<CardType::assault>()
     {
         for(auto& on_kill_skill: att_status->m_card->m_skills_on_kill)
         {
-//            _DEBUG_MSG("Evaluating %s skill %s\n", status_description(att_status).c_str(), skill_description(fd, on_kill_skill).c_str());
+//            _DEBUG_MSG("Evaluating %s skill %s\n", status_description(att_status).c_str(), skill_description(fd->cards, on_kill_skill).c_str());
             fd->skill_queue.emplace_back(att_status, on_kill_skill);
             resolve_skill(fd);
             if(fd->end) { break; }
@@ -2201,7 +2201,7 @@ void perform_summon(Field* fd, CardStatus* src_status, const SkillSpec& s)
         card_status.m_index = storage->size() - 1;
         card_status.m_player = player;
         card_status.m_is_summoned = true;
-        _DEBUG_MSG("%s Summon %s %u [%s]\n", status_description(src_status).c_str(), cardtype_names[summoned->m_type].c_str(), card_status.m_index, card_description(fd, summoned).c_str());
+        _DEBUG_MSG("%s Summon %s %u [%s]\n", status_description(src_status).c_str(), cardtype_names[summoned->m_type].c_str(), card_status.m_index, card_description(fd->cards, summoned).c_str());
         prepend_skills(fd, &card_status);
         if(card_status.m_card->m_blitz)
         {
@@ -2267,7 +2267,7 @@ void perform_mimic(Field* fd, CardStatus* src_status, const SkillSpec& s)
                 (std::get<0>(skill) == supply && src_status->m_card->m_type != CardType::assault))
         { continue; }
         SkillSpec mimic_s(std::get<0>(skill), std::get<1>(skill), allfactions, std::get<3>(skill), SkillMod::on_activate);
-//        _DEBUG_MSG("Evaluating mimiced %s skill %s\n", status_description(c).c_str(), skill_description(fd, skill).c_str());
+//        _DEBUG_MSG("Evaluating mimiced %s skill %s\n", status_description(c).c_str(), skill_description(fd->cards, skill).c_str());
         fd->skill_queue.emplace_back(src_status, src_status->m_augmented > 0 ? augmented_skill(src_status, mimic_s) : mimic_s);
         resolve_skill(fd);
         if(fd->end) { break; }

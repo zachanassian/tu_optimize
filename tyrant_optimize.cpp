@@ -1216,6 +1216,10 @@ int main(int argc, char** argv)
              todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex + 1]), 0u, simulate));
              argIndex += 1;
         }
+        else if(strcmp(argv[argIndex], "verbose") == 0)
+        {
+            debug_print = true;
+        }
         else if(strcmp(argv[argIndex], "debug") == 0)
         {
             debug_print = true;
@@ -1314,10 +1318,10 @@ int main(int argc, char** argv)
     }
 
     modify_cards(cards, effect);
-    std::cout << "Attacker: " << (debug_print ? att_deck->long_description() : att_deck->short_description()) << std::endl;
+    std::cout << "Attacker: " << (debug_print ? att_deck->long_description(cards) : att_deck->short_description()) << std::endl;
     for(auto def_deck: def_decks)
     {
-        std::cout << "Defender: " << (debug_print ? def_deck->long_description() : def_deck->short_description()) << std::endl;
+        std::cout << "Defender: " << (debug_print ? def_deck->long_description(cards) : def_deck->short_description()) << std::endl;
     }
     if(effect != Effect::none)
     {
