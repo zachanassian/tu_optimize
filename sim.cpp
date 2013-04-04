@@ -300,41 +300,7 @@ inline unsigned opponent(unsigned player)
     return((player + 1) % 2);
 }
 //------------------------------------------------------------------------------
-void prepend_on_death(Field* fd)
-{
-    for(auto status: boost::adaptors::reverse(fd->killed_with_on_death))
-    {
-        if(status->m_jammed)
-        {
-            continue;
-        }
-        for(auto& skill: boost::adaptors::reverse(status->m_card->m_skills_on_death))
-        {
-            _DEBUG_MSG("On death skill pushed in front: %s\n", skill_description(fd->cards, skill).c_str());
-            fd->skill_queue.emplace_front(status, skill);
-        }
-    }
-    fd->killed_with_on_death.clear();
-}
-//------------------------------------------------------------------------------
-void(*skill_table[num_skills])(Field*, CardStatus* src_status, const SkillSpec&);
-void resolve_skill(Field* fd)
-{
-    while(!fd->skill_queue.empty())
-    {
-        auto skill_instance(fd->skill_queue.front());
-        auto& status(std::get<0>(skill_instance));
-        auto& skill(std::get<1>(skill_instance));
-        fd->skill_queue.pop_front();
-        if(!status || !status->m_jammed)
-        {
-            skill_table[std::get<0>(skill)](fd, status, skill);
-        }
-    }
-}
-//------------------------------------------------------------------------------
-void attack_phase(Field* fd);
-SkillSpec augmented_skill(CardStatus* status, const SkillSpec& s)
+SkillSpec augmented_skill(const CardStatus* status, const SkillSpec& s)
 {
     if (std::get<0>(s) == augment || std::get<0>(s) == summon || std::get<1>(s) == 0)
     {
@@ -360,6 +326,49 @@ SkillSpec infused_skill(const SkillSpec& s)
     std::get<2>(infused_s) = bloodthirsty;
     return(infused_s);
 }
+//------------------------------------------------------------------------------
+void prepend_on_death(Field* fd)
+{
+    for(auto status: boost::adaptors::reverse(fd->killed_with_on_death))
+    {
+        if(status->m_jammed)
+        {
+            continue;
+        }
+        for(auto& skill: boost::adaptors::reverse(status->m_card->m_skills_on_death))
+        {
+            _DEBUG_MSG("On death skill pushed in front: %s\n", skill_description(fd->cards, skill).c_str());
+            fd->skill_queue.emplace_front(status, skill);
+        }
+    }
+    fd->killed_with_on_death.clear();
+}
+//------------------------------------------------------------------------------
+void(*skill_table[num_skills])(Field*, CardStatus* src_status, const SkillSpec&);
+void resolve_skill(Field* fd)
+{
+    while(!fd->skill_queue.empty())
+    {
+        auto skill_instance(fd->skill_queue.front());
+        auto& status(std::get<0>(skill_instance));
+        const auto& skill(std::get<1>(skill_instance));
+        fd->skill_queue.pop_front();
+        if(!status)
+        {
+            skill_table[std::get<0>(skill)](fd, status, skill);
+        }
+        else if(!status->m_jammed)
+        {
+            bool fusion_active = status->m_card->m_fusion && status->m_player == fd->tapi && fd->fusion_count >= 3;
+            auto& augmented_s = status->m_augmented > 0 ? augmented_skill(status, skill) : skill;
+            auto& fusioned_s = fusion_active ? fusioned_skill(augmented_s) : augmented_s;
+            auto& infused_s = status->m_infused ? infused_skill(fusioned_s) : fusioned_s;
+            skill_table[std::get<0>(skill)](fd, status, infused_s);
+        }
+    }
+}
+//------------------------------------------------------------------------------
+void attack_phase(Field* fd);
 void evaluate_skills(Field* fd, CardStatus* status, const std::vector<SkillSpec>& skills)
 {
     assert(status);
@@ -367,11 +376,7 @@ void evaluate_skills(Field* fd, CardStatus* status, const std::vector<SkillSpec>
     for(auto& skill: skills)
     {
 //        _DEBUG_MSG("Evaluating %s skill %s\n", status_description(status).c_str(), skill_description(fd->cards, skill).c_str());
-        bool fusion_active = status->m_card->m_fusion && status->m_player == fd->tapi && fd->fusion_count >= 3;
-        auto& augmented_s = status->m_augmented > 0 ? augmented_skill(status, skill) : skill;
-        auto& fusioned_s = fusion_active ? fusioned_skill(augmented_s) : augmented_s;
-        auto& infused_s = status->m_infused ? infused_skill(fusioned_s) : fusioned_s;
-        fd->skill_queue.emplace_back(status, infused_s);
+        fd->skill_queue.emplace_back(status, skill);
         resolve_skill(fd);
         if(fd->end) { break; }
     }
@@ -445,13 +450,7 @@ struct PlayCard
     template <enum CardType::CardType>
     void onPlaySkills()
     {
-        for(auto& skill: card->m_skills_on_play)
-        {
-//            _DEBUG_MSG("Evaluating %s skill %s\n", status_description(status).c_str(), skill_description(fd->cards, skill).c_str());
-            fd->skill_queue.emplace_back(status, skill);
-            resolve_skill(fd);
-            if(fd->end) { break; }
-        }
+        evaluate_skills(fd, status, card->m_skills_on_play);
     }
 };
 // assault
@@ -499,13 +498,7 @@ void PlayCard::fieldEffects<CardType::assault>()
 template <>
 void PlayCard::onPlaySkills<CardType::action>()
 {
-    for(auto& skill: card->m_skills)
-    {
-//        _DEBUG_MSG("Evaluating %s skill %s\n", status_description(status).c_str(), skill_description(fd->cards, skill).c_str());
-        fd->skill_queue.emplace_back(status, skill);
-        resolve_skill(fd);
-        if(fd->end) { break; }
-    }
+    evaluate_skills(fd, status, card->m_skills);
 }
 //------------------------------------------------------------------------------
 inline bool is_attacking_or_has_attacked(CardStatus* c) { return(c->m_step >= CardStep::attacking); }
@@ -645,13 +638,7 @@ Results<unsigned> play(Field* fd)
                 status_split.m_player = fd->tapi;
                 status_split.m_is_summoned = true;
                 _DEBUG_MSG("%s splits %s\n", status_description(&current_status).c_str(), status_description(&status_split).c_str());
-                for(auto& skill: status_split.m_card->m_skills_on_play)
-                {
-//                    _DEBUG_MSG("Evaluating %s skill %s\n", status_description(&current_status).c_str(), skill_description(fd->cards, skill).c_str());
-                    fd->skill_queue.emplace_back(&status_split, skill);
-                    resolve_skill(fd);
-                    if(fd->end) { break; }
-                }
+                evaluate_skills(fd, &status_split, status_split.m_card->m_skills_on_play);
                 if(status_split.m_card->m_blitz)
                 {
                     check_and_perform_blitz(fd, &status_split);
@@ -1331,13 +1318,7 @@ struct PerformAttack
             count_achievement<berserk>(fd, def_status); 
             def_status->m_berserk += def_status->m_card->m_berserk_oa;
         }
-        for(auto& oa_skill: def_status->m_card->m_skills_on_attacked)
-        {
-//            _DEBUG_MSG("Evaluating %s skill %s\n", status_description(def_status).c_str(), skill_description(fd->cards, oa_skill).c_str());
-            fd->skill_queue.emplace_back(def_status, def_status->m_augmented > 0 ? augmented_skill(def_status, oa_skill) : oa_skill);
-            resolve_skill(fd);
-            if(fd->end) { break; }
-        }
+        evaluate_skills(fd, def_status, def_status->m_card->m_skills_on_attacked);
     }
 
     template<enum CardType::CardType>
@@ -1394,13 +1375,7 @@ void PerformAttack::on_kill<CardType::assault>()
 {
     if(killed_by_attack)
     {
-        for(auto& on_kill_skill: att_status->m_card->m_skills_on_kill)
-        {
-//            _DEBUG_MSG("Evaluating %s skill %s\n", status_description(att_status).c_str(), skill_description(fd->cards, on_kill_skill).c_str());
-            fd->skill_queue.emplace_back(att_status, on_kill_skill);
-            resolve_skill(fd);
-            if(fd->end) { break; }
-        }
+        evaluate_skills(fd, att_status, att_status->m_card->m_skills_on_kill);
     }
 }
 
