@@ -1271,13 +1271,13 @@ struct PerformAttack
             if(debug_print) { reduced_desc += "-" + to_string(att_card.m_pierce) + "(pierce)"; }
             reduced_dmg = safe_minus(reduced_dmg, att_card.m_pierce);
         }
+        att_dmg = safe_minus(att_dmg, reduced_dmg);
         if(debug_print)
         {
             if(!reduced_desc.empty()) { desc += "-[" + reduced_desc + "]"; }
             if(!desc.empty()) { desc += "=" + to_string(att_dmg); }
             _DEBUG_MSG("%s attacks %s for %u%s damage\n", status_description(att_status).c_str(), status_description(def_status).c_str(), pre_modifier_dmg, desc.c_str());
         }
-        att_dmg = safe_minus(att_dmg, reduced_dmg);
     }
 
     template<enum CardType::CardType>
