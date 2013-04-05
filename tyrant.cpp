@@ -13,8 +13,7 @@ std::string skill_names[Skill::num_skills] =
     "Augment", "Backfire", "Chaos", "Cleanse", "Enfeeble",
     "Freeze", "Heal", "Infuse", "Jam",
     "Mimic", "Protect", "Rally", "Recharge", "Repair", "Rush", "Shock",
-    "Siege", "Strike", "Summon", "Supply",
-    "temporary_split",
+    "Siege", "Split", "Strike", "Summon", "Supply",
     "trigger_regen",
     "Weaken",
     // Combat-Modifier:

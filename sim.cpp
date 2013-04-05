@@ -170,7 +170,6 @@ std::string card_description(const Cards& cards, const Card* c)
     if(c->m_refresh) { desc += ", refresh"; }
     if(c->m_regenerate > 0) { desc += ", regenerate " + to_string(c->m_regenerate); }
     if(c->m_siphon > 0) { desc += ", siphon " + to_string(c->m_siphon); }
-    if(c->m_split) { desc += ", split"; }
     if(c->m_swipe) { desc += ", swipe"; }
     if(c->m_tribute) { desc += ", tribute"; }
     if(c->m_valor > 0) { desc += ", valor " + to_string(c->m_valor); }
@@ -419,7 +418,6 @@ struct PlayCard
         status->set(card);
         status->m_index = storage->size() - 1;
         status->m_player = fd->tapi;
-		status->m_temporary_split = false;
         if(fd->turn == 1 && fd->gamemode == tournament && status->m_delay > 0)
         {
             ++status->m_delay;
@@ -560,11 +558,24 @@ Results<unsigned> play(Field* fd)
         if(fd->effect == Effect::clone_project ||
            (fd->effect == Effect::clone_experiment && (fd->turn == 9 || fd->turn == 10)))
         {
-            std::vector<SkillSpec> skills;
-            skills.emplace_back(temporary_split, 0, allfactions, false, SkillMod::on_activate);
-            // The skill doesn't actually come from the commander,
-            // but we need to provide some source and it seemed most reasonable.
-            evaluate_skills(fd, &fd->tap->commander, skills);
+            CardStatus* target(nullptr);
+            unsigned selection_array_size(0);
+            for(auto c: fd->tap->assaults.m_indirect)
+            {
+                if (c->m_delay == 0 && c->m_hp > 0)
+                {
+                    ++ selection_array_size;
+                    if (fd->rand(0, selection_array_size - 1) == 0)
+                    {
+                        target = c;
+                    }
+                }
+            }
+            if(target != nullptr)
+            {
+                _DEBUG_MSG("%s gains skill Split until end of turn.\n", status_description(target).c_str());
+                target->m_temporary_split = true;
+            }
         }
 
         // Play a card
@@ -628,25 +639,15 @@ Results<unsigned> play(Field* fd)
                 current_status.m_step = CardStep::attacked;
                 continue;
             }
-            // Special case: check for split (tartarus swarm raid, or clone battlefield effects)
-            if((current_status.m_temporary_split || current_status.m_card->m_split) && fd->tap->assaults.size() + fd->tap->structures.size() < 100)
-            {
-                // TODO count_achievement<split>(fd, current_status)
-                CardStatus& status_split(fd->tap->assaults.add_back());
-                status_split.set(current_status.m_card);
-                status_split.m_index = fd->tap->assaults.size() - 1;
-                status_split.m_player = fd->tapi;
-                status_split.m_is_summoned = true;
-                _DEBUG_MSG("%s splits %s\n", status_description(&current_status).c_str(), status_description(&status_split).c_str());
-                evaluate_skills(fd, &status_split, status_split.m_card->m_skills_on_play);
-                if(status_split.m_card->m_blitz)
-                {
-                    check_and_perform_blitz(fd, &status_split);
-                }
-                // TODO: Use summon to implement split?
-            }
             // Evaluate skills
             evaluate_skills(fd, &current_status, current_status.m_card->m_skills);
+            // Special case: check for temporary split (clone battlefield effects)
+            if(current_status.m_temporary_split)
+            {
+                std::vector<SkillSpec> skills;
+                skills.emplace_back(split, 0, allfactions, false, SkillMod::on_activate);
+                evaluate_skills(fd, &current_status, skills);
+            }
             // Attack
             if(!fd->end && !current_status.m_immobilized && !current_status.m_stunned && current_status.m_hp > 0)
             {
@@ -1614,12 +1615,6 @@ inline bool skill_predicate<supply>(Field* fd, CardStatus* c, const SkillSpec& s
 { return(can_be_healed(c)); }
 
 template<>
-inline bool skill_predicate<temporary_split>(Field* fd, CardStatus* c, const SkillSpec& s)
-// It is unnecessary to check for Blitz, since temporary_split status is
-// awarded before a card is played.
-{ return(c->m_delay == 0 && c->m_hp > 0); }
-
-template<>
 inline bool skill_predicate<weaken>(Field* fd, CardStatus* c, const SkillSpec& s)
 {
     const auto& mod = std::get<4>(s);
@@ -1748,12 +1743,6 @@ template<>
 inline void perform_skill<supply>(Field* fd, CardStatus* c, unsigned v)
 {
     add_hp(fd, c, v);
-}
-
-template<>
-inline void perform_skill<temporary_split>(Field* fd, CardStatus* c, unsigned v)
-{
-    c->m_temporary_split = true;
 }
 
 template<>
@@ -1906,9 +1895,6 @@ template<> std::vector<CardStatus*>& skill_targets<strike>(Field* fd, CardStatus
 { return(skill_targets_hostile_assault(fd, src_status)); }
 
 template<> std::vector<CardStatus*>& skill_targets<supply>(Field* fd, CardStatus* src_status)
-{ return(skill_targets_allied_assault(fd, src_status)); }
-
-template<> std::vector<CardStatus*>& skill_targets<temporary_split>(Field* fd, CardStatus* src_status)
 { return(skill_targets_allied_assault(fd, src_status)); }
 
 template<> std::vector<CardStatus*>& skill_targets<weaken>(Field* fd, CardStatus* src_status)
@@ -2162,6 +2148,15 @@ inline void prepend_skills(Field* fd, CardStatus* status)
     }
 }
 
+template<Skill skill_id>
+void perform_summon(Field* fd, CardStatus* src_status, const SkillSpec& s);
+
+void perform_split(Field* fd, CardStatus* src_status, const SkillSpec& s)
+{
+    perform_summon<split>(fd, src_status, SkillSpec(summon, src_status->m_card->m_id, std::get<2>(s), std::get<3>(s), std::get<4>(s)));
+}
+
+template<Skill skill_id>
 void perform_summon(Field* fd, CardStatus* src_status, const SkillSpec& s)
 {
     unsigned player = src_status->m_player;
@@ -2177,7 +2172,7 @@ void perform_summon(Field* fd, CardStatus* src_status, const SkillSpec& s)
         card_status.m_index = storage->size() - 1;
         card_status.m_player = player;
         card_status.m_is_summoned = true;
-        _DEBUG_MSG("%s Summon %s %u [%s]\n", status_description(src_status).c_str(), cardtype_names[summoned->m_type].c_str(), card_status.m_index, card_description(fd->cards, summoned).c_str());
+        _DEBUG_MSG("%s %s %s %u [%s]\n", status_description(src_status).c_str(), skill_names[skill_id].c_str(), cardtype_names[summoned->m_type].c_str(), card_status.m_index, card_description(fd->cards, summoned).c_str());
         prepend_skills(fd, &card_status);
         if(card_status.m_card->m_blitz)
         {
@@ -2271,9 +2266,9 @@ void fill_skill_table()
     skill_table[shock] = perform_shock;
     skill_table[siege] = perform_targetted_hostile_fast<siege>;
     skill_table[supply] = perform_targetted_allied_fast<supply>;
+    skill_table[split] = perform_split;
     skill_table[strike] = perform_targetted_hostile_fast<strike>;
-    skill_table[summon] = perform_summon;
-    skill_table[temporary_split] = perform_targetted_allied_fast<temporary_split>;
+    skill_table[summon] = perform_summon<summon>;
     skill_table[trigger_regen] = perform_trigger_regen;
     skill_table[weaken] = perform_targetted_hostile_fast<weaken>;
 }
@@ -2356,7 +2351,7 @@ void modify_cards(Cards& cards, enum Effect effect)
             break;
         case Effect::clone_project:
         case Effect::clone_experiment:
-            // Do nothing; these are implemented in the temporary_split skill
+            // Do nothing; these are implemented in play
             break;
         case Effect::friendly_fire:
             cards_gain_skill<CardType::assault>(cards, strike, 1, false, false);

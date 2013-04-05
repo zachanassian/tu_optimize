@@ -266,8 +266,6 @@ void read_cards(Cards& cards)
                     { c->m_regenerate = atoi(skill->first_attribute("x")->value()); }
                     if(strcmp(skill->first_attribute("id")->value(), "siphon") == 0)
                     { c->m_siphon = atoi(skill->first_attribute("x")->value()); }
-                    if(strcmp(skill->first_attribute("id")->value(), "split") == 0)
-                    { c->m_split = true; }
                     if(strcmp(skill->first_attribute("id")->value(), "stun") == 0)
                     { c->m_stun = true; }
                     if(strcmp(skill->first_attribute("id")->value(), "swipe") == 0)
@@ -312,6 +310,8 @@ void read_cards(Cards& cards)
                     { handle_skill<shock>(skill, c); }
                     if(strcmp(skill->first_attribute("id")->value(), "siege") == 0)
                     { handle_skill<siege>(skill, c); }
+                    if(strcmp(skill->first_attribute("id")->value(), "split") == 0)
+                    { handle_skill<split>(skill, c); }
                     if(strcmp(skill->first_attribute("id")->value(), "strike") == 0)
                     { handle_skill<strike>(skill, c); }
                     if(strcmp(skill->first_attribute("id")->value(), "summon") == 0)
