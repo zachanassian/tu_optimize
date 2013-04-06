@@ -2239,7 +2239,7 @@ void perform_mimic(Field* fd, CardStatus* src_status, const SkillSpec& s)
         { continue; }
         SkillSpec mimic_s(std::get<0>(skill), std::get<1>(skill), allfactions, std::get<3>(skill), SkillMod::on_activate);
 //        _DEBUG_MSG("Evaluating mimiced %s skill %s\n", status_description(c).c_str(), skill_description(fd->cards, skill).c_str());
-        fd->skill_queue.emplace_back(src_status, src_status->m_augmented > 0 ? augmented_skill(src_status, mimic_s) : mimic_s);
+        fd->skill_queue.emplace_back(src_status, mimic_s);
         resolve_skill(fd);
         if(fd->end) { break; }
         check_regeneration(fd);
