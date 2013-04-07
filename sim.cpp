@@ -678,7 +678,7 @@ Results<unsigned> play(Field* fd)
                 evaluate_skills(fd, &current_status, skills);
             }
             // Attack
-            if(!fd->end && !current_status.m_immobilized && !current_status.m_stunned && current_status.m_hp > 0)
+            if(!fd->end && can_attack(&current_status))
             {
                 current_status.m_step = CardStep::attacking;
                 attack_phase(fd);
