@@ -2234,7 +2234,7 @@ void perform_mimic(Field* fd, CardStatus* src_status, const SkillSpec& s)
     {
         if(src_status->m_card->m_type != CardType::action && src_status->m_hp == 0)
         { break; }
-        if(std::get<0>(skill) == mimic ||
+        if(std::get<0>(skill) == mimic || std::get<0>(skill) == split ||
                 (std::get<0>(skill) == supply && src_status->m_card->m_type != CardType::assault))
         { continue; }
         SkillSpec mimic_s(std::get<0>(skill), std::get<1>(skill), allfactions, std::get<3>(skill), SkillMod::on_activate);
