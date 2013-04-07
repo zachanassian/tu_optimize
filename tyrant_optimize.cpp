@@ -1081,8 +1081,7 @@ int main(int argc, char** argv)
         std::cout << "Tyrant Optimizer " << TYRANT_OPTIMIZER_VERSION << std::endl;
         return(0);
     }
-    debug_print = getenv("DEBUG_PRINT");
-    unsigned num_threads = (debug_print || getenv("DEBUG")) ? 1 : 4;
+    unsigned num_threads = 4;
     DeckStrategy::DeckStrategy att_strategy(DeckStrategy::random);
     DeckStrategy::DeckStrategy def_strategy(DeckStrategy::random);
     Cards cards;
@@ -1197,6 +1196,10 @@ int main(int argc, char** argv)
             turn_limit = atoi(argv[argIndex+1]);
             argIndex += 1;
         }
+        else if(strcmp(argv[argIndex], "+v") == 0)
+        {
+            ++ debug_print;
+        }
         else if(strcmp(argv[argIndex], "-wintie") == 0)
         {
             win_tie = true;
@@ -1216,20 +1219,12 @@ int main(int argc, char** argv)
              todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex + 1]), 0u, simulate));
              argIndex += 1;
         }
-        else if(strcmp(argv[argIndex], "verbose") == 0)
-        {
-            debug_print = true;
-        }
         else if(strcmp(argv[argIndex], "debug") == 0)
         {
-            debug_print = true;
-            num_threads = 1;
             todo.push_back(std::make_tuple(0u, 45u, fightuntil));
         }
         else if(strcmp(argv[argIndex], "debuguntil") == 0)
         {
-            debug_print = true;
-            num_threads = 1;
             // fight until the last battle results in range [min_score, max_score].
             // E.g., 0 0: until lose; 1 1: until win (non-ANP); 10 25: until win (ANP).
             todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex + 1]), (unsigned)atoi(argv[argIndex + 2]), fightuntil));
@@ -1356,13 +1351,24 @@ int main(int argc, char** argv)
                 break;
             }
             case fightuntil: {
+                unsigned saved_num_threads = num_threads;
+                num_threads = 1;
+                ++ debug_print;
+                ++ debug_cached;
                 while(1)
                 {
+                    debug_str.clear();
                     auto results = p.evaluate(1);
-                    print_score_info(results, p.factors);
                     double score = compute_score(results, p.factors);
-                    if(score >= std::get<0>(op) && score <= std::get<1>(op)) { break; }
+                    if(score >= std::get<0>(op) && score <= std::get<1>(op)) {
+                        std::cout << debug_str << std::flush;
+                        print_results(results, p.factors);
+                        break;
+                    }
                 }
+                -- debug_cached;
+                -- debug_print;
+                num_threads = saved_num_threads;
                 break;
             }
             }

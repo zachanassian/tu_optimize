@@ -2,6 +2,7 @@
 
 #include <boost/range/algorithm_ext/insert.hpp>
 #include <boost/tokenizer.hpp>
+#include <iostream>
 #include <sstream>
 #include <stdexcept>
 
