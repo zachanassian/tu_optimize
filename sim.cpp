@@ -155,7 +155,17 @@ std::string skill_description(const Cards& cards, const SkillSpec& s)
     switch(std::get<0>(s))
     {
     case summon:
-        return(skill_names[std::get<0>(s)] + " " + cards.by_id(std::get<1>(s))->m_name.c_str());
+        if(std::get<1>(s) == 0)
+        {
+            // Summon X
+            return(skill_names[std::get<0>(s)] + " X");
+        }
+        else
+        {
+            return(skill_names[std::get<0>(s)] +
+                    " " + cards.by_id(std::get<1>(s))->m_name.c_str() +
+                    skill_activation_modifier_names[std::get<4>(s)]);
+        }
     default:
         return(skill_names[std::get<0>(s)] +
            (std::get<3>(s) ? " all" : "") +
@@ -416,7 +426,7 @@ void evaluate_skills(Field* fd, CardStatus* status, const std::vector<SkillSpec>
         _DEBUG_MSG(2, "Evaluating %s skill %s\n", status_description(status).c_str(), skill_description(fd->cards, skill).c_str());
         fd->skill_queue.emplace_back(status, skill);
         resolve_skill(fd);
-        if(fd->end) { break; }
+        if(__builtin_expect(fd->end, false)) { break; }
     }
 }
 bool check_and_perform_blitz(Field* fd, CardStatus* src_status);
@@ -575,7 +585,7 @@ Results<unsigned> play(Field* fd)
     fd->inc_counter(fd->achievement.unit_played, fd->players[0]->commander.m_card->m_id);
 
     fd->set_counter(fd->achievement.misc_req, AchievementMiscReq::turns, 1);
-    while(fd->turn <= turn_limit && !fd->end)
+    while(__builtin_expect(fd->turn <= turn_limit && !fd->end, true))
     {
         fd->current_phase = Field::playcard_phase;
         // Initialize stuff, remove dead cards
@@ -628,6 +638,7 @@ Results<unsigned> play(Field* fd)
                 break;
             }
         }
+        if(__builtin_expect(fd->end, false)) { break; }
 
         // Evaluate Legion skill
         fd->current_phase = Field::legion_phase;
@@ -636,14 +647,7 @@ Results<unsigned> play(Field* fd)
         // Evaluate commander
         fd->current_phase = Field::commander_phase;
         evaluate_skills(fd, &fd->tap->commander, fd->tap->commander.m_card->m_skills);
-
-        if (fd->effect == Effect::genesis)
-        {
-            unsigned index(fd->rand(0, fd->cards.player_assaults.size() - 1));
-            std::vector<SkillSpec> skills;
-            skills.emplace_back(summon, fd->cards.player_assaults[index]->m_id, allfactions, false, SkillMod::on_activate);
-            evaluate_skills(fd, &fd->tap->commander, skills);
-        }
+        if(__builtin_expect(fd->end, false)) { break; }
 
         // Evaluate structures
         fd->current_phase = Field::structures_phase;
@@ -669,6 +673,7 @@ Results<unsigned> play(Field* fd)
             }
             // Evaluate skills
             evaluate_skills(fd, &current_status, current_status.m_card->m_skills);
+            if(__builtin_expect(fd->end, false)) { break; }
 
             // Special case: check for temporary split (clone battlefield effects)
             if(current_status.m_temporary_split)
@@ -677,18 +682,17 @@ Results<unsigned> play(Field* fd)
                 skills.emplace_back(split, 0, allfactions, false, SkillMod::on_activate);
                 evaluate_skills(fd, &current_status, skills);
             }
+            if(__builtin_expect(fd->end, false)) { break; }
+
             // Attack
-            if(!fd->end && can_attack(&current_status))
+            if(can_attack(&current_status))
             {
                 current_status.m_step = CardStep::attacking;
                 attack_phase(fd);
             }
             current_status.m_step = CardStep::attacked;
         }
-        if(fd->end)
-        {
-            break;
-        }
+        if(__builtin_expect(fd->end, false)) { break; }
         _DEBUG_MSG(1, "TURN %u ends for %s\n", fd->turn, status_description(&fd->tap->commander).c_str());
         std::swap(fd->tapi, fd->tipi);
         std::swap(fd->tap, fd->tip);
@@ -1201,11 +1205,7 @@ struct PerformAttack
         {
             immobilize<def_cardtype>();
             attack_damage<def_cardtype>();
-            if(fd->end)
-            {
-                // Commander dies?
-                return;
-            }
+            if(__builtin_expect(fd->end, false)) { return; }
             siphon_poison_disease<def_cardtype>();
             on_kill<def_cardtype>();
         }
@@ -1487,8 +1487,7 @@ void attack_phase(Field* fd)
                 {
                     PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci-1]}.op<CardType::assault>();
                 }
-                if(fd->end)
-                { return; }
+                if(__builtin_expect(fd->end, false)) { return; }
                 // stille alive? attack the card in front
                 if(can_attack(att_status) && alive_assault(def_assaults, fd->current_ci))
                 {
@@ -1498,10 +1497,9 @@ void attack_phase(Field* fd)
                 {
                     attack_commander(fd, att_status);
                 }
-                if(fd->end)
-                { return; }
+                if(__builtin_expect(fd->end, false)) { return; }
                 // still alive? attack the card on the right
-                if(!fd->end && can_attack(att_status) && alive_assault(def_assaults, fd->current_ci + 1))
+                if(can_attack(att_status) && alive_assault(def_assaults, fd->current_ci + 1))
                 {
                     PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci+1]}.op<CardType::assault>();
                 }
@@ -2132,7 +2130,7 @@ template<Skill skill_id>
 void perform_summon(Field* fd, CardStatus* src_status, const SkillSpec& s)
 {
     unsigned player = src_status->m_player;
-    const Card* summoned = fd->cards.by_id(std::get<1>(s));
+    const Card* summoned = std::get<1>(s) != 0 ? fd->cards.by_id(std::get<1>(s)) : fd->random_in_vector(fd->cards.player_assaults);
     assert(summoned->m_type == CardType::assault || summoned->m_type == CardType::structure);
     Hand* hand{fd->players[player]};
     if(hand->assaults.size() + hand->structures.size() < 100)
@@ -2213,7 +2211,7 @@ void perform_mimic(Field* fd, CardStatus* src_status, const SkillSpec& s)
         _DEBUG_MSG(2, "Evaluating %s mimiced skill %s\n", status_description(c).c_str(), skill_description(fd->cards, skill).c_str());
         fd->skill_queue.emplace_back(src_status, mimic_s);
         resolve_skill(fd);
-        if(fd->end) { break; }
+        if(__builtin_expect(fd->end, false)) { break; }
         check_regeneration(fd);
     }
 }
@@ -2330,7 +2328,7 @@ void modify_cards(Cards& cards, enum Effect effect)
             cards_gain_skill<CardType::commander>(cards, chaos, 0, true, true);
             break;
         case Effect::genesis:
-            // Do nothing; this is implemented in play
+            cards_gain_skill<CardType::commander>(cards, summon, 0, false, false); // No replace exising Summon, if any
             break;
         case Effect::decrepit:
             cards_gain_skill<CardType::commander>(cards, enfeeble, 1, true, true);

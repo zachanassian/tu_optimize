@@ -239,7 +239,7 @@ public:
     }
 
     template <typename T>
-    inline T& random_in_vector(std::vector<T>& v)
+    inline T random_in_vector(const std::vector<T>& v)
     {
         assert(v.size() > 0);
         return(v[this->rand(0, v.size() - 1)]);
