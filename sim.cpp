@@ -381,11 +381,12 @@ void prepend_on_death(Field* fd)
     {
         if(status->m_jammed)
         {
+            _DEBUG_MSG(2, "%s is jammed and cannot activate its on Death skill.\n", status_description(status).c_str());
             continue;
         }
         for(auto& skill: boost::adaptors::reverse(status->m_card->m_skills_on_death))
         {
-            _DEBUG_MSG(2, "On death skill pushed in front: %s\n", skill_description(fd->cards, skill).c_str());
+            _DEBUG_MSG(2, "%s pushes its on Death skill in front of the queue: %s\n", status_description(status).c_str(), skill_description(fd->cards, skill).c_str());
             fd->skill_queue.emplace_front(status, skill);
         }
     }
@@ -403,6 +404,7 @@ void resolve_skill(Field* fd)
         fd->skill_queue.pop_front();
         if(!status)
         {
+            // trigger_regen
             skill_table[std::get<0>(skill)](fd, status, skill);
         }
         else if(!status->m_jammed)
@@ -1808,12 +1810,6 @@ inline unsigned select_fast<supply>(Field* fd, CardStatus* src_status, const std
     return(fd->make_selection_array(cards.begin() + min_index, cards.begin() + max_index + 1, [fd, src_status, s](CardStatus* c){return(skill_predicate<supply>(fd, src_status, c, s));}));
 }
 
-inline unsigned select_infuse(Field* fd, const SkillSpec& s)
-{
-    const auto &cards = boost::join(fd->tap->assaults.m_indirect, fd->tip->assaults.m_indirect);
-    return(fd->make_selection_array(cards.begin(), cards.end(), [fd, s](CardStatus* c){return(skill_predicate<infuse>(fd, &fd->tap->commander, c, s));}));
-}
-
 inline std::vector<CardStatus*>& skill_targets_hostile_assault(Field* fd, CardStatus* src_status)
 {
     return(fd->players[src_status->m_chaosed ? src_status->m_player : opponent(src_status->m_player)]->assaults.m_indirect);
@@ -1905,35 +1901,35 @@ void maybeTriggerRegen<true_>(Field* fd)
     fd->skill_queue.emplace_front(nullptr, std::make_tuple(trigger_regen, 0, allfactions, false, SkillMod::on_activate));
 }
 
-unsigned get_target_hostile_index(Field* fd, CardStatus* src_status)
+CardStatus* select_interceptable(Field* fd, CardStatus* src_status, unsigned index)
 {
-    unsigned rand_index(fd->rand(0, fd->selection_array.size() - 1));
-    // intercept
-    if(!src_status->m_chaosed)
+    CardStatus* status(fd->selection_array[index]);
+    // do not intercept skills from allied units (Chaosed / Infuse)
+    if(src_status->m_player == status->m_player)
     {
-        CardStatus* status(fd->selection_array[rand_index]);
-        if(rand_index > 0)
+        return(fd->selection_array[index]);
+    }
+    if(index > 0)
+    {
+        CardStatus* left_status(fd->selection_array[index - 1]);
+        if(left_status->m_card->m_intercept && left_status->m_index == status->m_index - 1 && left_status->m_player == status->m_player && skill_check<intercept>(fd, left_status, status))
         {
-            CardStatus* left_status(fd->selection_array[rand_index - 1]);
-            if(left_status->m_card->m_intercept && left_status->m_index == status->m_index - 1 && skill_check<intercept>(fd, left_status, status))
-            {
-                count_achievement<intercept>(fd, left_status);
-                _DEBUG_MSG(1, "%s intercepts for %s\n", status_description(left_status).c_str(), status_description(status).c_str());
-                return(rand_index - 1);
-            }
-        }
-        if(rand_index + 1 < fd->selection_array.size())
-        {
-            CardStatus* right_status(fd->selection_array[rand_index + 1]);
-            if(right_status->m_card->m_intercept && right_status->m_index == status->m_index + 1 && skill_check<intercept>(fd, right_status, status))
-            {
-                count_achievement<intercept>(fd, right_status);
-                _DEBUG_MSG(1, "%s intercepts for %s\n", status_description(right_status).c_str(), status_description(status).c_str());
-                return(rand_index + 1);
-            }
+            count_achievement<intercept>(fd, left_status);
+            _DEBUG_MSG(1, "%s intercepts for %s\n", status_description(left_status).c_str(), status_description(status).c_str());
+            return(fd->selection_array[index - 1]);
         }
     }
-    return(rand_index);
+    if(index + 1 < fd->selection_array.size())
+    {
+        CardStatus* right_status(fd->selection_array[index + 1]);
+        if(right_status->m_card->m_intercept && right_status->m_index == status->m_index + 1 && right_status->m_player == status->m_player && skill_check<intercept>(fd, right_status, status))
+        {
+            count_achievement<intercept>(fd, right_status);
+            _DEBUG_MSG(1, "%s intercepts for %s\n", status_description(right_status).c_str(), status_description(status).c_str());
+            return(fd->selection_array[index + 1]);
+        }
+    }
+    return(fd->selection_array[index]);
 }
 
 template<Skill skill_id>
@@ -2011,20 +2007,17 @@ void perform_targetted_hostile_fast(Field* fd, CardStatus* src_status, const Ski
     }
     else
     {
-        if(!skill_roll<skill_id>(fd))
-        {
-            return;
-        }
-        index_start = index_end = get_target_hostile_index(fd, src_status);
+        index_start = index_end = fd->rand(0, fd->selection_array.size() - 1);
     }
     bool is_count_achievement(true);
     for(unsigned s_index(index_start); s_index <= index_end; ++s_index)
     {
-        if(std::get<3>(s) && !skill_roll<skill_id>(fd))
+        if(!skill_roll<skill_id>(fd))
         {
+            _DEBUG_MSG(2, "%s misses the 50%% chance to activate %s (%u) on %s\n", status_description(src_status).c_str(), skill_names[skill_id].c_str(), std::get<1>(s), status_description(fd->selection_array[s_index]).c_str());
             continue;
         }
-        CardStatus* c(fd->selection_array[s_index]);
+        CardStatus* c(std::get<3>(s) ? fd->selection_array[s_index] : select_interceptable(fd, src_status, s_index));
         if(check_and_perform_skill<skill_id>(fd, src_status, c, s, true, is_count_achievement))
         {
             // Count at most once even targeting "All"
@@ -2067,6 +2060,7 @@ void perform_targetted_allied_fast(Field* fd, CardStatus* src_status, const Skil
         // So far no friendly activation skill needs to roll 50% but check it for completeness.
         if(!skill_roll<skill_id>(fd))
         {
+            _DEBUG_MSG(2, "%s misses the 50%% chance to %s (%u) on %s\n", status_description(src_status).c_str(), skill_names[skill_id].c_str(), std::get<1>(s), status_description(fd->selection_array[s_index]).c_str());
             continue;
         }
         CardStatus* c(fd->selection_array[s_index]);
@@ -2104,10 +2098,11 @@ void perform_backfire(Field* fd, CardStatus* src_status, const SkillSpec& s)
 
 void perform_infuse(Field* fd, CardStatus* src_status, const SkillSpec& s)
 {
-    if(select_infuse(fd, s) > 0)
+    const auto &cards = boost::join(fd->tap->assaults.m_indirect, fd->tip->assaults.m_indirect);
+    if(fd->make_selection_array(cards.begin(), cards.end(), [fd, s](CardStatus* c){return(skill_predicate<infuse>(fd, &fd->tap->commander, c, s));}) > 0)
     {
         _DEBUG_SELECTION("%s", skill_names[infuse].c_str());
-        CardStatus* c(fd->selection_array[fd->rand(0, fd->selection_array.size() - 1)]);
+        CardStatus* c(select_interceptable(fd, src_status, fd->rand(0, fd->selection_array.size() - 1)));
         check_and_perform_skill<infuse>(fd, src_status, c, s, true, true);
     }
 }
@@ -2196,7 +2191,7 @@ void perform_mimic(Field* fd, CardStatus* src_status, const SkillSpec& s)
         return; 
     }
     _DEBUG_SELECTION("%s", skill_names[mimic].c_str());
-    CardStatus* c(fd->selection_array[fd->effect == Effect::copycat ? fd->rand(0, fd->selection_array.size() - 1) : get_target_hostile_index(fd, src_status)]);
+    CardStatus* c(select_interceptable(fd, src_status, fd->rand(0, fd->selection_array.size() - 1)));
     // evade check for mimic
     // individual skills are subject to evade checks too,
     // but resolve_skill will handle those.
