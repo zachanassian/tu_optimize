@@ -768,9 +768,9 @@ inline bool skill_check<antiair>(Field* fd, CardStatus* c, CardStatus* ref)
 template<>
 inline bool skill_check<blitz>(Field* fd, CardStatus* c, CardStatus* ref)
 {
-    
     unsigned opponent_player = opponent(c->m_player);
-    return(fd->players[opponent_player]->assaults.size() > c->m_index &&
+    return(fd->current_phase != Field::assaults_phase &&
+            fd->players[opponent_player]->assaults.size() > c->m_index &&
             fd->players[opponent_player]->assaults[c->m_index].m_hp > 0 &&
             fd->players[opponent_player]->assaults[c->m_index].m_delay == 0);
 }
