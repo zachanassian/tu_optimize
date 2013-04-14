@@ -768,6 +768,7 @@ inline bool skill_check<antiair>(Field* fd, CardStatus* c, CardStatus* ref)
 template<>
 inline bool skill_check<blitz>(Field* fd, CardStatus* c, CardStatus* ref)
 {
+    
     unsigned opponent_player = opponent(c->m_player);
     return(fd->players[opponent_player]->assaults.size() > c->m_index &&
             fd->players[opponent_player]->assaults[c->m_index].m_hp > 0 &&
@@ -2036,6 +2037,22 @@ void perform_targetted_hostile_fast(Field* fd, CardStatus* src_status, const Ski
 }
 
 template<Skill skill_id>
+inline void check_and_perform_emulate(Field* fd, CardStatus* src_status, CardStatus* opposite_status, const SkillSpec& s)
+{
+    Hand* hand = fd->players[opponent(opposite_status->m_player)];
+    if(hand->assaults.size() > opposite_status->m_index)
+    {
+        CardStatus& emulator = hand->assaults[opposite_status->m_index];
+        if(emulator.m_card->m_emulate && skill_predicate<skill_id>(fd, src_status, &emulator, s) && skill_check<emulate>(fd, &emulator, nullptr))
+        {
+            count_achievement<emulate>(fd, &emulator);
+            _DEBUG_MSG(1, "Emulate (%s %u) on %s\n", skill_names[skill_id].c_str(), std::get<1>(s), status_description(&emulator).c_str());
+            perform_skill<skill_id>(fd, &emulator, std::get<1>(s));
+        }
+    }
+}
+
+template<Skill skill_id>
 void perform_targetted_allied_fast(Field* fd, CardStatus* src_status, const SkillSpec& s)
 {
     std::vector<CardStatus*>& cards(skill_targets<skill_id>(fd, src_status));
@@ -2074,19 +2091,9 @@ void perform_targetted_allied_fast(Field* fd, CardStatus* src_status, const Skil
                 count_achievement<tribute>(fd, c);
                 _DEBUG_MSG(1, "Tribute (%s %u) on %s\n", skill_names[skill_id].c_str(), std::get<1>(s), status_description(src_status).c_str());
                 perform_skill<skill_id>(fd, src_status, std::get<1>(s));
+                check_and_perform_emulate<skill_id>(fd, src_status, src_status, s);
             }
-            // Emulate
-            Hand* opp = fd->players[opponent(c->m_player)];
-            if(opp->assaults.size() > c->m_index)
-            {
-                CardStatus& emulator = opp->assaults[c->m_index];
-                if(emulator.m_card->m_emulate && skill_predicate<skill_id>(fd, src_status, &emulator, s) && skill_check<emulate>(fd, &emulator, nullptr))
-                {
-                    count_achievement<emulate>(fd, &emulator);
-                    _DEBUG_MSG(1, "Emulate (%s %u) on %s\n", skill_names[skill_id].c_str(), std::get<1>(s), status_description(&emulator).c_str());
-                    perform_skill<skill_id>(fd, &emulator, std::get<1>(s));
-                }
-            }
+            check_and_perform_emulate<skill_id>(fd, src_status, c, s);
         }
     }
 }
