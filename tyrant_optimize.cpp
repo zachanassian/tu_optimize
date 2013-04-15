@@ -215,9 +215,9 @@ bool suitable_commander(const Card* card)
     return(true);
 }
 //------------------------------------------------------------------------------
-double compute_score(const std::pair<std::vector<Results<unsigned>> , unsigned>& results, std::vector<double>& factors)
+long double compute_score(const std::pair<std::vector<Results<unsigned>> , unsigned>& results, std::vector<long double>& factors)
 {
-    double sum{0.};
+    long double sum{0.};
     for(unsigned index(0); index < results.first.size(); ++index)
     {
         if(use_anp)
@@ -233,13 +233,13 @@ double compute_score(const std::pair<std::vector<Results<unsigned>> , unsigned>&
             sum += results.first[index].wins * factors[index];
         }
     }
-    return(sum / std::accumulate(factors.begin(), factors.end(), 0.) / (double)results.second);
+    return(sum / std::accumulate(factors.begin(), factors.end(), 0.) / (long double)results.second);
 }
 //------------------------------------------------------------------------------
 volatile unsigned thread_num_iterations{0}; // written by threads
 std::vector<Results<unsigned>> thread_results; // written by threads
 volatile unsigned thread_total{0}; // written by threads
-volatile double thread_prev_score{0.0};
+volatile long double thread_prev_score{0.0};
 volatile bool thread_compare{false};
 volatile bool thread_compare_stop{false}; // written by threads
 volatile bool destroy_threads;
@@ -256,12 +256,12 @@ struct SimulationData
     Hand att_hand;
     std::vector<std::shared_ptr<Deck> > def_decks;
     std::vector<Hand*> def_hands;
-    std::vector<double> factors;
+    std::vector<long double> factors;
     gamemode_t gamemode;
     enum Effect effect;
     const Achievement& achievement;
 
-    SimulationData(unsigned seed, const Cards& cards_, const Decks& decks_, unsigned num_def_decks_, std::vector<double> factors_, gamemode_t gamemode_, enum Effect effect_, const Achievement& achievement_) :
+    SimulationData(unsigned seed, const Cards& cards_, const Decks& decks_, unsigned num_def_decks_, std::vector<long double> factors_, gamemode_t gamemode_, enum Effect effect_, const Achievement& achievement_) :
         re(seed),
         cards(cards_),
         decks(decks_),
@@ -329,12 +329,12 @@ public:
     const Decks& decks;
     Deck* att_deck;
     const std::vector<Deck*> def_decks;
-    std::vector<double> factors;
+    std::vector<long double> factors;
     gamemode_t gamemode;
     enum Effect effect;
     Achievement achievement;
 
-    Process(unsigned _num_threads, const Cards& cards_, const Decks& decks_, Deck* att_deck_, std::vector<Deck*> _def_decks, std::vector<double> _factors, gamemode_t _gamemode, enum Effect _effect, const Achievement& achievement_) :
+    Process(unsigned _num_threads, const Cards& cards_, const Decks& decks_, Deck* att_deck_, std::vector<Deck*> _def_decks, std::vector<long double> _factors, gamemode_t _gamemode, enum Effect _effect, const Achievement& achievement_) :
         num_threads(_num_threads),
         main_barrier(num_threads+1),
         cards(cards_),
@@ -376,7 +376,7 @@ public:
         return(std::make_pair(thread_results, thread_total));
     }
 
-    std::pair<std::vector<Results<unsigned>> , unsigned> compare(unsigned num_iterations, double prev_score)
+    std::pair<std::vector<Results<unsigned>> , unsigned> compare(unsigned num_iterations, long double prev_score)
     {
         thread_num_iterations = num_iterations;
         thread_results = std::vector<Results<unsigned>>(def_decks.size());
@@ -446,7 +446,7 @@ void thread_evaluate(boost::barrier& main_barrier,
                     // Multiple defense decks case: scaling by factors and approximation of a "discrete" number of events.
                     if(result.size() > 1)
                     {
-                        double score_accum_d = 0.0;
+                        long double score_accum_d = 0.0;
                         for(unsigned i = 0; i < thread_score_local.size(); ++i)
                         {
                             score_accum_d += thread_score_local[i] * sim.factors[i];
@@ -463,7 +463,7 @@ void thread_evaluate(boost::barrier& main_barrier,
                     {
                         // TODO: Fix this solution for ANP
                         // Get a loose, rather than no, upper bound.
-                        double best_possible = gamemode_local == surge ? 45 : 25;
+                        long double best_possible = gamemode_local == surge ? 45 : 25;
                         compare_stop = (boost::math::binomial_distribution<>::find_upper_bound_on_p(thread_total_local, score_accum / best_possible, 0.01) * best_possible < thread_prev_score);
                     }
                     else
@@ -482,7 +482,7 @@ void thread_evaluate(boost::barrier& main_barrier,
     }
 }
 //------------------------------------------------------------------------------
-void print_score_info(const std::pair<std::vector<Results<unsigned>> , unsigned>& results, std::vector<double>& factors)
+void print_score_info(const std::pair<std::vector<Results<unsigned>> , unsigned>& results, std::vector<long double>& factors)
 {
     if(use_anp)
     {
@@ -492,7 +492,7 @@ void print_score_info(const std::pair<std::vector<Results<unsigned>> , unsigned>
             std::cout << " (";
             for(auto val: results.first)
             {
-                std::cout << static_cast<double>(val.points) / results.second << " ";
+                std::cout << static_cast<long double>(val.points) / results.second << " ";
             }
             std::cout << "reps.)";
         }
@@ -509,9 +509,9 @@ void print_score_info(const std::pair<std::vector<Results<unsigned>> , unsigned>
     }
 }
 //------------------------------------------------------------------------------
-void print_results(const std::pair<std::vector<Results<unsigned>> , unsigned>& results, std::vector<double>& factors)
+void print_results(const std::pair<std::vector<Results<unsigned>> , unsigned>& results, std::vector<long double>& factors)
 {
-    Results<double> final{0, 0, 0, 0};
+    Results<long double> final{0, 0, 0, 0};
     for(unsigned index(0); index < results.first.size(); ++index)
     {
         final.wins += results.first[index].wins * factors[index];
@@ -519,10 +519,10 @@ void print_results(const std::pair<std::vector<Results<unsigned>> , unsigned>& r
         final.losses += results.first[index].losses * factors[index];
         final.points += results.first[index].points * factors[index];
     }
-    final.wins /= std::accumulate(factors.begin(), factors.end(), 0.) * (double)results.second;
-    final.draws /= std::accumulate(factors.begin(), factors.end(), 0.) * (double)results.second;
-    final.losses /= std::accumulate(factors.begin(), factors.end(), 0.) * (double)results.second;
-    final.points /= std::accumulate(factors.begin(), factors.end(), 0.) * (double)results.second;
+    final.wins /= std::accumulate(factors.begin(), factors.end(), 0.) * (long double)results.second;
+    final.draws /= std::accumulate(factors.begin(), factors.end(), 0.) * (long double)results.second;
+    final.losses /= std::accumulate(factors.begin(), factors.end(), 0.) * (long double)results.second;
+    final.points /= std::accumulate(factors.begin(), factors.end(), 0.) * (long double)results.second;
 
     std::cout << "win%: " << final.wins * 100.0 << " (";
     for(auto val: results.first)
@@ -551,14 +551,14 @@ void print_results(const std::pair<std::vector<Results<unsigned>> , unsigned>& r
         std::cout << " (";
         for(auto val: results.first)
         {
-            std::cout << static_cast<double>(val.points) / results.second << " ";
+            std::cout << static_cast<long double>(val.points) / results.second << " ";
         }
         std::cout << "reps.)";
     }
     std::cout << std::endl;
 }
 //------------------------------------------------------------------------------
-void print_deck_inline(const double score, const Card *commander, std::vector<const Card*> cards, bool is_ordered)
+void print_deck_inline(const long double score, const Card *commander, std::vector<const Card*> cards, bool is_ordered)
 {
     if(use_anp)
     {
@@ -603,8 +603,8 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc)
 {
     auto results = proc.evaluate(num_iterations);
     print_score_info(results, proc.factors);
-    double current_score = compute_score(results, proc.factors);
-    double best_score = current_score;
+    long double current_score = compute_score(results, proc.factors);
+    long double best_score = current_score;
     // Non-commander cards
     auto non_commander_cards = proc.cards.player_assaults;
     non_commander_cards.insert(non_commander_cards.end(), proc.cards.player_structures.begin(), proc.cards.player_structures.end());
@@ -616,7 +616,7 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc)
     std::mt19937 re(time(NULL));
     bool deck_has_been_improved = true;
     bool eval_commander = true;
-    double best_possible = use_anp ? (gamemode == surge ? 45 : 25) : 1;
+    long double best_possible = use_anp ? (gamemode == surge ? 45 : 25) : 1;
     for(unsigned slot_i(0), dead_slot(0); (deck_has_been_improved || slot_i != dead_slot) && best_score < best_possible; slot_i = (slot_i + 1) % std::min<unsigned>(10, d1->cards.size() + (fixed_len ? 0 : 1)))
     {
         if(deck_has_been_improved)
@@ -708,8 +708,8 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc)
 {
     auto results = proc.evaluate(num_iterations);
     print_score_info(results, proc.factors);
-    double current_score = compute_score(results, proc.factors);
-    double best_score = current_score;
+    long double current_score = compute_score(results, proc.factors);
+    long double best_score = current_score;
     // Non-commander cards
     auto non_commander_cards = proc.cards.player_assaults;
     non_commander_cards.insert(non_commander_cards.end(), proc.cards.player_structures.begin(), proc.cards.player_structures.end());
@@ -721,7 +721,7 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc)
     std::mt19937 re(time(NULL));
     bool deck_has_been_improved = true;
     bool eval_commander = true;
-    double best_possible = use_anp ? (gamemode == surge ? 45 : 25) : 1;
+    long double best_possible = use_anp ? (gamemode == surge ? 45 : 25) : 1;
     for(unsigned from_slot(0), dead_slot(0); (deck_has_been_improved || from_slot != dead_slot) && best_score < best_possible; from_slot = (from_slot + 1) % std::min<unsigned>(10, d1->cards.size() + (fixed_len ? 0 : 1)))
     {
         if(deck_has_been_improved)
@@ -872,7 +872,7 @@ private:
 };
 //------------------------------------------------------------------------------
 static unsigned total_num_combinations_test(0);
-inline void try_all_ratio_combinations(unsigned deck_size, unsigned var_k, unsigned num_iterations, const std::vector<unsigned>& card_indices, std::vector<const Card*>& cards, const Card* commander, Process& proc, double& best_score, boost::optional<Deck>& best_deck)
+inline void try_all_ratio_combinations(unsigned deck_size, unsigned var_k, unsigned num_iterations, const std::vector<unsigned>& card_indices, std::vector<const Card*>& cards, const Card* commander, Process& proc, long double& best_score, boost::optional<Deck>& best_deck)
 {
     assert(card_indices.size() > 0);
     assert(card_indices.size() <= deck_size);
@@ -909,7 +909,7 @@ inline void try_all_ratio_combinations(unsigned deck_size, unsigned var_k, unsig
         deck.set(commander, deck_cards);
         (*dynamic_cast<Deck*>(proc.att_deck)) = deck;
         auto new_results = proc.compare(num_iterations, best_score);
-        double new_score = compute_score(new_results, proc.factors);
+        long double new_score = compute_score(new_results, proc.factors);
         if(new_score > best_score)
         {
             best_score = new_score;
@@ -949,7 +949,7 @@ inline void try_all_ratio_combinations(unsigned deck_size, unsigned var_k, unsig
             deck.set(commander, deck_cards);
             *proc.att_deck = deck;
             auto new_results = proc.compare(num_iterations, best_score);
-            double new_score = compute_score(new_results, proc.factors);
+            long double new_score = compute_score(new_results, proc.factors);
             if(new_score > best_score)
             {
                 best_score = new_score;
@@ -982,7 +982,7 @@ void exhaustive_k(unsigned num_iterations, unsigned var_k, Process& proc)
     Combination cardIndices(var_n, var_k);
     const std::vector<unsigned>& indices = cardIndices.getIndices();
     bool finished(false);
-    double best_score{0};
+    long double best_score{0};
     boost::optional<Deck> best_deck;
     unsigned num_cards = ((Deck*)proc.att_deck)->cards.size();
     while(!finished)
@@ -1264,7 +1264,7 @@ int main(int argc, char** argv)
     att_deck->strategy = att_strategy;
 
     std::vector<Deck*> def_decks;
-    std::vector<double> def_decks_factors;
+    std::vector<long double> def_decks_factors;
     for(auto deck_parsed: deck_list_parsed)
     {
         Deck* def_deck{nullptr};
@@ -1359,7 +1359,7 @@ int main(int argc, char** argv)
                 {
                     debug_str.clear();
                     auto results = p.evaluate(1);
-                    double score = compute_score(results, p.factors);
+                    long double score = compute_score(results, p.factors);
                     if(score >= std::get<0>(op) && score <= std::get<1>(op)) {
                         std::cout << debug_str << std::flush;
                         print_results(results, p.factors);

@@ -21,9 +21,9 @@ void load_decks(Decks& decks, Cards& cards)
     }
 }
 
-std::vector<std::pair<std::string, double> > parse_deck_list(std::string list_string)
+std::vector<std::pair<std::string, long double> > parse_deck_list(std::string list_string)
 {
-    std::vector<std::pair<std::string, double> > res;
+    std::vector<std::pair<std::string, long double> > res;
     boost::tokenizer<boost::char_delimiters_separator<char> > list_tokens{list_string, boost::char_delimiters_separator<char>{false, ";", ""}};
     for(auto list_token = list_tokens.begin(); list_token != list_tokens.end(); ++list_token)
     {
@@ -33,7 +33,7 @@ std::vector<std::pair<std::string, double> > parse_deck_list(std::string list_st
         ++deck_token;
         if(deck_token != deck_tokens.end())
         {
-            res.back().second = boost::lexical_cast<double>(*deck_token);
+            res.back().second = boost::lexical_cast<long double>(*deck_token);
         }
     }
     return(res);
