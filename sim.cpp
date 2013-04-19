@@ -1490,9 +1490,9 @@ void attack_phase(Field* fd)
                 {
                     PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci-1]}.op<CardType::assault>();
                 }
-                if(__builtin_expect(fd->end, false)) { return; }
-                // stille alive? attack the card in front
-                if(can_attack(att_status) && alive_assault(def_assaults, fd->current_ci))
+                if(fd->end || !can_attack(att_status)) { return; }
+                // attack the card in front (or attacks the commander if the card in front is just died)
+                if(alive_assault(def_assaults, fd->current_ci))
                 {
                     PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci]}.op<CardType::assault>();
                 }
@@ -1500,9 +1500,9 @@ void attack_phase(Field* fd)
                 {
                     attack_commander(fd, att_status);
                 }
-                if(__builtin_expect(fd->end, false)) { return; }
-                // still alive? attack the card on the right
-                if(can_attack(att_status) && alive_assault(def_assaults, fd->current_ci + 1))
+                if(fd->end || !can_attack(att_status)) { return; }
+                // attack the card on the right
+                if(alive_assault(def_assaults, fd->current_ci + 1))
                 {
                     PerformAttack{fd, att_status, &fd->tip->assaults[fd->current_ci+1]}.op<CardType::assault>();
                 }
