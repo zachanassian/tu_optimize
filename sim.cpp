@@ -2154,7 +2154,8 @@ void perform_summon(Field* fd, CardStatus* src_status, const SkillSpec& s)
         card_status.m_is_summoned = true;
         _DEBUG_MSG(1, "%s %s %s %u [%s]\n", status_description(src_status).c_str(), skill_names[skill_id].c_str(), cardtype_names[summoned->m_type].c_str(), card_status.m_index, card_description(fd->cards, summoned).c_str());
         prepend_skills(fd, &card_status);
-        if(card_status.m_card->m_blitz)
+        // Summon X (Genesis effect) does not activate Blitz for X
+        if(std::get<1>(s) != 0 && card_status.m_card->m_blitz)
         {
             check_and_perform_blitz(fd, &card_status);
         }
