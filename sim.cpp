@@ -1576,7 +1576,8 @@ inline bool skill_predicate<chaos>(Field* fd, CardStatus* src, CardStatus* c, co
 template<>
 inline bool skill_predicate<cleanse>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
 {
-    return(c->m_hp > 0 && (
+    return(fd->effect != Effect::decay &&
+            c->m_hp > 0 && (
                c->m_chaosed ||
                c->m_diseased ||
                c->m_enfeebled > 0 ||
@@ -1688,10 +1689,6 @@ inline void perform_skill<chaos>(Field* fd, CardStatus* c, unsigned v)
 template<>
 inline void perform_skill<cleanse>(Field* fd, CardStatus* c, unsigned v)
 {
-    if(fd->effect == Effect::decay)
-    {
-        return;
-    }
     c->m_chaosed = false;
     c->m_diseased = false;
     c->m_enfeebled = 0;
