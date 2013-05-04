@@ -216,12 +216,14 @@ std::string card_description(const Cards& cards, const Card* c)
     if(c->m_immobilize) { desc += ", immobilize"; }
     if(c->m_intercept) { desc += ", intercept"; }
     if(c->m_leech > 0) { desc += ", leech " + to_string(c->m_leech); }
+    if(c->m_legion > 0) { desc += ", legion " + to_string(c->m_legion); }
     if(c->m_payback) { desc += ", payback"; }
     if(c->m_pierce > 0) { desc += ", pierce " + to_string(c->m_pierce); }
     if(c->m_poison > 0) { desc += ", poison " + to_string(c->m_poison); }
     if(c->m_refresh) { desc += ", refresh"; }
     if(c->m_regenerate > 0) { desc += ", regenerate " + to_string(c->m_regenerate); }
     if(c->m_siphon > 0) { desc += ", siphon " + to_string(c->m_siphon); }
+    if(c->m_stun) { desc += ", stun"; }
     if(c->m_swipe) { desc += ", swipe"; }
     if(c->m_tribute) { desc += ", tribute"; }
     if(c->m_valor > 0) { desc += ", valor " + to_string(c->m_valor); }

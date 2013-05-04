@@ -615,7 +615,8 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc)
     print_deck_inline(best_score, best_commander, best_cards, false);
     std::mt19937 re(time(NULL));
     bool deck_has_been_improved = true;
-    bool eval_commander = true;
+    std::map<std::multiset<unsigned>, unsigned> evaluated_decks;
+    unsigned long skipped_simulations = 0;
     long double best_possible = use_anp ? (gamemode == surge ? 45 : 25) : 1;
     for(unsigned slot_i(0), dead_slot(0); (deck_has_been_improved || slot_i != dead_slot) && best_score < best_possible; slot_i = (slot_i + 1) % std::min<unsigned>(10, d1->cards.size() + (fixed_len ? 0 : 1)))
     {
@@ -624,7 +625,7 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc)
             dead_slot = slot_i;
             deck_has_been_improved = false;
         }
-        if(eval_commander && !keep_commander)
+        if(!keep_commander)
         {
             for(const Card* commander_candidate: proc.cards.player_commanders)
             {
@@ -634,24 +635,32 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc)
                 if(!suitable_commander(commander_candidate)) { continue; }
                 // Place it in the deck
                 d1->commander = commander_candidate;
-                // Evaluate new deck
-                auto compare_results = proc.compare(num_iterations, best_score);
-                current_score = compute_score(compare_results, proc.factors);
-                // Is it better ?
-                if(current_score > best_score)
+                auto &&cur_deck = d1->card_ids<std::multiset<unsigned>>();
+                if(evaluated_decks.count(cur_deck) == 0)
                 {
-                    // Then update best score/commander, print stuff
-                    best_score = current_score;
-                    best_commander = commander_candidate;
-                    deck_has_been_improved = true;
-                    std::cout << "Deck improved: " << deck_hash(commander_candidate, best_cards, false) << " commander -> " << card_id_name(commander_candidate) << ": ";
-                    print_score_info(compare_results, proc.factors);
-                    print_deck_inline(best_score, best_commander, best_cards, false);
+                    // Evaluate new deck
+                    auto compare_results = proc.compare(num_iterations, best_score);
+                    current_score = compute_score(compare_results, proc.factors);
+                    evaluated_decks[cur_deck] = compare_results.second;
+                    // Is it better ?
+                    if(current_score > best_score)
+                    {
+                        // Then update best score/commander, print stuff
+                        best_score = current_score;
+                        best_commander = commander_candidate;
+                        deck_has_been_improved = true;
+                        std::cout << "Deck improved: " << deck_hash(commander_candidate, best_cards, false) << " commander -> " << card_id_name(commander_candidate) << ": ";
+                        print_score_info(compare_results, proc.factors);
+                        print_deck_inline(best_score, best_commander, best_cards, false);
+                    }
+                }
+                else
+                {
+                    skipped_simulations += evaluated_decks[cur_deck];
                 }
             }
             // Now that all commanders are evaluated, take the best one
             d1->commander = best_commander;
-            eval_commander = false;
         }
         std::shuffle(non_commander_cards.begin(), non_commander_cards.end(), re);
         for(const Card* card_candidate: non_commander_cards)
@@ -678,28 +687,38 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc)
                 // Remove it from the deck
                 d1->cards.erase(d1->cards.begin() + slot_i);
             }
-            // Evaluate new deck
-            auto compare_results = proc.compare(num_iterations, best_score);
-            current_score = compute_score(compare_results, proc.factors);
-            // Is it better ?
-            if(current_score > best_score)
+            auto &&cur_deck = d1->card_ids<std::multiset<unsigned>>();
+            if(evaluated_decks.count(cur_deck) == 0)
             {
-                std::cout << "Deck improved: " << deck_hash(best_commander, d1->cards, false) << " " << card_id_name(slot_i < best_cards.size() ? best_cards[slot_i] : NULL) <<
-                    " -> " << card_id_name(card_candidate) << ": ";
-                // Then update best score/slot, print stuff
-                best_score = current_score;
-                best_cards = d1->cards;
-                eval_commander = true;
-                deck_has_been_improved = true;
-                print_score_info(compare_results, proc.factors);
-                print_deck_inline(best_score, best_commander, best_cards, false);
+                // Evaluate new deck
+                auto compare_results = proc.compare(num_iterations, best_score);
+                current_score = compute_score(compare_results, proc.factors);
+                evaluated_decks[cur_deck] = compare_results.second;
+                // Is it better ?
+                if(current_score > best_score)
+                {
+                    std::cout << "Deck improved: " << deck_hash(best_commander, d1->cards, false) << " " << card_id_name(slot_i < best_cards.size() ? best_cards[slot_i] : NULL) <<
+                        " -> " << card_id_name(card_candidate) << ": ";
+                    // Then update best score/slot, print stuff
+                    best_score = current_score;
+                    best_cards = d1->cards;
+                    deck_has_been_improved = true;
+                    print_score_info(compare_results, proc.factors);
+                    print_deck_inline(best_score, best_commander, best_cards, false);
+                }
+            }
+            else
+            {
+                skipped_simulations += evaluated_decks[cur_deck];
             }
             d1->cards = best_cards;
             if(best_score == best_possible) { break; }
         }
-        // Now that all cards are evaluated, take the best one
-        d1->cards = best_cards;
     }
+    unsigned simulations = 0;
+    for(auto evaluation: evaluated_decks)
+    { simulations += evaluation.second; }
+    std::cout << "Evaluated " << evaluated_decks.size() << " decks (" << simulations << " + " << skipped_simulations << " simulations)." << std::endl;
     std::cout << "Optimized Deck: ";
     print_deck_inline(best_score, best_commander, best_cards, false);
 }
@@ -720,7 +739,8 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc)
     print_deck_inline(best_score, best_commander, best_cards, true);
     std::mt19937 re(time(NULL));
     bool deck_has_been_improved = true;
-    bool eval_commander = true;
+    std::map<std::vector<unsigned>, unsigned> evaluated_decks;
+    unsigned long skipped_simulations = 0;
     long double best_possible = use_anp ? (gamemode == surge ? 45 : 25) : 1;
     for(unsigned from_slot(0), dead_slot(0); (deck_has_been_improved || from_slot != dead_slot) && best_score < best_possible; from_slot = (from_slot + 1) % std::min<unsigned>(10, d1->cards.size() + (fixed_len ? 0 : 1)))
     {
@@ -729,7 +749,7 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc)
             dead_slot = from_slot;
             deck_has_been_improved = false;
         }
-        if(eval_commander && !keep_commander)
+        if(!keep_commander)
         {
             for(const Card* commander_candidate: proc.cards.player_commanders)
             {
@@ -740,24 +760,32 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc)
                 if(!suitable_commander(commander_candidate)) { continue; }
                 // Place it in the deck
                 d1->commander = commander_candidate;
-                // Evaluate new deck
-                auto compare_results = proc.compare(num_iterations, best_score);
-                current_score = compute_score(compare_results, proc.factors);
-                // Is it better ?
-                if(current_score > best_score)
+                auto &&cur_deck = d1->card_ids<std::vector<unsigned>>();
+                if(evaluated_decks.count(cur_deck) == 0)
                 {
-                    // Then update best score/commander, print stuff
-                    best_score = current_score;
-                    best_commander = commander_candidate;
-                    deck_has_been_improved = true;
-                    std::cout << "Deck improved: " << deck_hash(commander_candidate, best_cards, true) << " commander -> " << card_id_name(commander_candidate) << ": ";
-                    print_score_info(compare_results, proc.factors);
-                    print_deck_inline(best_score, best_commander, best_cards, true);
+                    // Evaluate new deck
+                    auto compare_results = proc.compare(num_iterations, best_score);
+                    current_score = compute_score(compare_results, proc.factors);
+                    evaluated_decks[cur_deck] = compare_results.second;
+                    // Is it better ?
+                    if(current_score > best_score)
+                    {
+                        // Then update best score/commander, print stuff
+                        best_score = current_score;
+                        best_commander = commander_candidate;
+                        deck_has_been_improved = true;
+                        std::cout << "Deck improved: " << deck_hash(commander_candidate, best_cards, true) << " commander -> " << card_id_name(commander_candidate) << ": ";
+                        print_score_info(compare_results, proc.factors);
+                        print_deck_inline(best_score, best_commander, best_cards, true);
+                    }
+                }
+                else
+                {
+                    skipped_simulations += evaluated_decks[cur_deck];
                 }
             }
             // Now that all commanders are evaluated, take the best one
             d1->commander = best_commander;
-            eval_commander = false;
         }
         std::shuffle(non_commander_cards.begin(), non_commander_cards.end(), re);
         for(const Card* card_candidate: non_commander_cards)
@@ -784,27 +812,39 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc)
                     // Remove it from the deck
                     d1->cards.erase(d1->cards.begin() + from_slot);
                 }
-                // Evaluate new deck
-                auto compare_results = proc.compare(num_iterations, best_score);
-                current_score = compute_score(compare_results, proc.factors);
-                // Is it better ?
-                if(current_score > best_score)
+                auto &&cur_deck = d1->card_ids<std::vector<unsigned>>();
+                if(evaluated_decks.count(cur_deck) == 0)
                 {
-                    // Then update best score/slot, print stuff
-                    std::cout << "Deck improved: " << deck_hash(best_commander, d1->cards, true) << " " << from_slot << " " << card_id_name(from_slot < best_cards.size() ? best_cards[from_slot] : NULL) <<
-                        " -> " << to_slot << " " << card_id_name(card_candidate) << ": ";
-                    best_score = current_score;
-                    best_cards = d1->cards;
-                    eval_commander = true;
-                    deck_has_been_improved = true;
-                    print_score_info(compare_results, proc.factors);
-                    print_deck_inline(best_score, best_commander, best_cards, true);
+                    // Evaluate new deck
+                    auto compare_results = proc.compare(num_iterations, best_score);
+                    current_score = compute_score(compare_results, proc.factors);
+                    evaluated_decks[cur_deck] = compare_results.second;
+                    // Is it better ?
+                    if(current_score > best_score)
+                    {
+                        // Then update best score/slot, print stuff
+                        std::cout << "Deck improved: " << deck_hash(best_commander, d1->cards, true) << " " << from_slot << " " << card_id_name(from_slot < best_cards.size() ? best_cards[from_slot] : NULL) <<
+                            " -> " << to_slot << " " << card_id_name(card_candidate) << ": ";
+                        best_score = current_score;
+                        best_cards = d1->cards;
+                        deck_has_been_improved = true;
+                        print_score_info(compare_results, proc.factors);
+                        print_deck_inline(best_score, best_commander, best_cards, true);
+                    }
+                }
+                else
+                {
+                    skipped_simulations += evaluated_decks[cur_deck];
                 }
                 d1->cards = best_cards;
             }
             if(best_score == best_possible) { break; }
         }
     }
+    unsigned simulations = 0;
+    for(auto evaluation: evaluated_decks)
+    { simulations += evaluation.second; }
+    std::cout << "Evaluated " << evaluated_decks.size() << " decks (" << simulations << " + " << skipped_simulations << " simulations)." << std::endl;
     std::cout << "Optimized Deck: ";
     print_deck_inline(best_score, best_commander, best_cards, true);
 }

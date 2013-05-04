@@ -78,6 +78,18 @@ struct Deck
     void set(const Cards& all_cards, const std::string& deck_string_);
     void resolve(const Cards& all_cards);
 
+    template<class Container>
+    Container card_ids() const
+    {
+        Container results;
+        results.insert(results.end(), commander->m_id);
+        for(auto card: cards)
+        {
+            results.insert(results.end(), card->m_id);
+        }
+        return(results);
+    }
+
     Deck* clone() const;
     std::string short_description() const;
     std::string long_description(const Cards& all_cards) const;
