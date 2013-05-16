@@ -138,6 +138,7 @@ struct CardStatus
     unsigned m_protected;
     unsigned m_rallied;
     unsigned m_stunned;
+    bool m_sundered;
     unsigned m_weakened;
     bool m_temporary_split;
     bool m_is_summoned; // is this card summoned (or split)?

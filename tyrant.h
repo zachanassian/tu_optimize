@@ -1,7 +1,7 @@
 #ifndef TYRANT_H_INCLUDED
 #define TYRANT_H_INCLUDED
 
-#define TYRANT_OPTIMIZER_VERSION "1.0.12"
+#define TYRANT_OPTIMIZER_VERSION "1.0.13"
 
 #include <string>
 #include <set>
@@ -33,7 +33,7 @@ enum Skill
     // Damage-Dependant:
     berserk, crush, disease, immobilize, leech, poison, siphon,
     // Defensive:
-    armored, counter, emulate, evade, flying, intercept, payback, refresh, regenerate, stun, tribute, wall,
+    armored, counter, emulate, evade, flying, intercept, payback, refresh, regenerate, stun, sunder, tribute, wall,
     // Triggered:
     blitz, legion,
     // Static, ignored:

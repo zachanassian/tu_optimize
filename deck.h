@@ -7,8 +7,8 @@
 #include <random>
 #include <vector>
 #include "tyrant.h"
+#include "card.h"
 
-class Card;
 class Cards;
 
 std::string deck_hash(const Card* commander, std::vector<const Card*> cards, bool is_ordered);

@@ -268,6 +268,12 @@ void read_cards(Cards& cards)
                     { c->m_siphon = atoi(skill->first_attribute("x")->value()); }
                     if(strcmp(skill->first_attribute("id")->value(), "stun") == 0)
                     { c->m_stun = true; }
+                    if(strcmp(skill->first_attribute("id")->value(), "sunder") == 0)
+                    {
+                        bool attacked(skill->first_attribute("attacked"));
+                        if(attacked) { c->m_sunder_oa = true; }
+                        else {c->m_sunder = true; }
+                    }
                     if(strcmp(skill->first_attribute("id")->value(), "swipe") == 0)
                     { c->m_swipe = true; }
                     if(strcmp(skill->first_attribute("id")->value(), "tribute") == 0)

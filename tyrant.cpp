@@ -21,7 +21,7 @@ std::string skill_names[Skill::num_skills] =
     // Damage-Dependant:
     "Berserk", "Crush", "Disease", "Immobilize", "Leech", "Poison", "Siphon",
     // Defensive:
-    "Armored", "Counter", "Emulate", "Evade", "Flying", "Intercept", "Payback", "Refresh", "Regenerate", "Stun", "Tribute", "Wall",
+    "Armored", "Counter", "Emulate", "Evade", "Flying", "Intercept", "Payback", "Refresh", "Regenerate", "Stun", "Sunder", "Tribute", "Wall",
     // Triggered:
     "Blitz", "Legion",
     // Static (Ignored):

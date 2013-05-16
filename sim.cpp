@@ -100,6 +100,7 @@ CardStatus::CardStatus(const Card* card) :
     m_protected(0),
     m_rallied(0),
     m_stunned(0),
+    m_sundered(false),
     m_weakened(0),
     m_temporary_split(false),
     m_is_summoned(false),
@@ -136,6 +137,7 @@ inline void CardStatus::set(const Card& card)
     m_rallied = 0;
     m_weakened = 0;
     m_stunned = 0;
+    m_sundered = false;
     m_temporary_split = false;
     m_is_summoned = false;
     m_step = CardStep::none;
@@ -224,6 +226,7 @@ std::string card_description(const Cards& cards, const Card* c)
     if(c->m_regenerate > 0) { desc += ", regenerate " + to_string(c->m_regenerate); }
     if(c->m_siphon > 0) { desc += ", siphon " + to_string(c->m_siphon); }
     if(c->m_stun) { desc += ", stun"; }
+    if(c->m_sunder) { desc += ", sunder"; }
     if(c->m_swipe) { desc += ", swipe"; }
     if(c->m_tribute) { desc += ", tribute"; }
     if(c->m_valor > 0) { desc += ", valor " + to_string(c->m_valor); }
@@ -234,6 +237,7 @@ std::string card_description(const Cards& cards, const Card* c)
     if(c->m_berserk_oa > 0) { desc += ", berserk " + to_string(c->m_berserk_oa); }
     if(c->m_disease_oa) { desc += ", disease on Attacked"; }
     if(c->m_poison_oa > 0) { desc += ", poison " + to_string(c->m_poison_oa) + " on Attacked"; }
+    if(c->m_sunder_oa) { desc += ", sunder on Attacked"; }
     for(auto& skill: c->m_skills_on_attacked) { desc += ", " + skill_description(cards, skill); }
     for(auto& skill: c->m_skills_on_death) { desc += ", " + skill_description(cards, skill); }
     return(desc);
@@ -282,6 +286,7 @@ std::string CardStatus::description()
     if(m_immobilized) { desc += ", immobilized"; }
     if(m_infused) { desc += ", infused"; }
     if(m_jammed) { desc += ", jammed"; }
+    if(m_sundered) { desc += ", sundered"; }
     if(m_temporary_split) { desc += ", cloning"; }
     if(m_augmented > 0) { desc += ", augmented " + to_string(m_augmented); }
     if(m_enfeebled > 0) { desc += ", enfeebled " + to_string(m_enfeebled); }
@@ -768,6 +773,12 @@ inline bool skill_check<antiair>(Field* fd, CardStatus* c, CardStatus* ref)
 }
 
 template<>
+inline bool skill_check<berserk>(Field* fd, CardStatus* c, CardStatus* ref)
+{
+    return(!c->m_sundered);
+}
+
+template<>
 inline bool skill_check<blitz>(Field* fd, CardStatus* c, CardStatus* ref)
 {
     unsigned opponent_player = opponent(c->m_player);
@@ -841,6 +852,12 @@ template<>
 inline bool skill_check<stun>(Field* fd, CardStatus* c, CardStatus* ref)
 {
     return(ref->m_card->m_type == CardType::assault);
+}
+
+template<>
+inline bool skill_check<sunder>(Field* fd, CardStatus* c, CardStatus* ref)
+{
+    return(!ref->m_sundered);
 }
 
 template<>
@@ -934,11 +951,11 @@ inline void remove_dead(Storage<CardStatus>& storage)
 {
     storage.remove(is_it_dead);
 }
-inline void add_hp(Field* field, CardStatus* target, unsigned v)
+inline void add_hp(Field* fd, CardStatus* target, unsigned v)
 {
     unsigned old_hp = target->m_hp;
     target->m_hp = std::min(target->m_hp + v, target->m_card->m_health);
-    if(field->effect == Effect::invigorate && target->m_card->m_type == CardType::assault)
+    if(fd->effect == Effect::invigorate && target->m_card->m_type == CardType::assault && skill_check<berserk>(fd, target, nullptr))
     {
         unsigned healed = target->m_hp - old_hp;
         target->m_berserk += healed;
@@ -1089,7 +1106,7 @@ void evaluate_legion(Field* fd)
         }
         // skill_check<legion>
         bool do_heal = can_be_healed(status);
-        bool do_rally = status->m_hp > 0 && (fd->tapi == status->m_player ? status->m_delay == 0 || status->m_blitzing : status->m_delay <= 1);
+        bool do_rally = status->m_hp > 0 && !status->m_sundered && (fd->tapi == status->m_player ? status->m_delay == 0 || status->m_blitzing : status->m_delay <= 1);
         if(!do_heal && !do_rally)
         {
             continue;
@@ -1181,8 +1198,8 @@ struct PerformAttack
         // modify damage
         // assaults only: immobilize
         // deal damage
-        // assaults only: (siphon, poison, disease, on_kill)
-        // on_attacked: poison, disease, assaults only: berserk, skills
+        // assaults only: (siphon, poison, disease, sunder, on_kill)
+        // on_attacked: poison, disease, sunder, assaults only: berserk, skills
         // counter, berserk
         // assaults only: (crush, leech if still alive)
         // check regeneration
@@ -1353,6 +1370,13 @@ struct PerformAttack
             count_achievement<berserk>(fd, def_status); 
             def_status->m_berserk += def_status->m_card->m_berserk_oa;
         }
+        if(def_status->m_card->m_sunder_oa && skill_check<sunder>(fd, def_status, att_status))
+        {
+            count_achievement<sunder>(fd, def_status);
+            // perform_skill_sunder
+            _DEBUG_MSG(1, "%s (on attacked) sunders %s\n", status_description(def_status).c_str(), status_description(att_status).c_str());
+            att_status->m_sundered = true;
+        }
         evaluate_skills(fd, def_status, def_status->m_card->m_skills_on_attacked);
     }
 
@@ -1402,6 +1426,13 @@ void PerformAttack::siphon_poison_disease<CardType::assault>()
         // perform_skill_disease
         _DEBUG_MSG(1, "%s diseases %s\n", status_description(def_status).c_str(), status_description(att_status).c_str());
         def_status->m_diseased = true;
+    }
+    if(att_status->m_card->m_sunder && skill_check<sunder>(fd, att_status, def_status))
+    {
+        count_achievement<sunder>(fd, att_status);
+        // perform_skill_sunder
+        _DEBUG_MSG(1, "%s sunders %s\n", status_description(def_status).c_str(), status_description(att_status).c_str());
+        def_status->m_sundered = true;
     }
 }
 
@@ -1587,7 +1618,8 @@ inline bool skill_predicate<cleanse>(Field* fd, CardStatus* src, CardStatus* c, 
                c->m_immobilized ||
                c->m_jammed ||
                c->m_poisoned ||
-               c->m_stunned
+               c->m_stunned ||
+               c->m_sundered
                ));
 }
 
@@ -1629,7 +1661,7 @@ template<>
 inline bool skill_predicate<rally>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
 {
     const auto& mod = std::get<4>(s);
-    return(can_attack(c) &&  // (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)));
+    return(can_attack(c) && !c->m_sundered &&  // (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)));
         (src->m_player != c->m_player || mod == SkillMod::on_death ? (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)) :
          mod == SkillMod::on_attacked ? is_active_next_turn(c) :
          is_active(c) && !is_attacking_or_has_attacked(c)));
@@ -1699,6 +1731,7 @@ inline void perform_skill<cleanse>(Field* fd, CardStatus* c, unsigned v)
     c->m_jammed = false;
     c->m_poisoned = 0;
     c->m_stunned = 0;
+    c->m_sundered = false;
 }
 
 template<>

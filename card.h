@@ -47,6 +47,8 @@ public:
         m_siphon(0),
         m_split(false),
         m_stun(false),
+        m_sunder(false),
+        m_sunder_oa(false),
         m_swipe(false),
         m_tribute(false),
         m_unique(false),
@@ -106,6 +108,8 @@ public:
     unsigned m_siphon;
     bool m_split;
     bool m_stun;
+    bool m_sunder;
+    bool m_sunder_oa;
     bool m_swipe;
     bool m_tribute;
     bool m_unique;
