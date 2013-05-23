@@ -80,7 +80,8 @@ Deck* find_deck(Decks& decks, const Cards& cards, std::string deck_name)
 //------------------------------------------------------------------------------
 std::map<unsigned, unsigned> owned_cards;
 bool use_owned_cards{false};
-bool fixed_len{false};
+unsigned min_deck_len{1};
+unsigned max_deck_len{10};
 
 // No raid rewards from 500 and 1k honor for ancient raids
 // No very hard to get rewards (level >= 150, faction >= 13)
@@ -609,7 +610,7 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc)
     auto non_commander_cards = proc.cards.player_assaults;
     non_commander_cards.insert(non_commander_cards.end(), proc.cards.player_structures.begin(), proc.cards.player_structures.end());
     non_commander_cards.insert(non_commander_cards.end(), proc.cards.player_actions.begin(), proc.cards.player_actions.end());
-    if(!fixed_len) { non_commander_cards.insert(non_commander_cards.end(), std::initializer_list<Card *>{NULL,}); }
+    non_commander_cards.insert(non_commander_cards.end(), std::initializer_list<Card *>{NULL,});
     const Card* best_commander = d1->commander;
     std::vector<const Card*> best_cards = d1->cards;
     print_deck_inline(best_score, best_commander, best_cards, false);
@@ -618,7 +619,7 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc)
     std::map<std::multiset<unsigned>, unsigned> evaluated_decks;
     unsigned long skipped_simulations = 0;
     long double best_possible = use_anp ? (gamemode == surge ? 45 : 25) : 1;
-    for(unsigned slot_i(0), dead_slot(0); (deck_has_been_improved || slot_i != dead_slot) && best_score < best_possible; slot_i = (slot_i + 1) % std::min<unsigned>(10, d1->cards.size() + (fixed_len ? 0 : 1)))
+    for(unsigned slot_i(0), dead_slot(0); (deck_has_been_improved || slot_i != dead_slot) && best_score < best_possible; slot_i = (slot_i + 1) % std::min<unsigned>(max_deck_len, d1->cards.size() + 1))
     {
         if(deck_has_been_improved)
         {
@@ -683,7 +684,7 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc)
             }
             else
             {
-                if(fixed_len || slot_i == best_cards.size() || best_cards.size() == 1) { continue; }
+                if(best_cards.size() <= min_deck_len || slot_i == best_cards.size()) { continue; }
                 // Remove it from the deck
                 d1->cards.erase(d1->cards.begin() + slot_i);
             }
@@ -733,7 +734,7 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc)
     auto non_commander_cards = proc.cards.player_assaults;
     non_commander_cards.insert(non_commander_cards.end(), proc.cards.player_structures.begin(), proc.cards.player_structures.end());
     non_commander_cards.insert(non_commander_cards.end(), proc.cards.player_actions.begin(), proc.cards.player_actions.end());
-    if(!fixed_len) { non_commander_cards.insert(non_commander_cards.end(), std::initializer_list<Card *>{NULL,}); }
+    non_commander_cards.insert(non_commander_cards.end(), std::initializer_list<Card *>{NULL,});
     const Card* best_commander = d1->commander;
     std::vector<const Card*> best_cards = d1->cards;
     print_deck_inline(best_score, best_commander, best_cards, true);
@@ -742,7 +743,7 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc)
     std::map<std::vector<unsigned>, unsigned> evaluated_decks;
     unsigned long skipped_simulations = 0;
     long double best_possible = use_anp ? (gamemode == surge ? 45 : 25) : 1;
-    for(unsigned from_slot(0), dead_slot(0); (deck_has_been_improved || from_slot != dead_slot) && best_score < best_possible; from_slot = (from_slot + 1) % std::min<unsigned>(10, d1->cards.size() + (fixed_len ? 0 : 1)))
+    for(unsigned from_slot(0), dead_slot(0); (deck_has_been_improved || from_slot != dead_slot) && best_score < best_possible; from_slot = (from_slot + 1) % std::min<unsigned>(max_deck_len, d1->cards.size() + 1))
     {
         if(deck_has_been_improved)
         {
@@ -808,7 +809,7 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc)
                 }
                 else
                 {
-                    if(fixed_len || from_slot == best_cards.size() || best_cards.size() == 1) { continue; }
+                    if(best_cards.size() <= min_deck_len || from_slot == best_cards.size()) { continue; }
                     // Remove it from the deck
                     d1->cards.erase(d1->cards.begin() + from_slot);
                 }
@@ -1093,7 +1094,8 @@ void usage(int argc, char** argv)
         "  -A <achievement>: optimize for the achievement specified by either id or name.\n"
         "  -c: don't try to optimize the commander.\n"
         "  -e <effect>: set the battleground effect. effect is automatically set for quests.\n"
-        "  -fixedlen: prevent hill climbing from changing the number of cards.\n"
+        "  minlen <size>: prevent hill climbing from shortening decks than <size> cards.\n"
+        "  maxlen <size>: prevent hill climbing from lengthening decks than <size> cards.\n"
         "  -o: restrict hill climbing to the owned cards listed in \"ownedcards.txt\".\n"
         "  -o=<filename>: restrict hill climbing to the owned cards listed in <filename>.\n"
         "  -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).\n"
@@ -1151,6 +1153,7 @@ int main(int argc, char** argv)
         effect_map[ss.str()] = i;
     }
 
+    bool fixed_len{false};
     std::vector<std::tuple<unsigned, unsigned, Operation> > todo;
     for(int argIndex(3); argIndex < argc; ++argIndex)
     {
@@ -1175,10 +1178,6 @@ int main(int argc, char** argv)
         {
             keep_commander = true;
         }
-        else if(strcmp(argv[argIndex], "tournament") == 0)
-        {
-            gamemode = tournament;
-        }
         else if(strcmp(argv[argIndex], "-e") == 0)
         {
             std::string arg_effect(argv[argIndex + 1]);
@@ -1195,6 +1194,16 @@ int main(int argc, char** argv)
         else if(strcmp(argv[argIndex], "-fixedlen") == 0)
         {
             fixed_len = true;
+        }
+        else if(strcmp(argv[argIndex], "maxlen") == 0)
+        {
+            max_deck_len = atoi(argv[argIndex + 1]);
+            argIndex += 1;
+        }
+        else if(strcmp(argv[argIndex], "minlen") == 0)
+        {
+            min_deck_len = atoi(argv[argIndex + 1]);
+            argIndex += 1;
         }
         else if(strcmp(argv[argIndex], "-o") == 0)
         {
@@ -1225,6 +1234,10 @@ int main(int argc, char** argv)
         else if(strcmp(argv[argIndex], "-s") == 0 || strcmp(argv[argIndex], "surge") == 0)
         {
             gamemode = surge;
+        }
+        else if(strcmp(argv[argIndex], "tournament") == 0)
+        {
+            gamemode = tournament;
         }
         else if(strcmp(argv[argIndex], "-t") == 0)
         {
@@ -1302,6 +1315,10 @@ int main(int argc, char** argv)
         return(5);
     }
     att_deck->strategy = att_strategy;
+    if(fixed_len)
+    {
+        min_deck_len = max_deck_len = att_deck->cards.size();
+    }
 
     std::vector<Deck*> def_decks;
     std::vector<long double> def_decks_factors;
