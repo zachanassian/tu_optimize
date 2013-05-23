@@ -103,6 +103,7 @@ enum Effect {
     clone_experiment,
     toxic,
     haunt,
+    united_front,
     num_effects
 };
 

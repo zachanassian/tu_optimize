@@ -1093,7 +1093,8 @@ void evaluate_legion(Field* fd)
     for(fd->current_ci = 0; fd->current_ci < assaults.size(); ++fd->current_ci)
     {
         CardStatus* status(&assaults[fd->current_ci]);
-        if(status->m_card->m_legion == 0)
+        unsigned legion_base = fd->effect == Effect::united_front && status->m_player == 1 ? status->m_card->m_delay : status->m_card->m_legion;
+        if(legion_base == 0)
         {
             continue;
         }
@@ -1112,8 +1113,8 @@ void evaluate_legion(Field* fd)
             continue;
         }
         count_achievement<legion>(fd, status);
-        unsigned legion_value = status->m_card->m_legion * legion_size;
-        _DEBUG_MSG(1, "%s activates Legion %u, %s%s%s by %u\n", status_description(status).c_str(), status->m_card->m_legion,
+        unsigned legion_value = legion_base * legion_size;
+        _DEBUG_MSG(1, "%s activates Legion %u, %s%s%s by %u\n", status_description(status).c_str(), legion_base,
                 do_heal ? "healed" : "", do_heal && do_rally ? " and " : "", do_rally ? "rallied" : "", legion_value);
         if(do_heal)
         {
@@ -2363,8 +2364,7 @@ void modify_cards(Cards& cards, enum Effect effect)
             // Do nothing; this is implemented in add_hp
             break;
         case Effect::clone_project:
-        case Effect::clone_experiment:
-            // Do nothing; these are implemented in play
+            // Do nothing; this is implemented in play
             break;
         case Effect::friendly_fire:
             cards_gain_skill<CardType::assault>(cards, strike, 1, false, false);
@@ -2372,6 +2372,10 @@ void modify_cards(Cards& cards, enum Effect effect)
             break;
         case Effect::genesis:
             cards_gain_skill<CardType::commander>(cards, summon, 0, false, false); // No replace exising Summon, if any
+            break;
+        case Effect::artillery_fire:
+        case Effect::photon_shield:
+            throw std::runtime_error("Unused effect");
             break;
         case Effect::decrepit:
             cards_gain_skill<CardType::commander>(cards, enfeeble, 1, true, true);
@@ -2382,9 +2386,18 @@ void modify_cards(Cards& cards, enum Effect effect)
         case Effect::chilling_touch:
             cards_gain_skill<CardType::commander>(cards, freeze, 0, false, false);
             break;
+        case Effect::clone_experiment:
+            // Do nothing; this is implemented in play
+            break;
         case Effect::toxic:
             // Do nothing; this is implemented in PlayCard::fieldEffects
             // and summon_card
+            break;
+        case Effect::haunt:
+            throw std::runtime_error("Unused effect");
+            break;
+        case Effect::united_front:
+            // Do nothing: this is implemented in evaluate_legion
             break;
         default:
             // TODO: throw something more useful
