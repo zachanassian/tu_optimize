@@ -198,11 +198,9 @@ bool suitable_non_commander(const Deck& deck, unsigned slot, const Card* card)
     return(true);
 }
 
-bool keep_commander{false};
 bool suitable_commander(const Card* card)
 {
     assert(card->m_type == CardType::commander);
-    if(keep_commander) { return(false); }
     if(use_owned_cards)
     {
         auto owned_iter = owned_cards.find(card->m_id);
@@ -600,7 +598,7 @@ void print_deck_inline(const long double score, const Card *commander, std::vect
     std::cout << std::endl;
 }
 //------------------------------------------------------------------------------
-void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc)
+void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc, std::map<signed, char> card_marks)
 {
     auto results = proc.evaluate(num_iterations);
     print_score_info(results, proc.factors);
@@ -621,12 +619,13 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc)
     long double best_possible = use_anp ? (gamemode == surge ? 45 : 25) : 1;
     for(unsigned slot_i(0), dead_slot(0); (deck_has_been_improved || slot_i != dead_slot) && best_score < best_possible; slot_i = (slot_i + 1) % std::min<unsigned>(max_deck_len, d1->cards.size() + 1))
     {
+        if(card_marks.count(slot_i)) { continue; }
         if(deck_has_been_improved)
         {
             dead_slot = slot_i;
             deck_has_been_improved = false;
         }
-        if(!keep_commander)
+        if(!card_marks.count(-1))
         {
             for(const Card* commander_candidate: proc.cards.player_commanders)
             {
@@ -724,7 +723,7 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc)
     print_deck_inline(best_score, best_commander, best_cards, false);
 }
 //------------------------------------------------------------------------------
-void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc)
+void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc, std::map<signed, char> card_marks)
 {
     auto results = proc.evaluate(num_iterations);
     print_score_info(results, proc.factors);
@@ -750,7 +749,7 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc)
             dead_slot = from_slot;
             deck_has_been_improved = false;
         }
-        if(!keep_commander)
+        if(!card_marks.count(-1))
         {
             for(const Card* commander_candidate: proc.cards.player_commanders)
             {
@@ -795,6 +794,7 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc)
             assert(!card_candidate || card_candidate->m_type != CardType::commander);
             for(unsigned to_slot(card_candidate ? 0 : d1->cards.size() - 1); to_slot < d1->cards.size() + (from_slot < d1->cards.size() ? 0 : 1); ++to_slot)
             {
+                if(card_marks.count(from_slot) && card_candidate != best_cards[from_slot]) { break; }
                 if(card_candidate)
                 {
                     // Various checks to check if the card is accepted
@@ -831,6 +831,24 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc)
                         deck_has_been_improved = true;
                         print_score_info(compare_results, proc.factors);
                         print_deck_inline(best_score, best_commander, best_cards, true);
+                        std::map<signed, char> new_card_marks;
+                        for(auto it: card_marks)
+                        {
+                            signed pos = it.first;
+                            char mark = it.second;
+                            if(pos < 0) {}
+                            else if(static_cast<unsigned>(pos) == from_slot)
+                            {
+                                pos = to_slot;
+                            }
+                            else
+                            {
+                                if(static_cast<unsigned>(pos) > from_slot) { -- pos; }
+                                if(static_cast<unsigned>(pos) >= to_slot) { ++ pos; }
+                            }
+                            new_card_marks[pos] = mark;
+                        }
+                        card_marks = new_card_marks;
                     }
                 }
                 else
@@ -1004,7 +1022,7 @@ inline void try_all_ratio_combinations(unsigned deck_size, unsigned var_k, unsig
     }
 }
 //------------------------------------------------------------------------------
-void exhaustive_k(unsigned num_iterations, unsigned var_k, Process& proc)
+void exhaustive_k(unsigned num_iterations, unsigned var_k, Process& proc, std::map<signed, char> card_marks)
 {
     std::vector<const Card*> ass_structs;
     for(const Card* card: proc.cards.player_assaults)
@@ -1028,7 +1046,7 @@ void exhaustive_k(unsigned num_iterations, unsigned var_k, Process& proc)
     unsigned num_cards = ((Deck*)proc.att_deck)->cards.size();
     while(!finished)
     {
-        if(keep_commander)
+        if(card_marks.count(-1))
         {
             try_all_ratio_combinations(num_cards, var_k, num_iterations, indices, ass_structs, ((Deck*)proc.att_deck)->commander, proc, best_score, best_deck);
         }
@@ -1153,6 +1171,7 @@ int main(int argc, char** argv)
         effect_map[ss.str()] = i;
     }
 
+    bool keep_commander{false};
     bool fixed_len{false};
     std::vector<std::tuple<unsigned, unsigned, Operation> > todo;
     for(int argIndex(3); argIndex < argc; ++argIndex)
@@ -1315,6 +1334,10 @@ int main(int argc, char** argv)
         return(5);
     }
     att_deck->strategy = att_strategy;
+    if(keep_commander)
+    {
+        att_deck->card_marks[-1] = '!';
+    }
     if(fixed_len)
     {
         min_deck_len = max_deck_len = att_deck->cards.size();
@@ -1388,17 +1411,17 @@ int main(int argc, char** argv)
             switch(std::get<2>(op))
             {
             case bruteforce: {
-                exhaustive_k(std::get<1>(op), std::get<0>(op), p);
+                exhaustive_k(std::get<1>(op), std::get<0>(op), p, att_deck->card_marks);
                 break;
             }
             case climb: {
                 if(att_strategy == DeckStrategy::random)
                 {
-                    hill_climbing(std::get<0>(op), att_deck, p);
+                    hill_climbing(std::get<0>(op), att_deck, p, att_deck->card_marks);
                 }
                 else
                 {
-                    hill_climbing_ordered(std::get<0>(op), att_deck, p);
+                    hill_climbing_ordered(std::get<0>(op), att_deck, p, att_deck->card_marks);
                 }
                 break;
             }

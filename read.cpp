@@ -81,15 +81,21 @@ template<typename Iterator, typename Functor, typename Token> Iterator read_toke
 }
 
 // num_sign = 0 if card_num is "N"; = +1 if "+N"; = -1 if "-N"
-void parse_card_spec(const Cards& cards, std::string& card_spec, unsigned& card_id, unsigned& card_num, signed& num_sign)
+void parse_card_spec(const Cards& cards, std::string& card_spec, unsigned& card_id, unsigned& card_num, signed& num_sign, char& mark)
 {
     static std::set<std::string> recognized_abbr;
     auto card_spec_iter = card_spec.begin();
     card_id = 0;
     card_num = 1;
     num_sign = 0;
+    mark = 0;
     std::string card_name;
     card_spec_iter = read_token(card_spec_iter, card_spec.end(), [](char c){return(c=='#' || c=='(' || c=='\r');}, card_name);
+    if(card_name[0] == '!')
+    {
+        mark = card_name[0];
+        card_name.erase(0, 1);
+    }
     if(card_name.empty())
     {
         throw std::runtime_error("no card name");
@@ -280,7 +286,9 @@ void read_owned_cards(Cards& cards, std::map<unsigned, unsigned>& owned_cards, c
             unsigned card_id{0};
             unsigned card_num{1};
             signed num_sign{0};
-            parse_card_spec(cards, card_spec, card_id, card_num, num_sign);
+            char mark{0};
+            parse_card_spec(cards, card_spec, card_id, card_num, num_sign, mark);
+            assert(mark == 0);
             if(num_sign == 0)
             {
                 owned_cards[card_id] = card_num;

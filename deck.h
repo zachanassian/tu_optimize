@@ -40,6 +40,7 @@ struct Deck
     const Card* commander;
     std::vector<const Card*> cards;
 
+    std::map<signed, char> card_marks;  // <positions of card, prefix mark>: -1 indicating the commander. E.g, used as a mark to be kept in attacking deck when optimizing.
     std::deque<const Card*> shuffled_cards;
     // card id -> card order
     std::map<unsigned, std::list<unsigned> > order;

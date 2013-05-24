@@ -125,33 +125,6 @@ void hash_to_ids(const char* hash, std::vector<unsigned int>& ids)
 }
 } // end of namespace
 
-void namelist_to_ids(const Cards& all_cards, const std::string& deck_string, std::vector<unsigned>& ids)
-{
-    boost::tokenizer<boost::char_delimiters_separator<char> > deck_tokens{deck_string, boost::char_delimiters_separator<char>{false, ":,", ""}};
-    auto token_iter = deck_tokens.begin();
-    for(; token_iter != deck_tokens.end(); ++token_iter)
-    {
-        std::string card_spec(*token_iter);
-        unsigned card_id{0};
-        unsigned card_num{1};
-        signed num_sign{0};
-        try
-        {
-            parse_card_spec(all_cards, card_spec, card_id, card_num, num_sign);
-            assert(num_sign == 0);
-            for(unsigned i(0); i < card_num; ++i)
-            {
-                ids.push_back(card_id);
-            }
-        }
-        catch(std::exception& e)
-        {
-            std::cerr << "Ignore card: " << e.what() << std::endl;
-            continue;
-        }
-    }
-}
-
 namespace range = boost::range;
 
 void Deck::set(const Cards& all_cards, const std::vector<unsigned>& ids)
@@ -209,19 +182,23 @@ void Deck::resolve(const Cards& all_cards)
         {
             boost::tokenizer<boost::char_delimiters_separator<char> > deck_tokens{deck_string, boost::char_delimiters_separator<char>{false, ":,", ""}};
             auto token_iter = deck_tokens.begin();
+            signed p = -1;
             for(; token_iter != deck_tokens.end(); ++token_iter)
             {
                 std::string card_spec(*token_iter);
                 unsigned card_id{0};
                 unsigned card_num{1};
                 signed num_sign{0};
+                char mark{0};
                 try
                 {
-                    parse_card_spec(all_cards, card_spec, card_id, card_num, num_sign);
+                    parse_card_spec(all_cards, card_spec, card_id, card_num, num_sign, mark);
                     assert(num_sign == 0);
                     for(unsigned i(0); i < card_num; ++i)
                     {
                         ids.push_back(card_id);
+                        if(mark) { card_marks[p] = mark; }
+                        ++ p;
                     }
                 }
                 catch(std::exception& e)
