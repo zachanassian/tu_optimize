@@ -604,6 +604,7 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc, std::map<si
     print_score_info(results, proc.factors);
     long double current_score = compute_score(results, proc.factors);
     long double best_score = current_score;
+    std::map<std::multiset<unsigned>, unsigned> evaluated_decks{{d1->card_ids<std::multiset<unsigned>>(),  num_iterations}};
     // Non-commander cards
     auto non_commander_cards = proc.cards.player_assaults;
     non_commander_cards.insert(non_commander_cards.end(), proc.cards.player_structures.begin(), proc.cards.player_structures.end());
@@ -614,7 +615,6 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc, std::map<si
     print_deck_inline(best_score, best_commander, best_cards, false);
     std::mt19937 re(time(NULL));
     bool deck_has_been_improved = true;
-    std::map<std::multiset<unsigned>, unsigned> evaluated_decks;
     unsigned long skipped_simulations = 0;
     long double best_possible = use_anp ? (gamemode == surge ? 45 : 25) : 1;
     for(unsigned slot_i(0), dead_slot(0); (deck_has_been_improved || slot_i != dead_slot) && best_score < best_possible; slot_i = (slot_i + 1) % std::min<unsigned>(max_deck_len, d1->cards.size() + 1))
@@ -729,6 +729,7 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc, std
     print_score_info(results, proc.factors);
     long double current_score = compute_score(results, proc.factors);
     long double best_score = current_score;
+    std::map<std::vector<unsigned>, unsigned> evaluated_decks{{d1->card_ids<std::vector<unsigned>>(), num_iterations}};
     // Non-commander cards
     auto non_commander_cards = proc.cards.player_assaults;
     non_commander_cards.insert(non_commander_cards.end(), proc.cards.player_structures.begin(), proc.cards.player_structures.end());
@@ -739,7 +740,6 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc, std
     print_deck_inline(best_score, best_commander, best_cards, true);
     std::mt19937 re(time(NULL));
     bool deck_has_been_improved = true;
-    std::map<std::vector<unsigned>, unsigned> evaluated_decks;
     unsigned long skipped_simulations = 0;
     long double best_possible = use_anp ? (gamemode == surge ? 45 : 25) : 1;
     for(unsigned from_slot(0), dead_slot(0); (deck_has_been_improved || from_slot != dead_slot) && best_score < best_possible; from_slot = (from_slot + 1) % std::min<unsigned>(max_deck_len, d1->cards.size() + 1))
