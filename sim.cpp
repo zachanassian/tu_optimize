@@ -1093,7 +1093,7 @@ void evaluate_legion(Field* fd)
     for(fd->current_ci = 0; fd->current_ci < assaults.size(); ++fd->current_ci)
     {
         CardStatus* status(&assaults[fd->current_ci]);
-        unsigned legion_base = fd->effect == Effect::united_front && status->m_player == 1 ? status->m_card->m_delay : status->m_card->m_legion;
+        unsigned legion_base = fd->effect == Effect::united_front ? status->m_card->m_delay : status->m_card->m_legion;
         if(legion_base == 0)
         {
             continue;
