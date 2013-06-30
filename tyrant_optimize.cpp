@@ -1112,8 +1112,7 @@ void usage(int argc, char** argv)
         "  -A <achievement>: optimize for the achievement specified by either id or name.\n"
         "  -c: don't try to optimize the commander.\n"
         "  -e <effect>: set the battleground effect. effect is automatically set for quests.\n"
-        "  minlen <size>: prevent hill climbing from shortening decks than <size> cards.\n"
-        "  maxlen <size>: prevent hill climbing from lengthening decks than <size> cards.\n"
+        "  -L <min> <max>: restrict deck size between <min> and <max> during hill climbing.\n"
         "  -o: restrict hill climbing to the owned cards listed in \"ownedcards.txt\".\n"
         "  -o=<filename>: restrict hill climbing to the owned cards listed in <filename>.\n"
         "  -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).\n"
@@ -1214,15 +1213,11 @@ int main(int argc, char** argv)
         {
             fixed_len = true;
         }
-        else if(strcmp(argv[argIndex], "maxlen") == 0)
-        {
-            max_deck_len = atoi(argv[argIndex + 1]);
-            argIndex += 1;
-        }
-        else if(strcmp(argv[argIndex], "minlen") == 0)
+        else if(strcmp(argv[argIndex], "-L") == 0)
         {
             min_deck_len = atoi(argv[argIndex + 1]);
-            argIndex += 1;
+            max_deck_len = atoi(argv[argIndex + 2]);
+            argIndex += 2;
         }
         else if(strcmp(argv[argIndex], "-o") == 0)
         {
