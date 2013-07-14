@@ -1602,7 +1602,7 @@ inline bool skill_predicate<chaos>(Field* fd, CardStatus* src, CardStatus* c, co
 {
     const auto& mod = std::get<4>(s);
     return(!c->m_chaosed && can_act(c) &&  // (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)));
-            (mod == SkillMod::on_attacked ? is_active(c) && !is_attacking_or_has_attacked(c) :
+            (mod == SkillMod::on_attacked ? is_active(c) && c->m_index > fd->current_ci :
              mod == SkillMod::on_death ? c->m_index >= src->m_index && (fd->tapi != src->m_player ? is_active(c) : is_active_next_turn(c)) :
              is_active(c) || is_active_next_turn(c)));
 }
@@ -1645,7 +1645,7 @@ inline bool skill_predicate<jam>(Field* fd, CardStatus* src, CardStatus* c, cons
 {
     const auto& mod = std::get<4>(s);
     return(can_act(c) &&  // (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)));
-            (mod == SkillMod::on_attacked ? is_active(c) && !is_attacking_or_has_attacked(c) :
+            (mod == SkillMod::on_attacked ? is_active(c) && c->m_index > fd->current_ci :
              mod == SkillMod::on_death ? c->m_index >= src->m_index && (fd->tapi != src->m_player ? is_active(c) : is_active_next_turn(c)) :
              is_active(c) || is_active_next_turn(c)));
 }
@@ -1693,7 +1693,7 @@ inline bool skill_predicate<weaken>(Field* fd, CardStatus* src, CardStatus* c, c
 {
     const auto& mod = std::get<4>(s);
     return(can_attack(c) && attack_power(c) > 0 &&  // (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)));
-            (mod == SkillMod::on_attacked ? is_active(c) && !is_attacking_or_has_attacked(c) :
+            (mod == SkillMod::on_attacked ? is_active(c) && c->m_index > fd->current_ci :
              mod == SkillMod::on_death ? c->m_index >= src->m_index && (fd->tapi != src->m_player ? is_active(c) : is_active_next_turn(c)) :
              is_active(c) || is_active_next_turn(c)));
 }
