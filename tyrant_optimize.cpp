@@ -42,6 +42,7 @@ namespace {
     bool use_anp{false};
     bool win_tie{false};
     gamemode_t gamemode{fight};
+    long double target_score{-1};
 }
 
 using namespace std::placeholders;
@@ -616,8 +617,7 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc, std::map<si
     std::mt19937 re(time(NULL));
     bool deck_has_been_improved = true;
     unsigned long skipped_simulations = 0;
-    long double best_possible = use_anp ? (gamemode == surge ? 45 : 25) : 1;
-    for(unsigned slot_i(0), dead_slot(0); (deck_has_been_improved || slot_i != dead_slot) && best_score < best_possible; slot_i = (slot_i + 1) % std::min<unsigned>(max_deck_len, d1->cards.size() + 1))
+    for(unsigned slot_i(0), dead_slot(0); (deck_has_been_improved || slot_i != dead_slot) && best_score - target_score < 1e-9; slot_i = (slot_i + 1) % std::min<unsigned>(max_deck_len, d1->cards.size() + 1))
     {
         if(card_marks.count(slot_i)) { continue; }
         if(deck_has_been_improved)
@@ -712,7 +712,7 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc, std::map<si
                 skipped_simulations += evaluated_decks[cur_deck];
             }
             d1->cards = best_cards;
-            if(best_score == best_possible) { break; }
+            if(best_score - target_score > -1e-9) { break; }
         }
     }
     unsigned simulations = 0;
@@ -741,8 +741,7 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc, std
     std::mt19937 re(time(NULL));
     bool deck_has_been_improved = true;
     unsigned long skipped_simulations = 0;
-    long double best_possible = use_anp ? (gamemode == surge ? 45 : 25) : 1;
-    for(unsigned from_slot(0), dead_slot(0); (deck_has_been_improved || from_slot != dead_slot) && best_score < best_possible; from_slot = (from_slot + 1) % std::min<unsigned>(max_deck_len, d1->cards.size() + 1))
+    for(unsigned from_slot(0), dead_slot(0); (deck_has_been_improved || from_slot != dead_slot) && best_score - target_score < 1e-9; from_slot = (from_slot + 1) % std::min<unsigned>(max_deck_len, d1->cards.size() + 1))
     {
         if(deck_has_been_improved)
         {
@@ -753,7 +752,7 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc, std
         {
             for(const Card* commander_candidate: proc.cards.player_commanders)
             {
-                if(best_score == best_possible) { break; }
+                if(best_score - target_score > -1e-9) { break; }
                 // Various checks to check if the card is accepted
                 assert(commander_candidate->m_type == CardType::commander);
                 if(commander_candidate->m_name == best_commander->m_name) { continue; }
@@ -857,7 +856,7 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc, std
                 }
                 d1->cards = best_cards;
             }
-            if(best_score == best_possible) { break; }
+            if(best_score - target_score > -1e-9) { break; }
         }
     }
     unsigned simulations = 0;
@@ -1118,6 +1117,7 @@ void usage(int argc, char** argv)
         "  -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).\n"
         "  -s: use surge (default is fight).\n"
         "  -t <num>: set the number of threads, default is 4.\n"
+        "  target <num>: set the target score for hill climbing.\n"
         "  -turnlimit <num>: set the number of turns in a battle, default is 50 (can be used for speedy achievements).\n"
         "  -wintie: attacker wins if turns run out (default is defeated; can be used for def deck simulation).\n"
         "\n"
@@ -1249,6 +1249,11 @@ int main(int argc, char** argv)
         {
             gamemode = surge;
         }
+        else if(strcmp(argv[argIndex], "target") == 0)
+        {
+            target_score = atof(argv[argIndex+1]);
+            argIndex += 1;
+        }
         else if(strcmp(argv[argIndex], "tournament") == 0)
         {
             gamemode = tournament;
@@ -1302,6 +1307,10 @@ int main(int argc, char** argv)
             std::cerr << "Error: Unknown option " << argv[argIndex] << std::endl;
             return(1);
         }
+    }
+    if (target_score < 0)
+    {
+        target_score = use_anp ? (gamemode == surge ? 45 : 25) : 1;
     }
 
     Deck* att_deck{nullptr};
