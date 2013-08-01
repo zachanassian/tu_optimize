@@ -1058,7 +1058,7 @@ void turn_start_phase(Field* fd)
             CardStatus& status(assaults[index]);
             status.m_index = index;
             status.m_augmented = 0;
-            status.m_blitzing = false;
+            status.m_blitzing = status.m_blitzing && status.m_jammed;
             status.m_chaosed = false;
             status.m_enfeebled = 0;
             status.m_frozen = false;
