@@ -585,8 +585,11 @@ Results<unsigned> play(Field* fd)
     fd->achievement_counter.clear();
     fd->achievement_counter.resize(fd->achievement.req_counter.size());
 
+#if 0
     // ANP: Last decision point is second-to-last card played.
     fd->points_since_last_decision = 0;
+#endif
+    fd->all_damage_to_commander = 0;
     unsigned p0_size = fd->players[0]->deck->cards.size();
     fd->last_decision_turn = p0_size == 1 ? 0 : p0_size * 2 - (fd->gamemode == surge ? 2 : 3);
 
@@ -600,12 +603,14 @@ Results<unsigned> play(Field* fd)
         // Initialize stuff, remove dead cards
         _DEBUG_MSG(1, "------------------------------------------------------------------------\n"
                 "TURN %u begins for %s\n", fd->turn, status_description(&fd->tap->commander).c_str());
+#if 0
         // ANP: If it's the player's turn and he's making a decision,
         // reset his points to 0.
         if(fd->tapi == 0 && fd->turn <= fd->last_decision_turn)
         {
             fd->points_since_last_decision = 0;
         }
+#endif
         turn_start_phase(fd);
         // Special case: refresh on commander
         if(fd->tip->commander.m_card->m_refresh)
@@ -709,6 +714,7 @@ Results<unsigned> play(Field* fd)
         fd->inc_counter(fd->achievement.misc_req, AchievementMiscReq::turns);
     }
     bool made_achievement = true;
+    fd->set_counter(fd->achievement.misc_req, AchievementMiscReq::com_total, fd->all_damage_to_commander);
     for(unsigned i(0); made_achievement && i < fd->achievement.req_counter.size(); ++i)
     {
         made_achievement = made_achievement && fd->achievement.req_counter[i].check(fd->achievement_counter[i]);
@@ -717,34 +723,42 @@ Results<unsigned> play(Field* fd)
     {
         print_achievement_results(fd);
     }
-    // defender wins
+    // you lose
     if(fd->players[0]->commander.m_hp == 0)
     {
-        _DEBUG_MSG(1, "Defender wins.\n");
+        _DEBUG_MSG(1, "You lose.\n");
         return {0, 0, 1, 0};
     }
-    // achievement: assuming winner='1'
-    if (!made_achievement)
+    // you win in raid
+    if(fd->optimization_mode == OptimizationMode::raid)
     {
-        _DEBUG_MSG(1, "Achievement fails.\n");
-        return {0, 0, 1, 0};
+        _DEBUG_MSG(1, "You win.\n");
+        return {1, 0, 0, std::min(fd->all_damage_to_commander, 200u) + (fd->players[1]->commander.m_hp == 0 ? 50 : 0)};
     }
-    // attacker wins
+    // you win
     if(fd->players[1]->commander.m_hp == 0)
     {
+        if (!made_achievement)
+        {
+            _DEBUG_MSG(1, "You win but no achievement.\n");
+            return {1, 0, 0, 0};
+        }
+        _DEBUG_MSG(1, "You win.\n");
+#if 0
         // ANP: Speedy if turn < last_decision + 10.
         bool speedy = fd->turn < fd->last_decision_turn + 10;
         if(fd->points_since_last_decision > 10)
         {
             fd->points_since_last_decision = 10;
         }
-        _DEBUG_MSG(1, "Attacker wins.\n");
-        return {1, 0, 0, 10 + (speedy ? 5 : 0) + (fd->gamemode == surge ? 20 : 0) + fd->points_since_last_decision};
+        return {1, 0, 0, 10 + (speedy ? 5 : 0) + (fd->gamemode == surge ? 20 : 0) + fd->points_since_last_decision, 0};
+#endif
+        return {1, 0, 0, 1};
     }
     if (fd->turn > turn_limit)
     {
         _DEBUG_MSG(1, "Stall after %u turns.\n", turn_limit);
-        return {0, 1, 0, 0};
+        return {0, 1, 0, fd->optimization_mode == OptimizationMode::defense};
     }
 
     // Huh? How did we get here?
@@ -1164,8 +1178,10 @@ void remove_commander_hp(Field* fd, CardStatus& status, unsigned dmg, bool count
     // Points are awarded for overkill, so it is correct to simply add dmg.
     if(count_points && status.m_player == 1)
     {
+#if 0
         fd->points_since_last_decision += dmg;
-        fd->inc_counter(fd->achievement.misc_req, AchievementMiscReq::com_total, dmg);
+#endif
+        fd->all_damage_to_commander += dmg;
     }
     if(status.m_hp == 0)
     {

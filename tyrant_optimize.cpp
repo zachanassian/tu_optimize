@@ -39,10 +39,9 @@
 //#include "timer.hpp"
 
 namespace {
-    bool use_anp{false};
-    bool win_tie{false};
     gamemode_t gamemode{fight};
-    long double target_score{-1};
+    OptimizationMode optimization_mode{OptimizationMode::win};
+    long double target_score{-1e9};
 }
 
 using namespace std::placeholders;
@@ -220,18 +219,7 @@ long double compute_score(const std::pair<std::vector<Results<unsigned>> , unsig
     long double sum{0.};
     for(unsigned index(0); index < results.first.size(); ++index)
     {
-        if(use_anp)
-        {
-            sum += results.first[index].points * factors[index];
-        }
-        else if(win_tie)
-        {
-            sum += (results.first[index].wins + results.first[index].draws) * factors[index];
-        }
-        else
-        {
-            sum += results.first[index].wins * factors[index];
-        }
+        sum += results.first[index].points * factors[index];
     }
     return(sum / std::accumulate(factors.begin(), factors.end(), 0.) / (long double)results.second);
 }
@@ -302,7 +290,7 @@ struct SimulationData
         {
             att_hand.reset(re);
             def_hand->reset(re);
-            Field fd(re, cards, att_hand, *def_hand, gamemode, effect, achievement);
+            Field fd(re, cards, att_hand, *def_hand, gamemode, optimization_mode, effect, achievement);
             Results<unsigned> result(play(&fd));
             res.emplace_back(result);
         }
@@ -398,8 +386,6 @@ void thread_evaluate(boost::barrier& main_barrier,
                      const Process& p,
                      unsigned thread_id)
 {
-    bool use_anp_local{use_anp};
-    gamemode_t gamemode_local{gamemode};
     while(true)
     {
         main_barrier.wait();
@@ -424,18 +410,7 @@ void thread_evaluate(boost::barrier& main_barrier,
                 for(unsigned index(0); index < result.size(); ++index)
                 {
                     thread_results[index] += result[index]; //!
-                    if(use_anp_local)
-                    {
-                        thread_score_local[index] = thread_results[index].points; //!
-                    }
-                    else if(win_tie)
-                    {
-                        thread_score_local[index] = thread_results[index].wins + thread_results[index].draws; //!
-                    }
-                    else
-                    {
-                        thread_score_local[index] = thread_results[index].wins; //!
-                    }
+                    thread_score_local[index] = thread_results[index].points; //!
                 }
                 ++thread_total; //!
                 unsigned thread_total_local{thread_total}; //!
@@ -459,17 +434,9 @@ void thread_evaluate(boost::barrier& main_barrier,
                         score_accum = thread_score_local[0];
                     }
                     bool compare_stop(false);
-                    if(use_anp_local)
-                    {
-                        // TODO: Fix this solution for ANP
-                        // Get a loose, rather than no, upper bound.
-                        long double best_possible = gamemode_local == surge ? 45 : 25;
-                        compare_stop = (boost::math::binomial_distribution<>::find_upper_bound_on_p(thread_total_local, score_accum / best_possible, 0.01) * best_possible < thread_prev_score);
-                    }
-                    else
-                    {
-                        compare_stop = (boost::math::binomial_distribution<>::find_upper_bound_on_p(thread_total_local, score_accum, 0.01) < thread_prev_score);
-                    }
+                    long double best_possible = (optimization_mode == OptimizationMode::raid ? 250 : 1);
+                    // Get a loose (better than no) upper bound. TODO: Improve it.
+                    compare_stop = (boost::math::binomial_distribution<>::find_upper_bound_on_p(thread_total_local, score_accum / best_possible, 0.01) * best_possible < thread_prev_score);
                     if(compare_stop) {
                         shared_mutex.lock(); //<<<<
                         //std::cout << thread_total_local << "\n";
@@ -484,29 +451,12 @@ void thread_evaluate(boost::barrier& main_barrier,
 //------------------------------------------------------------------------------
 void print_score_info(const std::pair<std::vector<Results<unsigned>> , unsigned>& results, std::vector<long double>& factors)
 {
-    if(use_anp)
+    std::cout << compute_score(results, factors) << " (";
+    for(auto val: results.first)
     {
-        std::cout << "ANP: " << compute_score(results, factors);
-        if(results.first.size() > 1)
-        {
-            std::cout << " (";
-            for(auto val: results.first)
-            {
-                std::cout << static_cast<long double>(val.points) / results.second << " ";
-            }
-            std::cout << "reps.)";
-        }
-        std::cout << std::endl;
+        std::cout << val.points << " ";
     }
-    else
-    {
-        std::cout << "win%: " << compute_score(results, factors) * 100.0 << " (";
-        for(auto val: results.first)
-        {
-            std::cout << val.wins << " ";
-        }
-        std::cout << "out of " << results.second << ")" << std::endl;
-    }
+    std::cout << "/ " << results.second << ")" << std::endl;
 }
 //------------------------------------------------------------------------------
 void print_results(const std::pair<std::vector<Results<unsigned>> , unsigned>& results, std::vector<long double>& factors)
@@ -529,46 +479,39 @@ void print_results(const std::pair<std::vector<Results<unsigned>> , unsigned>& r
     {
         std::cout << val.wins << " ";
     }
-    std::cout << "out of " << results.second << ")" << std::endl;
+    std::cout << "/ " << results.second << ")" << std::endl;
 
-    std::cout << "draw%: " << final.draws * 100.0 << " (";
-    for(auto val: results.first)
+    if(optimization_mode != OptimizationMode::raid)
     {
-        std::cout << val.draws << " ";
+        std::cout << "draw%: " << final.draws * 100.0 << " (";
+        for(auto val: results.first)
+        {
+            std::cout << val.draws << " ";
+        }
+        std::cout << "/ " << results.second << ")" << std::endl;
     }
-    std::cout << "out of " << results.second << ")" << std::endl;
 
     std::cout << "loss%: " << final.losses * 100.0 << " (";
     for(auto val: results.first)
     {
         std::cout << val.losses << " ";
     }
-    std::cout << "out of " << results.second << ")" << std::endl;
+    std::cout << "/ " << results.second << ")" << std::endl;
 
-    std::cout << "ANP: " << final.points;
-    if(results.first.size() > 1)
+    if(optimization_mode == OptimizationMode::raid)
     {
-        std::cout << " (";
+        std::cout << "ard: " << final.points << " (";
         for(auto val: results.first)
         {
-            std::cout << static_cast<long double>(val.points) / results.second << " ";
+            std::cout << val.points << " ";
         }
-        std::cout << "reps.)";
+        std::cout << "/ " << results.second << ")" << std::endl;
     }
-    std::cout << std::endl;
 }
 //------------------------------------------------------------------------------
 void print_deck_inline(const long double score, const Card *commander, std::vector<const Card*> cards, bool is_ordered)
 {
-    if(use_anp)
-    {
-        std::cout << score << ": ";
-    }
-    else
-    {
-        std::cout << score * 100.0 << "%: ";
-    }
-    std::cout << commander->m_name;
+    std::cout << score << ": " << commander->m_name;
     if(!is_ordered)
     {
         std::sort(cards.begin(), cards.end(), [](const Card* a, const Card* b) { return a->m_id < b->m_id; });
@@ -1068,7 +1011,8 @@ enum Operation {
     bruteforce,
     climb,
     simulate,
-    fightuntil
+    debug,
+    debuguntil
 };
 //------------------------------------------------------------------------------
 void print_available_decks(const Decks& decks, bool allow_card_pool)
@@ -1095,21 +1039,21 @@ void print_available_effects()
 
 void usage(int argc, char** argv)
 {
-    std::cout << "usage: " << argv[0] << " Attacker Defender [Flags] [Operations]\n"
+    std::cout << "usage: " << argv[0] << " Your_Deck Enemy_Deck [Flags] [Operations]\n"
         "\n"
-        "Attacker:\n"
+        "Your_Deck:\n"
         "  the name/hash/cards of a custom deck.\n"
         "\n"
-        "Defender:\n"
+        "Enemy_Deck:\n"
         "  semicolon separated list of defense decks, syntax:\n"
         "  deck1[:factor1];deck2[:factor2];...\n"
         "  where deck is the name/hash/cards of a mission, raid, quest or custom deck, and factor is optional. The default factor is 1.\n"
         "  example: \'fear:0.2;slowroll:0.8\' means fear is the defense deck 20% of the time, while slowroll is the defense deck 80% of the time.\n"
         "\n"
         "Flags:\n"
-        "  -a: optimize for ANP instead of win rate.\n"
         "  -A <achievement>: optimize for the achievement specified by either id or name.\n"
         "  -c: don't try to optimize the commander.\n"
+        "  defense: score even if turns run out. can be used for defending deck simulation.\n"
         "  -e <effect>: set the battleground effect. effect is automatically set for quests.\n"
         "  -L <min> <max>: restrict deck size between <min> and <max> during hill climbing.\n"
         "  -o: restrict hill climbing to the owned cards listed in \"ownedcards.txt\".\n"
@@ -1117,9 +1061,8 @@ void usage(int argc, char** argv)
         "  -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).\n"
         "  -s: use surge (default is fight).\n"
         "  -t <num>: set the number of threads, default is 4.\n"
-        "  target <num>: set the target score for hill climbing.\n"
+        "  target <num>: stop hill climbing as soon as the score reaches <num>.\n"
         "  -turnlimit <num>: set the number of turns in a battle, default is 50 (can be used for speedy achievements).\n"
-        "  -wintie: attacker wins if turns run out (default is defeated; can be used for def deck simulation).\n"
         "\n"
         "Operations:\n"
         "  brute <num1> <num2>: find the best combination of <num1> different cards, using up to <num2> battles to evaluate a deck.\n"
@@ -1175,11 +1118,7 @@ int main(int argc, char** argv)
     std::vector<std::tuple<unsigned, unsigned, Operation> > todo;
     for(int argIndex(3); argIndex < argc; ++argIndex)
     {
-        if(strcmp(argv[argIndex], "-a") == 0)
-        {
-            use_anp = true;
-        }
-        else if(strcmp(argv[argIndex], "-A") == 0)
+        if(strcmp(argv[argIndex], "-A") == 0)
         {
             try
             {
@@ -1195,6 +1134,10 @@ int main(int argc, char** argv)
         else if(strcmp(argv[argIndex], "-c") == 0)
         {
             keep_commander = true;
+        }
+        else if(strcmp(argv[argIndex], "defense") == 0)
+        {
+            optimization_mode = OptimizationMode::defense;
         }
         else if(strcmp(argv[argIndex], "-e") == 0)
         {
@@ -1233,6 +1176,10 @@ int main(int argc, char** argv)
         {
             att_strategy = DeckStrategy::ordered;
         }
+        else if(strcmp(argv[argIndex], "raid") == 0)  // for test
+        {
+            optimization_mode = OptimizationMode::raid;
+        }
         else if(strcmp(argv[argIndex], "exact-ordered") == 0)
         {
             att_strategy = DeckStrategy::exact_ordered;
@@ -1249,11 +1196,6 @@ int main(int argc, char** argv)
         {
             gamemode = surge;
         }
-        else if(strcmp(argv[argIndex], "target") == 0)
-        {
-            target_score = atof(argv[argIndex+1]);
-            argIndex += 1;
-        }
         else if(strcmp(argv[argIndex], "tournament") == 0)
         {
             gamemode = tournament;
@@ -1261,6 +1203,11 @@ int main(int argc, char** argv)
         else if(strcmp(argv[argIndex], "-t") == 0)
         {
             num_threads = atoi(argv[argIndex+1]);
+            argIndex += 1;
+        }
+        else if(strcmp(argv[argIndex], "target") == 0)
+        {
+            target_score = atof(argv[argIndex+1]);
             argIndex += 1;
         }
         else if(strcmp(argv[argIndex], "-turnlimit") == 0)
@@ -1271,10 +1218,6 @@ int main(int argc, char** argv)
         else if(strcmp(argv[argIndex], "+v") == 0)
         {
             ++ debug_print;
-        }
-        else if(strcmp(argv[argIndex], "-wintie") == 0)
-        {
-            win_tie = true;
         }
         else if(strcmp(argv[argIndex], "brute") == 0)
         {
@@ -1293,13 +1236,13 @@ int main(int argc, char** argv)
         }
         else if(strcmp(argv[argIndex], "debug") == 0)
         {
-            todo.push_back(std::make_tuple(0u, 45u, fightuntil));
+            todo.push_back(std::make_tuple(0u, 0u, debug));
         }
         else if(strcmp(argv[argIndex], "debuguntil") == 0)
         {
-            // fight until the last battle results in range [min_score, max_score].
-            // E.g., 0 0: until lose; 1 1: until win (non-ANP); 10 25: until win (ANP).
-            todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex + 1]), (unsigned)atoi(argv[argIndex + 2]), fightuntil));
+            // output the debug info for the first battle that min_score <= score <= max_score.
+            // E.g., 0 0: lose; 1 1: win (non-raid); 100 999: at least 100 damage (raid).
+            todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex + 1]), (unsigned)atoi(argv[argIndex + 2]), debuguntil));
             argIndex += 2;
         }
         else
@@ -1307,10 +1250,6 @@ int main(int argc, char** argv)
             std::cerr << "Error: Unknown option " << argv[argIndex] << std::endl;
             return(1);
         }
-    }
-    if (target_score < 0)
-    {
-        target_score = use_anp ? (gamemode == surge ? 45 : 25) : 1;
     }
 
     Deck* att_deck{nullptr};
@@ -1371,7 +1310,7 @@ int main(int argc, char** argv)
         {
             if(def_deck->decktype != DeckType::mission)
             {
-                std::cerr << "Error: Defender must be mission for achievement." << std::endl;
+                std::cerr << "Error: Enemy's deck must be mission for achievement." << std::endl;
                 return(1);
             }
             if(!achievement.mission_condition.check(def_deck->id))
@@ -1379,6 +1318,11 @@ int main(int argc, char** argv)
                 std::cerr << "Error: Wrong mission [" << deck_parsed.first << "] for achievement." << std::endl;
                 return(1);
             }
+        }
+        if(def_deck->decktype == DeckType::raid)
+        {
+            optimization_mode = OptimizationMode::raid;
+            turn_limit = 30;
         }
         // Set quest effect:
         Effect this_effect = def_deck->effect;
@@ -1397,14 +1341,19 @@ int main(int argc, char** argv)
     }
 
     modify_cards(cards, effect);
-    std::cout << "Attacker: " << (debug_print ? att_deck->long_description(cards) : att_deck->short_description()) << std::endl;
+    std::cout << "Your Deck: " << (debug_print ? att_deck->long_description(cards) : att_deck->short_description()) << std::endl;
     for(auto def_deck: def_decks)
     {
-        std::cout << "Defender: " << (debug_print ? def_deck->long_description(cards) : def_deck->short_description()) << std::endl;
+        std::cout << "Enemy's Deck: " << (debug_print ? def_deck->long_description(cards) : def_deck->short_description()) << std::endl;
     }
     if(effect != Effect::none)
     {
         std::cout << "Effect: " << effect_names[effect] << std::endl;
+    }
+
+    if (target_score < 0)
+    {
+        target_score = optimization_mode == OptimizationMode::raid ? 250 : 1;
     }
 
     Process p(num_threads, cards, decks, att_deck, def_decks, def_decks_factors, gamemode, effect, achievement);
@@ -1434,7 +1383,18 @@ int main(int argc, char** argv)
                 print_results(results, p.factors);
                 break;
             }
-            case fightuntil: {
+            case debug: {
+                unsigned saved_num_threads = num_threads;
+                num_threads = 1;
+                ++ debug_print;
+                debug_str.clear();
+                auto results = p.evaluate(1);
+                print_results(results, p.factors);
+                -- debug_print;
+                num_threads = saved_num_threads;
+                break;
+            }
+            case debuguntil: {
                 unsigned saved_num_threads = num_threads;
                 num_threads = 1;
                 ++ debug_print;

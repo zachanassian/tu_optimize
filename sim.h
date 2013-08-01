@@ -190,7 +190,8 @@ public:
     std::vector<CardStatus*> selection_array;
     unsigned turn;
     gamemode_t gamemode;
-    const enum Effect effect;
+    OptimizationMode optimization_mode;
+    const Effect effect;
     const Achievement& achievement;
     // With the introduction of on death skills, a single skill can trigger arbitrary many skills.
     // They are stored in this, and cleared after all have been performed.
@@ -212,18 +213,20 @@ public:
     // otherwise is the index of the current card in players->structures or players->assaults
     unsigned current_ci;
     unsigned last_decision_turn;
-    unsigned points_since_last_decision;
+//    unsigned points_since_last_decision;
+    unsigned all_damage_to_commander;
 
     unsigned fusion_count;
     std::vector<unsigned> achievement_counter;
 
-    Field(std::mt19937& re_, const Cards& cards_, Hand& hand1, Hand& hand2, gamemode_t gamemode_, enum Effect effect_, const Achievement& achievement_) :
+    Field(std::mt19937& re_, const Cards& cards_, Hand& hand1, Hand& hand2, gamemode_t gamemode_, OptimizationMode optimization_mode_, Effect effect_, const Achievement& achievement_) :
         end{false},
         re(re_),
         cards(cards_),
         players{{&hand1, &hand2}},
         turn(1),
         gamemode(gamemode_),
+        optimization_mode(optimization_mode_),
         effect(effect_),
         achievement(achievement_)
     {

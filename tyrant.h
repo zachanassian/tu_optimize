@@ -1,7 +1,7 @@
 #ifndef TYRANT_H_INCLUDED
 #define TYRANT_H_INCLUDED
 
-#define TYRANT_OPTIMIZER_VERSION "1.0.17"
+#define TYRANT_OPTIMIZER_VERSION "1.1.0"
 
 #include <string>
 #include <set>
@@ -126,6 +126,13 @@ enum gamemode_t
     fight,
     surge,
     tournament
+};
+
+enum class OptimizationMode
+{
+    win,
+    raid,
+    defense
 };
 
 struct true_ {};
