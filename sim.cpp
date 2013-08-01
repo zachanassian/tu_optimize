@@ -733,7 +733,7 @@ Results<unsigned> play(Field* fd)
     if(fd->optimization_mode == OptimizationMode::raid)
     {
         _DEBUG_MSG(1, "You win.\n");
-        return {1, 0, 0, std::min(fd->all_damage_to_commander, 200u) + (fd->players[1]->commander.m_hp == 0 ? 50 : 0)};
+        return {1, 0, 0, fd->players[1]->commander.m_hp == 0 ? 250 : std::min(fd->all_damage_to_commander, 200u)};
     }
     // you win
     if(fd->players[1]->commander.m_hp == 0)

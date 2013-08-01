@@ -560,7 +560,7 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc, std::map<si
     std::mt19937 re(time(NULL));
     bool deck_has_been_improved = true;
     unsigned long skipped_simulations = 0;
-    for(unsigned slot_i(0), dead_slot(0); (deck_has_been_improved || slot_i != dead_slot) && best_score - target_score < 1e-9; slot_i = (slot_i + 1) % std::min<unsigned>(max_deck_len, d1->cards.size() + 1))
+    for(unsigned slot_i(0), dead_slot(0); (deck_has_been_improved || slot_i != dead_slot) && best_score - target_score < -1e-9; slot_i = (slot_i + 1) % std::min<unsigned>(max_deck_len, d1->cards.size() + 1))
     {
         if(card_marks.count(slot_i)) { continue; }
         if(deck_has_been_improved)
@@ -684,7 +684,7 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc, std
     std::mt19937 re(time(NULL));
     bool deck_has_been_improved = true;
     unsigned long skipped_simulations = 0;
-    for(unsigned from_slot(0), dead_slot(0); (deck_has_been_improved || from_slot != dead_slot) && best_score - target_score < 1e-9; from_slot = (from_slot + 1) % std::min<unsigned>(max_deck_len, d1->cards.size() + 1))
+    for(unsigned from_slot(0), dead_slot(0); (deck_has_been_improved || from_slot != dead_slot) && best_score - target_score < -1e-9; from_slot = (from_slot + 1) % std::min<unsigned>(max_deck_len, d1->cards.size() + 1))
     {
         if(deck_has_been_improved)
         {
@@ -1179,6 +1179,7 @@ int main(int argc, char** argv)
         else if(strcmp(argv[argIndex], "raid") == 0)  // for test
         {
             optimization_mode = OptimizationMode::raid;
+            turn_limit = 30;
         }
         else if(strcmp(argv[argIndex], "exact-ordered") == 0)
         {
