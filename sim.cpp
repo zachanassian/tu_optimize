@@ -348,7 +348,7 @@ void Hand::reset(std::mt19937& re)
 // Everything about how a battle plays out, except the following:
 // the implementation of the attack by an assault card is in the next section;
 // the implementation of the active skills is in the section after that.
-unsigned turn_limit{50};
+unsigned turn_limit{0};
 //------------------------------------------------------------------------------
 inline unsigned opponent(unsigned player)
 {
@@ -714,14 +714,17 @@ Results<unsigned> play(Field* fd)
         fd->inc_counter(fd->achievement.misc_req, AchievementMiscReq::turns);
     }
     bool made_achievement = true;
-    fd->set_counter(fd->achievement.misc_req, AchievementMiscReq::com_total, fd->all_damage_to_commander);
-    for(unsigned i(0); made_achievement && i < fd->achievement.req_counter.size(); ++i)
+    if(fd->optimization_mode == OptimizationMode::achievement)
     {
-        made_achievement = made_achievement && fd->achievement.req_counter[i].check(fd->achievement_counter[i]);
-    }
-    if(debug_print)
-    {
-        print_achievement_results(fd);
+        fd->set_counter(fd->achievement.misc_req, AchievementMiscReq::com_total, fd->all_damage_to_commander);
+        for(unsigned i(0); made_achievement && i < fd->achievement.req_counter.size(); ++i)
+        {
+            made_achievement = made_achievement && fd->achievement.req_counter[i].check(fd->achievement_counter[i]);
+        }
+        if(debug_print)
+        {
+            print_achievement_results(fd);
+        }
     }
     // you lose
     if(fd->players[0]->commander.m_hp == 0)
@@ -732,13 +735,21 @@ Results<unsigned> play(Field* fd)
     // you win in raid
     if(fd->optimization_mode == OptimizationMode::raid)
     {
-        _DEBUG_MSG(1, "You win.\n");
-        return {1, 0, 0, fd->players[1]->commander.m_hp == 0 ? 250 : std::min(fd->all_damage_to_commander, 200u)};
+        if(fd->players[1]->commander.m_hp == 0)
+        {
+            _DEBUG_MSG(1, "You win (boss killed).\n");
+            return {1, 0, 0, 250};
+        }
+        else
+        {
+            _DEBUG_MSG(1, "You win (survival).\n");
+            return {0, 1, 0, std::min(fd->all_damage_to_commander, 200u)};
+        }
     }
     // you win
     if(fd->players[1]->commander.m_hp == 0)
     {
-        if (!made_achievement)
+        if (fd->optimization_mode == OptimizationMode::achievement && !made_achievement)
         {
             _DEBUG_MSG(1, "You win but no achievement.\n");
             return {1, 0, 0, 0};

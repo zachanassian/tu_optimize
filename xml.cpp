@@ -611,10 +611,6 @@ void read_achievement(Decks& decks, const Cards& cards, Achievement& achievement
             }
             else if(num_turns)
             {
-                if(comparator == less_equal)
-                {
-                    turn_limit = atoi(num_turns->value());
-                }
                 achievement.misc_req[AchievementMiscReq::turns] = achievement.req_counter.size();
                 achievement.req_counter.emplace_back(atoi(num_turns->value()), comparator);
                 std::cout << "  " << achievement_misc_req_names[AchievementMiscReq::turns] << achievement.req_counter.back().str() << std::endl;
