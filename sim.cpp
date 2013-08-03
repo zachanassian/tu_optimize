@@ -764,12 +764,12 @@ Results<uint64_t> play(Field* fd)
         }
         return {1, 0, 0, 10 + (speedy ? 5 : 0) + (fd->gamemode == surge ? 20 : 0) + fd->points_since_last_decision, 0};
 #endif
-        return {1, 0, 0, 1, 0};
+        return {1, 0, 0, 100, 0};
     }
     if (fd->turn > turn_limit)
     {
         _DEBUG_MSG(1, "Stall after %u turns.\n", turn_limit);
-        return {0, 1, 0, fd->optimization_mode == OptimizationMode::defense, 0};
+        return {0, 1, 0, fd->optimization_mode == OptimizationMode::defense ? 100ul : 0ul, 0};
     }
 
     // Huh? How did we get here?

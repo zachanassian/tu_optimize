@@ -445,7 +445,7 @@ void thread_evaluate(boost::barrier& main_barrier,
                         score_accum = thread_score_local[0];
                     }
                     bool compare_stop(false);
-                    long double best_possible = (optimization_mode == OptimizationMode::raid ? 250 : 1);
+                    long double best_possible = (optimization_mode == OptimizationMode::raid ? 250 : 100);
                     // Get a loose (better than no) upper bound. TODO: Improve it.
                     compare_stop = (boost::math::binomial_distribution<>::find_upper_bound_on_p(thread_total_local, score_accum / best_possible, 0.01) * best_possible < thread_prev_score);
                     if(compare_stop) {
@@ -466,7 +466,15 @@ void print_score_info(const std::pair<std::vector<Results<uint64_t>> , unsigned>
     std::cout << final.points << " (";
     for(auto val: results.first)
     {
-        std::cout << val.points << " ";
+        switch(optimization_mode)
+        {
+            case OptimizationMode::raid:
+                std::cout << val.points << " ";
+                break;
+            default:
+                std::cout << val.points / 100 << " ";
+                break;
+        }
     }
     std::cout << "/ " << results.second << ")" << std::endl;
 }
@@ -511,10 +519,10 @@ void print_results(const std::pair<std::vector<Results<uint64_t>> , unsigned>& r
             }
             break;
         case OptimizationMode::achievement:
-            std::cout << "achievement%: " << final.points * 100.0 << " (";
+            std::cout << "achievement%: " << final.points << " (";
             for(auto val: results.first)
             {
-                std::cout << val.points << " ";
+                std::cout << val.points / 100 << " ";
             }
             std::cout << "/ " << results.second << ")" << std::endl;
             break;
@@ -1282,7 +1290,7 @@ int main(int argc, char** argv)
         else if(strcmp(argv[argIndex], "debuguntil") == 0)
         {
             // output the debug info for the first battle that min_score <= score <= max_score.
-            // E.g., 0 0: lose; 1 1: win (non-raid); 100 999: at least 100 damage (raid).
+            // E.g., 0 0: lose; 100 100: win (non-raid); 150 250: at least 150 damage (raid).
             todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex + 1]), (unsigned)atoi(argv[argIndex + 2]), debuguntil));
             argIndex += 2;
         }
@@ -1402,7 +1410,7 @@ int main(int argc, char** argv)
     }
     if (target_score < 0)
     {
-        target_score = optimization_mode == OptimizationMode::raid ? 250 : 1;
+        target_score = optimization_mode == OptimizationMode::raid ? 250 : 100;
     }
 
     Process p(num_threads, cards, decks, att_deck, def_decks, def_decks_factors, gamemode, effect, achievement);
