@@ -30,6 +30,7 @@ struct Results
     result_type draws;
     result_type losses;
     result_type points;
+    result_type sq_points;
     template<typename other_result_type>
     Results& operator+=(const Results<other_result_type>& other)
     {
@@ -37,12 +38,13 @@ struct Results
         draws += other.draws;
         losses += other.losses;
         points += other.points;
+        sq_points += other.points * other.points;
         return *this;
     }
 };
 
 void fill_skill_table();
-Results<unsigned> play(Field* fd);
+Results<uint64_t> play(Field* fd);
 void modify_cards(Cards& cards, enum Effect effect);
 // Pool-based indexed storage.
 //---------------------- Pool-based indexed storage ----------------------------

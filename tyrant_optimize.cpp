@@ -42,6 +42,7 @@ namespace {
     gamemode_t gamemode{fight};
     OptimizationMode optimization_mode{OptimizationMode::none};
     long double target_score{-1e9};
+    bool show_stdev{false};
 }
 
 using namespace std::placeholders;
@@ -214,26 +215,28 @@ bool suitable_commander(const Card* card)
     return(true);
 }
 //------------------------------------------------------------------------------
-Results<long double> compute_score(const std::pair<std::vector<Results<unsigned>> , unsigned>& results, std::vector<long double>& factors)
+Results<long double> compute_score(const std::pair<std::vector<Results<uint64_t>> , unsigned>& results, std::vector<long double>& factors)
 {
-    Results<long double> final{0, 0, 0, 0};
+    Results<long double> final{0, 0, 0, 0, 0};
     for(unsigned index(0); index < results.first.size(); ++index)
     {
         final.wins += results.first[index].wins * factors[index];
         final.draws += results.first[index].draws * factors[index];
         final.losses += results.first[index].losses * factors[index];
         final.points += results.first[index].points * factors[index];
+        final.sq_points += results.first[index].sq_points * factors[index] * factors[index];
     }
     auto factor_sum = std::accumulate(factors.begin(), factors.end(), 0.);
     final.wins /= factor_sum * (long double)results.second;
     final.draws /= factor_sum * (long double)results.second;
     final.losses /= factor_sum * (long double)results.second;
     final.points /= factor_sum * (long double)results.second;
+    final.sq_points /= factor_sum * factor_sum * (long double)results.second;
     return final;
 }
 //------------------------------------------------------------------------------
 volatile unsigned thread_num_iterations{0}; // written by threads
-std::vector<Results<unsigned>> thread_results; // written by threads
+std::vector<Results<uint64_t>> thread_results; // written by threads
 volatile unsigned thread_total{0}; // written by threads
 volatile long double thread_prev_score{0.0};
 volatile bool thread_compare{false};
@@ -291,15 +294,15 @@ struct SimulationData
         }
     }
 
-    inline std::vector<Results<unsigned>> evaluate()
+    inline std::vector<Results<uint64_t>> evaluate()
     {
-        std::vector<Results<unsigned>> res;
+        std::vector<Results<uint64_t>> res;
         for(Hand* def_hand: def_hands)
         {
             att_hand.reset(re);
             def_hand->reset(re);
             Field fd(re, cards, att_hand, *def_hand, gamemode, optimization_mode, effect, achievement);
-            Results<unsigned> result(play(&fd));
+            Results<uint64_t> result(play(&fd));
             res.emplace_back(result);
         }
         return(res);
@@ -359,10 +362,10 @@ public:
         for(auto data: threads_data) { delete(data); }
     }
 
-    std::pair<std::vector<Results<unsigned>> , unsigned> evaluate(unsigned num_iterations)
+    std::pair<std::vector<Results<uint64_t>> , unsigned> evaluate(unsigned num_iterations)
     {
         thread_num_iterations = num_iterations;
-        thread_results = std::vector<Results<unsigned>>(def_decks.size());
+        thread_results = std::vector<Results<uint64_t>>(def_decks.size());
         thread_total = 0;
         thread_compare = false;
         // unlock all the threads
@@ -372,10 +375,10 @@ public:
         return(std::make_pair(thread_results, thread_total));
     }
 
-    std::pair<std::vector<Results<unsigned>> , unsigned> compare(unsigned num_iterations, long double prev_score)
+    std::pair<std::vector<Results<uint64_t>> , unsigned> compare(unsigned num_iterations, long double prev_score)
     {
         thread_num_iterations = num_iterations;
-        thread_results = std::vector<Results<unsigned>>(def_decks.size());
+        thread_results = std::vector<Results<uint64_t>>(def_decks.size());
         thread_total = 0;
         thread_prev_score = prev_score;
         thread_compare = true;
@@ -412,7 +415,7 @@ void thread_evaluate(boost::barrier& main_barrier,
             {
                 --thread_num_iterations; //!
                 shared_mutex.unlock(); //>>>>
-                std::vector<Results<unsigned>> result{sim.evaluate()};
+                std::vector<Results<uint64_t>> result{sim.evaluate()};
                 shared_mutex.lock(); //<<<<
                 std::vector<unsigned> thread_score_local(thread_results.size(), 0u); //!
                 for(unsigned index(0); index < result.size(); ++index)
@@ -457,7 +460,7 @@ void thread_evaluate(boost::barrier& main_barrier,
     }
 }
 //------------------------------------------------------------------------------
-void print_score_info(const std::pair<std::vector<Results<unsigned>> , unsigned>& results, std::vector<long double>& factors)
+void print_score_info(const std::pair<std::vector<Results<uint64_t>> , unsigned>& results, std::vector<long double>& factors)
 {
     auto final = compute_score(results, factors);
     std::cout << final.points << " (";
@@ -468,7 +471,7 @@ void print_score_info(const std::pair<std::vector<Results<unsigned>> , unsigned>
     std::cout << "/ " << results.second << ")" << std::endl;
 }
 //------------------------------------------------------------------------------
-void print_results(const std::pair<std::vector<Results<unsigned>> , unsigned>& results, std::vector<long double>& factors)
+void print_results(const std::pair<std::vector<Results<uint64_t>> , unsigned>& results, std::vector<long double>& factors)
 {
     auto final = compute_score(results, factors);
 
@@ -502,6 +505,10 @@ void print_results(const std::pair<std::vector<Results<unsigned>> , unsigned>& r
                 std::cout << val.points << " ";
             }
             std::cout << "/ " << results.second << ")" << std::endl;
+            if (show_stdev)
+            {
+                std::cout << "stdev: " << sqrt(final.sq_points - final.points * final.points) << std::endl;
+            }
             break;
         case OptimizationMode::achievement:
             std::cout << "achievement%: " << final.points * 100.0 << " (";
@@ -521,7 +528,11 @@ void print_deck_inline(const Results<long double> score, const Card *commander, 
     switch(optimization_mode)
     {
         case OptimizationMode::raid:
-            std::cout << "(" << score.wins * 100.0 << "% kill, " << score.draws * 100.0 << "% stall) ";
+            std::cout << "(" << score.wins * 100.0 << "% kill, " << score.draws * 100.0 << "% stall";
+            if (show_stdev) {
+                std::cout << ", " << sqrt(score.sq_points - score.points * score.points) << " stdev";
+            }
+            std::cout << ") ";
             break;
         case OptimizationMode::achievement:
             std::cout << "(" << score.wins * 100.0 << "% win) ";
@@ -1240,6 +1251,10 @@ int main(int argc, char** argv)
         {
             turn_limit = atoi(argv[argIndex+1]);
             argIndex += 1;
+        }
+        else if(strcmp(argv[argIndex], "+stdev") == 0)
+        {
+            show_stdev = true;
         }
         else if(strcmp(argv[argIndex], "+v") == 0)
         {

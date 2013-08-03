@@ -572,7 +572,7 @@ void turn_start_phase(Field* fd);
 void evaluate_legion(Field* fd);
 bool check_and_perform_refresh(Field* fd, CardStatus* src_status);
 // return value : (raid points) -> attacker wins, 0 -> defender wins
-Results<unsigned> play(Field* fd)
+Results<uint64_t> play(Field* fd)
 {
     fd->players[0]->commander.m_player = 0;
     fd->players[1]->commander.m_player = 1;
@@ -730,7 +730,7 @@ Results<unsigned> play(Field* fd)
     if(fd->players[0]->commander.m_hp == 0)
     {
         _DEBUG_MSG(1, "You lose.\n");
-        return {0, 0, 1, 0};
+        return {0, 0, 1, 0, 0};
     }
     // you win in raid
     if(fd->optimization_mode == OptimizationMode::raid)
@@ -738,12 +738,12 @@ Results<unsigned> play(Field* fd)
         if(fd->players[1]->commander.m_hp == 0)
         {
             _DEBUG_MSG(1, "You win (boss killed).\n");
-            return {1, 0, 0, 250};
+            return {1, 0, 0, 250, 0};
         }
         else
         {
             _DEBUG_MSG(1, "You win (survival).\n");
-            return {0, 1, 0, std::min(fd->all_damage_to_commander, 200u)};
+            return {0, 1, 0, std::min(fd->all_damage_to_commander, 200u), 0};
         }
     }
     // you win
@@ -752,7 +752,7 @@ Results<unsigned> play(Field* fd)
         if (fd->optimization_mode == OptimizationMode::achievement && !made_achievement)
         {
             _DEBUG_MSG(1, "You win but no achievement.\n");
-            return {1, 0, 0, 0};
+            return {1, 0, 0, 0, 0};
         }
         _DEBUG_MSG(1, "You win.\n");
 #if 0
@@ -764,17 +764,17 @@ Results<unsigned> play(Field* fd)
         }
         return {1, 0, 0, 10 + (speedy ? 5 : 0) + (fd->gamemode == surge ? 20 : 0) + fd->points_since_last_decision, 0};
 #endif
-        return {1, 0, 0, 1};
+        return {1, 0, 0, 1, 0};
     }
     if (fd->turn > turn_limit)
     {
         _DEBUG_MSG(1, "Stall after %u turns.\n", turn_limit);
-        return {0, 1, 0, fd->optimization_mode == OptimizationMode::defense};
+        return {0, 1, 0, fd->optimization_mode == OptimizationMode::defense, 0};
     }
 
     // Huh? How did we get here?
     assert(false);
-    return {0, 0, 0, 0};
+    return {0, 0, 0, 0, 0};
 }
 
 // Roll a coin in case an Activation skill has 50% chance to proc.
