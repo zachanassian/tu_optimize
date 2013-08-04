@@ -41,6 +41,7 @@
 namespace {
     gamemode_t gamemode{fight};
     OptimizationMode optimization_mode{OptimizationMode::none};
+    bool auto_upgrade_cards{true};
     long double target_score{-1e9};
     bool show_stdev{false};
 }
@@ -157,25 +158,9 @@ std::set<unsigned> top_commanders{
         1225, // Yuletta
         };
 //------------------------------------------------------------------------------
-bool suitable_non_commander(const Deck& deck, unsigned slot, const Card* card)
+bool suitable_non_commander(const Deck& deck, unsigned slot, const Card* card, const Cards & cards)
 {
     assert(card->m_type != CardType::commander);
-    if(use_owned_cards)
-    {
-        if(owned_cards.find(card->m_id) == owned_cards.end()) { return(false); }
-        else
-        {
-            unsigned num_in_deck{0};
-            for(unsigned i(0); i < deck.cards.size(); ++i)
-            {
-                if(i != slot && deck.cards[i]->m_id == card->m_id)
-                {
-                    ++num_in_deck;
-                }
-            }
-            if(owned_cards.find(card->m_id)->second <= num_in_deck) { return(false); }
-        }
-    }
     if(card->m_rarity == 4) // legendary - 1 per deck
     {
         for(unsigned i(0); i < deck.cards.size(); ++i)
@@ -196,23 +181,45 @@ bool suitable_non_commander(const Deck& deck, unsigned slot, const Card* card)
             }
         }
     }
-    return(true);
+    if(!use_owned_cards)
+    {
+        return(true);
+    }
+
+    unsigned num_in_deck{0}, num_proto_in_deck{0}, num_upgraded_in_deck{0};
+    for(unsigned i(0); i < deck.cards.size(); ++i)
+    {
+        if(i == slot) { continue; }
+        num_in_deck += (deck.cards[i]->m_id == card->m_id);
+        num_proto_in_deck += (deck.cards[i]->m_id == card->m_proto_id);
+        num_upgraded_in_deck += (deck.cards[i]->m_id == card->m_upgraded_id);
+    }
+    unsigned num_owned{owned_cards.find(card->m_id)->second};
+    auto owned_upgraded_iter = owned_cards.find(card->m_upgraded_id);
+    if(num_owned >= num_in_deck + 2 * safe_minus(num_upgraded_in_deck, owned_upgraded_iter == owned_cards.end() ? 0 : owned_upgraded_iter->second) + 1) { return(true); }
+    // try upgrade
+    if(auto_upgrade_cards && card->m_proto_id > 0)
+    {
+        auto owned_proto_iter = owned_cards.find(card->m_proto_id);
+        if(owned_proto_iter != owned_cards.end() && num_owned * 2 + owned_proto_iter->second >= num_in_deck * 2 + num_proto_in_deck + 2) { return(true); }
+    }
+    return(false);
 }
 
-bool suitable_commander(const Card* card)
+bool suitable_commander(const Card* card, const Cards & cards)
 {
     assert(card->m_type == CardType::commander);
     if(use_owned_cards)
     {
-        auto owned_iter = owned_cards.find(card->m_id);
-        if(owned_iter == owned_cards.end()) { return(false); }
-        else
+        if(owned_cards.find(card->m_id)->second >= 1) { return(true); }
+        // try upgrade
+        if(auto_upgrade_cards && card->m_proto_id > 0)
         {
-            if(owned_iter->second <= 0) { return(false); }
+            auto owned_iter = owned_cards.find(card->m_proto_id);
+            if(owned_iter != owned_cards.end() && owned_iter->second >= 2) { return(true); }
         }
     }
-//    if(top_commanders.find(card->m_id) == top_commanders.end()) { return(false); }  // XXX
-    return(true);
+    return(false);
 }
 //------------------------------------------------------------------------------
 Results<long double> compute_score(const std::pair<std::vector<Results<uint64_t>> , unsigned>& results, std::vector<long double>& factors)
@@ -615,7 +622,7 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc, std::map<si
                 // Various checks to check if the card is accepted
                 assert(commander_candidate->m_type == CardType::commander);
                 if(commander_candidate->m_name == best_commander->m_name) { continue; }
-                if(!suitable_commander(commander_candidate)) { continue; }
+                if(!suitable_commander(commander_candidate, proc.cards)) { continue; }
                 // Place it in the deck
                 d1->commander = commander_candidate;
                 auto &&cur_deck = d1->card_ids<std::multiset<unsigned>>();
@@ -653,7 +660,7 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc, std::map<si
                 // Various checks to check if the card is accepted
                 assert(card_candidate->m_type != CardType::commander);
                 if(slot_i < best_cards.size() && card_candidate->m_name == best_cards[slot_i]->m_name) { continue; }
-                if(!suitable_non_commander(*d1, slot_i, card_candidate)) { continue; }
+                if(!suitable_non_commander(*d1, slot_i, card_candidate, proc.cards)) { continue; }
                 // Place it in the deck
                 if(slot_i == d1->cards.size())
                 {
@@ -739,7 +746,7 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc, std
                 // Various checks to check if the card is accepted
                 assert(commander_candidate->m_type == CardType::commander);
                 if(commander_candidate->m_name == best_commander->m_name) { continue; }
-                if(!suitable_commander(commander_candidate)) { continue; }
+                if(!suitable_commander(commander_candidate, proc.cards)) { continue; }
                 // Place it in the deck
                 d1->commander = commander_candidate;
                 auto &&cur_deck = d1->card_ids<std::vector<unsigned>>();
@@ -781,7 +788,7 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc, std
                 {
                     // Various checks to check if the card is accepted
                     if(to_slot < best_cards.size() && card_candidate->m_name == best_cards[to_slot]->m_name) { continue; }
-                    if(!suitable_non_commander(*d1, from_slot, card_candidate)) { continue; }
+                    if(!suitable_non_commander(*d1, from_slot, card_candidate, proc.cards)) { continue; }
                     // Place it in the deck
                     if(from_slot < d1->cards.size())
                     {
@@ -1038,7 +1045,7 @@ void exhaustive_k(unsigned num_iterations, unsigned var_k, Process& proc, std::m
             for(unsigned commanderIndex(0); commanderIndex < proc.cards.player_commanders.size() && !finished; ++commanderIndex)
             {
                 const Card* commander(proc.cards.player_commanders[commanderIndex]);
-                if(!suitable_commander(commander)) { continue; }
+                if(!suitable_commander(commander, proc.cards)) { continue; }
                 try_all_ratio_combinations(num_cards, var_k, num_iterations, indices, ass_structs, commander, proc, best_score, best_deck);
             }
         }
@@ -1101,6 +1108,7 @@ void usage(int argc, char** argv)
         "  -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).\n"
         "  -s: use surge (default is fight).\n"
         "  -t <num>: set the number of threads, default is 4.\n"
+        "  -u: do not upgrade owned cards during hill climbing. (by default, upgrade owned cards when needed)\n"
         "  target <num>: stop hill climbing as soon as the score reaches <num>.\n"
         "  -turnlimit <num>: set the number of turns in a battle, default is 50 (can be used for speedy achievements).\n"
         "\n"
@@ -1259,6 +1267,10 @@ int main(int argc, char** argv)
         {
             turn_limit = atoi(argv[argIndex+1]);
             argIndex += 1;
+        }
+        else if(strcmp(argv[argIndex], "-u") == 0)
+        {
+            auto_upgrade_cards = false;
         }
         else if(strcmp(argv[argIndex], "+stdev") == 0)
         {

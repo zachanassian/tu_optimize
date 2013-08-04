@@ -22,6 +22,11 @@ extern bool debug_line;
 extern std::string debug_str;
 extern unsigned turn_limit;
 
+inline unsigned safe_minus(unsigned x, unsigned y)
+{
+    return(x - std::min(x, y));
+}
+
 //---------------------- Represent Simulation Results ----------------------------
 template<typename result_type>
 struct Results

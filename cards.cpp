@@ -88,59 +88,62 @@ void Cards::organize()
         }
         cards_by_id[card->m_id] = card;
         // Card available to players
-        if(card->m_set != -1)
+        if(card->m_set != 0)
         {
             player_cards.push_back(card);
             switch(card->m_type)
             {
-            case CardType::commander: {
-                player_commanders.push_back(card);
-                break;
-            }
-            case CardType::assault: {
-                player_assaults.push_back(card);
-                break;
-            }
-            case CardType::structure: {
-                player_structures.push_back(card);
-                break;
-            }
-            case CardType::action: {
-                player_actions.push_back(card);
-                break;
-            }
-            case CardType::num_cardtypes: {
-                throw card->m_type;
-                break;
-            }
+                case CardType::commander: {
+                    player_commanders.push_back(card);
+                    break;
+                }
+                case CardType::assault: {
+                    player_assaults.push_back(card);
+                    break;
+                }
+                case CardType::structure: {
+                    player_structures.push_back(card);
+                    break;
+                }
+                case CardType::action: {
+                    player_actions.push_back(card);
+                    break;
+                }
+                case CardType::num_cardtypes: {
+                    throw card->m_type;
+                    break;
+                }
             }
             std::string simple_name{simplify_name(card->m_name)};
-            if(player_cards_by_name.find(simple_name) == player_cards_by_name.end())
+            auto card_itr = player_cards_by_name.find({simple_name, card->m_hidden});
+            if(card_itr == player_cards_by_name.end() || card_itr->second->m_id == card->m_replace)
             {
-                player_cards_by_name[simple_name] = card;
+                player_cards_by_name[{simple_name, card->m_hidden}] = card;
             }
         }
     }
     for(Card* card: cards)
     {
         // generate abbreviations
-        for(auto&& abbr_name : get_abbreviations(card->m_name))
+        if(card->m_hidden == 0)
         {
-            if(abbr_name.length() > 1 && player_cards_by_name.find(abbr_name) == player_cards_by_name.end())
+            for(auto&& abbr_name : get_abbreviations(card->m_name))
             {
-                player_cards_abbr[abbr_name] = card->m_name;
+                if(abbr_name.length() > 1 && player_cards_by_name.find({abbr_name, 0}) == player_cards_by_name.end())
+                {
+                    player_cards_abbr[abbr_name] = card->m_name;
+                }
             }
         }
-        // update base_id
-        std::string base_name{simplify_name(card->m_name)};
+
+        // update proto_id and upgraded_id
         if(card->m_set == 5002)
         {
-            base_name.erase(base_name.size() - 1);
-        }
-        auto card_itr = player_cards_by_name.find(base_name);
-        if(card_itr != player_cards_by_name.end() && card_itr->second != card)
-        {
-            card->m_base_id = card_itr->second->m_id;
+            std::string proto_name{simplify_name(card->m_name)};
+            proto_name.erase(proto_name.size() - 1);  // remove suffix "*"
+            Card * proto_card = player_cards_by_name[{proto_name, card->m_hidden}];
+            card->m_proto_id = proto_card->m_id;
+            proto_card->m_upgraded_id = card->m_id;
         }
     }
 }

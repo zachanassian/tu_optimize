@@ -143,10 +143,6 @@ inline void CardStatus::set(const Card& card)
     m_step = CardStep::none;
 }
 //------------------------------------------------------------------------------
-inline unsigned safe_minus(unsigned x, unsigned y)
-{
-    return(x - std::min(x, y));
-}
 inline int attack_power(CardStatus* att)
 {
     return(safe_minus(att->m_card->m_attack + att->m_berserk + att->m_rallied, att->m_weakened));
