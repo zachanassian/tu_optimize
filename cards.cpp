@@ -34,7 +34,7 @@ std::string simplify_name(const std::string& card_name)
 std::list<std::string> get_abbreviations(const std::string& name)
 {
     std::list<std::string> abbr_list;
-    boost::tokenizer<boost::char_delimiters_separator<char> > word_token{name, boost::char_delimiters_separator<char>{false, " ", ""}};
+    boost::tokenizer<boost::char_delimiters_separator<char>> word_token{name, boost::char_delimiters_separator<char>{false, " ", ""}};
     std::string initial;
     auto token_iter = word_token.begin();
     for(; token_iter != word_token.end(); ++token_iter)

@@ -180,7 +180,7 @@ void Deck::resolve(const Cards& all_cards)
         }
         else
         {
-            boost::tokenizer<boost::char_delimiters_separator<char> > deck_tokens{deck_string, boost::char_delimiters_separator<char>{false, ":,", ""}};
+            boost::tokenizer<boost::char_delimiters_separator<char>> deck_tokens{deck_string, boost::char_delimiters_separator<char>{false, ":,", ""}};
             auto token_iter = deck_tokens.begin();
             signed p = -1;
             for(; token_iter != deck_tokens.end(); ++token_iter)
@@ -188,7 +188,7 @@ void Deck::resolve(const Cards& all_cards)
                 std::string card_spec(*token_iter);
                 unsigned card_id{0};
                 unsigned card_num{1};
-                signed num_sign{0};
+                char num_sign{0};
                 char mark{0};
                 try
                 {

@@ -21,13 +21,13 @@ void load_decks(Decks& decks, Cards& cards)
     }
 }
 
-std::vector<std::pair<std::string, long double> > parse_deck_list(std::string list_string)
+std::vector<std::pair<std::string, long double>> parse_deck_list(std::string list_string)
 {
-    std::vector<std::pair<std::string, long double> > res;
-    boost::tokenizer<boost::char_delimiters_separator<char> > list_tokens{list_string, boost::char_delimiters_separator<char>{false, ";", ""}};
+    std::vector<std::pair<std::string, long double>> res;
+    boost::tokenizer<boost::char_delimiters_separator<char>> list_tokens{list_string, boost::char_delimiters_separator<char>{false, ";", ""}};
     for(auto list_token = list_tokens.begin(); list_token != list_tokens.end(); ++list_token)
     {
-        boost::tokenizer<boost::char_delimiters_separator<char> > deck_tokens{*list_token, boost::char_delimiters_separator<char>{false, ":", ""}};
+        boost::tokenizer<boost::char_delimiters_separator<char>> deck_tokens{*list_token, boost::char_delimiters_separator<char>{false, ":", ""}};
         auto deck_token = deck_tokens.begin();
         res.push_back(std::make_pair(*deck_token, 1.0d));
         ++deck_token;
@@ -80,8 +80,7 @@ template<typename Iterator, typename Functor, typename Token> Iterator read_toke
     return(token_end_after_spaces);
 }
 
-// num_sign = 0 if card_num is "N"; = +1 if "+N"; = -1 if "-N"
-void parse_card_spec(const Cards& cards, std::string& card_spec, unsigned& card_id, unsigned& card_num, signed& num_sign, char& mark)
+void parse_card_spec(const Cards& cards, std::string& card_spec, unsigned& card_id, unsigned& card_num, char& num_sign, char& mark)
 {
     static std::set<std::string> recognized_abbr;
     auto card_spec_iter = card_spec.begin();
@@ -128,14 +127,9 @@ void parse_card_spec(const Cards& cards, std::string& card_spec, unsigned& card_
         ++card_spec_iter;
         if(card_spec_iter != card_spec.end())
         {
-           if(*card_spec_iter == '+')
+           if(strchr("+-$", *card_spec_iter))
            {
-               num_sign = +1;
-               ++card_spec_iter;
-           }
-           else if(*card_spec_iter == '-')
-           {
-               num_sign = -1;
+               num_sign = *card_spec_iter;
                ++card_spec_iter;
            }
         }
@@ -173,7 +167,7 @@ unsigned read_card_abbrs(Cards& cards, const std::string& filename)
                 continue;
             }
             std::string abbr_name;
-            auto abbr_string_iter = read_token(abbr_string.begin(), abbr_string.end(), [](char c){return(strchr(":", c));}, abbr_name);
+            auto abbr_string_iter = read_token(abbr_string.begin(), abbr_string.end(), [](char c){return(c == ':');}, abbr_name);
             if(abbr_string_iter == abbr_string.end() || abbr_name.empty())
             {
                 std::cerr << "Error in custom deck file " << filename << " at line " << num_line << ", could not read the deck name.\n";
@@ -263,7 +257,7 @@ unsigned read_custom_decks(Decks& decks, Cards& cards, std::string filename)
     return(0);
 }
 
-void read_owned_cards(Cards& cards, std::map<unsigned, unsigned>& owned_cards, const char *filename)
+void read_owned_cards(Cards& cards, std::map<unsigned, unsigned>& owned_cards, std::map<unsigned, unsigned>& buyable_cards, const char *filename)
 {
     std::ifstream owned_file{filename};
     if(!owned_file.good())
@@ -285,7 +279,7 @@ void read_owned_cards(Cards& cards, std::map<unsigned, unsigned>& owned_cards, c
         {
             unsigned card_id{0};
             unsigned card_num{1};
-            signed num_sign{0};
+            char num_sign{0};
             char mark{0};
             parse_card_spec(cards, card_spec, card_id, card_num, num_sign, mark);
             assert(mark == 0);
@@ -293,13 +287,17 @@ void read_owned_cards(Cards& cards, std::map<unsigned, unsigned>& owned_cards, c
             {
                 owned_cards[card_id] = card_num;
             }
-            else if(num_sign > 0)
+            else if(num_sign == '+')
             {
                 owned_cards[card_id] += card_num;
             }
-            else if(num_sign < 0)
+            else if(num_sign == '-')
             {
                 owned_cards[card_id] = owned_cards[card_id] > card_num ? owned_cards[card_id] - card_num : 0;
+            }
+            else if(num_sign == '$')
+            {
+                buyable_cards[card_id] = card_num;
             }
         }
         catch(std::exception& e)

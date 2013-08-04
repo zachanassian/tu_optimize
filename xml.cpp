@@ -352,42 +352,51 @@ Deck* read_deck(Decks& decks, const Cards& cards, xml_node<>* node, DeckType::De
 {
     xml_node<>* commander_node(node->first_node("commander"));
     const Card* commander_card{cards.by_id(atoi(commander_node->value()))};
+    std::vector<const Card*> always_cards;
+    std::vector<std::pair<unsigned, std::vector<const Card*>>> some_cards;
+    std::vector<const Card*> reward_cards;
     xml_node<>* deck_node(node->first_node("deck"));
     xml_node<>* always_node{deck_node->first_node("always_include")};
-    std::vector<const Card*> always_cards;
     for(xml_node<>* card_node = (always_node ? always_node : deck_node)->first_node("card");
             card_node;
             card_node = card_node->next_sibling("card"))
     {
-        unsigned card_id{static_cast<unsigned>(atoi(card_node->value()))};
+        unsigned card_id(atoi(card_node->value()));
         always_cards.push_back(cards.by_id(card_id));
     }
-    std::vector<std::pair<unsigned, std::vector<const Card*> > > some_cards;
     for(xml_node<>* pool_node = deck_node->first_node("card_pool");
             pool_node;
             pool_node = pool_node->next_sibling("card_pool"))
     {
-        unsigned num_cards_from_pool{static_cast<unsigned>(atoi(pool_node->first_attribute("amount")->value()))};
+        unsigned num_cards_from_pool(atoi(pool_node->first_attribute("amount")->value()));
         std::vector<const Card*> cards_from_pool;
 
         for(xml_node<>* card_node = pool_node->first_node("card");
                 card_node;
                 card_node = card_node->next_sibling("card"))
         {
-            unsigned card_id{static_cast<unsigned>(atoi(card_node->value()))};
-            // Special case Arctis Vanguard id 0 because of stray ` character.
-            // Don't continue on other raids because I want to be notified of other errors.
-            if(card_id == 0 && decktype == DeckType::raid && id == 1)
-            {
-                continue;
-            }
+            unsigned card_id(atoi(card_node->value()));
             cards_from_pool.push_back(cards.by_id(card_id));
         }
         some_cards.push_back(std::make_pair(num_cards_from_pool, cards_from_pool));
     }
+    xml_node<>* rewards_node(node->first_node("rewards"));
+    if(decktype == DeckType::mission && rewards_node)
+    {
+        for(xml_node<>* card_node = rewards_node->first_node("card");
+                card_node;
+                card_node = card_node->next_sibling("card"))
+        {
+            unsigned card_id(atoi(card_node->value()));
+            reward_cards.push_back(cards.by_id(card_id));
+        }
+    }
+    xml_node<>* mission_req_node(node->first_node(decktype == DeckType::mission ? "req" : "mission_req"));
+    unsigned mission_req(mission_req_node ? atoi(mission_req_node->value()) : 0);
     decks.decks.push_back(Deck{decktype, id, deck_name});
     Deck* deck = &decks.decks.back();
-    deck->set(commander_card, always_cards, some_cards);
+    deck->set(commander_card, always_cards, some_cards, reward_cards, mission_req);
+    decks.by_type_id[{decktype, id}] = deck;
     decks.by_name[deck_name] = deck;
     std::stringstream alt_name;
     alt_name << decktype_names[decktype] << " #" << id;
@@ -418,7 +427,6 @@ void read_missions(Decks& decks, const Cards& cards, std::string filename)
         xml_node<>* name_node(mission_node->first_node("name"));
         std::string deck_name{name_node->value()};
         read_deck(decks, cards, mission_node, DeckType::mission, id, deck_name);
-        decks.mission_names_by_id[id] = deck_name;
     }
 }
 //------------------------------------------------------------------------------
@@ -529,7 +537,7 @@ void read_achievement(Decks& decks, const Cards& cards, Achievement& achievement
         if(strcmp(mission_id->value(), "*") != 0)
         {
             achievement.mission_condition.init(atoi(mission_id->value()), get_comparator(type_node, equal));
-            std::cout << "  Mission" << achievement.mission_condition.str() << " (" << decks.mission_names_by_id[atoi(mission_id->value())] << ") and win" << std::endl;
+            std::cout << "  Mission" << achievement.mission_condition.str() << " (" << decks.by_type_id[{DeckType::mission, atoi(mission_id->value())}]->name << ") and win" << std::endl;
         }
         for (xml_node<>* req_node = achievement_node->first_node("req");
             req_node;

@@ -130,7 +130,6 @@ enum gamemode_t
 
 enum class OptimizationMode
 {
-    none,
     winrate,
     achievement,
     raid,

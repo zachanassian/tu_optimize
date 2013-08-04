@@ -344,7 +344,7 @@ void Hand::reset(std::mt19937& re)
 // Everything about how a battle plays out, except the following:
 // the implementation of the attack by an assault card is in the next section;
 // the implementation of the active skills is in the section after that.
-unsigned turn_limit{0};
+unsigned turn_limit{50};
 //------------------------------------------------------------------------------
 inline unsigned opponent(unsigned player)
 {

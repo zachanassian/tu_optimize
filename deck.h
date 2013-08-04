@@ -43,8 +43,10 @@ struct Deck
     std::map<signed, char> card_marks;  // <positions of card, prefix mark>: -1 indicating the commander. E.g, used as a mark to be kept in attacking deck when optimizing.
     std::deque<const Card*> shuffled_cards;
     // card id -> card order
-    std::map<unsigned, std::list<unsigned> > order;
-    std::vector<std::pair<unsigned, std::vector<const Card*> > > raid_cards;
+    std::map<unsigned, std::list<unsigned>> order;
+    std::vector<std::pair<unsigned, std::vector<const Card*>>> raid_cards;
+    std::vector<const Card*> reward_cards;
+    unsigned mission_req;
 
     std::string deck_string;
 
@@ -58,7 +60,8 @@ struct Deck
         name(name_),
         strategy(strategy_),
         effect(Effect::none),
-        commander(nullptr)
+        commander(nullptr),
+        mission_req(0)
     {
     }
 
@@ -67,12 +70,15 @@ struct Deck
     void set(
         const Card* commander_,
         const std::vector<const Card*>& cards_,
-        std::vector<std::pair<unsigned, std::vector<const Card*> > > raid_cards_ =
-        std::vector<std::pair<unsigned, std::vector<const Card*> > >())
+        std::vector<std::pair<unsigned, std::vector<const Card*>>> raid_cards_ = {},
+        std::vector<const Card*> reward_cards_ = {},
+        unsigned mission_req_ = 0)
     {
         commander = commander_;
         cards = std::vector<const Card*>(std::begin(cards_), std::end(cards_));
-        raid_cards = std::vector<std::pair<unsigned, std::vector<const Card*> > >(raid_cards_);
+        raid_cards = std::vector<std::pair<unsigned, std::vector<const Card*>>>(raid_cards_);
+        reward_cards = std::vector<const Card*>(reward_cards_);
+        mission_req = mission_req_;
     }
 
     void set(const Cards& all_cards, const std::vector<unsigned>& ids);
@@ -104,8 +110,8 @@ struct Deck
 struct Decks
 {
     std::list<Deck> decks;
+    std::map<std::pair<DeckType::DeckType, unsigned>, Deck*> by_type_id;
     std::map<std::string, Deck*> by_name;
-    std::map<unsigned, std::string> mission_names_by_id;
     std::map<std::string, std::string> custom_decks;
 };
 
