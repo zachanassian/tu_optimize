@@ -681,6 +681,7 @@ Results<uint64_t> play(Field* fd)
                 current_status.m_step = CardStep::attacked;
                 continue;
             }
+            current_status.m_blitzing = false;
             // Evaluate skills
             evaluate_skills(fd, &current_status, current_status.m_card->m_skills);
             if(__builtin_expect(fd->end, false)) { break; }
@@ -1065,7 +1066,6 @@ void turn_start_phase(Field* fd)
             CardStatus& status(assaults[index]);
             status.m_index = index;
             status.m_augmented = 0;
-            status.m_blitzing = status.m_blitzing && is_jammed(&status);
             status.m_chaosed = false;
             status.m_enfeebled = 0;
             status.m_frozen = false;
