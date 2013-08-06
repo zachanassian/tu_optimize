@@ -1734,8 +1734,8 @@ inline void perform_skill<augment>(Field* fd, CardStatus* c, unsigned v)
 template<>
 inline void perform_skill<backfire>(Field* fd, CardStatus* c, unsigned v)
 {
-    // backfire damage not count in ANP.
-    remove_commander_hp(fd, *c, v, false);
+    // backfire damage counts in ARD.
+    remove_commander_hp(fd, *c, v, true);
 }
 
 template<>
@@ -1816,7 +1816,7 @@ inline void perform_skill<rush>(Field* fd, CardStatus* c, unsigned v)
 template<>
 inline void perform_skill<shock>(Field* fd, CardStatus* c, unsigned v)
 {
-    // shock damage counts in ANP. (if attacker ever has the skill)
+    // shock damage counts in ARD. (if attacker ever has the skill)
     remove_commander_hp(fd, *c, v, true);
 }
 
