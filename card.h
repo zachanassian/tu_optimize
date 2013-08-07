@@ -110,6 +110,7 @@ public:
     bool m_refresh;
     unsigned m_regenerate;
     unsigned m_replace;
+    unsigned m_reserve;
     unsigned m_set;
     unsigned m_siphon;
     bool m_split;
@@ -119,6 +120,8 @@ public:
     bool m_swipe;
     bool m_tribute;
     bool m_unique;
+    unsigned m_upgrade_consumables;
+    unsigned m_upgrade_gold_cost;
     unsigned m_upgraded_id;  // The id of the upgraded card for an upgradable card. 0 otherwise.
     unsigned m_valor;
     bool m_wall;

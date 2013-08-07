@@ -170,6 +170,8 @@ void read_cards(Cards& cards)
             xml_node<>* health_node(card->first_node("health"));
             xml_node<>* cost_node(card->first_node("cost"));
             xml_node<>* unique_node(card->first_node("unique"));
+            xml_node<>* reserve_node(card->first_node("reserve"));
+            unsigned reserve(reserve_node ? atoi(reserve_node->value()) : 0);
             xml_node<>* base_card_node(card->first_node("base_card"));
             unsigned base_card_id(base_card_node ? atoi(base_card_node->value()) : id);
             xml_node<>* rarity_node(card->first_node("rarity"));
@@ -206,11 +208,16 @@ void read_cards(Cards& cards)
                 if(health_node) { c->m_health = atoi(health_node->value()); }
                 if(cost_node) { c->m_delay = atoi(cost_node->value()); }
                 if(unique_node) { c->m_unique = true; }
+                c->m_reserve = reserve;
                 c->m_base_id = base_card_id;
                 c->m_rarity = atoi(rarity_node->value());
                 unsigned type(type_node ? atoi(type_node->value()) : 0);
                 c->m_faction = map_to_faction(type);
                 c->m_set = set;
+                // Promo and Unpurchasable Reward cards will only require 1 copy
+                c->m_upgrade_consumables = set == 5001 || (set == 5000 and reserve) ? 1 : 2;
+                // Reward cards will still have a gold cost
+                c->m_upgrade_gold_cost = set == 5000 ? (c->m_rarity == 4 ? 100000 : 20000) : 0;
                 for(xml_node<>* skill = card->first_node("skill"); skill;
                     skill = skill->next_sibling("skill"))
                 {
