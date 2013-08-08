@@ -997,52 +997,10 @@ inline void try_all_ratio_combinations(unsigned deck_size, unsigned var_k, unsig
     }
 }
 //------------------------------------------------------------------------------
-void exhaustive_k(unsigned num_iterations, unsigned var_k, Process& proc, std::map<signed, char> card_marks)
-{
-    std::vector<const Card*> ass_structs;
-    for(const Card* card: proc.cards.player_assaults)
-    {
-        if(card->m_rarity >= 3) { ass_structs.push_back(card); }
-    }
-    for(const Card* card: proc.cards.player_structures)
-    {
-        if(card->m_rarity >= 3) { ass_structs.push_back(card); }
-    }
-    //std::vector<Card*> ass_structs; = cards.player_assaults;
-    //ass_structs.insert(ass_structs.end(), cards.player_structures.begin(), cards.player_structures.end());
-    unsigned var_n = ass_structs.size();
-    assert(var_k <= var_n);
-    unsigned num(0);
-    Combination cardIndices(var_n, var_k);
-    const std::vector<unsigned>& indices = cardIndices.getIndices();
-    bool finished(false);
-    Results<long double> best_score{0, 0, 0, 0};
-    boost::optional<Deck> best_deck;
-    unsigned num_cards = ((Deck*)proc.att_deck)->cards.size();
-    while(!finished)
-    {
-        if(card_marks.count(-1))
-        {
-            try_all_ratio_combinations(num_cards, var_k, num_iterations, indices, ass_structs, ((Deck*)proc.att_deck)->commander, proc, best_score, best_deck);
-        }
-        else
-        {
-            // Iterate over all commanders
-            for(unsigned commanderIndex(0); commanderIndex < proc.cards.player_commanders.size() && !finished; ++commanderIndex)
-            {
-                const Card* commander(proc.cards.player_commanders[commanderIndex]);
-                try_all_ratio_combinations(num_cards, var_k, num_iterations, indices, ass_structs, commander, proc, best_score, best_deck);
-            }
-        }
-        finished = cardIndices.next();
-    }
-    std::cout << "done " << num << "\n";
-}
-//------------------------------------------------------------------------------
 enum Operation {
-    bruteforce,
-    climb,
     simulate,
+    climb,
+    reorder,
     debug,
     debuguntil
 };
@@ -1098,14 +1056,13 @@ void usage(int argc, char** argv)
         "  -o: restrict to the owned cards listed in \"ownedcards.txt\".\n"
         "  -o=<filename>: restrict to the owned cards listed in <filename>.\n"
         "  fund <num>: fund <num> gold to buy/upgrade cards. prices are specified in ownedcards file.\n"
-        "  reorder: enable -r and restrict to the cards in your initial deck.\n"
         "  target <num>: stop as soon as the score reaches <num>.\n"
         "  -u: don't upgrade owned cards. (by default, upgrade owned cards when needed)\n"
         "\n"
         "Operations:\n"
-        "  brute <num1> <num2>: find the best combination of <num1> different cards, using up to <num2> battles to evaluate a deck.\n"
-        "  climb <num>: perform hill-climbing starting from the given attack deck, using up to <num> battles to evaluate a deck.\n"
         "  sim <num>: simulate <num> battles to evaluate a deck.\n"
+        "  climb <num>: perform hill-climbing starting from the given attack deck, using up to <num> battles to evaluate a deck.\n"
+        "  reorder <num>: optimize the order for given attack deck, using up to <num> battles to evaluate an order.\n"
 #ifndef NDEBUG
         "  debug: testing purpose only. very verbose output. only one battle.\n"
         "  debuguntil <min> <max>: testing purpose only. fight until the last fight results in range [<min>, <max>]. recommend to redirect output.\n"
@@ -1321,16 +1278,6 @@ int main(int argc, char** argv)
             fund = atoi(argv[argIndex+1]);
             argIndex += 1;
         }
-        else if(strcmp(argv[argIndex], "reorder") == 0)
-        {
-            att_strategy = DeckStrategy::ordered;
-            fixed_len = true;
-            use_owned_cards = true;
-            auto_upgrade_cards = false;
-            owned_cards.clear();
-            claim_cards({att_deck->commander}, cards, true, false);
-            claim_cards(att_deck->cards, cards, true, false);
-        }
         else if(strcmp(argv[argIndex], "-r") == 0 || strcmp(argv[argIndex], "ordered") == 0)
         {
             att_strategy = DeckStrategy::ordered;
@@ -1382,20 +1329,20 @@ int main(int argc, char** argv)
         {
             ++ debug_print;
         }
-        else if(strcmp(argv[argIndex], "brute") == 0)
+        else if(strcmp(argv[argIndex], "sim") == 0)
         {
-            todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex + 1]), (unsigned)atoi(argv[argIndex + 2]), bruteforce));
-            argIndex += 2;
+             todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex + 1]), 0u, simulate));
+             argIndex += 1;
         }
         else if(strcmp(argv[argIndex], "climb") == 0)
         {
             todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex + 1]), 0u, climb));
             argIndex += 1;
         }
-        else if(strcmp(argv[argIndex], "sim") == 0)
+        else if(strcmp(argv[argIndex], "reorder") == 0)
         {
-             todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex + 1]), 0u, simulate));
-             argIndex += 1;
+            todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex + 1]), 0u, reorder));
+            argIndex += 1;
         }
         else if(strcmp(argv[argIndex], "debug") == 0)
         {
@@ -1455,8 +1402,9 @@ int main(int argc, char** argv)
         {
             switch(std::get<2>(op))
             {
-            case bruteforce: {
-                exhaustive_k(std::get<1>(op), std::get<0>(op), p, att_deck->card_marks);
+            case simulate: {
+                auto results = p.evaluate(std::get<0>(op));
+                print_results(results, p.factors);
                 break;
             }
             case climb: {
@@ -1470,9 +1418,15 @@ int main(int argc, char** argv)
                 }
                 break;
             }
-            case simulate: {
-                auto results = p.evaluate(std::get<0>(op));
-                print_results(results, p.factors);
+            case reorder: {
+                att_strategy = DeckStrategy::ordered;
+                fixed_len = true;
+                use_owned_cards = true;
+                auto_upgrade_cards = false;
+                owned_cards.clear();
+                claim_cards({att_deck->commander}, cards, true, false);
+                claim_cards(att_deck->cards, cards, true, false);
+                hill_climbing_ordered(std::get<0>(op), att_deck, p, att_deck->card_marks);
                 break;
             }
             case debug: {
