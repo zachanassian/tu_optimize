@@ -584,7 +584,7 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc, std::map<si
     std::mt19937 re(time(NULL));
     bool deck_has_been_improved = true;
     unsigned long skipped_simulations = 0;
-    for(unsigned slot_i(0), dead_slot(0); (deck_has_been_improved || slot_i != dead_slot) && best_score.points - target_score < -1e-9; slot_i = (slot_i + 1) % std::min<unsigned>(max_deck_len, d1->cards.size() + 1))
+    for(unsigned slot_i(0), dead_slot(0); (deck_has_been_improved || slot_i != dead_slot) && best_score.points - target_score < -1e-9; slot_i = (slot_i + 1) % std::min<unsigned>(max_deck_len, best_cards.size() + 1))
     {
         if(card_marks.count(slot_i)) { continue; }
         if(deck_has_been_improved)
@@ -633,6 +633,7 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc, std::map<si
         std::shuffle(non_commander_cards.begin(), non_commander_cards.end(), re);
         for(const Card* card_candidate: non_commander_cards)
         {
+            d1->cards = best_cards;
             if(card_candidate)
             {
                 // Various checks to check if the card is accepted
@@ -764,18 +765,18 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc, std
         {
             // Various checks to check if the card is accepted
             assert(!card_candidate || card_candidate->m_type != CardType::commander);
-            for(unsigned to_slot(card_candidate ? 0 : d1->cards.size() - 1); to_slot < d1->cards.size() + (from_slot < d1->cards.size() ? 0 : 1); ++to_slot)
+            for(unsigned to_slot(card_candidate ? 0 : best_cards.size() - 1); to_slot < best_cards.size() + (from_slot < best_cards.size() ? 0 : 1); ++to_slot)
             {
                 if(card_marks.count(from_slot) && card_candidate != best_cards[from_slot]) { break; }
                 d1->cards = best_cards;
                 if(card_candidate)
                 {
                     // Various checks to check if the card is accepted
-                    if(to_slot < best_cards.size() && card_candidate->m_name == best_cards[to_slot]->m_name) { continue; }
                     if(!suitable_non_commander(*d1, from_slot, card_candidate)) { continue; }
                     // Place it in the deck
-                    if(from_slot < d1->cards.size())
+                    if(from_slot < best_cards.size())
                     {
+                        if(from_slot == to_slot && card_candidate->m_name == best_cards[to_slot]->m_name) { continue; }
                         d1->cards.erase(d1->cards.begin() + from_slot);
                     }
                     d1->cards.insert(d1->cards.begin() + to_slot, card_candidate);
