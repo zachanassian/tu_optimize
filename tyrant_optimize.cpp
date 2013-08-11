@@ -461,19 +461,32 @@ void print_results(const std::pair<std::vector<Results<uint64_t>> , unsigned>& r
 {
     auto final = compute_score(results, factors);
 
-    std::cout << (optimization_mode == OptimizationMode::raid ? "kill%: " : "win%: ") << final.wins * 100.0 << " (";
+    if(optimization_mode == OptimizationMode::raid)
+    {
+        std::cout <<  "win%: " << (final.wins + final.draws) * 100.0 << " (";
+        for(auto val: results.first)
+        {
+            std::cout << val.wins + val.draws << " ";
+        }
+        std::cout << "/ " << results.second << ")" << std::endl;
+    }
+
+    std::cout << (optimization_mode == OptimizationMode::raid ? "slay%: " : "win%: ") << final.wins * 100.0 << " (";
     for(auto val: results.first)
     {
         std::cout << val.wins << " ";
     }
     std::cout << "/ " << results.second << ")" << std::endl;
 
-    std::cout << "stall%: " << final.draws * 100.0 << " (";
-    for(auto val: results.first)
+    if(optimization_mode != OptimizationMode::raid)
     {
-        std::cout << val.draws << " ";
+        std::cout << "stall%: " << final.draws * 100.0 << " (";
+        for(auto val: results.first)
+        {
+            std::cout << val.draws << " ";
+        }
+        std::cout << "/ " << results.second << ")" << std::endl;
     }
-    std::cout << "/ " << results.second << ")" << std::endl;
 
     std::cout << "loss%: " << final.losses * 100.0 << " (";
     for(auto val: results.first)
@@ -518,7 +531,7 @@ void print_deck_inline(const unsigned deck_cost, const Results<long double> scor
     switch(optimization_mode)
     {
         case OptimizationMode::raid:
-            std::cout << "(" << score.wins * 100.0 << "% kill, " << score.draws * 100.0 << "% stall";
+            std::cout << "(" << (score.wins + score.draws) * 100 << "% win, " << score.wins * 100.0 << "% slay";
             if (show_stdev) {
                 std::cout << ", " << sqrt(score.sq_points - score.points * score.points) << " stdev";
             }
