@@ -41,6 +41,11 @@
 namespace {
     gamemode_t gamemode{fight};
     OptimizationMode optimization_mode{OptimizationMode::winrate};
+    std::map<unsigned, unsigned> owned_cards;
+    std::map<unsigned, unsigned> buyable_cards;
+    bool use_owned_cards{false};
+    unsigned min_deck_len{1};
+    unsigned max_deck_len{10};
     unsigned fund{0};
     bool auto_upgrade_cards{true};
     long double target_score{100};
@@ -78,14 +83,6 @@ Deck* find_deck(Decks& decks, const Cards& cards, std::string deck_name)
     return(deck);
 }
 //---------------------- $80 deck optimization ---------------------------------
-//------------------------------------------------------------------------------
-// Owned cards
-//------------------------------------------------------------------------------
-std::map<unsigned, unsigned> owned_cards;
-std::map<unsigned, unsigned> buyable_cards;
-bool use_owned_cards{false};
-unsigned min_deck_len{1};
-unsigned max_deck_len{10};
 
 // @claim_all: true = claim all cards; false = claim only non-buyable cards.
 // @is_reward: not claim a card if there is upgraded version (assuming the reward card has been upgraded).
@@ -1194,11 +1191,11 @@ int main(int argc, char** argv)
 
     for(int argIndex(3); argIndex < argc; ++argIndex)
     {
-        if(strcmp(argv[argIndex], "win") == 0) // for test
+        if(strcmp(argv[argIndex], "win") == 0)
         {
             optimization_mode = OptimizationMode::winrate;
         }
-        else if(strcmp(argv[argIndex], "raid") == 0)  // for test
+        else if(strcmp(argv[argIndex], "raid") == 0)
         {
             optimization_mode = OptimizationMode::raid;
             turn_limit = 30;
@@ -1343,10 +1340,15 @@ int main(int argc, char** argv)
         {
             ++ debug_print;
         }
+        else if(strcmp(argv[argIndex], "hand") == 0)  // set initial hand for test
+        {
+            att_deck->set_given_hand(cards, argv[argIndex + 1]);
+            argIndex += 1;
+        }
         else if(strcmp(argv[argIndex], "sim") == 0)
         {
-             todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex + 1]), 0u, simulate));
-             argIndex += 1;
+            todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex + 1]), 0u, simulate));
+            argIndex += 1;
         }
         else if(strcmp(argv[argIndex], "climb") == 0)
         {
@@ -1433,8 +1435,8 @@ int main(int argc, char** argv)
                 break;
             }
             case reorder: {
-                att_strategy = DeckStrategy::ordered;
-                fixed_len = true;
+                att_deck->strategy = DeckStrategy::ordered;
+                min_deck_len = max_deck_len = att_deck->cards.size();
                 use_owned_cards = true;
                 auto_upgrade_cards = false;
                 owned_cards.clear();

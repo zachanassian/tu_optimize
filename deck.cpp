@@ -83,7 +83,7 @@ const char* base64_chars =
 
 // Converts cards in `hash' to a deck.
 // Stores resulting card IDs in `ids'.
-void hash_to_ids(const char* hash, std::vector<unsigned int>& ids)
+void hash_to_ids(const char* hash, std::vector<unsigned>& ids)
 {
     unsigned int last_id = 0;
     const char* pc = hash;
@@ -123,11 +123,61 @@ void hash_to_ids(const char* hash, std::vector<unsigned int>& ids)
         }
     }
 }
+
+const std::pair<std::vector<unsigned>, std::map<signed, char>> string_to_ids(const Cards& all_cards, const std::string& deck_string, const std::string & description)
+{
+    std::vector<unsigned> card_ids;
+    std::map<signed, char> card_marks;
+    if(deck_string.find_first_of(":,") == std::string::npos)
+    {
+        try
+        {
+            hash_to_ids(deck_string.c_str(), card_ids);
+        }
+        catch(std::exception& e)
+        {
+            std::cerr << "Error while resolving " << description << ": " << e.what() << std::endl;
+            throw;
+        }
+    }
+    else
+    {
+        boost::tokenizer<boost::char_delimiters_separator<char>> deck_tokens{deck_string, boost::char_delimiters_separator<char>{false, ":,", ""}};
+        auto token_iter = deck_tokens.begin();
+        signed p = -1;
+        for(; token_iter != deck_tokens.end(); ++token_iter)
+        {
+            std::string card_spec(*token_iter);
+            unsigned card_id{0};
+            unsigned card_num{1};
+            char num_sign{0};
+            char mark{0};
+            try
+            {
+                parse_card_spec(all_cards, card_spec, card_id, card_num, num_sign, mark);
+                assert(num_sign == 0);
+                for(unsigned i(0); i < card_num; ++i)
+                {
+                    card_ids.push_back(card_id);
+                    if(mark) { card_marks[p] = mark; }
+                    ++ p;
+                }
+            }
+            catch(std::exception& e)
+            {
+                std::cerr << "Warning while resolving " << description << ": " << e.what() << std::endl;
+                continue;
+            }
+        }
+    }
+    return {card_ids, card_marks};
+}
+
 } // end of namespace
 
 namespace range = boost::range;
 
-void Deck::set(const Cards& all_cards, const std::vector<unsigned>& ids)
+void Deck::set(const Cards& all_cards, const std::vector<unsigned>& ids, const std::map<signed, char> marks)
 {
     commander = nullptr;
     strategy = DeckStrategy::random;
@@ -154,6 +204,7 @@ void Deck::set(const Cards& all_cards, const std::vector<unsigned>& ids)
     {
         throw std::runtime_error("While constructing a deck: no commander found");
     }
+    card_marks = marks;
 }
 
 void Deck::set(const Cards& all_cards, const std::string& deck_string_)
@@ -163,54 +214,19 @@ void Deck::set(const Cards& all_cards, const std::string& deck_string_)
 
 void Deck::resolve(const Cards& all_cards)
 {
-    if(commander == nullptr)
+    if(commander != nullptr)
     {
-        std::vector<unsigned int> ids;
-        if(deck_string.find_first_of(":,") == std::string::npos)
-        {
-            try
-            {
-                hash_to_ids(deck_string.c_str(), ids);
-            }
-            catch(std::exception& e)
-            {
-                std::cerr << "Error while resolving " << short_description() << ": " << e.what() << std::endl;
-                throw;
-            }
-        }
-        else
-        {
-            boost::tokenizer<boost::char_delimiters_separator<char>> deck_tokens{deck_string, boost::char_delimiters_separator<char>{false, ":,", ""}};
-            auto token_iter = deck_tokens.begin();
-            signed p = -1;
-            for(; token_iter != deck_tokens.end(); ++token_iter)
-            {
-                std::string card_spec(*token_iter);
-                unsigned card_id{0};
-                unsigned card_num{1};
-                char num_sign{0};
-                char mark{0};
-                try
-                {
-                    parse_card_spec(all_cards, card_spec, card_id, card_num, num_sign, mark);
-                    assert(num_sign == 0);
-                    for(unsigned i(0); i < card_num; ++i)
-                    {
-                        ids.push_back(card_id);
-                        if(mark) { card_marks[p] = mark; }
-                        ++ p;
-                    }
-                }
-                catch(std::exception& e)
-                {
-                    std::cerr << "Warning while resolving " << short_description() << ": " << e.what() << std::endl;
-                    continue;
-                }
-            }
-        }
-        set(all_cards, ids);
-        deck_string.clear();
+        return;
     }
+    auto && id_marks = string_to_ids(all_cards, deck_string, short_description());
+    set(all_cards, id_marks.first, id_marks.second);
+    deck_string.clear();
+}
+
+void Deck::set_given_hand(const Cards& all_cards, const std::string& hand_string)
+{
+    auto && id_marks = string_to_ids(all_cards, hand_string, "hand");
+    given_hand = id_marks.first;
 }
 
 std::string Deck::short_description() const
@@ -353,7 +369,27 @@ void Deck::shuffle(std::mt19937& re)
     }
     if(strategy != DeckStrategy::exact_ordered)
     {
-        std::shuffle(shuffled_cards.begin(), shuffled_cards.end(), re);
+        auto shufflable_iter = shuffled_cards.begin();
+        for(auto hand_card_id: given_hand)
+        {
+            auto it = std::find_if(shufflable_iter, shuffled_cards.end(), [hand_card_id](const Card* card) -> bool { return card->m_id == hand_card_id; });
+            if(it != shuffled_cards.end())
+            {
+                std::swap(*shufflable_iter, *it);
+                ++ shufflable_iter;
+            }
+        }
+        std::shuffle(shufflable_iter, shuffled_cards.end(), re);
+#if 0
+        if(!given_hand.empty())
+        {
+            for(auto card: cards) std::cout << ", " << card->m_name;
+            std::cout << std::endl;
+            std::cout << strategy;
+            for(auto card: shuffled_cards) std::cout << ", " << card->m_name;
+            std::cout << std::endl;
+        }
+#endif
     }
 }
 
