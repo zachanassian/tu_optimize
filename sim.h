@@ -221,7 +221,6 @@ public:
     unsigned current_ci;
     unsigned last_decision_turn;
 //    unsigned points_since_last_decision;
-    unsigned all_damage_to_commander;
 
     unsigned fusion_count;
     std::vector<unsigned> achievement_counter;

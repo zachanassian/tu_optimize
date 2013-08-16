@@ -585,7 +585,6 @@ Results<uint64_t> play(Field* fd)
     // ANP: Last decision point is second-to-last card played.
     fd->points_since_last_decision = 0;
 #endif
-    fd->all_damage_to_commander = 0;
     unsigned p0_size = fd->players[0]->deck->cards.size();
     fd->last_decision_turn = p0_size == 1 ? 0 : p0_size * 2 - (fd->gamemode == surge ? 2 : 3);
 
@@ -713,7 +712,6 @@ Results<uint64_t> play(Field* fd)
     bool made_achievement = true;
     if(fd->optimization_mode == OptimizationMode::achievement)
     {
-        fd->set_counter(fd->achievement.misc_req, AchievementMiscReq::com_total, fd->all_damage_to_commander);
         for(unsigned i(0); made_achievement && i < fd->achievement.req_counter.size(); ++i)
         {
             made_achievement = made_achievement && fd->achievement.req_counter[i].check(fd->achievement_counter[i]);
@@ -740,7 +738,7 @@ Results<uint64_t> play(Field* fd)
         else
         {
             _DEBUG_MSG(1, "You win (survival).\n");
-            return {0, 1, 0, std::min(fd->all_damage_to_commander, 200u), 0};
+            return {0, 1, 0, fd->players[1]->commander.m_card->m_health - fd->players[1]->commander.m_hp, 0};
         }
     }
     // you win
@@ -1188,7 +1186,7 @@ void remove_commander_hp(Field* fd, CardStatus& status, unsigned dmg, bool count
 #if 0
         fd->points_since_last_decision += dmg;
 #endif
-        fd->all_damage_to_commander += dmg;
+        fd->inc_counter(fd->achievement.misc_req, AchievementMiscReq::com_total, dmg);
     }
     if(status.m_hp == 0)
     {
