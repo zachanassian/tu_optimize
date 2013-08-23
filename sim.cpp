@@ -96,6 +96,7 @@ CardStatus::CardStatus(const Card* card) :
     m_immobilized(false),
     m_infused(false),
     m_jammed(false),
+    m_phased(false),
     m_poisoned(0),
     m_protected(0),
     m_rallied(0),
@@ -132,6 +133,7 @@ inline void CardStatus::set(const Card& card)
     m_immobilized = false;
     m_infused = false;
     m_jammed = false;
+    m_phased = false;
     m_poisoned = 0;
     m_protected = 0;
     m_rallied = 0;
@@ -217,6 +219,7 @@ std::string card_description(const Cards& cards, const Card* c)
     if(c->m_legion > 0) { desc += ", legion " + to_string(c->m_legion); }
     if(c->m_payback) { desc += ", payback"; }
     if(c->m_pierce > 0) { desc += ", pierce " + to_string(c->m_pierce); }
+    if(c->m_phase) { desc += ", phase"; }
     if(c->m_poison > 0) { desc += ", poison " + to_string(c->m_poison); }
     if(c->m_refresh) { desc += ", refresh"; }
     if(c->m_regenerate > 0) { desc += ", regenerate " + to_string(c->m_regenerate); }
@@ -282,6 +285,7 @@ std::string CardStatus::description()
     if(m_immobilized) { desc += ", immobilized"; }
     if(m_infused) { desc += ", infused"; }
     if(m_jammed) { desc += ", jammed"; }
+    if(m_phased) { desc += ", phased"; }
     if(m_sundered) { desc += ", sundered"; }
     if(m_temporary_split) { desc += ", cloning"; }
     if(m_augmented > 0) { desc += ", augmented " + to_string(m_augmented); }
@@ -853,6 +857,12 @@ inline bool skill_check<payback>(Field* fd, CardStatus* c, CardStatus* ref)
 }
 
 template<>
+inline bool skill_check<phase>(Field* fd, CardStatus* c, CardStatus* ref)
+{
+    return(!ref->m_phased);
+}
+
+template<>
 inline bool skill_check<refresh>(Field* fd, CardStatus* c, CardStatus* ref)
 { return(can_be_healed(c)); }
 
@@ -1069,6 +1079,7 @@ void turn_start_phase(Field* fd)
             status.m_frozen = false;
             status.m_immobilized = false;
             status.m_jammed = false;
+            status.m_phased = false;
             status.m_rallied = 0;
             if(status.m_stunned > 0) { -- status.m_stunned; }
             status.m_weakened = 0;
@@ -1220,7 +1231,7 @@ struct PerformAttack
         // modify damage
         // assaults only: immobilize
         // deal damage
-        // assaults only: (siphon, poison, disease, sunder, on_kill)
+        // assaults only: (siphon, poison, disease, sunder, phase, on_kill)
         // on_attacked: poison, disease, sunder, assaults only: berserk, skills
         // counter, berserk
         // assaults only: (crush, leech if still alive)
@@ -1250,7 +1261,7 @@ struct PerformAttack
             immobilize<def_cardtype>();
             attack_damage<def_cardtype>();
             if(__builtin_expect(fd->end, false)) { return; }
-            siphon_poison_disease<def_cardtype>();
+            damage_dependant_pre_oa<def_cardtype>();
             on_kill<def_cardtype>();
         }
         on_attacked<def_cardtype>();
@@ -1365,7 +1376,7 @@ struct PerformAttack
     }
 
     template<enum CardType::CardType>
-    void siphon_poison_disease() {}
+    void damage_dependant_pre_oa() {}
 
     template<enum CardType::CardType>
     void on_kill() {}
@@ -1424,7 +1435,7 @@ void PerformAttack::attack_damage<CardType::commander>()
 }
 
 template<>
-void PerformAttack::siphon_poison_disease<CardType::assault>()
+void PerformAttack::damage_dependant_pre_oa<CardType::assault>()
 {
     if(att_status->m_card->m_siphon > 0 && skill_check<siphon>(fd, att_status, def_status))
     {
@@ -1455,6 +1466,13 @@ void PerformAttack::siphon_poison_disease<CardType::assault>()
         // perform_skill_sunder
         _DEBUG_MSG(1, "%s sunders %s\n", status_description(def_status).c_str(), status_description(att_status).c_str());
         def_status->m_sundered = true;
+    }
+    if(att_status->m_card->m_phase && skill_check<phase>(fd, att_status, def_status))
+    {
+        count_achievement<phase>(fd, att_status);
+        // perform_skill_phase
+        _DEBUG_MSG(1, "%s phases %s\n", status_description(def_status).c_str(), status_description(att_status).c_str());
+        def_status->m_phased = true;
     }
 }
 
@@ -1843,26 +1861,26 @@ inline void perform_skill<weaken>(Field* fd, CardStatus* c, unsigned v)
 }
 
 template<unsigned skill_id>
-inline unsigned select_fast(Field* fd, CardStatus* src_status, const std::vector<CardStatus*>& cards, const SkillSpec& s)
+inline unsigned select_fast(Field* fd, CardStatus* src_status, const std::vector<CardStatus*>& cards, const SkillSpec& s, bool is_helpful_skill)
 {
     if(std::get<2>(s) == allfactions)
     {
-        return(fd->make_selection_array(cards.begin(), cards.end(), [fd, src_status, s](CardStatus* c){return(skill_predicate<skill_id>(fd, src_status, c, s));}));
+        return(fd->make_selection_array(cards.begin(), cards.end(), [fd, src_status, s, is_helpful_skill](CardStatus* c){return(!(is_helpful_skill && c->m_phased) && skill_predicate<skill_id>(fd, src_status, c, s));}));
     }
     else
     {
-        return(fd->make_selection_array(cards.begin(), cards.end(), [fd, src_status, s](CardStatus* c){return(c->m_faction == std::get<2>(s) && skill_predicate<skill_id>(fd, src_status, c, s));}));
+        return(fd->make_selection_array(cards.begin(), cards.end(), [fd, src_status, s, is_helpful_skill](CardStatus* c){return(c->m_faction == std::get<2>(s) && !(is_helpful_skill && c->m_phased) && skill_predicate<skill_id>(fd, src_status, c, s));}));
     }
 }
 
 template<>
-inline unsigned select_fast<supply>(Field* fd, CardStatus* src_status, const std::vector<CardStatus*>& cards, const SkillSpec& s)
+inline unsigned select_fast<supply>(Field* fd, CardStatus* src_status, const std::vector<CardStatus*>& cards, const SkillSpec& s, bool is_helpful_skill)
 {
     // mimiced supply by a structure, etc ?
     if(!(src_status->m_card->m_type == CardType::assault)) { return(0); }
     const unsigned min_index(src_status->m_index - (src_status->m_index == 0 ? 0 : 1));
     const unsigned max_index(src_status->m_index + (src_status->m_index == cards.size() - 1 ? 0 : 1));
-    return(fd->make_selection_array(cards.begin() + min_index, cards.begin() + max_index + 1, [fd, src_status, s](CardStatus* c){return(skill_predicate<supply>(fd, src_status, c, s));}));
+    return(fd->make_selection_array(cards.begin() + min_index, cards.begin() + max_index + 1, [fd, src_status, s, is_helpful_skill](CardStatus* c){return(!(is_helpful_skill && c->m_phased) && skill_predicate<supply>(fd, src_status, c, s));}));
 }
 
 inline std::vector<CardStatus*>& skill_targets_hostile_assault(Field* fd, CardStatus* src_status)
@@ -2049,7 +2067,7 @@ template<Skill skill_id>
 void perform_targetted_hostile_fast(Field* fd, CardStatus* src_status, const SkillSpec& s)
 {
     std::vector<CardStatus*>& cards(skill_targets<skill_id>(fd, src_status));
-    if(select_fast<skill_id>(fd, src_status, cards, s) == 0)
+    if(select_fast<skill_id>(fd, src_status, cards, s, false) == 0)
     {
         return;
     }
@@ -2110,7 +2128,7 @@ template<Skill skill_id>
 void perform_targetted_allied_fast(Field* fd, CardStatus* src_status, const SkillSpec& s)
 {
     std::vector<CardStatus*>& cards(skill_targets<skill_id>(fd, src_status));
-    if(select_fast<skill_id>(fd, src_status, cards, s) == 0)
+    if(select_fast<skill_id>(fd, src_status, cards, s, true) == 0)
     {
         return;
     }
@@ -2248,7 +2266,7 @@ void perform_mimic(Field* fd, CardStatus* src_status, const SkillSpec& s)
     // so we can probably clear it safely. This is necessary, because mimic calls resolve_skill as well (infinite loop).
     fd->skill_queue.clear();
     std::vector<CardStatus*>& cards(skill_targets<mimic>(fd, src_status));
-    if(select_fast<mimic>(fd, src_status, cards, s) == 0)
+    if(select_fast<mimic>(fd, src_status, cards, s, false) == 0)
     {
         return; 
     }

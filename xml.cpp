@@ -269,6 +269,8 @@ void read_cards(Cards& cards)
                     { c->m_payback = true; }
                     if(strcmp(skill->first_attribute("id")->value(), "pierce") == 0)
                     { c->m_pierce = atoi(skill->first_attribute("x")->value()); }
+                    if(strcmp(skill->first_attribute("id")->value(), "phase") == 0)
+                    { c->m_phase = true; }
                     if(strcmp(skill->first_attribute("id")->value(), "poison") == 0)
                     {
                         bool attacked(skill->first_attribute("attacked"));

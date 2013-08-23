@@ -39,6 +39,7 @@ public:
         m_name(""),
         m_payback(false),
         m_pierce(0),
+        m_phase(0),
         m_poison(0),
         m_poison_oa(0),
         m_proto_id(0),
@@ -103,6 +104,7 @@ public:
     std::string m_name;
     bool m_payback;
     unsigned m_pierce;
+    unsigned m_phase;
     unsigned m_poison;
     unsigned m_poison_oa;
     unsigned m_proto_id;  // The id of the prototype card (before upgraded) for an upgraded card. 0 otherwise.

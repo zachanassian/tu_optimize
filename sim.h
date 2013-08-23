@@ -141,6 +141,7 @@ struct CardStatus
     bool m_immobilized;
     bool m_infused;
     bool m_jammed;
+    bool m_phased;
     unsigned m_poisoned;
     unsigned m_protected;
     unsigned m_rallied;
