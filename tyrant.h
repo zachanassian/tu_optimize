@@ -38,6 +38,8 @@ enum Skill
     blitz, legion,
     // Static, ignored:
     /* blizzard, fusion, mist, */
+    // Placeholder for new gained skill from battleground effect:
+    new_skill,
     num_skills
 };
 extern std::string skill_names[num_skills];
@@ -95,7 +97,7 @@ enum Effect {
     clone_project,
     friendly_fire,
     genesis,
-    artillery_fire,
+    artillery_strike,
     photon_shield,
     decrepit,
     forcefield,

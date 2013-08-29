@@ -276,7 +276,7 @@ struct SimulationData
         {
             att_hand.reset(re);
             def_hand->reset(re);
-            Field fd(re, cards, att_hand, *def_hand, gamemode, optimization_mode, effect, achievement);
+            Field fd(re, cards, att_hand, *def_hand, gamemode, optimization_mode, effect != Effect::none ? effect : def_hand->deck->effect, achievement);
             Results<uint64_t> result(play(&fd));
             res.emplace_back(result);
         }
@@ -1165,17 +1165,6 @@ int main(int argc, char** argv)
             turn_limit = 30;
             target_score = 250;
         }
-        // Set quest effect:
-        Effect this_effect = def_deck->effect;
-        if(this_effect != Effect::none)
-        {
-            if(effect != Effect::none && effect != this_effect)
-            {
-                std::cerr << "Error: Inconsistent effects: " << effect_names[effect] << " and " << effect_names[this_effect] << ".\n";
-                return(7);
-            }
-            effect = this_effect;
-        }
         def_decks.push_back(def_deck);
         def_decks_factors.push_back(deck_parsed.second);
     }
@@ -1400,7 +1389,6 @@ int main(int argc, char** argv)
         min_deck_len = max_deck_len = att_deck->cards.size();
     }
 
-    modify_cards(cards, effect);
     std::cout << "Your Deck: " << (debug_print ? att_deck->long_description(cards) : att_deck->short_description()) << std::endl;
     for(auto def_deck: def_decks)
     {
@@ -1412,6 +1400,7 @@ int main(int argc, char** argv)
     }
 
     Process p(num_threads, cards, decks, att_deck, def_decks, def_decks_factors, gamemode, effect, achievement);
+
     {
         //ScopeClock timer;
         for(auto op: todo)

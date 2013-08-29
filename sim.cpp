@@ -137,10 +137,10 @@ inline void CardStatus::set(const Card& card)
     m_poisoned = 0;
     m_protected = 0;
     m_rallied = 0;
-    m_weakened = 0;
     m_stunned = 0;
     m_sundered = false;
     m_temporary_split = false;
+    m_weakened = 0;
     m_is_summoned = false;
     m_step = CardStep::none;
 }
@@ -158,7 +158,8 @@ std::string skill_description(const Cards& cards, const SkillSpec& s)
         if(std::get<1>(s) == 0)
         {
             // Summon X
-            return(skill_names[std::get<0>(s)] + " X");
+            return(skill_names[std::get<0>(s)] + " X" +
+                    skill_activation_modifier_names[std::get<4>(s)]);
         }
         else
         {
@@ -355,7 +356,7 @@ inline unsigned opponent(unsigned player)
     return((player + 1) % 2);
 }
 //------------------------------------------------------------------------------
-SkillSpec augmented_skill(const CardStatus* status, const SkillSpec& s)
+SkillSpec apply_augment(const CardStatus* status, const SkillSpec& s)
 {
     if (std::get<0>(s) == augment || std::get<0>(s) == summon || std::get<1>(s) == 0)
     {
@@ -365,13 +366,13 @@ SkillSpec augmented_skill(const CardStatus* status, const SkillSpec& s)
     std::get<1>(augmented_s) += status->m_augmented;
     return(augmented_s);
 }
-SkillSpec fusioned_skill(const SkillSpec& s)
+SkillSpec apply_fusion(const SkillSpec& s)
 {
     SkillSpec fusioned_s = s;
     std::get<1>(fusioned_s) *= 2;
     return(fusioned_s);
 }
-SkillSpec infused_skill(const SkillSpec& s)
+SkillSpec apply_infuse(const SkillSpec& s)
 {
     if (std::get<2>(s) == allfactions || std::get<2>(s) == bloodthirsty || helpful_skills.find(std::get<0>(s)) == helpful_skills.end())
     {
@@ -382,21 +383,169 @@ SkillSpec infused_skill(const SkillSpec& s)
     return(infused_s);
 }
 //------------------------------------------------------------------------------
+bool may_change_skill(const Field* fd, const CardStatus* status, const SkillMod::SkillMod mod)
+{
+    switch (mod)
+    {
+        case SkillMod::on_activate:
+            switch (status->m_card->m_type)
+            {
+                case CardType::commander:
+                    return (fd->effect == Effect::time_surge ||
+                            fd->effect == Effect::friendly_fire ||
+                            fd->effect == Effect::genesis ||
+                            (fd->effect == Effect::artillery_strike && fd->turn >= 9 && status->m_player == (fd->optimization_mode == OptimizationMode::defense ? 1 : 0)) ||
+                            fd->effect == Effect::decrepit ||
+                            fd->effect == Effect::forcefield ||
+                            fd->effect == Effect::chilling_touch);
+                case CardType::assault:
+                    return (fd->effect == Effect::friendly_fire ||
+                            ((fd->effect == Effect::clone_project || fd->effect == Effect::clone_experiment) && status->m_temporary_split));
+                default:
+                    break;
+            }
+            break;
+        case SkillMod::on_death:
+            return ((status->m_card->m_type == CardType::assault || status->m_card->m_type == CardType::structure) &&
+                    fd->effect == Effect::haunt && status->m_card->m_faction != bloodthirsty);
+        default:
+            break;
+    }
+    return false;
+}
+SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, const SkillSpec& ss, const SkillMod::SkillMod mod, bool& need_add_skill)
+{
+    const auto& skill = std::get<0>(ss);
+    switch (fd->effect)
+    {
+        case Effect::time_surge:
+            // replace other instance of the skill
+            if(skill == rush || skill == new_skill)
+            {
+                need_add_skill = false;
+                return SkillSpec(rush, 1, allfactions, false, mod);
+            }
+            break;
+        case Effect::clone_project:
+        case Effect::clone_experiment:
+            // no gain the skill if already have
+            if(skill == split)
+            {
+                need_add_skill = false;
+            }
+            else if(skill == new_skill)
+            {
+                return SkillSpec(split, 0, allfactions, false, mod);
+            }
+            break;
+        case Effect::friendly_fire:
+            switch (status->m_card->m_type)
+            {
+                case CardType::assault:
+                    // no gain the skill if already have
+                    if(skill == strike)
+                    {
+                        need_add_skill = false;
+                    }
+                    else if(skill == new_skill)
+                    {
+                        return SkillSpec(strike, 1, allfactions, false, mod);
+                    }
+                    break;
+                case CardType::commander:
+                    // replace other instance of the skill
+                    if(skill == chaos || skill == new_skill)
+                    {
+                        need_add_skill = false;
+                        return SkillSpec(chaos, 0, allfactions, true, mod);
+                    }
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case Effect::genesis:
+            // replace other instance of the skill
+            if(skill == summon || skill == new_skill)
+            {
+                need_add_skill = false;
+                return SkillSpec(summon, 0, allfactions, false, mod);
+            }
+            break;
+        case Effect::artillery_strike:
+            // replace other instance of the skill
+            if(skill == strike || skill == new_skill)
+            {
+                need_add_skill = false;
+                return SkillSpec(strike, 3, allfactions, true, mod);
+            }
+            break;
+        case Effect::decrepit:
+            // replace other instance of the skill
+            if(skill == enfeeble || skill == new_skill)
+            {
+                need_add_skill = false;
+                return SkillSpec(enfeeble, 1, allfactions, true, mod);
+            }
+            break;
+        case Effect::forcefield:
+            // replace other instance of the skill
+            if(skill == protect || skill == new_skill)
+            {
+                need_add_skill = false;
+                return SkillSpec(protect, 1, allfactions, true, mod);
+            }
+            break;
+        case Effect::chilling_touch:
+            // replace other instance of the skill
+            if(skill == freeze || skill == new_skill)
+            {
+                need_add_skill = false;
+                return SkillSpec(freeze, 0, allfactions, false, mod);
+            }
+            break;
+        case Effect::haunt:
+            // replace other instance of the skill
+            if(skill == summon || skill == new_skill)
+            {
+                need_add_skill = false;
+                return SkillSpec(summon, 0, bloodthirsty, false, mod);
+            }
+            break;
+        default:
+            break;
+    }
+    return ss;
+}
+//------------------------------------------------------------------------------
 void prepend_on_death(Field* fd)
 {
-    for(auto status: boost::adaptors::reverse(fd->killed_with_on_death))
+    std::vector<std::tuple<CardStatus*, SkillSpec>> od_skills;
+    auto mod = SkillMod::on_death;
+    for(auto status: fd->killed_with_on_death)
     {
         if(status->m_jammed)
         {
             _DEBUG_MSG(2, "%s is jammed and cannot activate its on Death skill.\n", status_description(status).c_str());
             continue;
         }
-        for(auto& skill: boost::adaptors::reverse(status->m_card->m_skills_on_death))
+        bool need_add_skill = may_change_skill(fd, status, mod);
+        for(auto& ss: status->m_card->m_skills_on_death)
         {
-            _DEBUG_MSG(2, "%s pushes its on Death skill in front of the queue: %s\n", status_description(status).c_str(), skill_description(fd->cards, skill).c_str());
-            fd->skill_queue.emplace_front(status, skill);
+            auto& battleground_s = need_add_skill ? apply_battleground_effect(fd, status, ss, mod, need_add_skill) : ss;
+            _DEBUG_MSG(2, "Preparing %s skill %s\n", status_description(status).c_str(), skill_description(fd->cards, battleground_s).c_str());
+            od_skills.emplace_back(status, battleground_s);
+            //if(__builtin_expect(fd->end, false)) { return; }  // so far no "on Death" skill may end the battle
+        }
+        if(need_add_skill)
+        {
+            auto battleground_s = apply_battleground_effect(fd, status, SkillSpec(new_skill, 0, allfactions, false, mod), mod, need_add_skill);
+            assert(std::get<0>(battleground_s) != new_skill);
+            _DEBUG_MSG(2, "Preparing %s skill %s\n", status_description(status).c_str(), skill_description(fd->cards, battleground_s).c_str());
+            od_skills.emplace_back(status, battleground_s);
         }
     }
+    fd->skill_queue.insert(fd->skill_queue.begin(), od_skills.begin(), od_skills.end());
     fd->killed_with_on_death.clear();
 }
 //------------------------------------------------------------------------------
@@ -417,25 +566,35 @@ void resolve_skill(Field* fd)
         else if(!status->m_jammed)
         {
             bool fusion_active = status->m_card->m_fusion && status->m_player == fd->tapi && fd->fusion_count >= 3;
-            auto& augmented_s = status->m_augmented > 0 ? augmented_skill(status, skill) : skill;
-            auto& fusioned_s = fusion_active ? fusioned_skill(augmented_s) : augmented_s;
-            auto& infused_s = status->m_infused ? infused_skill(fusioned_s) : fusioned_s;
+            auto& augmented_s = status->m_augmented > 0 ? apply_augment(status, skill) : skill;
+            auto& fusioned_s = fusion_active ? apply_fusion(augmented_s) : augmented_s;
+            auto& infused_s = status->m_infused ? apply_infuse(fusioned_s) : fusioned_s;
             skill_table[std::get<0>(skill)](fd, status, infused_s);
         }
     }
 }
 //------------------------------------------------------------------------------
 void attack_phase(Field* fd);
-void evaluate_skills(Field* fd, CardStatus* status, const std::vector<SkillSpec>& skills)
+void evaluate_skills(Field* fd, CardStatus* status, const std::vector<SkillSpec>& skills, const SkillMod::SkillMod mod)
 {
     assert(status);
     assert(fd->skill_queue.size() == 0);
-    for(auto& skill: skills)
+    bool need_add_skill = may_change_skill(fd, status, mod);
+    for(auto& ss: skills)
     {
-        _DEBUG_MSG(2, "Evaluating %s skill %s\n", status_description(status).c_str(), skill_description(fd->cards, skill).c_str());
-        fd->skill_queue.emplace_back(status, skill);
+        auto& battleground_s = need_add_skill ? apply_battleground_effect(fd, status, ss, mod, need_add_skill) : ss;
+        _DEBUG_MSG(2, "Evaluating %s skill %s\n", status_description(status).c_str(), skill_description(fd->cards, battleground_s).c_str());
+        fd->skill_queue.emplace_back(status, battleground_s);
         resolve_skill(fd);
         if(__builtin_expect(fd->end, false)) { break; }
+    }
+    if(need_add_skill)
+    {
+        auto battleground_s = apply_battleground_effect(fd, status, SkillSpec(new_skill, 0, allfactions, false, mod), mod, need_add_skill);
+        assert(std::get<0>(battleground_s) != new_skill);
+        _DEBUG_MSG(2, "Evaluating %s skill %s\n", status_description(status).c_str(), skill_description(fd->cards, battleground_s).c_str());
+        fd->skill_queue.emplace_back(status, battleground_s);
+        resolve_skill(fd);
     }
 }
 bool check_and_perform_blitz(Field* fd, CardStatus* src_status);
@@ -506,7 +665,7 @@ struct PlayCard
     template <enum CardType::CardType>
     void onPlaySkills()
     {
-        evaluate_skills(fd, status, card->m_skills_on_play);
+        evaluate_skills(fd, status, card->m_skills_on_play, SkillMod::on_play);
     }
 };
 // assault
@@ -554,7 +713,7 @@ void PlayCard::fieldEffects<CardType::assault>()
 template <>
 void PlayCard::onPlaySkills<CardType::action>()
 {
-    evaluate_skills(fd, status, card->m_skills);
+    evaluate_skills(fd, status, card->m_skills, SkillMod::on_play);
 }
 //------------------------------------------------------------------------------
 inline bool is_attacking_or_has_attacked(CardStatus* c) { return(c->m_step >= CardStep::attacking); }
@@ -659,7 +818,7 @@ Results<uint64_t> play(Field* fd)
 
         // Evaluate commander
         fd->current_phase = Field::commander_phase;
-        evaluate_skills(fd, &fd->tap->commander, fd->tap->commander.m_card->m_skills);
+        evaluate_skills(fd, &fd->tap->commander, fd->tap->commander.m_card->m_skills, SkillMod::on_activate);
         if(__builtin_expect(fd->end, false)) { break; }
 
         // Evaluate structures
@@ -669,7 +828,7 @@ Results<uint64_t> play(Field* fd)
             CardStatus& current_status(fd->tap->structures[fd->current_ci]);
             if(current_status.m_delay == 0 && current_status.m_hp > 0)
             {
-                evaluate_skills(fd, &current_status, current_status.m_card->m_skills);
+                evaluate_skills(fd, &current_status, current_status.m_card->m_skills, SkillMod::on_activate);
             }
         }
         // Evaluate assaults
@@ -686,16 +845,7 @@ Results<uint64_t> play(Field* fd)
             }
             current_status.m_blitzing = false;
             // Evaluate skills
-            evaluate_skills(fd, &current_status, current_status.m_card->m_skills);
-            if(__builtin_expect(fd->end, false)) { break; }
-
-            // Special case: check for temporary split (clone battlefield effects)
-            if(current_status.m_temporary_split)
-            {
-                std::vector<SkillSpec> skills;
-                skills.emplace_back(split, 0, allfactions, false, SkillMod::on_activate);
-                evaluate_skills(fd, &current_status, skills);
-            }
+            evaluate_skills(fd, &current_status, current_status.m_card->m_skills, SkillMod::on_activate);
             if(__builtin_expect(fd->end, false)) { break; }
 
             // Attack
@@ -951,7 +1101,7 @@ void remove_hp(Field* fd, CardStatus& status, unsigned dmg)
     if(status.m_hp == 0)
     {
         _DEBUG_MSG(1, "%s dies\n", status_description(&status).c_str());
-        if(status.m_card->m_skills_on_death.size() > 0)
+        if(status.m_card->m_skills_on_death.size() > 0 || fd->effect == Effect::haunt)
         {
             fd->killed_with_on_death.push_back(&status);
         }
@@ -1102,7 +1252,7 @@ void turn_start_phase(Field* fd)
         {
             CardStatus& status(structures[index]);
             status.m_index = index;
-            if(status.m_card->m_refresh)
+            if(status.m_card->m_refresh && fd->effect != Effect::impenetrable)
             {
                 check_and_perform_refresh(fd, &status);
             }
@@ -1335,15 +1485,20 @@ struct PerformAttack
         // prevent damage
         std::string reduced_desc;
         unsigned reduced_dmg(0);
-        if(def_card.m_armored > 0)
+        unsigned armored_value(def_card.m_armored);
+        if(armored_value == 0 && fd->effect == Effect::photon_shield && def_status->m_player == (fd->optimization_mode == OptimizationMode::defense ? 0 : 1))
+        {
+            armored_value = 2;
+        }
+        if(armored_value > 0)
         {
             // Armored counts if not totally cancelled by Pierce. TODO how if Armored + Proteced > Pierce?
-            if(def_card.m_armored > att_card.m_pierce)
+            if(armored_value > att_card.m_pierce)
             {
                 count_achievement<armored>(fd, def_status);
             }
-            if(debug_print) { reduced_desc += to_string(def_card.m_armored) + "(armored)"; }
-            reduced_dmg += def_card.m_armored;
+            if(debug_print) { reduced_desc += to_string(armored_value) + "(armored)"; }
+            reduced_dmg += armored_value;
         }
         if(def_status->m_protected > 0)
         {
@@ -1400,7 +1555,7 @@ struct PerformAttack
         }
         if(def_status->m_hp > 0 && def_status->m_card->m_berserk_oa > 0 && skill_check<berserk>(fd, def_status, nullptr))
         {
-            count_achievement<berserk>(fd, def_status); 
+            count_achievement<berserk>(fd, def_status);
             def_status->m_berserk += def_status->m_card->m_berserk_oa;
         }
         if(def_status->m_card->m_sunder_oa && skill_check<sunder>(fd, def_status, att_status))
@@ -1410,7 +1565,7 @@ struct PerformAttack
             _DEBUG_MSG(1, "%s (on attacked) sunders %s\n", status_description(def_status).c_str(), status_description(att_status).c_str());
             att_status->m_sundered = true;
         }
-        evaluate_skills(fd, def_status, def_status->m_card->m_skills_on_attacked);
+        evaluate_skills(fd, def_status, def_status->m_card->m_skills_on_attacked, SkillMod::on_attacked);
     }
 
     template<enum CardType::CardType>
@@ -1481,7 +1636,7 @@ void PerformAttack::on_kill<CardType::assault>()
 {
     if(killed_by_attack)
     {
-        evaluate_skills(fd, att_status, att_status->m_card->m_skills_on_kill);
+        evaluate_skills(fd, att_status, att_status->m_card->m_skills_on_kill, SkillMod::on_kill);
     }
 }
 
@@ -1630,6 +1785,14 @@ inline bool skill_predicate<augment>(Field* fd, CardStatus* src, CardStatus* c, 
         for(auto& s: c->m_card->m_skills)
         {
             // Any quantifiable skill except augment
+            if(std::get<1>(s) > 0 && std::get<0>(s) != augment && std::get<0>(s) != summon) { return(true); }
+        }
+        bool need_add_skill = true;
+        auto mod = SkillMod::on_activate;
+        if(may_change_skill(fd, c, mod))
+        {
+            auto s = apply_battleground_effect(fd, c, SkillSpec(new_skill, 0, allfactions, false, mod), mod, need_add_skill);
+            assert(std::get<0>(s) != new_skill);
             if(std::get<1>(s) > 0 && std::get<0>(s) != augment && std::get<0>(s) != summon) { return(true); }
         }
     }
@@ -2010,7 +2173,7 @@ bool check_and_perform_skill(Field* fd, CardStatus* src_status, CardStatus* dst_
 {
     if(skill_check<skill_id>(fd, src_status, dst_status))
     {
-        if(is_evadable && dst_status->m_card->m_evade && fd->flip() && skill_check<evade>(fd, dst_status, src_status))
+        if(is_evadable && (dst_status->m_card->m_evade || (fd->effect == Effect::quicksilver && dst_status->m_card->m_type == CardType::assault)) && fd->flip() && skill_check<evade>(fd, dst_status, src_status))
         {
             count_achievement<evade>(fd, dst_status);
             _DEBUG_MSG(1, "%s %s (%u) on %s but it evades\n", status_description(src_status).c_str(), skill_names[skill_id].c_str(), std::get<1>(s), status_description(dst_status).c_str());
@@ -2212,7 +2375,19 @@ template<Skill skill_id>
 void perform_summon(Field* fd, CardStatus* src_status, const SkillSpec& s)
 {
     unsigned player = src_status->m_player;
-    const Card* summoned = std::get<1>(s) != 0 ? fd->cards.by_id(std::get<1>(s)) : fd->random_in_vector(fd->cards.player_assaults);
+    unsigned summoned_id = std::get<1>(s);
+    const Card* summoned = 0;
+    if(summoned_id != 0)
+    {
+        summoned = fd->cards.by_id(summoned_id);
+    }
+    else
+    {
+        Faction summond_faction = std::get<2>(s);
+        do {
+            summoned = fd->random_in_vector(fd->cards.player_assaults);
+        } while(summond_faction != allfactions && summond_faction != summoned->m_faction);
+    }
     assert(summoned->m_type == CardType::assault || summoned->m_type == CardType::structure);
     Hand* hand{fd->players[player]};
     if(hand->assaults.size() + hand->structures.size() < 100)
@@ -2268,14 +2443,14 @@ void perform_mimic(Field* fd, CardStatus* src_status, const SkillSpec& s)
     std::vector<CardStatus*>& cards(skill_targets<mimic>(fd, src_status));
     if(select_fast<mimic>(fd, src_status, cards, s, false) == 0)
     {
-        return; 
+        return;
     }
     _DEBUG_SELECTION("%s", skill_names[mimic].c_str());
     CardStatus* c(select_interceptable(fd, src_status, fd->rand(0, fd->selection_array.size() - 1)));
     // evade check for mimic
     // individual skills are subject to evade checks too,
     // but resolve_skill will handle those.
-    if(c->m_card->m_evade && fd->flip() && skill_check<evade>(fd, c, src_status))
+    if((c->m_card->m_evade || (fd->effect == Effect::quicksilver && c->m_card->m_type == CardType::assault)) && fd->flip() && skill_check<evade>(fd, c, src_status))
     {
         count_achievement<evade>(fd, c);
         _DEBUG_MSG(1, "%s %s on %s but it evades\n", status_description(src_status).c_str(), skill_names[std::get<0>(s)].c_str(), status_description(c).c_str());
@@ -2283,19 +2458,31 @@ void perform_mimic(Field* fd, CardStatus* src_status, const SkillSpec& s)
     }
     count_achievement<mimic>(fd, src_status);
     _DEBUG_MSG(1, "%s %s on %s\n", status_description(src_status).c_str(), skill_names[std::get<0>(s)].c_str(), status_description(c).c_str());
-    for(auto skill: c->m_card->m_skills)
+    auto mod = SkillMod::on_activate;
+    bool need_add_skill = may_change_skill(fd, c, mod);
+    for(auto& skill: c->m_card->m_skills)
     {
         if(src_status->m_card->m_type != CardType::action && src_status->m_hp == 0)
         { break; }
         if(std::get<0>(skill) == mimic || std::get<0>(skill) == split ||
                 (std::get<0>(skill) == supply && src_status->m_card->m_type != CardType::assault))
         { continue; }
-        SkillSpec mimic_s(std::get<0>(skill), std::get<1>(skill), allfactions, std::get<3>(skill), SkillMod::on_activate);
-        _DEBUG_MSG(2, "Evaluating %s mimiced skill %s\n", status_description(c).c_str(), skill_description(fd->cards, skill).c_str());
+        auto& battleground_s = need_add_skill ? apply_battleground_effect(fd, c, skill, mod, need_add_skill) : skill;
+        SkillSpec mimic_s(std::get<0>(battleground_s), std::get<1>(battleground_s), allfactions, std::get<3>(battleground_s), mod);
+        _DEBUG_MSG(2, "Evaluating %s mimiced skill %s\n", status_description(c).c_str(), skill_description(fd->cards, mimic_s).c_str());
         fd->skill_queue.emplace_back(src_status, mimic_s);
         resolve_skill(fd);
         if(__builtin_expect(fd->end, false)) { break; }
         check_regeneration(fd);
+    }
+    if(need_add_skill)
+    {
+        auto battleground_s = apply_battleground_effect(fd, c, SkillSpec(new_skill, 0, allfactions, false, mod), mod, need_add_skill);
+        assert(std::get<0>(battleground_s) != new_skill);
+        SkillSpec mimic_s(std::get<0>(battleground_s), std::get<1>(battleground_s), allfactions, std::get<3>(battleground_s), mod);
+        _DEBUG_MSG(2, "Evaluating %s mimiced skill %s\n", status_description(c).c_str(), skill_description(fd->cards, mimic_s).c_str());
+        fd->skill_queue.emplace_back(src_status, mimic_s);
+        resolve_skill(fd);
     }
 }
 //------------------------------------------------------------------------------
@@ -2324,123 +2511,4 @@ void fill_skill_table()
     skill_table[summon] = perform_summon<summon>;
     skill_table[trigger_regen] = perform_trigger_regen;
     skill_table[weaken] = perform_targetted_hostile_fast<weaken>;
-}
-//------------------------------------------------------------------------------
-// Utility functions for modify_cards.
-
-// Adds the skill "<new_skill> <all> <magnitude>" to all cards of cardtype.
-// If the card has an instance of <new_skill> in its skill list and replace_instance==true, the new skill replaces it.
-// If the card has no instance of <new_skill> in its skill list, the new skill is added on to the end.
-template<enum CardType::CardType cardtype>
-inline void cards_gain_skill(Cards& cards, Skill new_skill, unsigned magnitude, bool all, bool replace_instance)
-{
-    for(Card* card: cards.cards)
-    {
-        if(card->m_type != cardtype)
-        {
-            continue;
-        }
-
-        bool do_add_skill(true);
-        for(auto& skill: card->m_skills)
-        {
-            if(std::get<0>(skill) == new_skill)
-            {
-                if(replace_instance)
-                {
-                    skill = std::make_tuple(new_skill, magnitude, allfactions, all, SkillMod::on_activate);
-                }
-                do_add_skill = false;
-            }
-        }
-
-        if(do_add_skill)
-        {
-            card->add_skill(new_skill, magnitude, allfactions, all);
-        }
-    }
-}
-//------------------------------------------------------------------------------
-void modify_cards(Cards& cards, enum Effect effect)
-{
-    switch (effect)
-    {
-        case Effect::none:
-            break;
-        case Effect::time_surge:
-            cards_gain_skill<CardType::commander>(cards, rush, 1, false, false);
-            break;
-        case Effect::copycat:
-            // Do nothing; this is implemented in perform_mimic
-            break;
-        case Effect::quicksilver:
-            for(Card* card: cards.cards)
-            {
-                if(card->m_type == CardType::assault)
-                {
-                    card->m_evade = true;
-                }
-            }
-            break;
-        case Effect::decay:
-            // Do nothing; this is implemented in PlayCard::fieldEffects,
-            // summon_card, and perform_skill<cleanse>
-            break;
-        case Effect::high_skies:
-            // Do nothing; this is implemented in PerformAttack
-            break;
-        case Effect::impenetrable:
-            // Also implemented in PerformAttack
-            for(Card* card: cards.cards)
-            {
-                if(card->m_type == CardType::structure)
-                {
-                    card->m_refresh = false;
-                }
-            }
-            break;
-        case Effect::invigorate:
-            // Do nothing; this is implemented in add_hp
-            break;
-        case Effect::clone_project:
-            // Do nothing; this is implemented in play
-            break;
-        case Effect::friendly_fire:
-            cards_gain_skill<CardType::assault>(cards, strike, 1, false, false);
-            cards_gain_skill<CardType::commander>(cards, chaos, 0, true, true);
-            break;
-        case Effect::genesis:
-            cards_gain_skill<CardType::commander>(cards, summon, 0, false, false); // No replace exising Summon, if any
-            break;
-        case Effect::artillery_fire:
-        case Effect::photon_shield:
-            throw std::runtime_error("Unused effect");
-            break;
-        case Effect::decrepit:
-            cards_gain_skill<CardType::commander>(cards, enfeeble, 1, true, true);
-            break;
-        case Effect::forcefield:
-            cards_gain_skill<CardType::commander>(cards, protect, 1, true, true);
-            break;
-        case Effect::chilling_touch:
-            cards_gain_skill<CardType::commander>(cards, freeze, 0, false, false);
-            break;
-        case Effect::clone_experiment:
-            // Do nothing; this is implemented in play
-            break;
-        case Effect::toxic:
-            // Do nothing; this is implemented in PlayCard::fieldEffects
-            // and summon_card
-            break;
-        case Effect::haunt:
-            throw std::runtime_error("Unused effect");
-            break;
-        case Effect::united_front:
-            // Do nothing: this is implemented in evaluate_legion
-            break;
-        default:
-            // TODO: throw something more useful
-            throw effect;
-            break;
-    }
 }

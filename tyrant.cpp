@@ -26,6 +26,8 @@ std::string skill_names[Skill::num_skills] =
     "Blitz", "Legion",
     // Static (Ignored):
     /* "Blizzard", "Fusion", "Mist", */
+    // Placeholder for new gained skill from battleground effect:
+    "<Error>"
 };
 
 std::set<Skill> helpful_skills{
@@ -52,7 +54,7 @@ std::string effect_names[Effect::num_effects] = {
     "Clone Project",
     "Friendly Fire",
     "Genesis",
-    "Artillery Fire",
+    "Artillery Strike",
     "Photon Shield",
     "Decrepit",
     "Forcefield",
