@@ -887,7 +887,7 @@ Results<uint64_t> play(Field* fd)
         if(fd->players[1]->commander.m_hp == 0)
         {
             _DEBUG_MSG(1, "You win (boss killed).\n");
-            return {1, 0, 0, 250, 0};
+            return {1, 0, 0, fd->players[1]->commander.m_card->m_health + 50, 0};
         }
         else
         {
