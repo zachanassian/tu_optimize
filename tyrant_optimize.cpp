@@ -50,6 +50,7 @@ namespace {
     bool auto_upgrade_cards{true};
     long double target_score{100};
     bool show_stdev{false};
+    bool use_harmonic_mean{false};
 }
 
 using namespace std::placeholders;
@@ -198,14 +199,20 @@ Results<long double> compute_score(const std::pair<std::vector<Results<uint64_t>
         final.wins += results.first[index].wins * factors[index];
         final.draws += results.first[index].draws * factors[index];
         final.losses += results.first[index].losses * factors[index];
-        final.points += results.first[index].points * factors[index];
+        if(use_harmonic_mean)
+        { final.points += factors[index] / results.first[index].points; }
+        else
+        { final.points += results.first[index].points * factors[index]; }
         final.sq_points += results.first[index].sq_points * factors[index] * factors[index];
     }
     long double factor_sum = std::accumulate(factors.begin(), factors.end(), 0.);
     final.wins /= factor_sum * (long double)results.second;
     final.draws /= factor_sum * (long double)results.second;
     final.losses /= factor_sum * (long double)results.second;
-    final.points /= factor_sum * (long double)results.second;
+    if(use_harmonic_mean)
+    { final.points = factor_sum / ((long double)results.second * final.points); }
+    else
+    { final.points /= factor_sum * (long double)results.second; }
     final.sq_points /= factor_sum * factor_sum * (long double)results.second;
     return final;
 }
@@ -1324,6 +1331,10 @@ int main(int argc, char** argv)
         else if(strcmp(argv[argIndex], "+stdev") == 0)
         {
             show_stdev = true;
+        }
+        else if(strcmp(argv[argIndex], "+hm") == 0)
+        {
+            use_harmonic_mean = true;
         }
         else if(strcmp(argv[argIndex], "+v") == 0)
         {
