@@ -111,7 +111,10 @@ void claim_cards(const std::vector<const Card*> & card_list, const Cards & cards
             if(num_to_claim > 0)
             {
                 owned_cards[card->m_id] += num_to_claim;
-//                std::cout << "Claim " << card->m_name << " (" << num_to_claim << ")" << std::endl;
+                if(debug_print)
+                {
+                    std::cout << "Claim " << card->m_name << " (" << num_to_claim << ")" << std::endl;
+                }
             }
         }
     }
