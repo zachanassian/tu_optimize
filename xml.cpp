@@ -460,7 +460,13 @@ void read_raids(Decks& decks, const Cards& cards, std::string filename)
         unsigned id(id_node ? atoi(id_node->value()) : 0);
         xml_node<>* name_node(raid_node->first_node("name"));
         std::string deck_name{name_node->value()};
-        read_deck(decks, cards, raid_node, DeckType::raid, id, deck_name);
+        Deck* deck = read_deck(decks, cards, raid_node, DeckType::raid, id, deck_name);
+        xml_node<>* effect_id_node(raid_node->first_node("effect"));
+        if(effect_id_node)
+        {
+            int effect_id(effect_id_node ? atoi(effect_id_node->value()) : 0);
+            deck->effect = static_cast<enum Effect>(effect_id);
+        }
     }
 }
 //------------------------------------------------------------------------------
@@ -487,10 +493,10 @@ void read_quests(Decks& decks, const Cards& cards, std::string filename)
         assert(id_node);
         unsigned id(id_node ? atoi(id_node->value()) : 0);
         std::string deck_name{"Step " + std::string{id_node->value()}};
-        xml_node<>* battleground_id_node(quest_node->first_node("battleground_id"));
-        int battleground_id(battleground_id_node ? atoi(battleground_id_node->value()) : 0);
         Deck* deck = read_deck(decks, cards, quest_node, DeckType::quest, id, deck_name);
-        deck->effect = static_cast<enum Effect>(battleground_id);
+        xml_node<>* effect_id_node(quest_node->first_node("effect_id"));
+        int effect_id(effect_id_node ? atoi(effect_id_node->value()) : 0);
+        deck->effect = static_cast<enum Effect>(effect_id);
     }
 }
 //------------------------------------------------------------------------------
