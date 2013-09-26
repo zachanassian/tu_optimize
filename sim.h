@@ -179,6 +179,7 @@ public:
     CardStatus commander;
     Storage<CardStatus> assaults;
     Storage<CardStatus> structures;
+    unsigned available_summons;
 };
 //------------------------------------------------------------------------------
 // struct Field is the data model of a battle:

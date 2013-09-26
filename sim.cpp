@@ -749,6 +749,9 @@ Results<uint64_t> play(Field* fd)
     fd->points_since_last_decision = 0;
 #endif
     unsigned p0_size = fd->players[0]->deck->cards.size();
+    unsigned p1_size = fd->players[1]->deck->cards.size();
+    fd->players[0]->available_summons = 29 + p0_size;
+    fd->players[1]->available_summons = 29 + p1_size;
     fd->last_decision_turn = p0_size == 1 ? 0 : p0_size * 2 - (fd->gamemode == surge ? 2 : 3);
 
     // Count commander as played for achievements (not count in type / faction / rarity requirements)
@@ -2375,6 +2378,19 @@ template<Skill skill_id>
 void perform_summon(Field* fd, CardStatus* src_status, const SkillSpec& s)
 {
     unsigned player = src_status->m_player;
+    const auto& mod = std::get<4>(s);
+    if(skill_id == summon && mod == SkillMod::on_activate)
+    {
+        if(fd->players[player]->available_summons == 0)
+        {
+            return;
+        }
+        -- fd->players[player]->available_summons;
+        if(fd->players[player]->available_summons == 0)
+        {
+            _DEBUG_MSG(1, "** Reaching summon limit, this is the last summon.\n");
+        }
+    }
     unsigned summoned_id = std::get<1>(s);
     const Card* summoned = 0;
     if(summoned_id != 0)
@@ -2390,33 +2406,30 @@ void perform_summon(Field* fd, CardStatus* src_status, const SkillSpec& s)
     }
     assert(summoned->m_type == CardType::assault || summoned->m_type == CardType::structure);
     Hand* hand{fd->players[player]};
-    if(hand->assaults.size() + hand->structures.size() < 100)
+    count_achievement<summon>(fd, src_status);
+    Storage<CardStatus>* storage{summoned->m_type == CardType::assault ? &hand->assaults : &hand->structures};
+    CardStatus& card_status(storage->add_back());
+    card_status.set(summoned);
+    card_status.m_index = storage->size() - 1;
+    card_status.m_player = player;
+    card_status.m_is_summoned = true;
+    _DEBUG_MSG(1, "%s %s %s %u [%s]\n", status_description(src_status).c_str(), skill_names[skill_id].c_str(), cardtype_names[summoned->m_type].c_str(), card_status.m_index, card_description(fd->cards, summoned).c_str());
+    prepend_skills(fd, &card_status);
+    // Summon X (Genesis effect) does not activate Blitz for X
+    if(std::get<1>(s) != 0 && card_status.m_card->m_blitz)
     {
-        count_achievement<summon>(fd, src_status);
-        Storage<CardStatus>* storage{summoned->m_type == CardType::assault ? &hand->assaults : &hand->structures};
-        CardStatus& card_status(storage->add_back());
-        card_status.set(summoned);
-        card_status.m_index = storage->size() - 1;
-        card_status.m_player = player;
-        card_status.m_is_summoned = true;
-        _DEBUG_MSG(1, "%s %s %s %u [%s]\n", status_description(src_status).c_str(), skill_names[skill_id].c_str(), cardtype_names[summoned->m_type].c_str(), card_status.m_index, card_description(fd->cards, summoned).c_str());
-        prepend_skills(fd, &card_status);
-        // Summon X (Genesis effect) does not activate Blitz for X
-        if(std::get<1>(s) != 0 && card_status.m_card->m_blitz)
+        check_and_perform_blitz(fd, &card_status);
+    }
+    if(summoned->m_type == CardType::assault)
+    {
+        if(fd->effect == Effect::toxic)
         {
-            check_and_perform_blitz(fd, &card_status);
+            card_status.m_poisoned = 1;
         }
-        if(summoned->m_type == CardType::assault)
+        else if(fd->effect == Effect::decay)
         {
-            if(fd->effect == Effect::toxic)
-            {
-                card_status.m_poisoned = 1;
-            }
-            else if(fd->effect == Effect::decay)
-            {
-                card_status.m_poisoned = 1;
-                card_status.m_diseased = true;
-            }
+            card_status.m_poisoned = 1;
+            card_status.m_diseased = true;
         }
     }
 }
