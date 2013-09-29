@@ -494,7 +494,7 @@ void read_quests(Decks& decks, const Cards& cards, std::string filename)
         unsigned id(id_node ? atoi(id_node->value()) : 0);
         std::string deck_name{"Step " + std::string{id_node->value()}};
         Deck* deck = read_deck(decks, cards, quest_node, DeckType::quest, id, deck_name);
-        xml_node<>* effect_id_node(quest_node->first_node("effect_id"));
+        xml_node<>* effect_id_node(quest_node->first_node("battleground_id"));
         int effect_id(effect_id_node ? atoi(effect_id_node->value()) : 0);
         deck->effect = static_cast<enum Effect>(effect_id);
     }
