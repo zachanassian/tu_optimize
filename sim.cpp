@@ -1615,21 +1615,21 @@ void PerformAttack::damage_dependant_pre_oa<CardType::assault>()
     {
         count_achievement<disease>(fd, att_status);
         // perform_skill_disease
-        _DEBUG_MSG(1, "%s diseases %s\n", status_description(def_status).c_str(), status_description(att_status).c_str());
+        _DEBUG_MSG(1, "%s diseases %s\n", status_description(att_status).c_str(), status_description(def_status).c_str());
         def_status->m_diseased = true;
     }
     if(att_status->m_card->m_sunder && skill_check<sunder>(fd, att_status, def_status))
     {
         count_achievement<sunder>(fd, att_status);
         // perform_skill_sunder
-        _DEBUG_MSG(1, "%s sunders %s\n", status_description(def_status).c_str(), status_description(att_status).c_str());
+        _DEBUG_MSG(1, "%s sunders %s\n", status_description(att_status).c_str(), status_description(def_status).c_str());
         def_status->m_sundered = true;
     }
     if(att_status->m_card->m_phase && skill_check<phase>(fd, att_status, def_status))
     {
         count_achievement<phase>(fd, att_status);
         // perform_skill_phase
-        _DEBUG_MSG(1, "%s phases %s\n", status_description(def_status).c_str(), status_description(att_status).c_str());
+        _DEBUG_MSG(1, "%s phases %s\n", status_description(att_status).c_str(), status_description(def_status).c_str());
         def_status->m_phased = true;
     }
 }
