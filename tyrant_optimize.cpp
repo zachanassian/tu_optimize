@@ -1348,6 +1348,14 @@ int main(int argc, char** argv)
             att_deck->set_given_hand(cards, argv[argIndex + 1]);
             argIndex += 1;
         }
+        else if(strcmp(argv[argIndex], "defender:hand") == 0)  // set enemies' initial hand for test
+        {
+            for(auto def_deck: def_decks)
+            {
+                def_deck->set_given_hand(cards, argv[argIndex + 1]);
+            }
+            argIndex += 1;
+        }
         else if(strcmp(argv[argIndex], "sim") == 0)
         {
             todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex + 1]), 0u, simulate));
