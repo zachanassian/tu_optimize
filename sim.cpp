@@ -921,7 +921,10 @@ Results<uint64_t> play(Field* fd)
     if (fd->turn > turn_limit)
     {
         _DEBUG_MSG(1, "Stall after %u turns.\n", turn_limit);
-        return {0, 1, 0, fd->optimization_mode == OptimizationMode::defense ? 100ul : 0ul, 0};
+        if (fd->optimization_mode == OptimizationMode::defense)
+        { return {1, 1, 0, 100, 0}; }
+        else
+        { return {0, 1, 0, 0, 0}; }
     }
 
     // Huh? How did we get here?
