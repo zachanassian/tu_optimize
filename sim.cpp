@@ -394,7 +394,7 @@ bool may_change_skill(const Field* fd, const CardStatus* status, const SkillMod:
                     return (fd->effect == Effect::time_surge ||
                             fd->effect == Effect::friendly_fire ||
                             fd->effect == Effect::genesis ||
-                            (fd->effect == Effect::artillery_strike && fd->turn >= 9 && status->m_player == (fd->optimization_mode == OptimizationMode::defense ? 1 : 0)) ||
+                            (fd->effect == Effect::artillery_strike && fd->turn >= 9 && status->m_player == (fd->optimization_mode == OptimizationMode::defense ? 1u : 0u)) ||
                             fd->effect == Effect::decrepit ||
                             fd->effect == Effect::forcefield ||
                             fd->effect == Effect::chilling_touch);
@@ -635,7 +635,7 @@ struct PlayCard
         status->set(card);
         status->m_index = storage->size() - 1;
         status->m_player = fd->tapi;
-        if(fd->turn == 1 && fd->gamemode == tournament && status->m_delay > 0)
+        if((fd->turn == 1 && fd->gamemode == tournament && status->m_delay > 0) || (type == CardType::assault && fd->effect == Effect::harsh_conditions))
         {
             ++status->m_delay;
         }
@@ -1489,7 +1489,7 @@ struct PerformAttack
         std::string reduced_desc;
         unsigned reduced_dmg(0);
         unsigned armored_value(def_card.m_armored);
-        if(armored_value == 0 && fd->effect == Effect::photon_shield && def_status->m_player == (fd->optimization_mode == OptimizationMode::defense ? 0 : 1))
+        if(armored_value == 0 && fd->effect == Effect::photon_shield && def_status->m_player == (fd->optimization_mode == OptimizationMode::defense ? 0u : 1u))
         {
             armored_value = 2;
         }
@@ -2412,6 +2412,10 @@ void perform_summon(Field* fd, CardStatus* src_status, const SkillSpec& s)
     card_status.set(summoned);
     card_status.m_index = storage->size() - 1;
     card_status.m_player = player;
+    if(summoned->m_type == CardType::assault && fd->effect == Effect::harsh_conditions)
+    {
+        ++card_status.m_delay;
+    }
     card_status.m_is_summoned = true;
     _DEBUG_MSG(1, "%s %s %s %u [%s]\n", status_description(src_status).c_str(), skill_names[skill_id].c_str(), cardtype_names[summoned->m_type].c_str(), card_status.m_index, card_description(fd->cards, summoned).c_str());
     prepend_skills(fd, &card_status);
