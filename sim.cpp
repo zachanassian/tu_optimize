@@ -2382,7 +2382,8 @@ void perform_summon(Field* fd, CardStatus* src_status, const SkillSpec& s)
 {
     unsigned player = src_status->m_player;
     const auto& mod = std::get<4>(s);
-    if(skill_id == summon && mod == SkillMod::on_activate)
+    // Split and Summon on Play are not counted towards the Summon Limit.
+    if(skill_id == summon && mod != SkillMod::on_play)
     {
         if(fd->players[player]->available_summons == 0)
         {
