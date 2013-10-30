@@ -1,7 +1,7 @@
 #ifndef TYRANT_H_INCLUDED
 #define TYRANT_H_INCLUDED
 
-#define TYRANT_OPTIMIZER_VERSION "1.1.5"
+#define TYRANT_OPTIMIZER_VERSION "1.1.6"
 
 #include <string>
 #include <set>

@@ -435,7 +435,13 @@ void read_missions(Decks& decks, const Cards& cards, std::string filename)
         unsigned id(id_node ? atoi(id_node->value()) : 0);
         xml_node<>* name_node(mission_node->first_node("name"));
         std::string deck_name{name_node->value()};
-        read_deck(decks, cards, mission_node, DeckType::mission, id, deck_name);
+        Deck* deck = read_deck(decks, cards, mission_node, DeckType::mission, id, deck_name);
+        xml_node<>* effect_id_node(mission_node->first_node("effect"));
+        if(effect_id_node)
+        {
+            int effect_id(effect_id_node ? atoi(effect_id_node->value()) : 0);
+            deck->effect = static_cast<enum Effect>(effect_id);
+        }
     }
 }
 //------------------------------------------------------------------------------
