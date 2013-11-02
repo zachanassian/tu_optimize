@@ -112,6 +112,10 @@ void parse_card_spec(const Cards& cards, std::string& card_spec, unsigned& card_
         simple_name = simplify_name(abbr_it->second);
     }
     auto card_it = cards.player_cards_by_name.find({simple_name, 0});
+    if(card_it == cards.player_cards_by_name.end())
+    {
+        card_it = cards.player_cards_by_name.find({simple_name, 1});
+    }
     auto card_id_iter = advance_until(simple_name.begin(), simple_name.end(), [](char c){return(c=='[');});
     if(card_it != cards.player_cards_by_name.end())
     {
