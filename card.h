@@ -97,6 +97,7 @@ public:
     unsigned m_health;
     unsigned m_hidden;
     unsigned m_id;
+    unsigned m_max_level_id;
     bool m_immobilize;
     bool m_intercept;
     unsigned m_leech;

@@ -88,6 +88,8 @@ void load_decks_xml(Decks& decks, const Cards& cards)
     {
         std::cout << "\nException while loading decks from file missions.xml\n";
     }
+    return; //TU only missions are relevant
+
     try
     {
         read_raids(decks, cards, "raids.xml");
@@ -156,15 +158,17 @@ void read_cards(Cards& cards)
         card;
         card = card->next_sibling())
     {
+        //std::cout << "processing card " << card->first_node("id")->value() << "\n";
         if(strcmp(card->name(), "unit") == 0)
         {
             xml_node<>* id_node(card->first_node("id"));
             assert(id_node);
+            //std::cout << "id:" << id_node->value() << "\n";
             unsigned id(id_node ? atoi(id_node->value()) : 0);
             xml_node<>* name_node(card->first_node("name"));
-            xml_node<>* hidden_node(card->first_node("hidden"));
+            xml_node<>* hidden_node(card->first_node("hidden")); //TU not used
             unsigned hidden(hidden_node ? atoi(hidden_node->value()) : 0);
-            xml_node<>* replace_node(card->first_node("replace"));
+            xml_node<>* replace_node(card->first_node("replace")); //TU not used
             unsigned replace_id(replace_node ? atoi(replace_node->value()) : 0);
             xml_node<>* attack_node(card->first_node("attack"));
             xml_node<>* health_node(card->first_node("health"));
@@ -179,173 +183,232 @@ void read_cards(Cards& cards)
             xml_node<>* set_node(card->first_node("set"));
             int set(set_node ? atoi(set_node->value()) : 0);
             ai_only = set == 0;
-            if((ai_only || set >= 0) && name_node && rarity_node)
+            //xml_node<>* max_level_node(nullptr);
+            xml_node<>* max_level_card_id_node(nullptr);
+            for(xml_node<>* upgrade = card->first_node("upgrade"); upgrade;
+                    upgrade = upgrade->next_sibling("upgrade"))
             {
-                if(!ai_only)
-                {
-                    nb_cards++;
-                    sets_counts[set]++;
-                }
-                Card* c(new Card());
-                c->m_id = id;
-                c->m_name = name_node->value();
-                // So far, commanders have attack_node (value == 0)
-                if(id < 1000)
-                { c->m_type = CardType::assault; }
-                else if(id < 2000)
-                { c->m_type = CardType::commander; }
-                else if(id < 3000)
-                { c->m_type = CardType::structure; }
-                else if(id < 4000)
-                { c->m_type = CardType::action; }
-                else if(id < 5000)
-                { c->m_type = CardType::assault; }
-                else
-                { c->m_type = cost_node ? (attack_node ? CardType::assault : CardType::structure) : (health_node ? CardType::commander : CardType::action); }
-                c->m_hidden = hidden;
-                c->m_replace = replace_id;
-                if(attack_node) { c->m_attack = atoi(attack_node->value()); }
-                if(health_node) { c->m_health = atoi(health_node->value()); }
-                if(cost_node) { c->m_delay = atoi(cost_node->value()); }
-                if(unique_node) { c->m_unique = true; }
-                c->m_reserve = reserve;
-                c->m_base_id = base_card_id;
-                c->m_rarity = atoi(rarity_node->value());
-                unsigned type(type_node ? atoi(type_node->value()) : 0);
-                c->m_faction = map_to_faction(type);
-                c->m_set = set;
-                // Promo and Unpurchasable Reward cards will only require 1 copy
-                c->m_upgrade_consumables = set == 5001 || (set == 5000 and reserve) ? 1 : 2;
-                // Reward cards will still have a gold cost
-                c->m_upgrade_gold_cost = set == 5000 ? (c->m_rarity == 4 ? 100000 : 20000) : 0;
-                for(xml_node<>* skill = card->first_node("skill"); skill;
-                    skill = skill->next_sibling("skill"))
-                {
-                    if(strcmp(skill->first_attribute("id")->value(), "antiair") == 0)
-                    { c->m_antiair = atoi(skill->first_attribute("x")->value()); }
-                    if(strcmp(skill->first_attribute("id")->value(), "armored") == 0)
-                    { c->m_armored = atoi(skill->first_attribute("x")->value()); }
-                    if(strcmp(skill->first_attribute("id")->value(), "berserk") == 0)
-                    {
-                        bool attacked(skill->first_attribute("attacked"));
-                        if(attacked) { c->m_berserk_oa = atoi(skill->first_attribute("x")->value()); }
-                        else {c->m_berserk = atoi(skill->first_attribute("x")->value()); }
-                    }
-                    if(strcmp(skill->first_attribute("id")->value(), "blitz") == 0)
-                    { c->m_blitz = true; }
-                    if(strcmp(skill->first_attribute("id")->value(), "burst") == 0)
-                    { c->m_burst = atoi(skill->first_attribute("x")->value()); }
-                    if(strcmp(skill->first_attribute("id")->value(), "counter") == 0)
-                    { c->m_counter = atoi(skill->first_attribute("x")->value()); }
-                    if(strcmp(skill->first_attribute("id")->value(), "crush") == 0)
-                    { c->m_crush = atoi(skill->first_attribute("x")->value()); }
-                    if(strcmp(skill->first_attribute("id")->value(), "disease") == 0)
-                    {
-                        bool attacked(skill->first_attribute("attacked"));
-                        if(attacked) { c->m_disease_oa = true; }
-                        else {c->m_disease = true; }
-                    }
-                    if(strcmp(skill->first_attribute("id")->value(), "emulate") == 0)
-                    { c->m_emulate = true; }
-                    if(strcmp(skill->first_attribute("id")->value(), "evade") == 0)
-                    { c->m_evade = true; }
-                    if(strcmp(skill->first_attribute("id")->value(), "fear") == 0)
-                    { c->m_fear = true; }
-                    if(strcmp(skill->first_attribute("id")->value(), "flurry") == 0)
-                    { c->m_flurry = atoi(skill->first_attribute("x")->value()); }
-                    if(strcmp(skill->first_attribute("id")->value(), "flying") == 0)
-                    { c->m_flying = true; }
-                    if(strcmp(skill->first_attribute("id")->value(), "fusion") == 0)
-                    { c->m_fusion = true; }
-                    if(strcmp(skill->first_attribute("id")->value(), "immobilize") == 0)
-                    { c->m_immobilize = true; }
-                    if(strcmp(skill->first_attribute("id")->value(), "intercept") == 0)
-                    { c->m_intercept = true; }
-                    if(strcmp(skill->first_attribute("id")->value(), "leech") == 0)
-                    { c->m_leech = atoi(skill->first_attribute("x")->value()); }
-                    if(strcmp(skill->first_attribute("id")->value(), "legion") == 0)
-                    { c->m_legion = atoi(skill->first_attribute("x")->value()); }
-                    if(strcmp(skill->first_attribute("id")->value(), "payback") == 0)
-                    { c->m_payback = true; }
-                    if(strcmp(skill->first_attribute("id")->value(), "pierce") == 0)
-                    { c->m_pierce = atoi(skill->first_attribute("x")->value()); }
-                    if(strcmp(skill->first_attribute("id")->value(), "phase") == 0)
-                    { c->m_phase = true; }
-                    if(strcmp(skill->first_attribute("id")->value(), "poison") == 0)
-                    {
-                        bool attacked(skill->first_attribute("attacked"));
-                        if(attacked) { c->m_poison_oa = atoi(skill->first_attribute("x")->value()); }
-                        else {c->m_poison = atoi(skill->first_attribute("x")->value()); }
-                    }
-                    if(strcmp(skill->first_attribute("id")->value(), "refresh") == 0)
-                    { c->m_refresh = true; }
-                    if(strcmp(skill->first_attribute("id")->value(), "regenerate") == 0)
-                    { c->m_regenerate = atoi(skill->first_attribute("x")->value()); }
-                    if(strcmp(skill->first_attribute("id")->value(), "siphon") == 0)
-                    { c->m_siphon = atoi(skill->first_attribute("x")->value()); }
-                    if(strcmp(skill->first_attribute("id")->value(), "stun") == 0)
-                    { c->m_stun = true; }
-                    if(strcmp(skill->first_attribute("id")->value(), "sunder") == 0)
-                    {
-                        bool attacked(skill->first_attribute("attacked"));
-                        if(attacked) { c->m_sunder_oa = true; }
-                        else {c->m_sunder = true; }
-                    }
-                    if(strcmp(skill->first_attribute("id")->value(), "swipe") == 0)
-                    { c->m_swipe = true; }
-                    if(strcmp(skill->first_attribute("id")->value(), "tribute") == 0)
-                    { c->m_tribute = true; }
-                    if(strcmp(skill->first_attribute("id")->value(), "valor") == 0)
-                    { c->m_valor = atoi(skill->first_attribute("x")->value()); }
-                    if(strcmp(skill->first_attribute("id")->value(), "wall") == 0)
-                    { c->m_wall = true; }
-                    if(strcmp(skill->first_attribute("id")->value(), "augment") == 0)
-                    { handle_skill<augment>(skill, c); }
-                    if(strcmp(skill->first_attribute("id")->value(), "backfire") == 0)
-                    { handle_skill<backfire>(skill, c); }
-                    if(strcmp(skill->first_attribute("id")->value(), "chaos") == 0)
-                    { handle_skill<chaos>(skill, c); }
-                    if(strcmp(skill->first_attribute("id")->value(), "cleanse") == 0)
-                    { handle_skill<cleanse>(skill, c); }
-                    if(strcmp(skill->first_attribute("id")->value(), "enfeeble") == 0)
-                    { handle_skill<enfeeble>(skill, c); }
-                    if(strcmp(skill->first_attribute("id")->value(), "freeze") == 0)
-                    { handle_skill<freeze>(skill, c); }
-                    if(strcmp(skill->first_attribute("id")->value(), "heal") == 0)
-                    { handle_skill<heal>(skill, c); }
-                    if(strcmp(skill->first_attribute("id")->value(), "infuse") == 0)
-                    { handle_skill<infuse>(skill, c); }
-                    if(strcmp(skill->first_attribute("id")->value(), "jam") == 0)
-                    { handle_skill<jam>(skill, c); }
-                    if(strcmp(skill->first_attribute("id")->value(), "mimic") == 0)
-                    { handle_skill<mimic>(skill, c); }
-                    if(strcmp(skill->first_attribute("id")->value(), "protect") == 0)
-                    { handle_skill<protect>(skill, c); }
-                    if(strcmp(skill->first_attribute("id")->value(), "rally") == 0)
-                    { handle_skill<rally>(skill, c); }
-                    if(strcmp(skill->first_attribute("id")->value(), "recharge") == 0)
-                    { handle_skill<recharge>(skill, c); }
-                    if(strcmp(skill->first_attribute("id")->value(), "repair") == 0)
-                    { handle_skill<repair>(skill, c); }
-                    if(strcmp(skill->first_attribute("id")->value(), "rush") == 0)
-                    { handle_skill<rush>(skill, c); }
-                    if(strcmp(skill->first_attribute("id")->value(), "shock") == 0)
-                    { handle_skill<shock>(skill, c); }
-                    if(strcmp(skill->first_attribute("id")->value(), "siege") == 0)
-                    { handle_skill<siege>(skill, c); }
-                    if(strcmp(skill->first_attribute("id")->value(), "split") == 0)
-                    { handle_skill<split>(skill, c); }
-                    if(strcmp(skill->first_attribute("id")->value(), "strike") == 0)
-                    { handle_skill<strike>(skill, c); }
-                    if(strcmp(skill->first_attribute("id")->value(), "summon") == 0)
-                    { handle_skill<summon>(skill, c); }
-                    if(strcmp(skill->first_attribute("id")->value(), "supply") == 0)
-                    { handle_skill<supply>(skill, c); }
-                    if(strcmp(skill->first_attribute("id")->value(), "weaken") == 0)
-                    { handle_skill<weaken>(skill, c); }
-                }
-                cards.cards.push_back(c);
+                //max_level_node = upgrade->first_node("level");
+                max_level_card_id_node = upgrade->first_node("card_id");
             }
+            //<id>1999</id> Katana has no upgrades...
+            //unsigned max_level(max_level_node ? atoi(max_level_node->value()) : 1);
+            unsigned max_level_card_id(max_level_card_id_node ? atoi(max_level_card_id_node->value()) : id);
+            //std::cout << "card: " << name_node->value() << " " << max_level_card_id << "\n";
+            unsigned level = 1;
+            xml_node<>* base_for_skill_node(card);
+            xml_node<>* upgrade_node(nullptr);
+
+            do
+            {
+                if((ai_only || set >= 0 || set == -1) && name_node && rarity_node) //TU Malika 1143 has set - 1
+                {
+                    if(!ai_only)
+                    {
+                        nb_cards++;
+                        sets_counts[set]++;
+                    }
+                    Card* c(new Card());
+                    c->m_id = id;
+                    std::stringstream ss;
+                    ss << name_node->value() << "-" << level;
+                    c->m_name = ss.str();
+                    //std::cout << "created card: " << c->m_name << " max_level_id:" << max_level_card_id << "\n";
+                    c->m_max_level_id = max_level_card_id;
+                    // So far, commanders have attack_node (value == 0)
+                    if(id < 1000)
+                    { c->m_type = CardType::assault; }
+                    else if(id < 2000)
+                    { c->m_type = CardType::commander; }
+                    else if(id < 3000)
+                    { c->m_type = CardType::structure; }
+                    else if(id < 4000)
+                    { c->m_type = CardType::action; }
+                    else if(id < 6000) //adjusted for TU pattern seems to be valid there as well
+                    { c->m_type = CardType::assault; }
+                    else
+                    { c->m_type = cost_node ? (attack_node ? CardType::assault : CardType::structure) : (health_node ? CardType::commander : CardType::action); }
+                    c->m_hidden = hidden;
+                    c->m_replace = replace_id;
+                    if(attack_node) { c->m_attack = atoi(attack_node->value()); }
+                    if(health_node) { c->m_health = atoi(health_node->value()); }
+                    if(cost_node) { c->m_delay = atoi(cost_node->value()); }
+                    if(unique_node) { c->m_unique = true; }
+                    c->m_reserve = reserve;
+                    c->m_base_id = base_card_id;
+                    c->m_rarity = atoi(rarity_node->value());
+                    unsigned type(type_node ? atoi(type_node->value()) : 0);
+                    c->m_faction = map_to_faction(type);
+                    c->m_set = set;
+                    // Promo and Unpurchasable Reward cards will only require 1 copy
+                    c->m_upgrade_consumables = set == 5001 || (set == 5000 and reserve) ? 1 : 2;
+                    // Reward cards will still have a gold cost
+                    c->m_upgrade_gold_cost = set == 5000 ? (c->m_rarity == 4 ? 100000 : 20000) : 0;
+                    for(xml_node<>* skill = base_for_skill_node->first_node("skill"); skill;
+                        skill = skill->next_sibling("skill"))
+                    {
+                        if(strcmp(skill->first_attribute("id")->value(), "antiair") == 0)
+                        { c->m_antiair = atoi(skill->first_attribute("x")->value()); }
+                        if(strcmp(skill->first_attribute("id")->value(), "armored") == 0)
+                        { c->m_armored = atoi(skill->first_attribute("x")->value()); }
+                        if(strcmp(skill->first_attribute("id")->value(), "berserk") == 0)
+                        {
+                            bool attacked(skill->first_attribute("attacked"));
+                            if(attacked) { c->m_berserk_oa = atoi(skill->first_attribute("x")->value()); }
+                            else {c->m_berserk = atoi(skill->first_attribute("x")->value()); }
+                        }
+                        if(strcmp(skill->first_attribute("id")->value(), "blitz") == 0)
+                        { c->m_blitz = true; }
+                        if(strcmp(skill->first_attribute("id")->value(), "burst") == 0)
+                        { c->m_burst = atoi(skill->first_attribute("x")->value()); }
+                        if(strcmp(skill->first_attribute("id")->value(), "counter") == 0)
+                        { c->m_counter = atoi(skill->first_attribute("x")->value()); }
+                        if(strcmp(skill->first_attribute("id")->value(), "crush") == 0)
+                        { c->m_crush = atoi(skill->first_attribute("x")->value()); }
+                        if(strcmp(skill->first_attribute("id")->value(), "disease") == 0)
+                        {
+                            bool attacked(skill->first_attribute("attacked"));
+                            if(attacked) { c->m_disease_oa = true; }
+                            else {c->m_disease = true; }
+                        }
+                        if(strcmp(skill->first_attribute("id")->value(), "emulate") == 0)
+                        { c->m_emulate = true; }
+                        if(strcmp(skill->first_attribute("id")->value(), "evade") == 0)
+                        { c->m_evade = true; }
+                        if(strcmp(skill->first_attribute("id")->value(), "fear") == 0)
+                        { c->m_fear = true; }
+                        if(strcmp(skill->first_attribute("id")->value(), "flurry") == 0)
+                        { c->m_flurry = atoi(skill->first_attribute("x")->value()); }
+                        if(strcmp(skill->first_attribute("id")->value(), "flying") == 0)
+                        { c->m_flying = true; }
+                        if(strcmp(skill->first_attribute("id")->value(), "fusion") == 0)
+                        { c->m_fusion = true; }
+                        if(strcmp(skill->first_attribute("id")->value(), "immobilize") == 0)
+                        { c->m_immobilize = true; }
+                        if(strcmp(skill->first_attribute("id")->value(), "intercept") == 0)
+                        { c->m_intercept = true; }
+                        if(strcmp(skill->first_attribute("id")->value(), "leech") == 0)
+                        { c->m_leech = atoi(skill->first_attribute("x")->value()); }
+                        if(strcmp(skill->first_attribute("id")->value(), "legion") == 0)
+                        { c->m_legion = atoi(skill->first_attribute("x")->value()); }
+                        if(strcmp(skill->first_attribute("id")->value(), "payback") == 0)
+                        { c->m_payback = true; }
+                        if(strcmp(skill->first_attribute("id")->value(), "pierce") == 0)
+                        { c->m_pierce = atoi(skill->first_attribute("x")->value()); }
+                        if(strcmp(skill->first_attribute("id")->value(), "phase") == 0)
+                        { c->m_phase = true; }
+                        if(strcmp(skill->first_attribute("id")->value(), "poison") == 0)
+                        {
+                            bool attacked(skill->first_attribute("attacked"));
+                            if(attacked) { c->m_poison_oa = atoi(skill->first_attribute("x")->value()); }
+                            else {c->m_poison = atoi(skill->first_attribute("x")->value()); }
+                        }
+                        if(strcmp(skill->first_attribute("id")->value(), "refresh") == 0)
+                        { c->m_refresh = true; }
+                        if(strcmp(skill->first_attribute("id")->value(), "regenerate") == 0)
+                        { c->m_regenerate = atoi(skill->first_attribute("x")->value()); }
+                        if(strcmp(skill->first_attribute("id")->value(), "siphon") == 0)
+                        { c->m_siphon = atoi(skill->first_attribute("x")->value()); }
+                        if(strcmp(skill->first_attribute("id")->value(), "stun") == 0)
+                        { c->m_stun = true; }
+                        if(strcmp(skill->first_attribute("id")->value(), "sunder") == 0)
+                        {
+                            bool attacked(skill->first_attribute("attacked"));
+                            if(attacked) { c->m_sunder_oa = true; }
+                            else {c->m_sunder = true; }
+                        }
+                        if(strcmp(skill->first_attribute("id")->value(), "swipe") == 0)
+                        { c->m_swipe = true; }
+                        if(strcmp(skill->first_attribute("id")->value(), "tribute") == 0)
+                        { c->m_tribute = true; }
+                        if(strcmp(skill->first_attribute("id")->value(), "valor") == 0)
+                        { c->m_valor = atoi(skill->first_attribute("x")->value()); }
+                        if(strcmp(skill->first_attribute("id")->value(), "wall") == 0)
+                        { c->m_wall = true; }
+                        if(strcmp(skill->first_attribute("id")->value(), "augment") == 0)
+                        { handle_skill<augment>(skill, c); }
+                        if(strcmp(skill->first_attribute("id")->value(), "backfire") == 0)
+                        { handle_skill<backfire>(skill, c); }
+                        if(strcmp(skill->first_attribute("id")->value(), "chaos") == 0)
+                        { handle_skill<chaos>(skill, c); }
+                        if(strcmp(skill->first_attribute("id")->value(), "cleanse") == 0)
+                        { handle_skill<cleanse>(skill, c); }
+                        if(strcmp(skill->first_attribute("id")->value(), "enfeeble") == 0)
+                        { handle_skill<enfeeble>(skill, c); }
+                        if(strcmp(skill->first_attribute("id")->value(), "freeze") == 0)
+                        { handle_skill<freeze>(skill, c); }
+                        if(strcmp(skill->first_attribute("id")->value(), "heal") == 0)
+                        { handle_skill<heal>(skill, c); }
+                        if(strcmp(skill->first_attribute("id")->value(), "infuse") == 0)
+                        { handle_skill<infuse>(skill, c); }
+                        if(strcmp(skill->first_attribute("id")->value(), "jam") == 0)
+                        { handle_skill<jam>(skill, c); }
+                        if(strcmp(skill->first_attribute("id")->value(), "mimic") == 0)
+                        { handle_skill<mimic>(skill, c); }
+                        if(strcmp(skill->first_attribute("id")->value(), "protect") == 0)
+                        { handle_skill<protect>(skill, c); }
+                        if(strcmp(skill->first_attribute("id")->value(), "rally") == 0)
+                        { handle_skill<rally>(skill, c); }
+                        if(strcmp(skill->first_attribute("id")->value(), "recharge") == 0)
+                        { handle_skill<recharge>(skill, c); }
+                        if(strcmp(skill->first_attribute("id")->value(), "repair") == 0)
+                        { handle_skill<repair>(skill, c); }
+                        if(strcmp(skill->first_attribute("id")->value(), "rush") == 0)
+                        { handle_skill<rush>(skill, c); }
+                        if(strcmp(skill->first_attribute("id")->value(), "shock") == 0)
+                        { handle_skill<shock>(skill, c); }
+                        if(strcmp(skill->first_attribute("id")->value(), "siege") == 0)
+                        { handle_skill<siege>(skill, c); }
+                        if(strcmp(skill->first_attribute("id")->value(), "split") == 0)
+                        { handle_skill<split>(skill, c); }
+                        if(strcmp(skill->first_attribute("id")->value(), "strike") == 0)
+                        { handle_skill<strike>(skill, c); }
+                        if(strcmp(skill->first_attribute("id")->value(), "summon") == 0)
+                        { handle_skill<summon>(skill, c); }
+                        if(strcmp(skill->first_attribute("id")->value(), "supply") == 0)
+                        { handle_skill<supply>(skill, c); }
+                        if(strcmp(skill->first_attribute("id")->value(), "weaken") == 0)
+                        { handle_skill<weaken>(skill, c); }
+                    }
+                    cards.cards.push_back(c);
+                } // end if 
+                if(upgrade_node)
+                {
+                    upgrade_node = upgrade_node->next_sibling("upgrade");
+                }
+                else
+                {
+                    upgrade_node = card->first_node("upgrade");
+                }
+                if(!upgrade_node)
+                { break; }
+                id_node = upgrade_node->first_node("card_id");
+                assert(id_node);
+                id = id_node ? atoi(id_node->value()) : 0;
+                xml_node<>* level_node(upgrade_node->first_node("level"));
+                assert(level_node);
+                level = atoi(level_node->value());
+                //xml_node<>* name_node(card->first_node("name"));
+                //xml_node<>* hidden_node(card->first_node("hidden")); //TU not used
+                //unsigned hidden(hidden_node ? atoi(hidden_node->value()) : 0);
+                //xml_node<>* replace_node(card->first_node("replace")); //TU not used
+                //unsigned replace_id(replace_node ? atoi(replace_node->value()) : 0);
+                xml_node<>* upgrade_attack_node(upgrade_node->first_node("attack"));
+                attack_node = upgrade_attack_node ? upgrade_attack_node : attack_node; 
+                xml_node<>* upgrade_health_node(upgrade_node->first_node("health"));
+                health_node = upgrade_health_node ? upgrade_health_node : health_node;  
+                xml_node<>* upgrade_cost_node(upgrade_node->first_node("cost"));
+                cost_node = upgrade_cost_node ? upgrade_cost_node : cost_node;
+                //xml_node<>* unique_node(card->first_node("unique"));
+                //xml_node<>* reserve_node(card->first_node("reserve"));
+                //unsigned reserve(reserve_node ? atoi(reserve_node->value()) : 0);
+                //xml_node<>* base_card_node(card->first_node("base_card"));
+                //unsigned base_card_id(base_card_node ? atoi(base_card_node->value()) : id);
+                //xml_node<>* rarity_node(card->first_node("rarity"));
+                //xml_node<>* type_node(card->first_node("type"));
+                //xml_node<>* set_node(card->first_node("set"));
+                base_for_skill_node = upgrade_node->first_node("skill") ? upgrade_node : base_for_skill_node; 
+            } while (upgrade_node);
         }
     }
     cards.organize();
@@ -365,15 +428,15 @@ Deck* read_deck(Decks& decks, const Cards& cards, xml_node<>* node, DeckType::De
     std::vector<std::pair<unsigned, std::vector<const Card*>>> some_cards;
     std::vector<const Card*> reward_cards;
     xml_node<>* deck_node(node->first_node("deck"));
-    xml_node<>* always_node{deck_node->first_node("always_include")};
+    xml_node<>* always_node{deck_node->first_node("always_include")}; //tyrant raids
     for(xml_node<>* card_node = (always_node ? always_node : deck_node)->first_node("card");
             card_node;
             card_node = card_node->next_sibling("card"))
     {
         unsigned card_id(atoi(card_node->value()));
-        always_cards.push_back(cards.by_id(card_id));
+        always_cards.push_back(cards.by_id(cards.by_id(card_id)->m_max_level_id)); //TU Level 10 mission always have all cards max level
     }
-    for(xml_node<>* pool_node = deck_node->first_node("card_pool");
+    for(xml_node<>* pool_node = deck_node->first_node("card_pool"); //tyrant raids
             pool_node;
             pool_node = pool_node->next_sibling("card_pool"))
     {
