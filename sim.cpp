@@ -728,6 +728,7 @@ inline bool can_attack(CardStatus* c) { return(can_act(c) && !c->m_immobilized &
 inline bool can_be_healed(CardStatus* c) { return(c->m_hp > 0 && c->m_hp < c->m_card->m_health && !c->m_diseased); }
 //------------------------------------------------------------------------------
 void turn_start_phase(Field* fd);
+void turn_end_phase(Field* fd);
 void evaluate_legion(Field* fd);
 bool check_and_perform_refresh(Field* fd, CardStatus* src_status);
 // return value : (raid points) -> attacker wins, 0 -> defender wins
@@ -859,6 +860,7 @@ Results<uint64_t> play(Field* fd)
             }
             current_status.m_step = CardStep::attacked;
         }
+        turn_end_phase(fd);
         if(__builtin_expect(fd->end, false)) { break; }
         _DEBUG_MSG(1, "TURN %u ends for %s\n", fd->turn, status_description(&fd->tap->commander).c_str());
         std::swap(fd->tapi, fd->tipi);
@@ -1165,6 +1167,27 @@ void check_regeneration(Field* fd)
     }
     fd->killed_with_regen.clear();
 }
+void turn_end_phase(Field* fd)
+{
+    {
+        auto& assaults(fd->tap->assaults);
+        for(unsigned index(0), end(assaults.size());
+            index < end;
+            ++index)
+        {
+            CardStatus& status(assaults[index]);
+            //status.m_index = index;
+            //status.m_enfeebled = 0;
+            //status.m_protected = 0;
+            unsigned diff = safe_minus(status.m_poisoned, status.m_protected);
+            if(diff > 0)
+            {
+                _DEBUG_MSG(1, "%s takes poison damage\n", status_description(&status).c_str());
+                remove_hp(fd, status, diff);
+            }
+        }
+    }
+}
 void turn_start_phase(Field* fd)
 {
     remove_dead(fd->tap->assaults);
@@ -1185,11 +1208,11 @@ void turn_start_phase(Field* fd)
             status.m_index = index;
             status.m_enfeebled = 0;
             status.m_protected = 0;
-            if(status.m_poisoned > 0)
-            {
-                _DEBUG_MSG(1, "%s takes poison damage\n", status_description(&status).c_str());
-                remove_hp(fd, status, status.m_poisoned);
-            }
+            //if(status.m_poisoned > 0)
+            //{
+            //    _DEBUG_MSG(1, "%s takes poison damage\n", status_description(&status).c_str());
+            //    remove_hp(fd, status, status.m_poisoned);
+            //}
             if(status.m_delay > 0 && !status.m_frozen)
             {
                 _DEBUG_MSG(1, "%s reduces its timer\n", status_description(&status).c_str());

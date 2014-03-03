@@ -3,6 +3,12 @@ tyrant_optimize
 This fork tries to adapt the code to be used with Tyrant Unleashed!
 This is not working at the moment
 
+Version 0.11
+============
+Poison is now triggered at end of turn and protect reduces poison damage.
+Testcase
+tyrant_optimize.exe "Cyrus-1, Starformer-6" "Constantine-6, Pylon-3(2)" debug
+
 Version 0.1
 ===========
 TU: cards.xml and mission.xml are now parsed
@@ -17,5 +23,5 @@ Poison is triggered at start instead of end of turn
            Results<uint64_t> play(Field* fd)
 Enhance Skill not working
 Jam Skill not working as in TU
-Compare to simTU 1.000.000 sims 
-This: 14,43 sec simTU: 102,78 sec 
+Compare to simXX 1.000.000 sims 
+This: 14,43 sec simXX: 102,78 sec 
