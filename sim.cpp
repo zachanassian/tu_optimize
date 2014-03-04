@@ -103,6 +103,7 @@ CardStatus::CardStatus(const Card* card) :
     m_stunned(0),
     m_sundered(false),
     m_weakened(0),
+    m_armored(card->m_armored),
     m_temporary_split(false),
     m_is_summoned(false),
     m_step(CardStep::none)
@@ -141,6 +142,7 @@ inline void CardStatus::set(const Card& card)
     m_sundered = false;
     m_temporary_split = false;
     m_weakened = 0;
+    m_armored = card.m_armored;
     m_is_summoned = false;
     m_step = CardStep::none;
 }
@@ -294,6 +296,7 @@ std::string CardStatus::description()
     if(m_poisoned > 0) { desc += ", poisoned " + to_string(m_poisoned); }
     if(m_protected > 0) { desc += ", protected " + to_string(m_protected); }
     if(m_stunned > 0) { desc += ", stunned " + to_string(m_stunned); }
+    if(m_armored != m_card->m_armored) { desc += ", armored " + to_string(m_armored); }
 //    if(m_step != CardStep::none) { desc += ", Step " + to_string(static_cast<int>(m_step)); }
     desc += "]";
     return(desc);
@@ -1182,7 +1185,7 @@ void turn_end_phase(Field* fd)
             unsigned diff = safe_minus(status.m_poisoned, status.m_protected);
             if(diff > 0)
             {
-                _DEBUG_MSG(1, "%s takes poison damage\n", status_description(&status).c_str());
+                _DEBUG_MSG(1, "%s takes poison damage (%u)\n", status_description(&status).c_str(), diff);
                 remove_hp(fd, status, diff);
             }
         }
@@ -1208,6 +1211,8 @@ void turn_start_phase(Field* fd)
             status.m_index = index;
             status.m_enfeebled = 0;
             status.m_protected = 0;
+            //remove enhance_armored
+            status.m_armored = status.m_card->m_armored;
             //if(status.m_poisoned > 0)
             //{
             //    _DEBUG_MSG(1, "%s takes poison damage\n", status_description(&status).c_str());
@@ -1482,7 +1487,7 @@ struct PerformAttack
     void modify_attack_damage(unsigned pre_modifier_dmg)
     {
         const Card& att_card(*att_status->m_card);
-        const Card& def_card(*def_status->m_card);
+        //const Card& def_card(*def_status->m_card);
         assert(att_card.m_type == CardType::assault);
         assert(pre_modifier_dmg > 0);
         att_dmg = pre_modifier_dmg;
@@ -1514,7 +1519,7 @@ struct PerformAttack
         // prevent damage
         std::string reduced_desc;
         unsigned reduced_dmg(0);
-        unsigned armored_value(def_card.m_armored);
+        unsigned armored_value(def_status->m_armored);
         if(armored_value == 0 && fd->effect == Effect::photon_shield && def_status->m_player == (fd->optimization_mode == OptimizationMode::defense ? 0u : 1u))
         {
             armored_value = 2;
@@ -1929,6 +1934,10 @@ inline bool skill_predicate<weaken>(Field* fd, CardStatus* src, CardStatus* c, c
              is_active(c) || is_active_next_turn(c)));
 }
 
+template<>
+inline bool skill_predicate<enhance_armored>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
+{ return(c->m_armored > 0); }
+
 template<unsigned skill_id>
 inline void perform_skill(Field* fd, CardStatus* c, unsigned v)
 { assert(false); }
@@ -2052,6 +2061,13 @@ inline void perform_skill<weaken>(Field* fd, CardStatus* c, unsigned v)
     c->m_weakened += v;
 }
 
+template<>
+inline void perform_skill<enhance_armored>(Field* fd, CardStatus* c, unsigned v)
+{
+    c->m_armored += v;
+}
+
+
 template<unsigned skill_id>
 inline unsigned select_fast(Field* fd, CardStatus* src_status, const std::vector<CardStatus*>& cards, const SkillSpec& s, bool is_helpful_skill)
 {
@@ -2154,6 +2170,9 @@ template<> std::vector<CardStatus*>& skill_targets<weaken>(Field* fd, CardStatus
 
 template<> std::vector<CardStatus*>& skill_targets<siege>(Field* fd, CardStatus* src_status)
 { return(skill_targets_hostile_structure(fd, src_status)); }
+
+template<> std::vector<CardStatus*>& skill_targets<enhance_armored>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_allied_assault(fd, src_status)); }
 
 template<typename T>
 void maybeTriggerRegen(Field* fd)
@@ -2555,4 +2574,5 @@ void fill_skill_table()
     skill_table[summon] = perform_summon<summon>;
     skill_table[trigger_regen] = perform_trigger_regen;
     skill_table[weaken] = perform_targetted_hostile_fast<weaken>;
+    skill_table[enhance_armored] = perform_targetted_allied_fast<enhance_armored>;
 }

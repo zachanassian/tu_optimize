@@ -369,6 +369,8 @@ void read_cards(Cards& cards)
                         { handle_skill<supply>(skill, c); }
                         if(strcmp(skill->first_attribute("id")->value(), "weaken") == 0)
                         { handle_skill<weaken>(skill, c); }
+                        if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) && (strcmp(skill->first_attribute("s")->value(), "armored") == 0))
+                        { handle_skill<enhance_armored>(skill, c); }
                     }
                     cards.cards.push_back(c);
                 } // end if 

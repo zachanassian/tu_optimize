@@ -3,7 +3,18 @@ tyrant_optimize
 This fork tries to adapt the code to be used with Tyrant Unleashed!
 This is not working at the moment
 
-Version 0.11
+Version 0.3
+===========
+Added new skill Enhanced Armored
+tyrant_optimize.exe "Cyrus-1, Starformer-6" "Constantine-6, Pylon-3(2)" sim 100000
+Your Deck: Deck: PoO6
+Enemy's Deck: Deck: S6CI+i
+win%: 68.75 (68750 / 100000)
+stall%: 31.25 (31250 / 100000)
+loss%: 0 (0 / 100000)
+OK !
+
+Version 0.2
 ============
 Poison is now triggered at end of turn and protect reduces poison damage.
 Testcase
