@@ -103,7 +103,7 @@ CardStatus::CardStatus(const Card* card) :
     m_stunned(0),
     m_sundered(false),
     m_weakened(0),
-    m_armored(card->m_armored),
+    m_enhance_armored(0),
     m_temporary_split(false),
     m_is_summoned(false),
     m_step(CardStep::none)
@@ -142,7 +142,7 @@ inline void CardStatus::set(const Card& card)
     m_sundered = false;
     m_temporary_split = false;
     m_weakened = 0;
-    m_armored = card.m_armored;
+    m_enhance_armored = 0;
     m_is_summoned = false;
     m_step = CardStep::none;
 }
@@ -296,7 +296,7 @@ std::string CardStatus::description()
     if(m_poisoned > 0) { desc += ", poisoned " + to_string(m_poisoned); }
     if(m_protected > 0) { desc += ", protected " + to_string(m_protected); }
     if(m_stunned > 0) { desc += ", stunned " + to_string(m_stunned); }
-    if(m_armored != m_card->m_armored) { desc += ", armored " + to_string(m_armored); }
+    if(m_enhance_armored > 0) { desc += ", enhance armored " + to_string(m_enhance_armored); }
 //    if(m_step != CardStep::none) { desc += ", Step " + to_string(static_cast<int>(m_step)); }
     desc += "]";
     return(desc);
@@ -1212,7 +1212,7 @@ void turn_start_phase(Field* fd)
             status.m_enfeebled = 0;
             status.m_protected = 0;
             //remove enhance_armored
-            status.m_armored = status.m_card->m_armored;
+            status.m_enhance_armored = 0;
             //if(status.m_poisoned > 0)
             //{
             //    _DEBUG_MSG(1, "%s takes poison damage\n", status_description(&status).c_str());
@@ -1487,7 +1487,7 @@ struct PerformAttack
     void modify_attack_damage(unsigned pre_modifier_dmg)
     {
         const Card& att_card(*att_status->m_card);
-        //const Card& def_card(*def_status->m_card);
+        const Card& def_card(*def_status->m_card);
         assert(att_card.m_type == CardType::assault);
         assert(pre_modifier_dmg > 0);
         att_dmg = pre_modifier_dmg;
@@ -1519,7 +1519,7 @@ struct PerformAttack
         // prevent damage
         std::string reduced_desc;
         unsigned reduced_dmg(0);
-        unsigned armored_value(def_status->m_armored);
+        unsigned armored_value(def_card.m_armored);
         if(armored_value == 0 && fd->effect == Effect::photon_shield && def_status->m_player == (fd->optimization_mode == OptimizationMode::defense ? 0u : 1u))
         {
             armored_value = 2;
@@ -1533,6 +1533,11 @@ struct PerformAttack
             }
             if(debug_print) { reduced_desc += to_string(armored_value) + "(armored)"; }
             reduced_dmg += armored_value;
+        }
+        if(def_status->m_enhance_armored > 0)
+        {
+            if(debug_print) { reduced_desc += (reduced_desc.empty() ? "" : "+") + to_string(def_status->m_enhance_armored) + "(enhance_armored)"; }
+            reduced_dmg += def_status->m_enhance_armored;
         }
         if(def_status->m_protected > 0)
         {
@@ -1936,7 +1941,7 @@ inline bool skill_predicate<weaken>(Field* fd, CardStatus* src, CardStatus* c, c
 
 template<>
 inline bool skill_predicate<enhance_armored>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
-{ return(c->m_armored > 0); }
+{ return(c->m_card->m_armored > 0); }
 
 template<unsigned skill_id>
 inline void perform_skill(Field* fd, CardStatus* c, unsigned v)
@@ -2064,7 +2069,7 @@ inline void perform_skill<weaken>(Field* fd, CardStatus* c, unsigned v)
 template<>
 inline void perform_skill<enhance_armored>(Field* fd, CardStatus* c, unsigned v)
 {
-    c->m_armored += v;
+    c->m_enhance_armored += v;
 }
 
 
