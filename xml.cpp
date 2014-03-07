@@ -373,6 +373,8 @@ void read_cards(Cards& cards)
                         { handle_skill<enhance_armored>(skill, c); }
                         if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) && (strcmp(skill->first_attribute("s")->value(), "poison") == 0))
                         { handle_skill<enhance_poison>(skill, c); }
+                        if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) && (strcmp(skill->first_attribute("s")->value(), "berserk") == 0))
+                        { handle_skill<enhance_berserk>(skill, c); }
                     }
                     cards.cards.push_back(c);
                 } // end if 

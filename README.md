@@ -5,6 +5,19 @@ This is **not working** at the moment!
 ##Version 0.5
 * Changed name from tyrant_optimize to tu_optimize
 * [FIX] cardabbrs.txt can be used again
+* Added Enhance Berserk
+<pre>
+tu_optimize.exe "Pet,HA(10)" "Obama, SF(5)" sim 100000
+Recognize abbreviation Pet: Petrisis-6
+Recognize abbreviation HA: Havoc Alpha-6
+Recognize abbreviation Obama: Barracus-6
+Recognize abbreviation SF: Starformer-6
+Your Deck: Deck: SuLQ+q
+Enemy's Deck: Deck: SoO6+l
+win%: 21.368 (21368 / 100000)
+stall%: 21.348 (21348 / 100000)
+loss%: 57.284 (57284 / 100000)
+</pre>
 
 ##Version 0.4
 * Added new skill Enhance Poison
