@@ -104,6 +104,7 @@ CardStatus::CardStatus(const Card* card) :
     m_sundered(false),
     m_weakened(0),
     m_enhance_armored(0),
+    m_enhance_poison(0),
     m_temporary_split(false),
     m_is_summoned(false),
     m_step(CardStep::none)
@@ -143,6 +144,7 @@ inline void CardStatus::set(const Card& card)
     m_temporary_split = false;
     m_weakened = 0;
     m_enhance_armored = 0;
+    m_enhance_poison = 0;
     m_is_summoned = false;
     m_step = CardStep::none;
 }
@@ -297,6 +299,7 @@ std::string CardStatus::description()
     if(m_protected > 0) { desc += ", protected " + to_string(m_protected); }
     if(m_stunned > 0) { desc += ", stunned " + to_string(m_stunned); }
     if(m_enhance_armored > 0) { desc += ", enhance armored " + to_string(m_enhance_armored); }
+    if(m_enhance_poison > 0) { desc += ", enhance poison " + to_string(m_enhance_poison); }
 //    if(m_step != CardStep::none) { desc += ", Step " + to_string(static_cast<int>(m_step)); }
     desc += "]";
     return(desc);
@@ -1211,13 +1214,9 @@ void turn_start_phase(Field* fd)
             status.m_index = index;
             status.m_enfeebled = 0;
             status.m_protected = 0;
-            //remove enhance_armored
+            //reset enhance_...
             status.m_enhance_armored = 0;
-            //if(status.m_poisoned > 0)
-            //{
-            //    _DEBUG_MSG(1, "%s takes poison damage\n", status_description(&status).c_str());
-            //    remove_hp(fd, status, status.m_poisoned);
-            //}
+            status.m_enhance_poison = 0;
             if(status.m_delay > 0 && !status.m_frozen)
             {
                 _DEBUG_MSG(1, "%s reduces its timer\n", status_description(&status).c_str());
@@ -1639,11 +1638,11 @@ void PerformAttack::damage_dependant_pre_oa<CardType::assault>()
         _DEBUG_MSG(1, "%s siphons %u health for %s\n", status_description(att_status).c_str(), v, status_description(&fd->tap->commander).c_str());
         add_hp(fd, &fd->tap->commander, v);
     }
-    if(att_status->m_card->m_poison > def_status->m_poisoned && skill_check<poison>(fd, att_status, def_status))
+    if(att_status->m_card->m_poison + att_status->m_enhance_poison > def_status->m_poisoned && skill_check<poison>(fd, att_status, def_status))
     {
         count_achievement<poison>(fd, att_status);
         // perform_skill_poison
-        unsigned v = att_status->m_card->m_poison;
+        unsigned v = att_status->m_card->m_poison + att_status->m_enhance_poison;
         _DEBUG_MSG(1, "%s poisons %s by %u\n", status_description(att_status).c_str(), status_description(def_status).c_str(), v);
         def_status->m_poisoned = v;
     }
@@ -1943,6 +1942,17 @@ template<>
 inline bool skill_predicate<enhance_armored>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
 { return(c->m_card->m_armored > 0); }
 
+template<>
+inline bool skill_predicate<enhance_poison>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
+{ 
+    //copied and adopted from rally
+    const auto& mod = std::get<4>(s);
+    return(c->m_card->m_poison > 0 && can_attack(c) && !c->m_sundered &&  // (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)));
+        (src->m_player != c->m_player || mod == SkillMod::on_death ? (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)) :
+         mod == SkillMod::on_attacked ? is_active_next_turn(c) :
+         is_active(c) && !is_attacking_or_has_attacked(c)));
+}
+
 template<unsigned skill_id>
 inline void perform_skill(Field* fd, CardStatus* c, unsigned v)
 { assert(false); }
@@ -2072,6 +2082,11 @@ inline void perform_skill<enhance_armored>(Field* fd, CardStatus* c, unsigned v)
     c->m_enhance_armored += v;
 }
 
+template<>
+inline void perform_skill<enhance_poison>(Field* fd, CardStatus* c, unsigned v)
+{
+    c->m_enhance_poison += v;
+}
 
 template<unsigned skill_id>
 inline unsigned select_fast(Field* fd, CardStatus* src_status, const std::vector<CardStatus*>& cards, const SkillSpec& s, bool is_helpful_skill)
@@ -2177,6 +2192,9 @@ template<> std::vector<CardStatus*>& skill_targets<siege>(Field* fd, CardStatus*
 { return(skill_targets_hostile_structure(fd, src_status)); }
 
 template<> std::vector<CardStatus*>& skill_targets<enhance_armored>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_allied_assault(fd, src_status)); }
+
+template<> std::vector<CardStatus*>& skill_targets<enhance_poison>(Field* fd, CardStatus* src_status)
 { return(skill_targets_allied_assault(fd, src_status)); }
 
 template<typename T>
@@ -2580,4 +2598,5 @@ void fill_skill_table()
     skill_table[trigger_regen] = perform_trigger_regen;
     skill_table[weaken] = perform_targetted_hostile_fast<weaken>;
     skill_table[enhance_armored] = perform_targetted_allied_fast<enhance_armored>;
+    skill_table[enhance_poison] = perform_targetted_allied_fast<enhance_poison>;
 }
