@@ -1050,7 +1050,7 @@ void print_available_effects()
 
 void usage(int argc, char** argv)
 {
-    std::cout << "usage: " << argv[0] << " Your_Deck Enemy_Deck [Flags] [Operations]\n"
+    std::cout << "Tyrant Unleashed Optimizer " << TU_OPTIMIZER_VERSION << "\nusage: " << argv[0] << " Your_Deck Enemy_Deck [Flags] [Operations]\n"
         "\n"
         "Your_Deck:\n"
         "  the name/hash/cards of a custom deck.\n"
@@ -1087,6 +1087,8 @@ void usage(int argc, char** argv)
 #ifndef NDEBUG
         "  debug: testing purpose only. very verbose output. only one battle.\n"
         "  debuguntil <min> <max>: testing purpose only. fight until the last fight results in range [<min>, <max>]. recommend to redirect output.\n"
+        "  example: debuguntil 100 100 will run till first win.\n"
+        "  example: debuguntil 0 0 will run till first lose.\n"
 #endif
         ;
 }
@@ -1096,7 +1098,7 @@ int main(int argc, char** argv)
     if(argc == 1) { usage(argc, argv); return(0); }
     if(argc <= 2 && strcmp(argv[1], "-version") == 0)
     {
-        std::cout << "Tyrant Optimizer " << TYRANT_OPTIMIZER_VERSION << std::endl;
+        std::cout << "Tyrant Unleashed Optimizer " << TU_OPTIMIZER_VERSION << std::endl;
         return(0);
     }
     unsigned num_threads = 4;

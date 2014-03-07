@@ -1,4 +1,4 @@
-MAIN := tyrant_optimize
+MAIN := tu_optimize
 SRCS := $(wildcard *.cpp)
 OBJS := $(patsubst %.cpp,obj/%.o,$(SRCS))
 INCS := $(wildcard *.h)
