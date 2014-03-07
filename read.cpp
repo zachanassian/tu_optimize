@@ -101,7 +101,7 @@ void parse_card_spec(const Cards& cards, std::string& card_spec, unsigned& card_
     }
     // If card name is not found, try find card id quoted in '[]' in name, ignoring other characters.
     std::string simple_name{simplify_name(card_name)};
-    auto abbr_it = cards.player_cards_abbr.find(simple_name);
+    auto abbr_it = cards.player_cards_abbr.find(card_name);
     if(abbr_it != cards.player_cards_abbr.end())
     {
         if(recognized_abbr.count(card_name) == 0)

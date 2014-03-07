@@ -4,6 +4,7 @@ This is **not working** at the moment!
 
 ##Version 0.5
 * Changed name from tyrant_optimize to tu_optimize
+* [FIX] cardabbrs.txt can be used again
 
 ##Version 0.4
 * Added new skill Enhance Poison
@@ -24,7 +25,7 @@ loss%: 0 (0 / 1000000)
 </pre>
 
 ##Version 0.3
-* Added new skill Enhanced Armored
+* Added new skill Enhance Armored
 <pre>
 tyrant_optimize.exe "Cyrus-1, Starformer-6" "Constantine-6, Pylon-3(2)" sim 100000
 Your Deck: Deck: PoO6
@@ -48,8 +49,10 @@ tyrant_optimize.exe "Cyrus-1, Starformer-6" "Constantine-6, Pylon-3(2)" debug
 <pre>
 tyrant_optimize.exe "Barracus-6, Starformer-6, Tartarus Brood-6" "94. Heart of Tartarus" debug
 </pre>
+* Compared this to simXX 1.000.000 sims. This: 14,43 sec simXX: 102,78 sec.  
 * What is still missing:
 ..* Poison is triggered at start instead of end of turn 
 ..* Enhance Skill not working
 ..* Jam Skill not working as in TU
-* Compared this to simXX 1.000.000 sims. This: 14,43 sec simXX: 102,78 sec.  
+..* Evade Skill works differently
+..* Unit Type 6 Progenitor can be targeted by any faction skill

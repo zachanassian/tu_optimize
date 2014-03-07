@@ -1,0 +1,4 @@
+Pet: Petrisis-6
+HA: Havoc Alpha-6
+Obama: Barracus-6
+SF: Starformer-6
