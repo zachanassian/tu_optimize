@@ -283,6 +283,37 @@ std::string Deck::long_description(const Cards& all_cards) const
     return ios.str();
 }
 
+std::string Deck::medium_description() const
+{
+    std::stringstream ios;
+    ios << "[" << deck_hash(commander, cards, strategy == DeckStrategy::ordered || strategy == DeckStrategy::exact_ordered) << "] ";
+    if(commander)
+    {
+        ios << commander->m_name;
+    }
+    else
+    {
+        ios << "No commander";
+    }
+    if(!cards.empty() && !raid_cards.empty())
+    {
+        ios << "Always include: ";
+    }
+    for(const Card* card: cards)
+    {
+        ios << ", " << card->m_name;
+    }
+    for(auto& pool: raid_cards)
+    {
+        ios << pool.first << " from: ";
+        for(auto& card: pool.second)
+        {
+            ios << ", " << card->m_name;
+        }
+    }
+    return ios.str();
+}
+
 Deck* Deck::clone() const
 {
     return(new Deck(*this));

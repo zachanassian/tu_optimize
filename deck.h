@@ -101,6 +101,7 @@ struct Deck
 
     Deck* clone() const;
     std::string short_description() const;
+    std::string medium_description() const;
     std::string long_description(const Cards& all_cards) const;
     const Card* get_commander();
     const Card* next();

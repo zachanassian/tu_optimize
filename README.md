@@ -17,6 +17,8 @@ stall%: 0.745 (745 / 100000)
 loss%: 75.062 (75062 / 100000)
 </pre>
 * Maxed Version of a Card is now recognized without -level => Barracus-6 => Barracus. However Barracus-6 will still be recognized as a build in abbreviation
+* Replaced "Recognize abbreviation" as to verbose with Your Deck: [S0CB+q] Nexor, Apex-5, Apex-5, Apex-5, Apex-5, Apex-5, Apex-5, Apex-5, Apex-5, Apex-5, Apex-5
+
 ##Version 0.5
 * Changed name from tyrant_optimize to tu_optimize
 * [FIX] cardabbrs.txt can be used again

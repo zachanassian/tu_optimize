@@ -1413,10 +1413,10 @@ int main(int argc, char** argv)
         min_deck_len = max_deck_len = att_deck->cards.size();
     }
 
-    std::cout << "Your Deck: " << (debug_print ? att_deck->long_description(cards) : att_deck->short_description()) << std::endl;
+    std::cout << "Your Deck: " << (debug_print ? att_deck->long_description(cards) : att_deck->medium_description()) << std::endl;
     for(auto def_deck: def_decks)
     {
-        std::cout << "Enemy's Deck: " << (debug_print ? def_deck->long_description(cards) : def_deck->short_description()) << std::endl;
+        std::cout << "Enemy's Deck: " << (debug_print ? def_deck->long_description(cards) : def_deck->medium_description()) << std::endl;
     }
     if(effect != Effect::none)
     {

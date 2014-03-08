@@ -82,7 +82,7 @@ template<typename Iterator, typename Functor, typename Token> Iterator read_toke
 
 void parse_card_spec(const Cards& cards, std::string& card_spec, unsigned& card_id, unsigned& card_num, char& num_sign, char& mark)
 {
-    static std::set<std::string> recognized_abbr;
+    //static std::set<std::string> recognized_abbr;
     auto card_spec_iter = card_spec.begin();
     card_id = 0;
     card_num = 1;
@@ -104,11 +104,11 @@ void parse_card_spec(const Cards& cards, std::string& card_spec, unsigned& card_
     auto abbr_it = cards.player_cards_abbr.find(card_name);
     if(abbr_it != cards.player_cards_abbr.end())
     {
-        if(recognized_abbr.count(card_name) == 0)
-        {
-            std::cout << "Recognize abbreviation " << card_name << ": " << abbr_it->second << std::endl;
-            recognized_abbr.insert(card_name);
-        }
+        //if(recognized_abbr.count(card_name) == 0)
+        //{
+        //    std::cout << "Recognize abbreviation " << card_name << ": " << abbr_it->second << std::endl;
+        //    recognized_abbr.insert(card_name);
+        //}
         simple_name = simplify_name(abbr_it->second);
     }
     auto card_it = cards.player_cards_by_name.find({simple_name, 0});
