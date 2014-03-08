@@ -210,11 +210,17 @@ void read_cards(Cards& cards)
                     }
                     Card* c(new Card());
                     c->m_id = id;
+                    c->m_max_level_id = max_level_card_id;
                     std::stringstream ss;
                     ss << name_node->value() << "-" << level;
-                    c->m_name = ss.str();
+                    //max level name logic: Barracus-6 => Barracus
+                    if(id != max_level_card_id){
+                      c->m_name = ss.str();              
+                    } else {
+                      c->m_name = name_node->value(); //Barracus
+                      cards.player_cards_abbr[ss.str()] = c->m_name; //Barracus-6 will also be recognized as Barracus
+                    }
                     //std::cout << "created card: " << c->m_name << " max_level_id:" << max_level_card_id << "\n";
-                    c->m_max_level_id = max_level_card_id;
                     // So far, commanders have attack_node (value == 0)
                     if(id < 1000)
                     { c->m_type = CardType::assault; }
