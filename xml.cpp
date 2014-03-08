@@ -383,6 +383,8 @@ void read_cards(Cards& cards)
                         { handle_skill<enhance_berserk>(skill, c); }
                         if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) && (strcmp(skill->first_attribute("s")->value(), "leech") == 0))
                         { handle_skill<enhance_leech>(skill, c); }
+                        if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) && (strcmp(skill->first_attribute("s")->value(), "counter") == 0))
+                        { handle_skill<enhance_counter>(skill, c); }
                     }
                     cards.cards.push_back(c);
                 } // end if 

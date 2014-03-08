@@ -18,6 +18,15 @@ loss%: 75.062 (75062 / 100000)
 </pre>
 * Maxed Version of a Card is now recognized without -level => Barracus-6 => Barracus. However Barracus-6 will still be recognized as a build in abbreviation
 * Replaced "Recognize abbreviation" as to verbose with Your Deck: [S0CB+q] Nexor, Apex-5, Apex-5, Apex-5, Apex-5, Apex-5, Apex-5, Apex-5, Apex-5, Apex-5, Apex-5
+* Added Enhance Counter
+<pre>
+tu_optimize.exe "Obama, Rabid Corruptor(10)" "Yurich,Dread Panzer-1(3)" sim 100000
+Your Deck: [SoFt+q] Barracus, Rabid Corruptor, Rabid Corruptor, Rabid Corruptor, Rabid Corruptor, ...
+Enemy's Deck: [QiAm+j] Yurich, Dread Panzer-1, Dread Panzer-1, Dread Panzer-1
+win%: 2.168 (2168 / 100000)
+stall%: 97.832 (97832 / 100000)
+loss%: 0 (0 / 100000)
+</pre>
 
 ##Version 0.5
 * Changed name from tyrant_optimize to tu_optimize
