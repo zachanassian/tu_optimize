@@ -106,6 +106,7 @@ CardStatus::CardStatus(const Card* card) :
     m_enhance_armored(0),
     m_enhance_poison(0),
     m_enhance_berserk(0),
+    m_enhance_leech(0),
     m_temporary_split(false),
     m_is_summoned(false),
     m_step(CardStep::none)
@@ -147,6 +148,7 @@ inline void CardStatus::set(const Card& card)
     m_enhance_armored = 0;
     m_enhance_poison = 0;
     m_enhance_berserk = 0;
+    m_enhance_leech = 0;
     m_is_summoned = false;
     m_step = CardStep::none;
 }
@@ -303,6 +305,7 @@ std::string CardStatus::description()
     if(m_enhance_armored > 0) { desc += ", enhance armored " + to_string(m_enhance_armored); }
     if(m_enhance_poison > 0) { desc += ", enhance poison " + to_string(m_enhance_poison); }
     if(m_enhance_berserk > 0) { desc += ", enhance berserk " + to_string(m_enhance_berserk); }
+    if(m_enhance_leech > 0) { desc += ", enhance leech " + to_string(m_enhance_leech); }
 //    if(m_step != CardStep::none) { desc += ", Step " + to_string(static_cast<int>(m_step)); }
     desc += "]";
     return(desc);
@@ -1221,6 +1224,7 @@ void turn_start_phase(Field* fd)
             status.m_enhance_armored = 0;
             status.m_enhance_poison = 0;
             status.m_enhance_berserk = 0;
+            status.m_enhance_leech = 0;
             if(status.m_delay > 0 && !status.m_frozen)
             {
                 _DEBUG_MSG(1, "%s reduces its timer\n", status_description(&status).c_str());
@@ -1704,8 +1708,8 @@ void PerformAttack::crush_leech<CardType::assault>()
     if(att_status->m_card->m_leech > 0 && skill_check<leech>(fd, att_status, nullptr))
     {
         count_achievement<leech>(fd, att_status);
-        _DEBUG_MSG(1, "%s leeches %u health\n", status_description(att_status).c_str(), std::min(att_dmg, att_status->m_card->m_leech));
-        add_hp(fd, att_status, std::min(att_dmg, att_status->m_card->m_leech));
+        _DEBUG_MSG(1, "%s leeches %u health\n", status_description(att_status).c_str(), std::min(att_dmg, att_status->m_card->m_leech + att_status->m_enhance_leech));
+        add_hp(fd, att_status, std::min(att_dmg, att_status->m_card->m_leech + att_status->m_enhance_leech));
     }
 }
 
@@ -1968,6 +1972,17 @@ inline bool skill_predicate<enhance_berserk>(Field* fd, CardStatus* src, CardSta
          is_active(c) && !is_attacking_or_has_attacked(c)));
 }
 
+template<>
+inline bool skill_predicate<enhance_leech>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
+{ 
+    //copied and adopted from rally
+    const auto& mod = std::get<4>(s);
+    return(c->m_card->m_leech > 0 && can_attack(c) && !c->m_sundered &&  // (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)));
+        (src->m_player != c->m_player || mod == SkillMod::on_death ? (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)) :
+         mod == SkillMod::on_attacked ? is_active_next_turn(c) :
+         is_active(c) && !is_attacking_or_has_attacked(c)));
+}
+
 template<unsigned skill_id>
 inline void perform_skill(Field* fd, CardStatus* c, unsigned v)
 { assert(false); }
@@ -2108,6 +2123,12 @@ inline void perform_skill<enhance_berserk>(Field* fd, CardStatus* c, unsigned v)
 {
     c->m_enhance_berserk += v;
 }
+
+template<>
+inline void perform_skill<enhance_leech>(Field* fd, CardStatus* c, unsigned v)
+{
+    c->m_enhance_leech += v;
+}
     
 template<unsigned skill_id>
 inline unsigned select_fast(Field* fd, CardStatus* src_status, const std::vector<CardStatus*>& cards, const SkillSpec& s, bool is_helpful_skill)
@@ -2219,6 +2240,9 @@ template<> std::vector<CardStatus*>& skill_targets<enhance_poison>(Field* fd, Ca
 { return(skill_targets_allied_assault(fd, src_status)); }
 
 template<> std::vector<CardStatus*>& skill_targets<enhance_berserk>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_allied_assault(fd, src_status)); }
+
+template<> std::vector<CardStatus*>& skill_targets<enhance_leech>(Field* fd, CardStatus* src_status)
 { return(skill_targets_allied_assault(fd, src_status)); }
 
 template<typename T>
@@ -2624,4 +2648,5 @@ void fill_skill_table()
     skill_table[enhance_armored] = perform_targetted_allied_fast<enhance_armored>;
     skill_table[enhance_poison] = perform_targetted_allied_fast<enhance_poison>;
     skill_table[enhance_berserk] = perform_targetted_allied_fast<enhance_berserk>;
+    skill_table[enhance_leech] = perform_targetted_allied_fast<enhance_leech>;
 }

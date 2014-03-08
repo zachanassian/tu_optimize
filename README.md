@@ -2,6 +2,21 @@
 This fork tries to adapt the code to be used with Tyrant Unleashed!
 This is **not working** at the moment!
 
+##Version 0.6
+* Added Enhance Leech
+<pre>
+tu_optimize.exe "Nex, Apex(10)" "Obama, SF(5)" sim 100000
+Recognize abbreviation Nex: Nexor-6
+Recognize abbreviation Apex: Apex-6
+Recognize abbreviation Obama: Barracus-6
+Recognize abbreviation SF: Starformer-6
+Your Deck: Deck: S0CC+q
+Enemy's Deck: Deck: SoO6+l
+win%: 24.193 (24193 / 100000)
+stall%: 0.745 (745 / 100000)
+loss%: 75.062 (75062 / 100000)
+</pre>
+
 ##Version 0.5
 * Changed name from tyrant_optimize to tu_optimize
 * [FIX] cardabbrs.txt can be used again

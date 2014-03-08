@@ -15,7 +15,7 @@ std::string skill_names[Skill::num_skills] =
     "Mimic", "Protect", "Rally", "Recharge", "Repair", "Rush", "Shock",
     "Siege", "Split", "Strike", "Summon", "Supply",
     "trigger_regen",
-    "Weaken", "Enhance Armored", "Enhance Poison", "Enhance Berserk"
+    "Weaken", "Enhance Armored", "Enhance Poison", "Enhance Berserk", "Enhance Leech",
     // Combat-Modifier:
     "AntiAir", "Burst", "Fear", "Flurry", "Pierce", "Swipe", "Valor",
     // Damage-Dependant:
