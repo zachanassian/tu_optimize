@@ -4,7 +4,16 @@ This is **not working** at the moment!
 
 ##Version 0.7
 * Evade logic adjusted to TU rules
-* [Fix] basic TU Factions are now recognized correctly 
+* [Fix] basic TU Factions are now recognized correctly
+* Added Enhance Evade
+<pre>
+tu_optimize.exe "Alaric, Revolver(3)" "Halcyon, Barrage Tank(3)" sim 100000
+Your Deck: [REH3+j] Alaric, Revolver, Revolver, Revolver
+Enemy's Deck: [QEFj+j] Halcyon, Barrage Tank, Barrage Tank, Barrage Tank
+win%: 99.572 (99572 / 100000)
+stall%: 0 (0 / 100000)
+loss%: 0.428 (428 / 100000)
+</pre> 
 
 ##Version 0.6
 * Added Enhance Leech
@@ -99,3 +108,4 @@ tyrant_optimize.exe "Barracus-6, Starformer-6, Tartarus Brood-6" "94. Heart of T
 ..* Jam Skill not working as in TU
 ..* Evade Skill works differently
 ..* Unit Type 6 Progenitor can be targeted by any faction skill
+..* only one legendary in a deck
