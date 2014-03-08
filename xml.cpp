@@ -28,6 +28,7 @@ Faction map_to_faction(unsigned i)
            i == 3 ? bloodthirsty :
            i == 4 ? xeno :
            i == 5 ? righteous :
+           i == 6 ? progenitor :
            allfactions);
 }
 

@@ -2169,7 +2169,7 @@ inline unsigned select_fast(Field* fd, CardStatus* src_status, const std::vector
     }
     else
     {
-        return(fd->make_selection_array(cards.begin(), cards.end(), [fd, src_status, s, is_helpful_skill](CardStatus* c){return(c->m_faction == std::get<2>(s) && !(is_helpful_skill && c->m_phased) && skill_predicate<skill_id>(fd, src_status, c, s));}));
+        return(fd->make_selection_array(cards.begin(), cards.end(), [fd, src_status, s, is_helpful_skill](CardStatus* c){return( (c->m_faction == Faction::progenitor || c->m_faction == std::get<2>(s)) && !(is_helpful_skill && c->m_phased) && skill_predicate<skill_id>(fd, src_status, c, s));}));
     }
 }
 

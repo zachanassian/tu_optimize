@@ -3,7 +3,7 @@
 #include <string>
 
 const std::string faction_names[Faction::num_factions] =
-{ "", "bloodthirsty", "imperial", "raider", "righteous", "xeno" };
+{ "", "bloodthirsty", "imperial", "raider", "righteous", "xeno", "progenitor" };
 
 std::string skill_names[Skill::num_skills] =
 {

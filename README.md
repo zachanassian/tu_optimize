@@ -28,6 +28,28 @@ Deck improved: REBA+k -void- -> [64] Omega: 100 (1000 / 1000)
 Evaluated 4 decks (4000 + 2000 simulations).
 Optimized Deck: 100: Alaric, Omega #4
 </pre>
+* Progenitor are now targeted by faction specific skills
+<pre>
+tu_optimize.exe "Nex, Tikal(3)" "Halcyon, Barrage Tank(3)" +v sim 1
+Your Deck: Deck: S0PS+j
+Nexor hp:52 legendary xeno, Enhance Leech 2, Protect xeno 2, Enfeeble all 1
+  Tikal 2/15/2 legendary progenitor, armored 3, leech 4, Rally 3
+  Tikal 2/15/2 legendary progenitor, armored 3, leech 4, Rally 3
+  Tikal 2/15/2 legendary progenitor, armored 3, leech 4, Rally 3
+
+Enemy's Deck: Deck: QEFj+j
+Halcyon hp:47 legendary imperial, Enhance Armored all 1, Heal all imperial 2, Strike 2
+  Barrage Tank 3/7/3 imperial, armored 1, Strike 2
+  Barrage Tank 3/7/3 imperial, armored 1, Strike 2
+  Barrage Tank 3/7/3 imperial, armored 1, Strike 2
+
+------------------------------------------------------------------------
+TURN 1 begins for Commander [Nexor hp:52]
+Commander [Nexor hp:52] plays Assault 0 [Tikal 2/15/2 legendary progenitor, armored 3, leech 4, Rally 3]
+Commander [Nexor hp:52] Protect (2) on Assault 0 [Tikal att:2 hp:15 cd:2]
+TURN 1 ends for Commander [Nexor hp:52]
+...
+</pre>
 
 ##Version 0.6
 * Added Enhance Leech

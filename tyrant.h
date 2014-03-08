@@ -15,6 +15,7 @@ enum Faction
     raider,
     righteous,
     xeno,
+    progenitor,
     num_factions
 };
 extern const std::string faction_names[num_factions];
