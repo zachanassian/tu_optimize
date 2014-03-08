@@ -1,3 +1,4 @@
 *.xml
 *.exe
 obj/*
+exclude/*

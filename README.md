@@ -13,7 +13,21 @@ Enemy's Deck: [QEFj+j] Halcyon, Barrage Tank, Barrage Tank, Barrage Tank
 win%: 99.572 (99572 / 100000)
 stall%: 0 (0 / 100000)
 loss%: 0.428 (428 / 100000)
-</pre> 
+</pre>
+* Allow more then one legendary in deck
+<pre>
+tu_optimize.exe "Alaric, Omega(2)" "Halcyon, Barrage Tank(3)" -o=exclude/ownedcards_omega.txt climb 1000
+Your Deck: [REBA+i] Alaric, Omega, Omega
+Enemy's Deck: [QEFj+j] Halcyon, Barrage Tank, Barrage Tank, Barrage Tank
+0 (0 / 1000)
+0: Alaric, Omega #2
+Deck improved: REBA+j -void- -> [64] Omega: 99.6 (996 / 1000)
+99.6: Alaric, Omega #3
+Deck improved: REBA+k -void- -> [64] Omega: 100 (1000 / 1000)
+100: Alaric, Omega #4
+Evaluated 4 decks (4000 + 2000 simulations).
+Optimized Deck: 100: Alaric, Omega #4
+</pre>
 
 ##Version 0.6
 * Added Enhance Leech

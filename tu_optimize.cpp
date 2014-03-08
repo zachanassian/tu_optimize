@@ -124,26 +124,27 @@ void claim_cards(const std::vector<const Card*> & card_list, const Cards & cards
 bool suitable_non_commander(const Deck& deck, unsigned slot, const Card* card)
 {
     assert(card->m_type != CardType::commander);
-    if(card->m_rarity == 4) // legendary - 1 per deck
-    {
-        for(unsigned i(0); i < deck.cards.size(); ++i)
-        {
-            if(i != slot && deck.cards[i]->m_rarity == 4)
-            {
-                return false;
-            }
-        }
-    }
-    if(card->m_unique) // unique - 1 card with same id per deck
-    {
-        for(unsigned i(0); i < deck.cards.size(); ++i)
-        {
-            if(i != slot && deck.cards[i]->m_base_id == card->m_base_id)
-            {
-                return false;
-            }
-        }
-    }
+    //TU does not have uniques. TU does not have one legendary per deck restriction
+    //if(card->m_rarity == 4) // legendary - 1 per deck
+    //{
+    //    for(unsigned i(0); i < deck.cards.size(); ++i)
+    //    {
+    //        if(i != slot && deck.cards[i]->m_rarity == 4)
+    //        {
+    //           return false;
+    //        }
+    //    }
+    //}
+    //if(card->m_unique) // unique - 1 card with same id per deck
+    //{
+    //    for(unsigned i(0); i < deck.cards.size(); ++i)
+    //    {
+    //        if(i != slot && deck.cards[i]->m_base_id == card->m_base_id)
+    //        {
+    //            return false;
+    //        }
+    //    }
+    //}
     return true;
 }
 
