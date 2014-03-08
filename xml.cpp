@@ -24,10 +24,10 @@ std::map<unsigned, unsigned> sets_counts;
 Faction map_to_faction(unsigned i)
 {
     return(i == 1 ? imperial :
+           i == 2 ? raider :
            i == 3 ? bloodthirsty :
            i == 4 ? xeno :
-           i == 8 ? righteous :
-           i == 9 ? raider :
+           i == 5 ? righteous :
            allfactions);
 }
 
@@ -280,7 +280,7 @@ void read_cards(Cards& cards)
                         if(strcmp(skill->first_attribute("id")->value(), "emulate") == 0)
                         { c->m_emulate = true; }
                         if(strcmp(skill->first_attribute("id")->value(), "evade") == 0)
-                        { c->m_evade = true; }
+                        { c->m_evade = atoi(skill->first_attribute("x")->value()); }
                         if(strcmp(skill->first_attribute("id")->value(), "fear") == 0)
                         { c->m_fear = true; }
                         if(strcmp(skill->first_attribute("id")->value(), "flurry") == 0)

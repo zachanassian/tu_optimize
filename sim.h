@@ -153,6 +153,7 @@ struct CardStatus
     unsigned m_enhance_berserk;
     unsigned m_enhance_leech;
     unsigned m_enhance_counter;
+    unsigned m_evades_left;
     bool m_temporary_split;
     bool m_is_summoned; // is this card summoned (or split)?
     CardStep m_step;

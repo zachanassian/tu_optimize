@@ -219,7 +219,7 @@ std::string card_description(const Cards& cards, const Card* c)
     if(c->m_crush > 0) { desc += ", crush " + to_string(c->m_crush); }
     if(c->m_disease) { desc += ", disease"; }
     if(c->m_emulate) { desc += ", emulate"; }
-    if(c->m_evade) { desc += ", evade"; }
+    if(c->m_evade > 0) { desc += ", evade " + to_string(c->m_evade); }
     if(c->m_fear) { desc += ", fear"; }
     if(c->m_flurry > 0) { desc += ", flurry " + to_string(c->m_flurry); }
     if(c->m_flying) { desc += ", flying"; }
@@ -298,6 +298,7 @@ std::string CardStatus::description()
     if(m_jammed) { desc += ", jammed"; }
     if(m_phased) { desc += ", phased"; }
     if(m_sundered) { desc += ", sundered"; }
+    if(m_card->m_evade > 0) { desc += ", evades left " + to_string(m_evades_left);}
     if(m_temporary_split) { desc += ", cloning"; }
     if(m_augmented > 0) { desc += ", augmented " + to_string(m_augmented); }
     if(m_enfeebled > 0) { desc += ", enfeebled " + to_string(m_enfeebled); }
@@ -1229,6 +1230,7 @@ void turn_start_phase(Field* fd)
             status.m_enhance_berserk = 0;
             status.m_enhance_leech = 0;
             status.m_enhance_counter = 0;
+            status.m_evades_left = status.m_card->m_evade;
             if(status.m_delay > 0 && !status.m_frozen)
             {
                 _DEBUG_MSG(1, "%s reduces its timer\n", status_description(&status).c_str());
@@ -2309,10 +2311,11 @@ bool check_and_perform_skill(Field* fd, CardStatus* src_status, CardStatus* dst_
 {
     if(skill_check<skill_id>(fd, src_status, dst_status))
     {
-        if(is_evadable && (dst_status->m_card->m_evade || (fd->effect == Effect::quicksilver && dst_status->m_card->m_type == CardType::assault)) && fd->flip() && skill_check<evade>(fd, dst_status, src_status))
+        if(is_evadable && dst_status->m_card->m_evade > 0 && dst_status->m_evades_left > 0 && skill_check<evade>(fd, dst_status, src_status))
         {
             count_achievement<evade>(fd, dst_status);
             _DEBUG_MSG(1, "%s %s (%u) on %s but it evades\n", status_description(src_status).c_str(), skill_names[skill_id].c_str(), std::get<1>(s), status_description(dst_status).c_str());
+            --dst_status->m_evades_left;
             return(false);
         }
         if(is_count_achievement)
@@ -2601,10 +2604,11 @@ void perform_mimic(Field* fd, CardStatus* src_status, const SkillSpec& s)
     // evade check for mimic
     // individual skills are subject to evade checks too,
     // but resolve_skill will handle those.
-    if((c->m_card->m_evade || (fd->effect == Effect::quicksilver && c->m_card->m_type == CardType::assault)) && fd->flip() && skill_check<evade>(fd, c, src_status))
+    if(c->m_card->m_evade > 0 && c->m_evades_left > 0 && skill_check<evade>(fd, c, src_status))
     {
         count_achievement<evade>(fd, c);
         _DEBUG_MSG(1, "%s %s on %s but it evades\n", status_description(src_status).c_str(), skill_names[std::get<0>(s)].c_str(), status_description(c).c_str());
+        --c->m_evades_left;
         return;
     }
     count_achievement<mimic>(fd, src_status);

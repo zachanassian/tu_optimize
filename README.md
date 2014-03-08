@@ -2,6 +2,10 @@
 This fork tries to adapt the code to be used with Tyrant Unleashed!
 This is **not working** at the moment!
 
+##Version 0.7
+* Evade logic adjusted to TU rules
+* [Fix] basic TU Factions are now recognized correctly 
+
 ##Version 0.6
 * Added Enhance Leech
 <pre>

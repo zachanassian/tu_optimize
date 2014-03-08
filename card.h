@@ -23,7 +23,7 @@ public:
         m_disease(false),
         m_disease_oa(false),
         m_emulate(false),
-        m_evade(false),
+        m_evade(0),
         m_faction(imperial),
         m_fear(false),
         m_flurry(0),
@@ -88,7 +88,7 @@ public:
     bool m_disease;
     bool m_disease_oa;
     bool m_emulate;
-    bool m_evade;
+    unsigned m_evade;
     Faction m_faction;
     bool m_fear;
     unsigned m_flurry;
