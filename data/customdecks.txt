@@ -1,2 +1,3 @@
+mydeck: Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
 eerie-spam: Barracus, Eerie(10)
 nbd-spam: Alaric, Noble Defiance(10)
