@@ -3,3 +3,5 @@ HA: Havoc Alpha
 Obama: Barracus
 SF: Starformer
 Nex: Nexor
+Eerie: Narscious the Eerie
+NbD: Noble Defiance

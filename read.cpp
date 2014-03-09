@@ -15,9 +15,9 @@
 
 void load_decks(Decks& decks, Cards& cards)
 {
-    if(boost::filesystem::exists("Custom.txt"))
+    if(boost::filesystem::exists("data/customdecks.txt"))
     {
-        read_custom_decks(decks, cards, "Custom.txt");
+        read_custom_decks(decks, cards, "data/customdecks.txt");
     }
 }
 

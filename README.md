@@ -2,6 +2,10 @@
 This fork tries to adapt the code to be used with Tyrant Unleashed!
 This is **not working** at the moment!
 
+##Version 0.8
+*Prepare Alpha Release
+*cardabbrs.txt, cards.xml, customdecks.txt, missions.xml, ownedcards.txt are now read from folder data/
+
 ##Version 0.7
 * Evade logic adjusted to TU rules
 * [Fix] basic TU Factions are now recognized correctly

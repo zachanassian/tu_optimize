@@ -83,7 +83,7 @@ void load_decks_xml(Decks& decks, const Cards& cards)
 {
     try
     {
-        read_missions(decks, cards, "missions.xml");
+        read_missions(decks, cards, "data/missions.xml");
     }
     catch(const rapidxml::parse_error& e)
     {
@@ -145,7 +145,7 @@ void read_cards(Cards& cards)
 {
     std::vector<char> buffer;
     xml_document<> doc;
-    parse_file("cards.xml", buffer, doc);
+    parse_file("data/cards.xml", buffer, doc);
     xml_node<>* root = doc.first_node();
 
     if(!root)

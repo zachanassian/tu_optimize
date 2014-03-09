@@ -1075,7 +1075,7 @@ void usage(int argc, char** argv)
         "Flags for climb:\n"
         "  -c: don't try to optimize the commander.\n"
         "  -L <min> <max>: restrict deck size between <min> and <max>.\n"
-        "  -o: restrict to the owned cards listed in \"ownedcards.txt\".\n"
+        "  -o: restrict to the owned cards listed in \"data/ownedcards.txt\".\n"
         "  -o=<filename>: restrict to the owned cards listed in <filename>.\n"
         "  fund <num>: fund <num> gold to buy/upgrade cards. prices are specified in ownedcards file.\n"
         "  target <num>: stop as soon as the score reaches <num>.\n"
@@ -1107,7 +1107,7 @@ int main(int argc, char** argv)
     DeckStrategy::DeckStrategy def_strategy(DeckStrategy::random);
     Cards cards;
     read_cards(cards);
-    read_card_abbrs(cards, "cardabbrs.txt");
+    read_card_abbrs(cards, "data/cardabbrs.txt");
     Decks decks;
     Achievement achievement;
     load_decks_xml(decks, cards);
