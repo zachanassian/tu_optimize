@@ -1205,7 +1205,8 @@ void turn_end_phase(Field* fd)
             //status.m_enfeebled = 0;
             //status.m_protected = 0;
             unsigned diff = safe_minus(status.m_poisoned, status.m_protected);
-            if(diff > 0)
+            //only cards that are still alive take poison damage
+            if(diff > 0 && status.m_hp > 0)
             {
                 _DEBUG_MSG(1, "%s takes poison damage (%u)\n", status_description(&status).c_str(), diff);
                 remove_hp(fd, status, diff);
