@@ -455,7 +455,7 @@ void read_cards(Cards& cards)
 Deck* read_deck(Decks& decks, const Cards& cards, xml_node<>* node, DeckType::DeckType decktype, unsigned id, std::string& deck_name)
 {
     xml_node<>* commander_node(node->first_node("commander"));
-    const Card* commander_card{cards.by_id(atoi(commander_node->value()))};
+    const Card* commander_card{ cards.by_id(cards.by_id(atoi(commander_node->value()))->m_max_level_id) };
     std::vector<const Card*> always_cards;
     std::vector<std::pair<unsigned, std::vector<const Card*>>> some_cards;
     std::vector<const Card*> reward_cards;
