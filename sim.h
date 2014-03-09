@@ -141,6 +141,7 @@ struct CardStatus
     bool m_immobilized;
     bool m_infused;
     bool m_jammed;
+    unsigned m_jam_charge;
     bool m_phased;
     unsigned m_poisoned;
     unsigned m_protected;
@@ -254,6 +255,7 @@ public:
 
     inline unsigned flip()
     {
+        std::cout << "WARNING!!! Field-flip() was called. THIS SHOULD NOT HAPPEN FOR TYRANT UNLEASHED\n";
         return(this->rand(0,1));
     }
 

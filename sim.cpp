@@ -96,6 +96,7 @@ CardStatus::CardStatus(const Card* card) :
     m_immobilized(false),
     m_infused(false),
     m_jammed(false),
+    m_jam_charge(card->m_jam),
     m_phased(false),
     m_poisoned(0),
     m_protected(0),
@@ -139,6 +140,7 @@ inline void CardStatus::set(const Card& card)
     m_immobilized = false;
     m_infused = false;
     m_jammed = false;
+    m_jam_charge = card.m_jam,
     m_phased = false;
     m_poisoned = 0;
     m_protected = 0;
@@ -301,6 +303,7 @@ std::string CardStatus::description()
     if(m_phased) { desc += ", phased"; }
     if(m_sundered) { desc += ", sundered"; }
     if(m_card->m_evade > 0) { desc += ", evades left " + to_string(m_evades_left);}
+    if(m_card->m_jam > 0) { desc += ", jam charge " + to_string(m_jam_charge);}
     if(m_temporary_split) { desc += ", cloning"; }
     if(m_augmented > 0) { desc += ", augmented " + to_string(m_augmented); }
     if(m_enfeebled > 0) { desc += ", enfeebled " + to_string(m_enfeebled); }
@@ -958,10 +961,6 @@ template<Skill>
 inline bool skill_roll(Field* fd)
 { return(true); }
 
-template<>
-inline bool skill_roll<jam>(Field* fd)
-{ return(fd->flip()); }
-
 // Check if a skill actually proc'ed.
 template<Skill>
 inline bool skill_check(Field* fd, CardStatus* c, CardStatus* ref)
@@ -1018,6 +1017,13 @@ template<>
 inline bool skill_check<immobilize>(Field* fd, CardStatus* c, CardStatus* ref)
 {
     return(!ref->m_immobilized && !is_jammed(ref) && is_active_next_turn(ref));
+}
+
+template<>
+inline bool skill_check<jam>(Field* fd, CardStatus* c, CardStatus* ref)
+{
+    assert(c->m_card->m_jam > 0);
+    return(c->m_card->m_jam == c->m_jam_charge);
 }
 
 template<>
@@ -1240,6 +1246,7 @@ void turn_start_phase(Field* fd)
                 _DEBUG_MSG(1, "%s reduces its timer\n", status_description(&status).c_str());
                 --status.m_delay;
             }
+            if(status.m_card->m_jam > 0 && status.m_jam_charge < status.m_card->m_jam) {++status.m_jam_charge;}
             if(status.m_card->m_fusion && status.m_delay == 0) { ++fd->fusion_count; }
         }
     }
@@ -1259,6 +1266,7 @@ void turn_start_phase(Field* fd)
                 _DEBUG_MSG(1, "%s reduces its timer\n", status_description(&status).c_str());
                 --status.m_delay;
             }
+            if(status.m_card->m_jam > 0 && status.m_jam_charge < status.m_card->m_jam) {++status.m_jam_charge;}
             if(status.m_card->m_fusion && status.m_delay == 0) { ++fd->fusion_count; }
         }
     }
@@ -2341,6 +2349,33 @@ bool check_and_perform_skill(Field* fd, CardStatus* src_status, CardStatus* dst_
         }
         _DEBUG_MSG(1, "%s %s (%u) on %s\n", status_description(src_status).c_str(), skill_names[skill_id].c_str(), std::get<1>(s), status_description(dst_status).c_str());
         perform_skill<skill_id>(fd, dst_status, std::get<1>(s));
+        return(true);
+    }
+    return(false);
+}
+
+//special implementation needed, because standard perform_skill<skill_id>(fd, dst_status, std::get<1>(s)); only allows to alter dst_status
+//but jam to change src_status as well (*1*)
+template<>
+bool check_and_perform_skill<jam>(Field* fd, CardStatus* src_status, CardStatus* dst_status, const SkillSpec& s, bool is_evadable, bool is_count_achievement)
+{
+    if(skill_check<jam>(fd, src_status, dst_status))
+    {
+        //std::cout << "check_and_perform_skill<jam>\n";
+        if(is_evadable && dst_status->m_card->m_evade > 0 && dst_status->m_evades_left > 0 && skill_check<evade>(fd, dst_status, src_status))
+        {
+            count_achievement<evade>(fd, dst_status);
+            _DEBUG_MSG(1, "%s %s (%u) on %s but it evades\n", status_description(src_status).c_str(), skill_names[jam].c_str(), std::get<1>(s), status_description(dst_status).c_str());
+            --dst_status->m_evades_left;
+            return(false);
+        }
+        if(is_count_achievement)
+        {
+            count_achievement<jam>(fd, src_status);
+        }
+        _DEBUG_MSG(1, "%s jams %s\n", status_description(src_status).c_str(), status_description(dst_status).c_str());
+        perform_skill<jam>(fd, dst_status, std::get<1>(s));
+        src_status->m_jam_charge = 0; //(*1*)
         return(true);
     }
     return(false);

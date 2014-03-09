@@ -349,7 +349,20 @@ void read_cards(Cards& cards)
                         if(strcmp(skill->first_attribute("id")->value(), "infuse") == 0)
                         { handle_skill<infuse>(skill, c); }
                         if(strcmp(skill->first_attribute("id")->value(), "jam") == 0)
-                        { handle_skill<jam>(skill, c); }
+                        {
+                          //normal for jam: <skill id='jam' x='5' c='5' />
+                          //Oracle (id 1087): <skill id='jam' c='3' /> -> x missing!!!
+                          //we do not know anything about c='..' => remove this and create x = if it does not exist
+                          //by doing this jam will look like all other normal skills <skill id='jam' x='5'>
+                          //http://rapidxml.sourceforge.net/manual.html#namespacerapidxml_1modifying_dom_tree
+                          if(!(skill->first_attribute("x"))){
+                            xml_attribute<> *attr = doc.allocate_attribute("x", skill->first_attribute("c")->value());
+                            skill->append_attribute(attr);
+                          }
+                          if(skill->first_attribute("c")) { skill->remove_attribute(skill->first_attribute("c")); }
+                          handle_skill<jam>(skill, c);
+                          c->m_jam = atoi(skill->first_attribute("x")->value());
+                        }
                         if(strcmp(skill->first_attribute("id")->value(), "mimic") == 0)
                         { handle_skill<mimic>(skill, c); }
                         if(strcmp(skill->first_attribute("id")->value(), "protect") == 0)

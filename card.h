@@ -34,6 +34,7 @@ public:
         m_id(0),
         m_immobilize(false),
         m_intercept(false),
+        m_jam(0),
         m_leech(0),
         m_legion(0),
         m_name(""),
@@ -100,6 +101,7 @@ public:
     unsigned m_max_level_id;
     bool m_immobilize;
     bool m_intercept;
+    unsigned m_jam;
     unsigned m_leech;
     unsigned m_legion;
     std::string m_name;

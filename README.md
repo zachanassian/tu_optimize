@@ -50,6 +50,15 @@ Commander [Nexor hp:52] Protect (2) on Assault 0 [Tikal att:2 hp:15 cd:2]
 TURN 1 ends for Commander [Nexor hp:52]
 ...
 </pre>
+* Jam logic adjusted to TU rules
+<pre>
+tu_optimize.exe "Nex, Tazerecca(4)" "Halcyon, Tikalan(3)" sim 100000
+Your Deck: [S0-LB+k] Nexor, Tazerecca, Tazerecca, Tazerecca, Tazerecca
+Enemy's Deck: [QEPY+j] Halcyon, Tikalan, Tikalan, Tikalan
+win%: 67.752 (67752 / 100000)
+stall%: 0.213 (213 / 100000)
+loss%: 32.035 (32035 / 100000)
+</pre>
 
 ##Version 0.6
 * Added Enhance Leech
