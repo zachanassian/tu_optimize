@@ -3,11 +3,11 @@ This fork tries to adapt the code to be used with Tyrant Unleashed!
 This is **not working** at the moment!
 
 ##Version 0.8
-*Prepare Alpha Release
-*cardabbrs.txt, cards.xml, customdecks.txt, missions.xml, ownedcards.txt are now read from folder data/
-*[FIX] no poison damage on dead card
-*Added GNU GENERAL PUBLIC LICENSE Version 3
-*[FIX] mission commander gets max level
+* Prepare Alpha Release
+* cardabbrs.txt, cards.xml, customdecks.txt, missions.xml, ownedcards.txt are now read from folder data/
+* [FIX] no poison damage on dead card
+* Added GNU GENERAL PUBLIC LICENSE Version 3
+* [FIX] mission commander gets max level
 
 ##Version 0.7
 * Evade logic adjusted to TU rules
