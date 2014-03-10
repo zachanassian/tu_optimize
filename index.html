@@ -129,9 +129,6 @@ win%: 40.37 (67603 13137 / 100000)
 stall%: 0.6215 (0 1243 / 100000)
 loss%: 59.0085 (32397 85620 / 100000)
 </pre>
-<ul>
-<li>you can define your own decks in file <code>data/customdecks.txt</code> and use them</li>
-</ul>
 
 <h2><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Sim against mission decks</h2>
 <pre>
@@ -148,7 +145,7 @@ loss%: 0 (0 / 100000)
 
 <h2><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Automatically optimize play order</h2>
 <pre>
-C:\Users\dirk\MyTyrantOptimize\TUGithub\tyrant_optimize>tu_optimize.exe mydeck eerie-spam -r reorder 100000
+>tu_optimize mydeck eerie-spam -r reorder 100000
 Your Deck: [So-BQ-BW-LB-LTO6-GViC] Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
 Enemy's Deck: [So-KF+q] Barracus, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie
 13.049 (13049 / 100000)
@@ -167,8 +164,74 @@ Evaluated 68 decks (648999 + 539668 simulations).
 Optimized Deck: 27.43: Barracus, Tazerecca, Crushing Anvil, Tartarus Brood, Ayrkrane Vik, Mach Jet, Shining Sanctuary, Starformer
 </pre>
 
+<h2><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Automatically optimize against all cards from your card pool</h2>
+<pre>
+>tu_optimize mydeck nbd-spam -r -o climb 100000
+Your Deck: [So-BQ-BW-LB-LTO6-GViC] Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
+Enemy's Deck: [RE-Iq+q] Alaric, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance
+67.932 (67932 / 100000)
+67.932: Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
+Deck improved: So-BW-LB-LTO6-GVA1iC 0 [4080] Crushing Anvil -> 5 [53] Havoc-1: 86.18 (86180 / 100000)
+86.18: Barracus, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Havoc-1, Shining Sanctuary
+Deck improved: So-LB-LTO6-GVA7A1iC 0 [4086] Tartarus Brood -> 4 [59] Omega-1: 87.999 (87999 / 100000)
+87.999: Barracus, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Omega-1, Havoc-1, Shining Sanctuary
+Deck improved: So-LTO6-GV-LBA7A1iC 0 [4705] Tazerecca -> 3 [4705] Tazerecca: 88.712 (88712 / 100000)
+88.712: Barracus, Mach Jet, Starformer, Ayrkrane Vik, Tazerecca, Omega-1, Havoc-1, Shining Sanctuary
+Deck improved: So-LT-GVO6-LBA7A1iC 1 [954] Starformer -> 2 [954] Starformer: 90.537 (90537 / 100000)
+90.537: Barracus, Mach Jet, Ayrkrane Vik, Starformer, Tazerecca, Omega-1, Havoc-1, Shining Sanctuary
+Deck improved: So-LT-GV-LB-BWA7A1iC 2 [954] Starformer -> 3 [4086] Tartarus Brood: 91.007 (91007 / 100000)
+91.007: Barracus, Mach Jet, Ayrkrane Vik, Tazerecca, Tartarus Brood, Omega-1, Havoc-1, Shining Sanctuary
+Deck improved: So-LTO6-GV-LB-BWA1iC 4 [59] Omega-1 -> 1 [954] Starformer: 94.752 (94752 / 100000)
+94.752: Barracus, Mach Jet, Starformer, Ayrkrane Vik, Tazerecca, Tartarus Brood, Havoc-1, Shining Sanctuary
+Deck improved: So-LTO6-GV-LB-BWiCPO 5 [53] Havoc-1 -> 6 [974] Tikal-2: 94.972 (94972 / 100000)
+94.972: Barracus, Mach Jet, Starformer, Ayrkrane Vik, Tazerecca, Tartarus Brood, Shining Sanctuary, Tikal-2
+Deck improved: So-LTO6-GV-LB-BWAUPO 5 [2178] Shining Sanctuary -> 5 [20] Tiamat-1: 94.99 (94990 / 100000)
+94.99: Barracus, Mach Jet, Starformer, Ayrkrane Vik, Tazerecca, Tartarus Brood, Tiamat-1, Tikal-2
+Deck improved: So-LTO6-GV-LB-BWPO 5 [20] Tiamat-1 -> 6 -void-: 95.762 (95762 / 100000)
+95.762: Barracus, Mach Jet, Starformer, Ayrkrane Vik, Tazerecca, Tartarus Brood, Tikal-2
+Deck improved: So-LTO6-GV-LB-BWD4 5 [974] Tikal-2 -> 5 [248] Blight Crusher-1: 95.898 (95898 / 100000)
+95.898: Barracus, Mach Jet, Starformer, Ayrkrane Vik, Tazerecca, Tartarus Brood, Blight Crusher-1
+Deck improved: So-LTO6-GV-LB-BWDs 5 [248] Blight Crusher-1 -> 5 [236] Contaminant Scour-1: 96.011 (96011 / 100000)
+96.011: Barracus, Mach Jet, Starformer, Ayrkrane Vik, Tazerecca, Tartarus Brood, Contaminant Scour-1
+Deck improved: So-LTO6-GV-LB-BWGg 5 [236] Contaminant Scour-1 -> 5 [416] Anvil-1: 96.023 (96023 / 100000)
+96.023: Barracus, Mach Jet, Starformer, Ayrkrane Vik, Tazerecca, Tartarus Brood, Anvil-1
+Deck improved: So-LTO6-GV-LB-BWCC 5 [416] Anvil-1 -> 5 [130] Apex: 96.109 (96109 / 100000)
+96.109: Barracus, Mach Jet, Starformer, Ayrkrane Vik, Tazerecca, Tartarus Brood, Apex
+Deck improved: So-LTO6-GV-LB-BWH+ 5 [130] Apex -> 5 [510] Dominator-1: 96.173 (96173 / 100000)
+96.173: Barracus, Mach Jet, Starformer, Ayrkrane Vik, Tazerecca, Tartarus Brood, Dominator-1
+Deck improved: So-LTO6-GV-LB-BW-BQ 5 [510] Dominator-1 -> 5 [4080] Crushing Anvil: 96.233 (96233 / 100000)
+96.233: Barracus, Mach Jet, Starformer, Ayrkrane Vik, Tazerecca, Tartarus Brood, Crushing Anvil
+Deck improved: So-LTO6-GV-LB-BWA7 5 [4080] Crushing Anvil -> 5 [59] Omega-1: 96.876 (96876 / 100000)
+96.876: Barracus, Mach Jet, Starformer, Ayrkrane Vik, Tazerecca, Tartarus Brood, Omega-1
+Deck improved: SoO6-GV-LB-BWA6A7 0 [4723] Mach Jet -> 4 [58] Havoc: 96.91 (96910 / 100000)
+96.91: Barracus, Starformer, Ayrkrane Vik, Tazerecca, Tartarus Brood, Havoc, Omega-1
+Deck improved: So-GV-LB-BWA6A7 0 [954] Starformer -> 5 -void-: 97.308 (97308 / 100000)
+97.308: Barracus, Ayrkrane Vik, Tazerecca, Tartarus Brood, Havoc, Omega-1
+Deck improved: So-GV-LB-BWiCA7 3 [58] Havoc -> 3 [2178] Shining Sanctuary: 97.567 (97567 / 100000)
+97.567: Barracus, Ayrkrane Vik, Tazerecca, Tartarus Brood, Shining Sanctuary, Omega-1
+Deck improved: So-GV-LB-BWA7iC 3 [2178] Shining Sanctuary -> 4 [2178] Shining Sanctuary: 98.611 (98611 / 100000)
+98.611: Barracus, Ayrkrane Vik, Tazerecca, Tartarus Brood, Omega-1, Shining Sanctuary
+Deck improved: SoO6-GV-LB-BWiC 3 [59] Omega-1 -> 0 [954] Starformer: 99.444 (99444 / 100000)
+99.444: Barracus, Starformer, Ayrkrane Vik, Tazerecca, Tartarus Brood, Shining Sanctuary
+Deck improved: SoO6-GV-LB-BW-R9 4 [2178] Shining Sanctuary -> 4 [5149] Auger-1: 99.648 (99648 / 100000)
+99.648: Barracus, Starformer, Ayrkrane Vik, Tazerecca, Tartarus Brood, Auger-1
+Deck improved: SoO6-GV-LB-BWA6 4 [5149] Auger-1 -> 4 [58] Havoc: 99.678 (99678 / 100000)
+99.678: Barracus, Starformer, Ayrkrane Vik, Tazerecca, Tartarus Brood, Havoc
+Deck improved: SoO6-GV-LB-BWAU 4 [58] Havoc -> 4 [20] Tiamat-1: 99.772 (99772 / 100000)
+99.772: Barracus, Starformer, Ayrkrane Vik, Tazerecca, Tartarus Brood, Tiamat-1
+Deck improved: SoO6-GV-LB-BWA7 4 [20] Tiamat-1 -> 4 [59] Omega-1: 99.949 (99949 / 100000)
+99.949: Barracus, Starformer, Ayrkrane Vik, Tazerecca, Tartarus Brood, Omega-1
+Deck improved: So-GVO6-LB-BWA7 0 [954] Starformer -> 1 [954] Starformer: 99.955 (99955 / 100000)
+99.955: Barracus, Ayrkrane Vik, Starformer, Tazerecca, Tartarus Brood, Omega-1
+Evaluated 5994 decks (4982370 + 1871800 simulations).
+Optimized Deck: 99.955: Barracus, Ayrkrane Vik, Starformer, Tazerecca, Tartarus Brood, Omega-1
+</pre>
+<ul>
+<li>define your own cardpool in <code>data/ownedcards.txt</code>. tu_optimze will try to build a best deck for you.</li>
+<li>use <code>data/ownedcards_template.txt</code> to find the cards you own and copy them to <code>data/ownedcards.txt</code>. Adjust count if you own several copies of the card</li>
+</ul>
+
 <p>
-climb =&gt; ownedcards.txt
 display inline help</p>
 
 <h2>
