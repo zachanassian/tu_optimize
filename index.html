@@ -254,23 +254,23 @@ Enemy_Deck:
 Flags:
   -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).
   -s: use surge (default is fight).
-  -t <num>: set the number of threads, default is 4.
-  -turnlimit <num>: set the number of turns in a battle, default is 50 (can be used for speedy achievements).
+  -t &lt;num&gt;: set the number of threads, default is 4.
+  -turnlimit &lt;num&gt;: set the number of turns in a battle, default is 50 (can be used for speedy achievements).
   win:     simulate/optimize for win rate. [default].
   defense: simulate/optimize for win rate + stall rate. can be used for defending deck.
 Flags for climb:
   -c: don't try to optimize the commander.
-  -L <min> <max>: restrict deck size between <min> and <max>.
+  -L &lt;min&gt; &lt;max&gt;: restrict deck size between &lt;min&gt; and &lt;max&gt;.
   -o: restrict to the owned cards listed in "data/ownedcards.txt".
-  -o=<filename>: restrict to the owned cards listed in <filename>.
-  target <num>: stop as soon as the score reaches <num>.
+  -o=&lt;filename&gt;: restrict to the owned cards listed in &lt;filename&gt;.
+  target &lt;num&gt;: stop as soon as the score reaches &lt;num&gt;.
 
 Operations:
-  sim <num>: simulate <num> battles to evaluate a deck.
-  climb <num>: perform hill-climbing starting from the given attack deck, using up to <num> battles to evaluate a deck.
-  reorder <num>: optimize the order for given attack deck, using up to <num> battles to evaluate an order.
+  sim &lt;num&gt;: simulate &lt;num&gt; battles to evaluate a deck.
+  climb &lt;num&gt;: perform hill-climbing starting from the given attack deck, using up to &lt;num&gt; battles to evaluate a deck.
+  reorder &lt;num&gt;: optimize the order for given attack deck, using up to &lt;num&gt; battles to evaluate an order.
   debug: testing purpose only. very verbose output. only one battle.
-  debuguntil <min> <max>: testing purpose only. fight until the last fight results in range [<min>, <max>]. recommend to redirect output.
+  debuguntil &lt;min&gt; &lt;max&gt;: testing purpose only. fight until the last fight results in range [&lt;min&gt;, &lt;max&gt;]. recommend to redirect output.
   example: debuguntil 100 100 will run till first win.
   example: debuguntil 0 0 will run till first lose.
 </pre>
