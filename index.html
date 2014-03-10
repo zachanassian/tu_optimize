@@ -52,15 +52,14 @@
         <section id="main_content">
 <h2><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Simulate your deck against another deck</h2>
 <pre>
->tu_optimize.exe "Alaric, Revolver(3)" "Halcyon, Barrage Tank(3)" sim 100000
-Your Deck: [REH3+j] Alaric, Revolver, Revolver, Revolver
-Enemy's Deck: [QEFj+j] Halcyon, Barrage Tank, Barrage Tank, Barrage Tank
-win%: 99.572 (99572 / 100000)
-stall%: 0 (0 / 100000)
-loss%: 0.428 (428 / 100000)
-</pre>
+>tu_optimize "Cyrus, Medic, Revolver, Imperial APC" "Malika, Grunt, Blitz Armor" sim 100000
+Your Deck: [RWFDFhH3] Cyrus, Medic, Revolver, Imperial APC
+Enemy's Deck: [PyA0Fl] Malika, Grunt, Blitz Armor
+win%: 59.443 (59443 / 100000)
+stall%: 0.014 (14 / 100000)
+loss%: 40.543 (40543 / 100000)</pre>
 <ul>
-<li>cards are identified by their name. By definition Halcyon means Halcyon Level 6. 
+<li>cards are identified by their name. By definition Cyrus means Cyrus Level 4. 
 If you want to use Halycon Level 5 use Halcyon-5</li>
 <li>if you have eg. three copies of Revolver use Revolver(3)</li>
 <li>by default your deck and enemy's deck are played in random order</li>
@@ -68,13 +67,12 @@ If you want to use Halycon Level 5 use Halcyon-5</li>
 
 <h2><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Play your deck ordered</h2>
 <pre>
->tu_optimize.exe "Alaric, Revolver(3)" "Halcyon, Barrage Tank, Barrage Tank, Barrage Tank, Barrage Tank, Barrage Tank, Barrage Tank" -r sim 100000
-Your Deck: [REH3+j] Alaric, Revolver, Revolver, Revolver
-Enemy's Deck: [QEFj+j] Halcyon, Barrage Tank, Barrage Tank, Barrage Tank
-win%: 99.572 (99572 / 100000)
-stall%: 0 (0 / 100000)
-loss%: 0.428 (428 / 100000)
-</pre>
+>tu_optimize "Cyrus, Imperial APC, Revolver, Medic" "Malika, Grunt, Blitz Armor" -r sim 100000
+Your Deck: [RWFDH3Fh] Cyrus, Imperial APC, Revolver, Medic
+Enemy's Deck: [PyA0Fl] Malika, Grunt, Blitz Armor
+win%: 86.192 (86192 / 100000)
+stall%: 0.088 (88 / 100000)
+loss%: 13.72 (13720 / 100000)</pre>
 <ul>
 <li>-r tries to play your card in the correct order still following the "three card hand limit" rule</li>
 <li>by default normal PVP mode is used. That means your deck starts in turn 1</li>
@@ -82,15 +80,14 @@ loss%: 0.428 (428 / 100000)
 
 <h2><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Play your deck in surge mode</h2>
 <pre>
->tu_optimize.exe "Alaric, Revolver(3)" "Halcyon, Barrage Tank, Barrage Tank, Barrage Tank, Barrage Tank, Barrage Tank, Barrage Tank" -r sim 100000
-Your Deck: [REH3+j] Alaric, Revolver, Revolver, Revolver
-Enemy's Deck: [QEFj+j] Halcyon, Barrage Tank, Barrage Tank, Barrage Tank
-win%: 99.572 (99572 / 100000)
-stall%: 0 (0 / 100000)
-loss%: 0.428 (428 / 100000)
-</pre>
+>tu_optimize "Cyrus, Imperial APC, Revolver, Medic" "Malika, Grunt, Blitz Armor" -r -s sim 100000
+Your Deck: [RWFDH3Fh] Cyrus, Imperial APC, Revolver, Medic
+Enemy's Deck: [PyA0Fl] Malika, Grunt, Blitz Armor
+win%: 64.898 (64898 / 100000)
+stall%: 0.083 (83 / 100000)
+loss%: 35.019 (35019 / 100000)</pre>
 <ul>
-<li>-s means enemy's deck starts in turn 1</li>
+<li><code>-s</code> means enemy's deck starts in turn 1</li>
 </ul>
 
 <p>sim deck gegen deck
