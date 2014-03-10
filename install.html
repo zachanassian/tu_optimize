@@ -38,7 +38,6 @@
 
         <section id="downloads" class="clearfix">
           <!--
-          <a href="https://github.com/zachanassian/tu_optimize/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
           <a href="https://github.com/zachanassian/tu_optimize/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
           <a href="https://github.com/zachanassian/tu_optimize" id="view-on-github" class="button"><span>View on GitHub</span></a>
           -->
@@ -50,39 +49,54 @@
         <hr>
 
         <section id="main_content">
-          <h1>
-<a name="tyrant-unleashed-optimizer" class="anchor" href="#tyrant-unleashed-optimizer"><span class="octicon octicon-link"></span></a>Tyrant Unleashed Optimizer</h1>
+<h2><a name="download" class="anchor" href="#download"><span class="octicon octicon-link"></span></a>Download</h2>
+<p>To download a .zip containing the latest release for windows use this button. Be aware this is alpha software!!! 
+No warrenty!!!</p>
+<p><a href="https://github.com/zachanassian/tu_optimize/releases/download/v0.8/tu_optimize_v0.8.zip" id="download-zip" 
+class="button"><span>Download .zip</span></a></p>
 
 <h2>
-<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
-
-<p>sim deck gegen deck
-sim deck gegen deck ordered
-sim deck gegen deck ordered surge
-abbreviations
-customdecks
-reorder
-climb =&gt; ownedcards.txt
-display inline help</p>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation
+</h2>
+<p>Extract the ZIP-file. Open a cmd shell and navigate to the folder containing <code>tu_optimze.exe</code>. 
+You can directly start your first simulation now.</p>
 
 <h2>
-<a name="install" class="anchor" href="#install"><span class="octicon octicon-link"></span></a>Install</h2>
-
-<p>Link auf Readme
-Download Zip
-Install (customdeck_template, abbreviations_template</p>
+<a name="compile" class="anchor" href="#compile"><span class="octicon octicon-link"></span></a>Compile and Build yourself.</h2>
+<h3>Prerequisits</h3>
+<p>To compile this yourself on windows it is highly recommended 
+to install <a href="http://www.mingw.org/" target="_blank">MinGW</a> first. 
+This will give you all the development tools. Especially a gcc compiler and git support for the next steps.</p>
+<p>Explore the root folder of MinGW and execute the file <code>set_distro_paths.bat</code>, a command prompt 
+window will appear. Use this command shell for the next steps.</p>
+<h3>Everyone needs to do these steps ONE TIME.</h3>
+<pre>
+>git clone git://github.com/zachanassian/tu_optimize
+>cd tu_optimize
+>git checkout master
+>mkdir obj
+>make  
+</pre>
+<p>Now you should have a file <code>tu_optimize.exe</code> to run your sim.</p>
+<h3>If Tyrant Optimizer is updated on github</h3>
+In the folder where you last compiled type:
+<pre>
+git pull origin
+make
+</pre>
+<h3>If Tyrant Unleashed gets updated</h3>
+In the folder where you last compiled goto folder data and type:
+<pre>
+wget -O cards.xml http://mobile.tyrantonline.com/assets/cards.xml
+wget -O missions.xml http://mobile.tyrantonline.com/assets/missions.xml  
+</pre>
+<p></p>
 
 <h2>
-<a name="faq" class="anchor" href="#faq"><span class="octicon octicon-link"></span></a>FAQ</h2>
-
-<p>tyrant_optimize
-very fast
-GUI -&gt; mayba later
-report issue
-learn git
-Contribute
-Install MinGW
-Branch</p>
+<a name="contribute" class="anchor" href="#contribute"><span class="octicon octicon-link"></span></a>Contribute</h2>
+<p>If you want to contribute this is easy with github. You can create your own repository and 
+send me a pull request with all the changes. Details can be found 
+<a href="https://help.github.com/articles/fork-a-repo" target="_blank">here</a> </p>
         </section>
 
         <footer>
