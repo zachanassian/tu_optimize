@@ -164,6 +164,16 @@ a.button span {
 #view-on-github {
   margin-right: 0;
 }
+#selected_button {
+  background: #c2c2c2; /* Old browsers */
+  background: -moz-linear-gradient(top,  #c2c2c2 0%, #f2f2f2 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#c2c2c2), color-stop(100%,#f2f2f2)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top,  #c2c2c2 0%,#f2f2f2 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top,  #c2c2c2 0%,#f2f2f2 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top,  #c2c2c2 0%,#f2f2f2 100%); /* IE10+ */
+  background: linear-gradient(top,  #c2c2c2 0%,#f2f2f2 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c2c2c2', endColorstr='#f2f2f2',GradientType=0 ); /* IE6-9 */
+}
 
 code, pre {
   font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal;
