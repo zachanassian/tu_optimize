@@ -3,3 +3,5 @@ obj/*
 exclude/*
 tu_optimize/*
 data/ownedcards.txt
+data/cardabbrs.txt
+data/customdecks.txt
