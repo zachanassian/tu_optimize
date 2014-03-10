@@ -46,14 +46,15 @@ stall%: 0 (0 / 100000)
 loss%: 0.428 (428 / 100000)
 </pre>
 <ul>
-<li>Cards are identified by their name. By definition Halcyon is Halcyon Level 6. 
-If you want to use Halycon Level 5 this is Halcyon-5</li>
-<li>By default your deck and enemy's deck are played in random order</li>
+<li>cards are identified by their name. By definition Halcyon means Halcyon Level 6. 
+If you want to use Halycon Level 5 use Halcyon-5</li>
+<li>if you have eg. three copies of Revolver use Revolver(3)</li>
+<li>by default your deck and enemy's deck are played in random order</li>
 </ul>
 
 <h2><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Play your deck ordered</h2>
 <pre>
->tu_optimize.exe "Alaric, Revolver(3)" "Halcyon, Barrage Tank(3)" -r sim 100000
+>tu_optimize.exe "Alaric, Revolver(3)" "Halcyon, Barrage Tank, Barrage Tank, Barrage Tank, Barrage Tank, Barrage Tank, Barrage Tank" -r sim 100000
 Your Deck: [REH3+j] Alaric, Revolver, Revolver, Revolver
 Enemy's Deck: [QEFj+j] Halcyon, Barrage Tank, Barrage Tank, Barrage Tank
 win%: 99.572 (99572 / 100000)
@@ -62,6 +63,20 @@ loss%: 0.428 (428 / 100000)
 </pre>
 <ul>
 <li>-r tries to play your card in the correct order still following the "three card hand limit" rule</li>
+<li>by default normal PVP mode is used. That means your deck starts in turn 1</li>
+</ul>
+
+<h2><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Play your deck in surge mode</h2>
+<pre>
+>tu_optimize.exe "Alaric, Revolver(3)" "Halcyon, Barrage Tank, Barrage Tank, Barrage Tank, Barrage Tank, Barrage Tank, Barrage Tank" -r sim 100000
+Your Deck: [REH3+j] Alaric, Revolver, Revolver, Revolver
+Enemy's Deck: [QEFj+j] Halcyon, Barrage Tank, Barrage Tank, Barrage Tank
+win%: 99.572 (99572 / 100000)
+stall%: 0 (0 / 100000)
+loss%: 0.428 (428 / 100000)
+</pre>
+<ul>
+<li>-s means enemy's deck starts in turn 1</li>
 </ul>
 
 <p>sim deck gegen deck
