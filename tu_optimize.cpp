@@ -1263,7 +1263,7 @@ int main(int argc, char** argv)
         }
         else if(strcmp(argv[argIndex], "-o") == 0)
         {
-            read_owned_cards(cards, owned_cards, buyable_cards, "ownedcards.txt");
+            read_owned_cards(cards, owned_cards, buyable_cards, "data/ownedcards.txt");
             use_owned_cards = true;
         }
         else if(strncmp(argv[argIndex], "-o=", 3) == 0)

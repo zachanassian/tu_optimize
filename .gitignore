@@ -2,3 +2,4 @@
 obj/*
 exclude/*
 tu_optimize/*
+data/ownedcards.txt
