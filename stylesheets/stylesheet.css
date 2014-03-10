@@ -42,8 +42,8 @@ q:before, q:after {
 	content: none;
 }
 table {
-	border-collapse: collapse;
-	border-spacing: 0;
+	/*border-collapse: collapse;
+	border-spacing: 0;*/
 }
 
 /* LAYOUT STYLES */
@@ -257,7 +257,7 @@ em {
 
 table {
   width: 100%;
-  border: 1px solid #ebebeb;
+  /*border: 1px solid #ebebeb;*/
 }
 
 table.noborder {
@@ -270,7 +270,7 @@ th {
 }
 
 td {
-  border: 1px solid #ebebeb;
+  /*border: 1px solid #ebebeb;*/
   text-align: center; 
   font-weight: 300;
 }
