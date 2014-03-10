@@ -175,6 +175,36 @@ a.button span {
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c2c2c2', endColorstr='#c2c2c2',GradientType=0 ); /* IE6-9 */
 }
 
+a.selectedbutton {
+  -moz-border-radius: 30px;
+  -webkit-border-radius: 30px;                     
+  border-radius: 30px;
+  border-top: solid 1px #cbcbcb;
+  border-left: solid 1px #b7b7b7;
+  border-right: solid 1px #b7b7b7;
+  border-bottom: solid 1px #b3b3b3;
+  color: #303030;
+  line-height: 25px;
+  font-weight: bold;
+  font-size: 15px;
+  padding: 12px 8px 12px 8px;
+  display: block;
+  float: left;
+  width: 179px;
+  margin-right: 14px;  
+  background: #c2c2c2; /* Old browsers */
+  background: -moz-linear-gradient(top,  #c2c2c2 0%, #c2c2c2 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#c2c2c2), color-stop(100%,#c2c2c2)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top,  #c2c2c2 0%,#c2c2c2 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top,  #c2c2c2 0%,#c2c2c2 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top,  #c2c2c2 0%,#c2c2c2 100%); /* IE10+ */
+  background: linear-gradient(top,  #c2c2c2 0%,#c2c2c2 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c2c2c2', endColorstr='#c2c2c2',GradientType=0 ); /* IE6-9 */
+  -webkit-box-shadow: 10px 10px 5px #888;
+  -moz-box-shadow: 10px 10px 5px #888;
+  box-shadow: 0px 1px 5px #e8e8e8;
+}
+
 code, pre {
   font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal;
   color: #222;
