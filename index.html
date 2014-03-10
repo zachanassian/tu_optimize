@@ -50,6 +50,8 @@
         <hr>
 
         <section id="main_content">
+Tyrant Unleashed Optimizer is a command line tool to optimize your tyrant unleashed deck. 
+To start the command line interpreter in windows use Start: <code>cmd.exe</code> and navigate to the folder containing <code>tu_optimizer.exe</code>.        
 <h2><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Simulate your deck against another deck</h2>
 <pre>
 >tu_optimize "Cyrus, Medic, Revolver, Imperial APC" "Malika, Grunt, Blitz Armor" sim 100000
@@ -231,27 +233,45 @@ Optimized Deck: 99.955: Barracus, Ayrkrane Vik, Starformer, Tazerecca, Tartarus 
 <li>use <code>data/ownedcards_template.txt</code> to find the cards you own and copy them to <code>data/ownedcards.txt</code>. Adjust count if you own several copies of the card. Yes this is cumbersome. Sorry about that.</li>
 </ul>
 
-<p>
-display inline help</p>
+<h2><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Use build in help if you forget command syntax</h2>
+<pre>
+>tu_optimize
+Tyrant Unleashed Optimizer 0.8
+usage: tu_optimize Your_Deck Enemy_Deck [Flags] [Operations]
 
-<h2>
-<a name="install" class="anchor" href="#install"><span class="octicon octicon-link"></span></a>Install</h2>
+Your_Deck:
+  the name/hash/cards of a custom deck.
 
-<p>Link auf Readme
-Download Zip
-Install (customdeck_template, abbreviations_template</p>
+Enemy_Deck:
+  semicolon separated list of defense decks, syntax:
+  deck1[:factor1];deck2[:factor2];...
+  where deck is the name/hash/cards of a mission, raid, quest or custom deck, and factor is optional. The default factor is 1.
+  example: 'eerie-spam:0.2;nbd-spam:0.8' means eerie-spam is the defense deck 20% of the time, while nbd-spam is the defense deck 80% of the time.
 
-<h2>
-<a name="faq" class="anchor" href="#faq"><span class="octicon octicon-link"></span></a>FAQ</h2>
+Flags:
+  -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).
+  -s: use surge (default is fight).
+  -t <num>: set the number of threads, default is 4.
+  -turnlimit <num>: set the number of turns in a battle, default is 50 (can be used for speedy achievements).
+  win:     simulate/optimize for win rate. [default].
+  defense: simulate/optimize for win rate + stall rate. can be used for defending deck.
+Flags for climb:
+  -c: don't try to optimize the commander.
+  -L <min> <max>: restrict deck size between <min> and <max>.
+  -o: restrict to the owned cards listed in "data/ownedcards.txt".
+  -o=<filename>: restrict to the owned cards listed in <filename>.
+  target <num>: stop as soon as the score reaches <num>.
 
-<p>tyrant_optimize
-very fast
-GUI -&gt; mayba later
-report issue
-learn git
-Contribute
-Install MinGW
-Branch</p>
+Operations:
+  sim <num>: simulate <num> battles to evaluate a deck.
+  climb <num>: perform hill-climbing starting from the given attack deck, using up to <num> battles to evaluate a deck.
+  reorder <num>: optimize the order for given attack deck, using up to <num> battles to evaluate an order.
+  debug: testing purpose only. very verbose output. only one battle.
+  debuguntil <min> <max>: testing purpose only. fight until the last fight results in range [<min>, <max>]. recommend to redirect output.
+  example: debuguntil 100 100 will run till first win.
+  example: debuguntil 0 0 will run till first lose.
+</pre>
+
         </section>
 
         <footer>
