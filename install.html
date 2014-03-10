@@ -81,20 +81,23 @@ window will appear. Use this command shell for the next steps.</p>
 >cd tu_optimize
 >git checkout master
 >mkdir obj
->make  
+>make
+>cd data
+>wget -O cards.xml http://mobile.tyrantonline.com/assets/cards.xml
+>wget -O missions.xml http://mobile.tyrantonline.com/assets/missions.xml  
 </pre>
 <p>Now you should have a file <code>tu_optimize.exe</code> to run your sim.</p>
 <h3>If Tyrant Optimizer is updated on github</h3>
 In the folder where you last compiled type:
 <pre>
-git pull origin
-make
+>git pull origin
+>make
 </pre>
 <h3>If Tyrant Unleashed gets updated</h3>
 In the folder where you last compiled goto folder data and type:
 <pre>
-wget -O cards.xml http://mobile.tyrantonline.com/assets/cards.xml
-wget -O missions.xml http://mobile.tyrantonline.com/assets/missions.xml  
+>wget -O cards.xml http://mobile.tyrantonline.com/assets/cards.xml
+>wget -O missions.xml http://mobile.tyrantonline.com/assets/missions.xml  
 </pre>
 <p></p>
 
