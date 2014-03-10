@@ -57,10 +57,11 @@ Your Deck: [RWFDFhH3] Cyrus, Medic, Revolver, Imperial APC
 Enemy's Deck: [PyA0Fl] Malika, Grunt, Blitz Armor
 win%: 59.443 (59443 / 100000)
 stall%: 0.014 (14 / 100000)
-loss%: 40.543 (40543 / 100000)</pre>
+loss%: 40.543 (40543 / 100000)
+</pre>
 <ul>
 <li>cards are identified by their name. By definition Cyrus means Cyrus Level 4. 
-If you want to use Halycon Level 5 use Halcyon-5</li>
+If you want to use Cyrus Level 1 use Cyrus-1</li>
 <li>if you have eg. three copies of Revolver use Revolver(3)</li>
 <li>by default your deck and enemy's deck are played in random order</li>
 </ul>
@@ -72,10 +73,11 @@ Your Deck: [RWFDH3Fh] Cyrus, Imperial APC, Revolver, Medic
 Enemy's Deck: [PyA0Fl] Malika, Grunt, Blitz Armor
 win%: 86.192 (86192 / 100000)
 stall%: 0.088 (88 / 100000)
-loss%: 13.72 (13720 / 100000)</pre>
+loss%: 13.72 (13720 / 100000)
+</pre>
 <ul>
-<li>-r tries to play your card in the correct order still following the "three card hand limit" rule</li>
-<li>by default normal PVP mode is used. That means your deck starts in turn 1</li>
+<li><code>-r</code> tries to play your card in the correct order still following the "three card hand limit" rule</li>
+<li>by default normal PVP mode is used. You play your first card in turn 1</li>
 </ul>
 
 <h2><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Play your deck in surge mode</h2>
@@ -85,17 +87,87 @@ Your Deck: [RWFDH3Fh] Cyrus, Imperial APC, Revolver, Medic
 Enemy's Deck: [PyA0Fl] Malika, Grunt, Blitz Armor
 win%: 64.898 (64898 / 100000)
 stall%: 0.083 (83 / 100000)
-loss%: 35.019 (35019 / 100000)</pre>
+loss%: 35.019 (35019 / 100000)
+</pre>
 <ul>
-<li><code>-s</code> means enemy's deck starts in turn 1</li>
+<li><code>-s</code> means enemy's deck starts in turn 1. You play your first card in turn 2</li>
 </ul>
 
-<p>sim deck gegen deck
-sim deck gegen deck ordered
-sim deck gegen deck ordered surge
-abbreviations
-customdecks
-reorder
+<h2><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Define and use your own card abbreviations</h2>
+<pre>
+>tu_optimize "Pet,HA(10)" "Obama, SF(5)" sim 100000
+Your Deck: [SuLQ+q] Petrisis, Havoc Alpha, Havoc Alpha, Havoc Alpha, Havoc Alpha, Havoc Alpha, Havoc Alpha, Havoc Alpha, Havoc Alpha, Havoc Alpha, Havoc Alpha
+Enemy's Deck: [SoO6+l] Barracus, Starformer, Starformer, Starformer, Starformer, Starformer
+win%: 21.506 (21506 / 100000)
+stall%: 21.326 (21326 / 100000)
+loss%: 57.168 (57168 / 100000)
+</pre>
+<ul>
+<li>you can define your own card abbreviations in file <code>data/cardabbrs.txt</code> and use them</li>
+</ul>
+
+<h2><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Define and use your own decks</h2>
+<pre>
+>tu_optimize mydeck nbd-spam sim 100000
+Your Deck: [SoO6iC-BQ-BW-GV-LB-LT] Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
+Enemy's Deck: [RE-Iq+q] Alaric, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance
+win%: 53.84 (53840 / 100000)
+stall%: 0.049 (49 / 100000)
+loss%: 46.111 (46111 / 100000)
+</pre>
+<ul>
+<li>you can define your own decks in file <code>data/customdecks.txt</code> and use them</li>
+</ul>
+
+<h2><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Sim against a batch of decks</h2>
+<pre>
+>tu_optimize.exe mydeck nbd-spam;eerie-spam -r sim 100000
+Your Deck: [So-BQ-BW-LB-LTO6-GViC] Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
+Enemy's Deck: [RE-Iq+q] Alaric, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance
+Enemy's Deck: [So-KF+q] Barracus, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie
+win%: 40.37 (67603 13137 / 100000)
+stall%: 0.6215 (0 1243 / 100000)
+loss%: 59.0085 (32397 85620 / 100000)
+</pre>
+<ul>
+<li>you can define your own decks in file <code>data/customdecks.txt</code> and use them</li>
+</ul>
+
+<h2><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Sim against mission decks</h2>
+<pre>
+>tu_optimize.exe mydeck "94. Heart of Tartarus" -r sim 100000
+Your Deck: [So-BQ-BW-LB-LTO6-GViC] Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
+Enemy's Deck: [RkBbBhC6D9+iFRGHGr+igZ] Petrisis, Blight Crusher, Blight Crusher, Smog Tank, Draconian Queen, Venomous Raptor, Venomous Raptor, Malgoth, Beholder, Mawcor, Blood Pool
+win%: 100 (100000 / 100000)
+stall%: 0 (0 / 100000)
+loss%: 0 (0 / 100000)
+</pre>
+<ul>
+<li>use mission name as enemy's deck to sim against mission level 10</li>
+</ul>
+
+<h2><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Automatically optimize play order</h2>
+<pre>
+C:\Users\dirk\MyTyrantOptimize\TUGithub\tyrant_optimize>tu_optimize.exe mydeck eerie-spam -r reorder 100000
+Your Deck: [So-BQ-BW-LB-LTO6-GViC] Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
+Enemy's Deck: [So-KF+q] Barracus, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie
+13.049 (13049 / 100000)
+13.049: Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
+Deck improved: So-BW-LB-BQ-LTO6-GViC 0 [4080] Crushing Anvil -> 2 [4080] Crushing Anvil: 17.637 (17637 / 100000)
+17.637: Barracus, Tartarus Brood, Tazerecca, Crushing Anvil, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
+Deck improved: So-BW-LB-BQO6-GV-LTiC 3 [4723] Mach Jet -> 5 [4723] Mach Jet: 20.947 (20947 / 100000)
+20.947: Barracus, Tartarus Brood, Tazerecca, Crushing Anvil, Starformer, Ayrkrane Vik, Mach Jet, Shining Sanctuary
+Deck improved: So-BW-LB-BQ-GVO6-LTiC 3 [954] Starformer -> 4 [954] Starformer: 22.616 (22616 / 100000)
+22.616: Barracus, Tartarus Brood, Tazerecca, Crushing Anvil, Ayrkrane Vik, Starformer, Mach Jet, Shining Sanctuary
+Deck improved: So-BW-LB-BQ-GV-LTiCO6 4 [954] Starformer -> 6 [954] Starformer: 23.35 (23350 / 100000)
+23.35: Barracus, Tartarus Brood, Tazerecca, Crushing Anvil, Ayrkrane Vik, Mach Jet, Shining Sanctuary, Starformer
+Deck improved: So-LB-BQ-BW-GV-LTiCO6 0 [4086] Tartarus Brood -> 2 [4086] Tartarus Brood: 27.43 (27430 / 100000)
+27.43: Barracus, Tazerecca, Crushing Anvil, Tartarus Brood, Ayrkrane Vik, Mach Jet, Shining Sanctuary, Starformer
+Evaluated 68 decks (648999 + 539668 simulations).
+Optimized Deck: 27.43: Barracus, Tazerecca, Crushing Anvil, Tartarus Brood, Ayrkrane Vik, Mach Jet, Shining Sanctuary, Starformer
+</pre>
+
+<p>
 climb =&gt; ownedcards.txt
 display inline help</p>
 
