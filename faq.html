@@ -50,6 +50,23 @@
         <hr>
 
         <section id="main_content">
+<h2><a name="usage" class="anchor" href="#batch"><span class="octicon octicon-link"></span></a>How to define a batch file (windows)</h2>
+<p>If you sim with the same set of parameters multiple times you should consider creating a batchfile. Windows uses 
+.bat-files. Once defined they can be used like a normal command. You can use a normal texteditor to edit a batchfile.
+In this example a batch file <code>simbatch1.bat</code> is created with the <code>echo</code> command. 
+Next line shos how to use <code>simbatch1.bat</code></p>
+<pre>
+>echo tu_optimize %1 "eerie-spam;nbd-spam;mydeck" -r sim 1000 > simbatch1.bat
+>tu_optimize mydeck "eerie-spam;nbd-spam;mydeck" -r sim 1000
+Your Deck: [SoO6iC-BQ-BW-GV-LB-LT] Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
+Enemy's Deck: [So-KF+q] Barracus, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie
+Enemy's Deck: [RE-Iq+q] Alaric, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance
+Enemy's Deck: [SoO6iC-BQ-BW-GV-LB-LT] Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
+win%: 50.0667 (63 547 892 / 1000)
+stall%: 0.2 (5 1 0 / 1000)
+loss%: 49.7333 (932 452 108 / 1000)
+</pre>
+
 <p>This is not finished yet. TODO list includes</p>
 
 <p>
