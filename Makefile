@@ -25,3 +25,5 @@ release:
 	xcopy /y data\cardabbrs_template.txt tu_optimize\data
 	xcopy /y data\customdecks_template.txt tu_optimize\data
 	xcopy /y data\ownedcards_template.txt tu_optimize\data
+	xcopy /y data\cards.xml tu_optimize\data
+	xcopy /y data\missions.xml tu_optimize\data
