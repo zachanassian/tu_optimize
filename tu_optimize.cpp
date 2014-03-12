@@ -1068,7 +1068,7 @@ void usage(int argc, char** argv)
         "  -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).\n"
         "  -s: use surge (default is fight).\n"
         "  -t <num>: set the number of threads, default is 4.\n"
-        "  -turnlimit <num>: set the number of turns in a battle, default is 50 (can be used for speedy achievements).\n"
+        "  -turnlimit <num>: set the number of turns in a battle, default is 50.\n"
         "  win:     simulate/optimize for win rate. [default].\n"
         "  defense: simulate/optimize for win rate + stall rate. can be used for defending deck.\n"
         //"  raid:    simulate/optimize for average raid damage (ARD). default for raids.\n"
