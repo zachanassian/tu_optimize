@@ -1098,7 +1098,7 @@ void print_available_effects()
 
 void usage(int argc, char** argv)
 {
-    std::cout << "Tyrant Unleashed Optimizer " << TU_OPTIMIZER_VERSION << "\nusage: " << argv[0] << " Your_Deck Enemy_Deck [Flags] [Operations]\n"
+    std::cout << "Tyrant Unleashed Optimizer " << TU_OPTIMIZER_VERSION << " - Copyright (C) 2014 zachanassian\nusage: " << argv[0] << " Your_Deck Enemy_Deck [Flags] [Operations]\n"
         "\n"
         "Your_Deck:\n"
         "  the name/hash/cards of a custom deck.\n"
@@ -1146,7 +1146,7 @@ int main(int argc, char** argv)
     if(argc == 1) { usage(argc, argv); return(0); }
     if(argc <= 2 && strcmp(argv[1], "-version") == 0)
     {
-        std::cout << "Tyrant Unleashed Optimizer " << TU_OPTIMIZER_VERSION << std::endl;
+        std::cout << "Tyrant Unleashed Optimizer " << TU_OPTIMIZER_VERSION << " - Copyright (C) 2014 zachanassian" << std::endl;
         return(0);
     }
     unsigned num_threads = 4;

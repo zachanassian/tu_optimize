@@ -12,7 +12,7 @@ Gui, Add, Edit, vEnemiesDeck w600 r5, "94. Heart of Tartarus"
 Gui, Add, Edit, vSimOptions w600, -r -o climb 10000
 Gui, Add, Button, default r2 w100 x100 y+15 section, Simulate
 Gui, Add, Button, r2 w100 ys xs+200, Exit
-Gui, Show,, Simple Tyrant Unleashed Optimize Starter - Copyright (C) 2014  zachanassian
+Gui, Show,, Simple Tyrant Unleashed Optimize Starter - Copyright (C) 2014 zachanassian
 return  
 
 ButtonSimulate:
