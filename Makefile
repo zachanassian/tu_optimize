@@ -11,11 +11,14 @@ all: $(MAIN)
 obj/%.o: %.cpp ${INCS}
 	$(CXX) $(CPPFLAGS) -o $@ -c $<
 
-$(MAIN): $(OBJS)
-	$(CXX) -o $@ $(OBJS) $(LDFLAGS)
+obj/icon.res: icon.rc
+	windres icon.rc -O coff -o obj/icon.res
+
+$(MAIN): $(OBJS) obj/icon.res
+	$(CXX) -o $@ $(OBJS) obj/icon.res $(LDFLAGS)
 
 clean:
-	del /q $(MAIN).exe obj\*.o tu_optimize\*.* tu_optimize\data\*.*
+	del /q $(MAIN).exe obj\*.* tu_optimize\*.* tu_optimize\data\*.*
 
 release:
 	xcopy /y tu_optimize.exe tu_optimize
@@ -27,3 +30,4 @@ release:
 	xcopy /y data\ownedcards_template.txt tu_optimize\data
 	xcopy /y data\cards.xml tu_optimize\data
 	xcopy /y data\missions.xml tu_optimize\data
+	"%ProgramFiles%\AutoHotkey\Compiler\Ahk2Exe.exe" /in SimpleTUOptimizeStarter.ahk /out tu_optimize/SimpleTUOptimizeStarter.exe /icon tu_optimize.ico

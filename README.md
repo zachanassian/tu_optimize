@@ -2,6 +2,11 @@
 This fork tries to adapt the code to be used with Tyrant Unleashed!
 This is **not working** at the moment!
 
+##Version ...
+* added simple UI: SimpleTUOptimizeStarter.exe
+* added tu_optimize icon credit to http://openiconlibrary.sourceforge.net/gallery2/?./Icons/apps/preferences-web-browser-cache-2.png
+* the zip file now contains cards.xml and missions.xml
+
 ##Version 0.8
 * Prepare Alpha Release
 * cardabbrs.txt, cards.xml, customdecks.txt, missions.xml, ownedcards.txt are now read from folder data/
