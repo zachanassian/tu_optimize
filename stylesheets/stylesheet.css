@@ -153,6 +153,7 @@ a.button span {
 }
 
 #download-zip span {
+  width: 200px;
   background: transparent url(../images/zip-icon.png) 12px 50% no-repeat;
 }
 #download-tar-gz span {
