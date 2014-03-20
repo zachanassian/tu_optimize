@@ -145,6 +145,9 @@ a.button:hover {
   background: linear-gradient(top,  #fdfdfd 0%,#e6e6e6, 100%); /* W3C */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fdfdfd', endColorstr='#e6e6e6',GradientType=0 ); /* IE6-9 */
 }
+a.button.large {
+  width: 200px;
+}
 
 a.button span {
   padding-left: 50px;
