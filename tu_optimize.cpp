@@ -584,6 +584,40 @@ void print_deck_inline(const unsigned deck_cost, const Results<long double> scor
     }
     std::cout << std::endl;
 }
+
+void print_deck_inline2(const Card *commander, std::vector<const Card*> cards, bool is_ordered)
+{
+    std::cout << "Skipped(already evaluated): " << commander->m_name;
+    if(!is_ordered)
+    {
+        std::sort(cards.begin(), cards.end(), [](const Card* a, const Card* b) { return a->m_id < b->m_id; });
+    }
+    std::string last_name;
+    unsigned num_repeat(0);
+    for(const Card* card: cards)
+    {
+        if(card->m_name == last_name)
+        {
+            ++ num_repeat;
+        }
+        else
+        {
+            if(num_repeat > 1)
+            {
+                std::cout << " #" << num_repeat;
+            }
+            std::cout << ", " << card->m_name;
+            last_name = card->m_name;
+            num_repeat = 1;
+        }
+    }
+    if(num_repeat > 1)
+    {
+        std::cout << " #" << num_repeat;
+    }
+    std::cout << std::endl;
+}
+
 //------------------------------------------------------------------------------
 void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc, std::map<signed, char> card_marks)
 {
@@ -772,6 +806,11 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc, std
                         print_score_info(compare_results, proc.factors);
                         print_deck_inline(deck_cost, best_score, best_commander, best_cards, true);
                     }
+                    //else{
+                    //    std::cout << "Deck tested but not improved: "; //<< deck_hash(commander_candidate, best_cards, true) << " commander -> " << card_id_name(commander_candidate) << ": ";
+                    //    print_score_info(compare_results, proc.factors);
+                    //    print_deck_inline(deck_cost, current_score, commander_candidate, best_cards, true);
+                    //}
                 }
                 else
                 {
@@ -847,9 +886,17 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc, std
                         }
                         card_marks = new_card_marks;
                     }
+                    //else{
+                        //std::cout << "Deck tested but not improved: "; << deck_hash(commander_candidate, best_cards, true) << " commander -> " << card_id_name(commander_candidate) << ": ";
+                        //std::cout << "Deck tested but not improved: " << deck_hash(best_commander, d1->cards, true) << " " << from_slot << " " << card_id_name(from_slot < best_cards.size() ? best_cards[from_slot] : NULL) <<
+                        //    " -> " << to_slot << " " << card_id_name(card_candidate) << ": ";
+                        //print_score_info(compare_results, proc.factors);
+                        //print_deck_inline(deck_cost, current_score, best_commander, d1->cards, true);
+                    //}
                 }
                 else
                 {
+                    //print_deck_inline2(best_commander, d1->cards, true);
                     skipped_simulations += evaluated_decks[cur_deck];
                 }
             }
@@ -1051,7 +1098,7 @@ void print_available_effects()
 
 void usage(int argc, char** argv)
 {
-    std::cout << "Tyrant Unleashed Optimizer " << TU_OPTIMIZER_VERSION << "\nusage: " << argv[0] << " Your_Deck Enemy_Deck [Flags] [Operations]\n"
+    std::cout << "Tyrant Unleashed Optimizer " << TU_OPTIMIZER_VERSION << " - Copyright (C) 2014 zachanassian\nusage: " << argv[0] << " Your_Deck Enemy_Deck [Flags] [Operations]\n"
         "\n"
         "Your_Deck:\n"
         "  the name/hash/cards of a custom deck.\n"
@@ -1068,7 +1115,7 @@ void usage(int argc, char** argv)
         "  -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).\n"
         "  -s: use surge (default is fight).\n"
         "  -t <num>: set the number of threads, default is 4.\n"
-        "  -turnlimit <num>: set the number of turns in a battle, default is 50 (can be used for speedy achievements).\n"
+        "  -turnlimit <num>: set the number of turns in a battle, default is 50.\n"
         "  win:     simulate/optimize for win rate. [default].\n"
         "  defense: simulate/optimize for win rate + stall rate. can be used for defending deck.\n"
         //"  raid:    simulate/optimize for average raid damage (ARD). default for raids.\n"
@@ -1099,7 +1146,7 @@ int main(int argc, char** argv)
     if(argc == 1) { usage(argc, argv); return(0); }
     if(argc <= 2 && strcmp(argv[1], "-version") == 0)
     {
-        std::cout << "Tyrant Unleashed Optimizer " << TU_OPTIMIZER_VERSION << std::endl;
+        std::cout << "Tyrant Unleashed Optimizer " << TU_OPTIMIZER_VERSION << " - Copyright (C) 2014 zachanassian" << std::endl;
         return(0);
     }
     unsigned num_threads = 4;

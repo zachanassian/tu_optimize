@@ -1,4 +1,5 @@
 *.exe
+*.bat
 obj/*
 exclude/*
 tu_optimize/*

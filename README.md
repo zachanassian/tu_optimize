@@ -1,6 +1,12 @@
 #Tyrant Unleashed Optimizer
-This fork tries to adapt the code to be used with Tyrant Unleashed!
-This is **not working** at the moment!
+Deck Simulator and Optimizer for Tyrant Unleashed!
+
+##Version 0.9
+* Beta Release
+* ownedcards.txt allows cards without id
+* added simple UI: SimpleTUOptimizeStarter.exe
+* added tu_optimize icon credit to http://openiconlibrary.sourceforge.net/gallery2/?./Icons/apps/preferences-web-browser-cache-2.png
+* the zip file now contains cards.xml and missions.xml
 
 ##Version 0.8
 * Prepare Alpha Release
