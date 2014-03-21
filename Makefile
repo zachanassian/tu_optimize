@@ -25,6 +25,7 @@ release:
 	xcopy /y rapidxml_license.txt tu_optimize
 	xcopy /y tu_optimize_license.txt tu_optimize
 	xcopy /y README.md tu_optimize\readme.txt
+	xcopy /y SimpleTUOptimizeStarter.ahk tu_optimize
 	xcopy /y data\cardabbrs_template.txt tu_optimize\data
 	xcopy /y data\customdecks_template.txt tu_optimize\data
 	xcopy /y data\ownedcards_template.txt tu_optimize\data
