@@ -90,6 +90,7 @@ CardStatus::CardStatus(const Card* card) :
     m_delay(card->m_delay),
     m_diseased(false),
     m_enfeebled(0),
+    m_evades_left(card->m_evade),
     m_faction(card->m_faction),
     m_frozen(false),
     m_hp(card->m_health),
@@ -135,6 +136,7 @@ inline void CardStatus::set(const Card& card)
     m_delay = card.m_delay;
     m_diseased = false;
     m_enfeebled = 0;
+    m_evades_left = card.m_evade,
     m_faction = card.m_faction;
     m_frozen = false;
     m_hp = card.m_health;

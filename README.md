@@ -1,6 +1,15 @@
 #Tyrant Unleashed Optimizer
 Deck Simulator and Optimizer for Tyrant Unleashed!
 
+##Version 0.10.1
+* [FIX] Played cards started with evade_left 0
+<pre>
+tu_optimize "Barracus, Noble Defiance, Xeno Suzerain, Starformer" Heimdal -r sim 10000
+win%: 59.73 (5973 / 10000)
+stall%: 17.21 (1721 / 10000)
+loss%: 23.06 (2306 / 10000)
+</pre>
+
 ##Version 0.10
 * Added Inhibit
 <pre>
@@ -10,12 +19,12 @@ TURN 6 begins for Commander [Cyrus hp:13]
 Assault 0 [Rally Infantry att:2 hp:6 cd:1, inhibited 3] reduces its timer
 Evaluating Commander [Cyrus hp:13] skill Heal imperial 2
 Possible targets of Heal:
-+ Assault 0 [Rally Infantry att:2 hp:6, inhibited 3]
+\+ Assault 0 [Rally Infantry att:2 hp:6, inhibited 3]
 Commander [Cyrus hp:13] Heal (2) on Assault 0 [Rally Infantry att:2 hp:6, inhibited 3] but it is inhibited
 Evaluating Commander [Cyrus hp:13] skill Siege 1
 Evaluating Assault 0 [Rally Infantry att:2 hp:6, inhibited 2] skill Rally 1
 Possible targets of Rally:
-+ Assault 0 [Rally Infantry att:2 hp:6, inhibited 2]
+\+ Assault 0 [Rally Infantry att:2 hp:6, inhibited 2]
 Assault 0 [Rally Infantry att:2 hp:6, inhibited 2] Rally (1) on Assault 0 [Rally Infantry att:2 hp:6, inhibited 2] but it is inhibited
 Assault 0 [Rally Infantry att:2 hp:6, inhibited 1] attacks Assault 0 [Test Inhibit att:1 hp:10] for 2 damage
 Assault 0 [Test Inhibit att:1 hp:10] takes 2 damage
