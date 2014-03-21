@@ -95,6 +95,7 @@ CardStatus::CardStatus(const Card* card) :
     m_hp(card->m_health),
     m_immobilized(false),
     m_infused(false),
+    m_inhibited(0),
     m_jammed(false),
     m_jam_charge(card->m_jam),
     m_phased(false),
@@ -139,6 +140,7 @@ inline void CardStatus::set(const Card& card)
     m_hp = card.m_health;
     m_immobilized = false;
     m_infused = false;
+    m_inhibited = 0;
     m_jammed = false;
     m_jam_charge = card.m_jam,
     m_phased = false;
@@ -229,6 +231,7 @@ std::string card_description(const Cards& cards, const Card* c)
     if(c->m_flying) { desc += ", flying"; }
     if(c->m_fusion) { desc += ", fusion"; }
     if(c->m_immobilize) { desc += ", immobilize"; }
+    if(c->m_inhibit > 0) { desc += ", inhibit " + to_string(c->m_inhibit); }
     if(c->m_intercept) { desc += ", intercept"; }
     if(c->m_leech > 0) { desc += ", leech " + to_string(c->m_leech); }
     if(c->m_legion > 0) { desc += ", legion " + to_string(c->m_legion); }
@@ -299,6 +302,7 @@ std::string CardStatus::description()
     if(m_frozen) { desc += ", frozen"; }
     if(m_immobilized) { desc += ", immobilized"; }
     if(m_infused) { desc += ", infused"; }
+    if(m_inhibited > 0) { desc += ", inhibited " + to_string(m_inhibited); }
     if(m_jammed) { desc += ", jammed"; }
     if(m_phased) { desc += ", phased"; }
     if(m_sundered) { desc += ", sundered"; }
@@ -1020,6 +1024,12 @@ inline bool skill_check<immobilize>(Field* fd, CardStatus* c, CardStatus* ref)
 }
 
 template<>
+inline bool skill_check<inhibit>(Field* fd, CardStatus* c, CardStatus* ref)
+{
+    return(ref->m_inhibited < c->m_card->m_inhibit);
+}
+
+template<>
 inline bool skill_check<jam>(Field* fd, CardStatus* c, CardStatus* ref)
 {
     assert(c->m_card->m_jam > 0);
@@ -1204,6 +1214,7 @@ void turn_end_phase(Field* fd)
             //status.m_index = index;
             //status.m_enfeebled = 0;
             //status.m_protected = 0;
+            status.m_inhibited = 0;
             unsigned diff = safe_minus(status.m_poisoned, status.m_protected);
             //only cards that are still alive take poison damage
             if(diff > 0 && status.m_hp > 0)
@@ -1693,6 +1704,13 @@ void PerformAttack::damage_dependant_pre_oa<CardType::assault>()
         // perform_skill_phase
         _DEBUG_MSG(1, "%s phases %s\n", status_description(att_status).c_str(), status_description(def_status).c_str());
         def_status->m_phased = true;
+    }
+    if(att_status->m_card->m_inhibit > 0 && skill_check<inhibit>(fd, att_status, def_status))
+    {
+        count_achievement<inhibit>(fd, att_status);
+        // perform_skill_inhibit
+        _DEBUG_MSG(1, "%s inhibits %s by %u\n", status_description(att_status).c_str(), status_description(def_status).c_str(), att_status->m_card->m_inhibit);
+        def_status->m_inhibited = att_status->m_card->m_inhibit;
     }
 }
 
@@ -2337,6 +2355,14 @@ bool check_and_perform_skill(Field* fd, CardStatus* src_status, CardStatus* dst_
 {
     if(skill_check<skill_id>(fd, src_status, dst_status))
     {
+        //assumption for TU all friendly skills (skills where dest and src player are the same) are helpful_skills and can be inhibited
+        if(dst_status->m_inhibited > 0 && dst_status->m_player == src_status->m_player)
+        {
+            count_achievement<inhibit>(fd, dst_status);
+            _DEBUG_MSG(1, "%s %s (%u) on %s but it is inhibited\n", status_description(src_status).c_str(), skill_names[skill_id].c_str(), std::get<1>(s), status_description(dst_status).c_str());
+            --dst_status->m_inhibited;
+            return(false);
+        }   
         if(is_evadable && dst_status->m_card->m_evade > 0 && dst_status->m_evades_left > 0 && skill_check<evade>(fd, dst_status, src_status))
         {
             count_achievement<evade>(fd, dst_status);
@@ -2362,7 +2388,6 @@ bool check_and_perform_skill<jam>(Field* fd, CardStatus* src_status, CardStatus*
 {
     if(skill_check<jam>(fd, src_status, dst_status))
     {
-        //std::cout << "check_and_perform_skill<jam>\n";
         if(is_evadable && dst_status->m_card->m_evade > 0 && dst_status->m_evades_left > 0 && skill_check<evade>(fd, dst_status, src_status))
         {
             count_achievement<evade>(fd, dst_status);

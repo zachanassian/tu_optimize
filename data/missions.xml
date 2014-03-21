@@ -8060,7 +8060,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>14</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -8105,7 +8105,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2076</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -8148,7 +8148,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2077</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -8192,7 +8192,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2078</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -8236,7 +8236,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2079</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -8279,7 +8279,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2080</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -8323,14 +8323,14 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2081</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
 		<id>2083</id>
 		<name>General Agmeus</name>
 		<picture>mission2083.jpg</picture>
-		<monster>feb_tank</monster>
+		<!-- <monster>feb_tank</monster> -->
 		<location_id>105</location_id>
 		<event_req>7</event_req>
 		<mission_type>2</mission_type>
@@ -8369,7 +8369,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2082</req>
+		<req>-1</req>
 	</mission>
 
 <!-- Week 2 -->
@@ -8416,7 +8416,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2083</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -8459,7 +8459,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2084</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -8502,7 +8502,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2085</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -8545,7 +8545,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2086</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -8590,7 +8590,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2087</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -8634,7 +8634,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2088</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -8677,7 +8677,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2089</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -8687,7 +8687,7 @@
 		<location_id>105</location_id>
 		<event_req>7</event_req>
 		<mission_type>2</mission_type>
-		<monster>feb_lab</monster>
+		<!-- <monster>feb_lab</monster> -->
 		<combatBG>CombatBGSnow</combatBG>
 		<energy>75</energy>
 		<x>240</x>
@@ -8723,7 +8723,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2090</req>
+		<req>-1</req>
 	</mission>
 	
 	<!-- Week 3 -->
@@ -8770,7 +8770,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2091</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -8813,7 +8813,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2092</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -8856,7 +8856,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2093</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -8900,7 +8900,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2094</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -8944,7 +8944,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2095</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -8988,7 +8988,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2096</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -9033,7 +9033,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2097</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -9043,7 +9043,7 @@
 		<location_id>105</location_id>
 		<event_req>7</event_req>
 		<mission_type>2</mission_type>
-		<monster>feb_mech</monster>
+		<!-- <monster>feb_mech</monster> -->
 		<combatBG>CombatBGSnow</combatBG>
 		<energy>100</energy>
 		<x>340</x>
@@ -9078,10 +9078,366 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2098</req>
+		<req>-1</req>
 	</mission>
 	
 	<!-- END February 2014 Missions -->
+	
+	<!-- March 2014 Missions -->
+
+	<mission>
+		<id>2100</id>
+		<name>Hazy Memory</name>
+		<picture>mission2100.jpg</picture>
+		<location_id>106</location_id>
+		<event_req>9</event_req>
+		<mission_type>4</mission_type>
+		<combatBG>CombatBGJungle</combatBG>
+		<energy>25</energy>
+		<x>80</x>
+		<y>460</y>
+		<commander>1281</commander>
+		<desc>Alone and confused, Tabitha finds herself amongst an angry Righteous tribe and must fight her way out.</desc>
+		<speech>
+			<line commander='1998'>How did I end up in the Swamp Lands. I can't even remember where I came from.</line>
+			<line commander='1281'>You are intruding on the ancient tribute. You will be expelled from this land.</line>
+		</speech>
+		<deck>
+			<card>5402</card>
+			<card>555</card>
+			<card>134</card>
+			<card>134</card>
+			<card>138</card>
+			<card>142</card>
+			<card>142</card>
+			<card>178</card>
+			<card>145</card>
+			<card>2025</card>
+		</deck>
+		<rewards>
+			<gold>27</gold>
+			<card>134</card>
+			<item>1041</item>
+			<star>
+				<id>2</id>
+				<req type='5' compare='great_equal' amount='5' />
+			</star>
+			<star>
+				<id>3</id>
+				<req type='5' compare='great_equal' amount='10' />
+			</star>
+		</rewards>
+		<req>14</req>
+	</mission>
+
+	<mission>
+		<id>2101</id>
+		<name>Alone</name>
+		<picture>mission2101.jpg</picture>
+		<location_id>106</location_id>
+		<event_req>9</event_req>
+		<mission_type>4</mission_type>
+		<combatBG>CombatBGJungle</combatBG>
+		<energy>27</energy>
+		<x>160</x>
+		<y>435</y>
+		<commander>1281</commander>
+		<speech>
+			<line commander='1998'>I need to find Octane, but I can't let the Righteous get away. If they are summoning another Sentinel, they must be stopped.</line>
+		</speech>
+		<deck>
+			<card>5402</card>
+			<card>179</card>
+			<card>376</card>
+			<card>378</card>
+			<card>200</card>
+			<card>200</card>
+			<card>145</card>
+			<card>139</card>
+			<card>2024</card>
+			<card>2027</card>
+		</deck>
+		<rewards>
+			<gold>30</gold>
+			<card>2024</card>
+			<item>1041</item>
+			<star>
+				<id>2</id>
+				<req type='5' compare='great_equal' amount='5' />
+			</star>
+			<star>
+				<id>3</id>
+				<req type='5' compare='great_equal' amount='10' />
+			</star>
+		</rewards>
+		<req>2100</req>
+	</mission>
+
+	<mission>
+		<id>2102</id>
+		<name>Divine</name>
+		<picture>mission2102.jpg</picture>
+		<location_id>106</location_id>
+		<event_req>9</event_req>
+		<mission_type>4</mission_type>
+		<combatBG>CombatBGJungle</combatBG>
+		<energy>30</energy>
+		<x>270</x>
+		<y>500</y>
+		<commander>1281</commander>
+		<speech>
+			<line commander='1998'>We've stopped a Sentinel before and we'll do it again. Your efforts are worthless.</line>
+			<line commander='1281'>The power of the Sentinels pale in comparison to the power of the Divine one.</line>
+		</speech>
+		<deck>
+			<card>5402</card>
+			<card>374</card>
+			<card>135</card>
+			<card>201</card>
+			<card>554</card>
+			<card>178</card>
+			<card>178</card>
+			<card>139</card>
+			<card>142</card>
+			<card>2028</card>
+		</deck>
+		<rewards>
+			<gold>33</gold>
+			<card>142</card>
+			<item>1042</item>
+			<star>
+				<id>2</id>
+				<req type='5' compare='great_equal' amount='5' />
+			</star>
+			<star>
+				<id>3</id>
+				<req type='5' compare='great_equal' amount='10' />
+			</star>
+		</rewards>
+		<req>2101</req>
+	</mission>
+
+	<mission>
+		<id>2103</id>
+		<name>Guardian</name>
+		<picture>mission2103.jpg</picture>
+		<location_id>106</location_id>
+		<event_req>9</event_req>
+		<mission_type>4</mission_type>
+		<combatBG>CombatBGJungle</combatBG>
+		<energy>33</energy>
+		<x>360</x>
+		<y>470</y>
+		<commander>1282</commander>
+		<speech>
+			<line commander='1998'>The Divine One?</line>
+			<line commander='1281'>It doesn't matter. Soon the Guardian will rise and put an end to your meddling.</line>
+		</speech>
+		<deck>
+			<card>5402</card>
+			<card>4414</card>
+			<card>143</card>
+			<card>178</card>
+			<card>376</card>
+			<card>554</card>
+			<card>133</card>
+			<card>134</card>
+			<card>2024</card>
+			<card>2024</card>
+		</deck>
+		<rewards>
+			<gold>36</gold>
+			<card>178</card>
+			<item>1042</item>
+			<star>
+				<id>2</id>
+				<req type='5' compare='great_equal' amount='5' />
+			</star>
+			<star>
+				<id>3</id>
+				<req type='5' compare='great_equal' amount='10' />
+			</star>
+		</rewards>
+		<req>2102</req>
+	</mission>
+
+	<mission>
+		<id>2104</id>
+		<name>Different Sect</name>
+		<picture>mission2104.jpg</picture>
+		<location_id>106</location_id>
+		<event_req>9</event_req>
+		<mission_type>4</mission_type>
+		<combatBG>CombatBGJungle</combatBG>
+		<energy>35</energy>
+		<x>440</x>
+		<y>480</y>
+		<commander>1282</commander>
+		<speech>
+			<line commander='1998'>This is getting out of hand. I need to finish this before I become overwhelmed.</line>
+		</speech>
+		<deck>
+			<card>5402</card>
+			<card>5329</card>
+			<card>145</card>
+			<card>138</card>
+			<card>139</card>
+			<card>135</card>
+			<card>135</card>
+			<card>146</card>
+			<card>201</card>
+			<card>2027</card>
+		</deck>
+		<rewards>
+			<gold>38</gold>
+			<card>200</card>
+			<item>1043</item>
+			<star>
+				<id>2</id>
+				<req type='5' compare='great_equal' amount='5' />
+			</star>
+			<star>
+				<id>3</id>
+				<req type='5' compare='great_equal' amount='10' />
+			</star>
+		</rewards>
+		<req>2103</req>
+	</mission>
+
+	<mission>
+		<id>2105</id>
+		<name>Preparations</name>
+		<picture>mission2105.jpg</picture>
+		<location_id>106</location_id>
+		<event_req>9</event_req>
+		<mission_type>4</mission_type>
+		<combatBG>CombatBGJungle</combatBG>
+		<energy>40</energy>
+		<x>530</x>
+		<y>510</y>
+		<commander>1282</commander>
+		<speech>
+			<line commander='1998'>That's enormous! It's bigger than a Sentinel.</line>
+			<line commander='1281'>Great Heimdal! Purge this land of the non-believers, so that we may prepare the tribute.</line>
+		</speech>
+		<deck>
+			<card>5402</card>
+			<card>200</card>
+			<card>133</card>
+			<card>140</card>
+			<card>140</card>
+			<card>143</card>
+			<card>146</card>
+			<card>179</card>
+			<card>4065</card>
+			<card>2027</card>
+		</deck>
+		<rewards>
+			<gold>45</gold>
+			<card>2027</card>
+			<item>1043</item>
+			<star>
+				<id>2</id>
+				<req type='5' compare='great_equal' amount='5' />
+			</star>
+			<star>
+				<id>3</id>
+				<req type='5' compare='great_equal' amount='10' />
+			</star>
+		</rewards>
+		<req>2104</req>
+	</mission>
+
+	<mission>
+		<id>2106</id>
+		<name>Refocused</name>
+		<picture>mission2106.jpg</picture>
+		<location_id>106</location_id>
+		<event_req>9</event_req>
+		<mission_type>4</mission_type>
+		<combatBG>CombatBGJungle</combatBG>
+		<energy>45</energy>
+		<x>520</x>
+		<y>410</y>
+		<commander>1282</commander>
+		<speech>
+			<line commander='1998'>Use what you've learned Tabitha. Get into position and take it out.</line>
+		</speech>
+		<deck>
+			<card>5402</card>
+			<card>4963</card>
+			<card>376</card>
+			<card>374</card>
+			<card>555</card>
+			<card>133</card>
+			<card>133</card>
+			<card>145</card>
+			<card>178</card>
+			<card>2028</card>
+		</deck>
+		<rewards>
+			<gold>49</gold>
+			<card>138</card>
+			<item>1044</item>
+			<star>
+				<id>2</id>
+				<req type='5' compare='great_equal' amount='5' />
+			</star>
+			<star>
+				<id>3</id>
+				<req type='5' compare='great_equal' amount='10' />
+			</star>
+		</rewards>
+		<req>2105</req>
+	</mission>
+
+	<mission>
+		<id>2107</id>
+		<name>Heimdal</name>
+		<picture>mission2107.jpg</picture>
+		<location_id>106</location_id>
+		<event_req>9</event_req>
+		<monster>rightboss1</monster>
+		<mission_type>2</mission_type>
+		<combatBG>CombatBGJungle</combatBG>
+		<energy>50</energy>
+		<x>620</x>
+		<y>410</y>
+		<commander>1275</commander>
+		<desc>Heimdal is just a distraction compared to the power that is coming. But Tabitha must defeat it.</desc>
+		<speech>
+			<line commander='1998'>I have a chance. This is my one shot to bring an end to this.</line>
+			<line commander='1281'>Preparations on the Carrier are complete to take us to the sacred ground. You will die here.</line>
+		</speech>
+		<deck>
+			<card>5402</card>
+			<card>5402</card>
+			<card>518</card>
+			<card>626</card>
+			<card>5330</card>
+			<card>148</card>
+			<card>152</card>
+			<card>392</card>
+			<card>4646</card>
+			<card>2062</card>
+		</deck>
+		<rewards>
+			<gold>60</gold>
+			<card>148</card>
+			<item>1044</item>
+			<star>
+				<id>2</id>
+				<req type='5' compare='great_equal' amount='5' />
+			</star>
+			<star>
+				<id>3</id>
+				<req type='5' compare='great_equal' amount='10' />
+			</star>
+		</rewards>
+		<req>2106</req>
+	</mission>
+	
+	<!-- END March 2014 Missions -->
 
 	<location>
 		<id>1</id>
@@ -9168,10 +9524,17 @@
 		<req>18</req>
 	</location> -->
 	
-	<location>
+	<!-- <location>
 		<id>105</id>
 		<name>Ashrock</name>
 		<mapBG>map1</mapBG>
+		<req>14</req>
+	</location> -->
+
+	<location>
+		<id>106</id>
+		<name>Swamp Lands</name>
+		<mapBG>map2</mapBG>
 		<req>14</req>
 	</location>
 	
@@ -9179,8 +9542,8 @@
 
 	<portal>
 		<location_id>1</location_id>
-		<destination_id>105</destination_id>
-		<event_req>-1</event_req>
+		<destination_id>106</destination_id>
+		<event_req>9</event_req>
 		<req>14</req>
 		<x>420</x>
 		<y>450</y>
@@ -9188,8 +9551,8 @@
 
 	<portal>
 		<location_id>2</location_id>
-		<destination_id>105</destination_id>
-		<event_req>-1</event_req>
+		<destination_id>106</destination_id>
+		<event_req>9</event_req>
 		<req>14</req>
 		<x>650</x>
 		<y>250</y>
@@ -9197,8 +9560,8 @@
 
 	<portal>
 		<location_id>3</location_id>
-		<destination_id>105</destination_id>
-		<event_req>-1</event_req>
+		<destination_id>106</destination_id>
+		<event_req>9</event_req>
 		<req>14</req>
 		<x>280</x>
 		<y>450</y>
@@ -9206,8 +9569,8 @@
 
 	<portal>
 		<location_id>4</location_id>
-		<destination_id>105</destination_id>
-		<event_req>-1</event_req>
+		<destination_id>106</destination_id>
+		<event_req>9</event_req>
 		<req>14</req>
 		<x>270</x>
 		<y>270</y>
@@ -9215,8 +9578,8 @@
 
 	<portal>
 		<location_id>5</location_id>
-		<destination_id>105</destination_id>
-		<event_req>-1</event_req>
+		<destination_id>106</destination_id>
+		<event_req>9</event_req>
 		<req>14</req>
 		<x>350</x>
 		<y>580</y>
@@ -9224,8 +9587,8 @@
 
 	<portal>
 		<location_id>6</location_id>
-		<destination_id>105</destination_id>
-		<event_req>-1</event_req>
+		<destination_id>106</destination_id>
+		<event_req>9</event_req>
 		<req>14</req>
 		<x>500</x>
 		<y>600</y>
@@ -9233,18 +9596,18 @@
 
 	<portal>
 		<location_id>7</location_id>
-		<destination_id>105</destination_id>
-		<event_req>-1</event_req>
+		<destination_id>106</destination_id>
+		<event_req>9</event_req>
 		<req>14</req>
 		<x>420</x>
 		<y>380</y>
 	</portal>
 
 	<portal>
-		<location_id>105</location_id>
+		<location_id>106</location_id>
 		<destination_id>0</destination_id>
-		<event_req>5</event_req>
-		<x>700</x>
+		<event_req>9</event_req>
+		<x>150</x>
 		<y>590</y>
 	</portal>
 
