@@ -1,7 +1,7 @@
 #ifndef TYRANT_H_INCLUDED
 #define TYRANT_H_INCLUDED
 
-#define TU_OPTIMIZER_VERSION "0.9"
+#define TU_OPTIMIZER_VERSION "0.10"
 
 #include <string>
 #include <set>
@@ -32,7 +32,7 @@ enum Skill
     // Combat-Modifier:
     antiair, burst, fear, flurry, pierce, swipe, valor,
     // Damage-Dependant:
-    berserk, crush, disease, immobilize, leech, phase, poison, siphon, sunder,
+    berserk, crush, disease, immobilize, inhibit, leech, phase, poison, siphon, sunder,
     // Defensive:
     armored, counter, emulate, evade, flying, intercept, payback, refresh, regenerate, stun, tribute, wall,
     // Triggered:

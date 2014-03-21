@@ -292,6 +292,8 @@ void read_cards(Cards& cards)
                         { c->m_fusion = true; }
                         if(strcmp(skill->first_attribute("id")->value(), "immobilize") == 0)
                         { c->m_immobilize = true; }
+                        if(strcmp(skill->first_attribute("id")->value(), "inhibit") == 0)
+                        { c->m_inhibit = atoi(skill->first_attribute("x")->value()); }
                         if(strcmp(skill->first_attribute("id")->value(), "intercept") == 0)
                         { c->m_intercept = true; }
                         if(strcmp(skill->first_attribute("id")->value(), "leech") == 0)

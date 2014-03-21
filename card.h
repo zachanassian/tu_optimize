@@ -33,6 +33,7 @@ public:
         m_hidden(0),
         m_id(0),
         m_immobilize(false),
+        m_inhibit(0),
         m_intercept(false),
         m_jam(0),
         m_leech(0),
@@ -100,6 +101,7 @@ public:
     unsigned m_id;
     unsigned m_max_level_id;
     bool m_immobilize;
+    unsigned m_inhibit;
     bool m_intercept;
     unsigned m_jam;
     unsigned m_leech;

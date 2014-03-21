@@ -1,6 +1,29 @@
 #Tyrant Unleashed Optimizer
 Deck Simulator and Optimizer for Tyrant Unleashed!
 
+##Version 0.10
+* Added Inhibit
+<pre>
+tu_optimize "Cyrus, Test Inhibit" "Cyrus, Rally Infantry" +v debug
+...
+TURN 6 begins for Commander [Cyrus hp:13]
+Assault 0 [Rally Infantry att:2 hp:6 cd:1, inhibited 3] reduces its timer
+Evaluating Commander [Cyrus hp:13] skill Heal imperial 2
+Possible targets of Heal:
++ Assault 0 [Rally Infantry att:2 hp:6, inhibited 3]
+Commander [Cyrus hp:13] Heal (2) on Assault 0 [Rally Infantry att:2 hp:6, inhibited 3] but it is inhibited
+Evaluating Commander [Cyrus hp:13] skill Siege 1
+Evaluating Assault 0 [Rally Infantry att:2 hp:6, inhibited 2] skill Rally 1
+Possible targets of Rally:
++ Assault 0 [Rally Infantry att:2 hp:6, inhibited 2]
+Assault 0 [Rally Infantry att:2 hp:6, inhibited 2] Rally (1) on Assault 0 [Rally Infantry att:2 hp:6, inhibited 2] but it is inhibited
+Assault 0 [Rally Infantry att:2 hp:6, inhibited 1] attacks Assault 0 [Test Inhibit att:1 hp:10] for 2 damage
+Assault 0 [Test Inhibit att:1 hp:10] takes 2 damage
+TURN 6 ends for Commander [Cyrus hp:13]
+...
+</pre> 
+* updated cards.xml and missons.xml
+
 ##Version 0.9
 * Beta Release
 * ownedcards.txt allows cards without id

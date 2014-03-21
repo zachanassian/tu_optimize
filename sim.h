@@ -140,6 +140,7 @@ struct CardStatus
     unsigned m_hp;
     bool m_immobilized;
     bool m_infused;
+    unsigned m_inhibited;
     bool m_jammed;
     unsigned m_jam_charge;
     bool m_phased;

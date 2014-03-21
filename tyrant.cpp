@@ -19,7 +19,7 @@ std::string skill_names[Skill::num_skills] =
     // Combat-Modifier:
     "AntiAir", "Burst", "Fear", "Flurry", "Pierce", "Swipe", "Valor",
     // Damage-Dependant:
-    "Berserk", "Crush", "Disease", "Immobilize", "Leech", "Phase", "Poison", "Siphon", "Sunder",
+    "Berserk", "Crush", "Disease", "Immobilize", "Inhibit", "Leech", "Phase", "Poison", "Siphon", "Sunder",
     // Defensive:
     "Armored", "Counter", "Emulate", "Evade", "Flying", "Intercept", "Payback", "Refresh", "Regenerate", "Stun", "Tribute", "Wall",
     // Triggered:
