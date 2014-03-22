@@ -17,10 +17,17 @@ return
 
 ButtonSimulate:
 Gui, Submit
-Run, cmd.exe /c echo tu_optimize "%MyDeck%" "%EnemiesDeck%" %SimOptions% && tu_optimize "%MyDeck%" "%EnemiesDeck%" %SimOptions% && pause
+Run, cmd.exe /c title TUOptimizeOutput && echo tu_optimize "%MyDeck%" "%EnemiesDeck%" %SimOptions% && tu_optimize "%MyDeck%" "%EnemiesDeck%" %SimOptions% && pause
 Gui, Show
 return
 
 GuiClose:
 ButtonExit:
+while true
+{
+  IfWinExist, TUOptimizeOutput
+      WinClose ; use the window found above
+  else
+      break
+}  
 ExitApp
