@@ -419,7 +419,10 @@ bool may_change_skill(const Field* fd, const CardStatus* status, const SkillMod:
             switch (status->m_card->m_type)
             {
                 case CardType::commander:
-                    return (fd->effect == Effect::time_surge ||
+                    return (fd->effect == Effect::poison_1 ||
+                            fd->effect == Effect::poison_2 ||
+                            fd->effect == Effect::poison_3 ||
+                            fd->effect == Effect::time_surge ||
                             fd->effect == Effect::friendly_fire ||
                             fd->effect == Effect::genesis ||
                             (fd->effect == Effect::artillery_strike && fd->turn >= 9 && status->m_player == (fd->optimization_mode == OptimizationMode::defense ? 1u : 0u)) ||
@@ -446,6 +449,27 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
     const auto& skill = std::get<0>(ss);
     switch (fd->effect)
     {
+        case Effect::poison_1:
+            if(skill == new_skill)
+            {
+                need_add_skill = false;
+                return SkillSpec(enhance_poison, 1, allfactions, true, mod);
+            }
+            break;
+        case Effect::poison_2:
+            if(skill == new_skill)
+            {
+                need_add_skill = false;
+                return SkillSpec(enhance_poison, 2, allfactions, true, mod);
+            }
+            break;
+        case Effect::poison_3:
+            if(skill == new_skill)
+            {
+                need_add_skill = false;
+                return SkillSpec(enhance_poison, 3, allfactions, true, mod);
+            }
+            break;
         case Effect::time_surge:
             // replace other instance of the skill
             if(skill == rush || skill == new_skill)

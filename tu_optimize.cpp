@@ -1090,7 +1090,8 @@ void print_available_decks(const Decks& decks, bool allow_card_pool)
 void print_available_effects()
 {
     std::cout << "Available effects:" << std::endl;
-    for(int i(1); i < Effect::num_effects; ++ i)
+    //TU workaround: omit all effect starting with time_surge. They are Web Tyrant Specific
+    for(int i(1); i < Effect::time_surge; ++ i)
     {
         std::cout << i << " \"" << effect_names[i] << "\"" << std::endl;
     }

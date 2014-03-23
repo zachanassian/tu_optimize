@@ -1,6 +1,18 @@
 #Tyrant Unleashed Optimizer
 Deck Simulator and Optimizer for Tyrant Unleashed!
 
+##Version ##
+* Added battleground effect Poison 1-3
+<pre>
+tu_optimize.exe "Barracus, Starformer(2)" "Constantine, Vigil(10)" -e "Poison 2" sim 10000
+Your Deck: [SoO6+i] Barracus, Starformer, Starformer
+Enemy's Deck: [S6Cd+q] Constantine, Vigil, Vigil, Vigil, Vigil, Vigil, Vigil, Vigil, Vigil, Vigil, Vigil
+Effect: Poison 2
+win%: 99.75 (9975 / 10000)
+stall%: 0.07 (7 / 10000)
+loss%: 0.18 (18 / 10000)
+</pre>
+
 ##Version 0.10.1
 * [FIX] Played cards started with evade_left 0
 <pre>
