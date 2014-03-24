@@ -2,8 +2,11 @@
 Deck Simulator and Optimizer for Tyrant Unleashed!
 
 ##Version 1.0
-* SimpleTUOptimizeStarter.exe no longer needs quotes
-* SimpleTUOptimizeStarter.exe will close all his opened output windows on exit or window close
+* SimpleTUOptimizeStarter no longer needs quotes
+* SimpleTUOptimizeStarter will close all his opened output windows on exit or window close
+* SimpleTUOptimizeStarter Help to show build in help
+* SimpleTUOptimizeStarter Web to open http://zachanassian.github.io/tu_optimize/
+* [FIX] SimpleTUOptimizeStarter output window should no longer close immediatly
 * ownedcards.txt sigle copy of a card no longer requires count (1)
 * Added battleground effect Poison 1-3
 <pre>

@@ -4,6 +4,9 @@
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
+Menu, MyMenu, Add, Help, MenuHelp
+Menu, MyMenu, Add, Web, MenuWeb
+Gui, Menu, MyMenu
 Gui, Add, Text, r5, My Deck:
 Gui, Add, Text, r5, Enemie's Deck:
 Gui, Add, Text, r1, Options:
@@ -18,6 +21,18 @@ return
 ButtonSimulate:
 Gui, Submit
 Run, cmd.exe /c title TUOptimizeOutput && echo tu_optimize "%MyDeck%" "%EnemiesDeck%" %SimOptions% && tu_optimize "%MyDeck%" "%EnemiesDeck%" %SimOptions% && pause
+Gui, Show
+return
+
+MenuHelp:
+Gui, Submit
+Run, cmd.exe /c title TUOptimizeOutput && echo tu_optimize && tu_optimize && pause
+Gui, Show
+return
+
+MenuWeb:
+Gui, Submit
+Run http://zachanassian.github.io/tu_optimize/
 Gui, Show
 return
 
