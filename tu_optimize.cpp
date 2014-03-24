@@ -1113,7 +1113,7 @@ void usage(int argc, char** argv)
         "Flags:\n"
         //"  -A <achievement>: optimize for the achievement specified by either id or name.\n"
         "  -e <effect>: set the battleground effect.\n"
-        "               use \"tu_optimize Po Po -e test\" to get a list of all available effects.\n" 
+        "               use \"tu_optimize Po Po -e list\" to get a list of all available effects.\n" 
         "  -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).\n"
         "  -s: use surge (default is fight).\n"
         "  -t <num>: set the number of threads, default is 4.\n"
@@ -1166,7 +1166,7 @@ int main(int argc, char** argv)
     if(argc <= 2)
     {
         print_available_decks(decks, true);
-        return(4);
+        return(0);
     }
     std::string att_deck_name{argv[1]};
     auto deck_list_parsed = parse_deck_list(argv[2]);
@@ -1186,7 +1186,7 @@ int main(int argc, char** argv)
     catch(const std::runtime_error& e)
     {
         std::cerr << "Error: Deck " << att_deck_name << ": " << e.what() << std::endl;
-        return(5);
+        return(0);
     }
     if(att_deck == nullptr)
     {
@@ -1200,7 +1200,7 @@ int main(int argc, char** argv)
     if(att_deck == nullptr)
     {
         print_available_decks(decks, false);
-        return(5);
+        return(0);
     }
 
     for(auto deck_parsed: deck_list_parsed)
@@ -1213,13 +1213,13 @@ int main(int argc, char** argv)
         catch(const std::runtime_error& e)
         {
             std::cerr << "Error: Deck " << deck_parsed.first << ": " << e.what() << std::endl;
-            return(5);
+            return(0);
         }
         if(def_deck == nullptr)
         {
             std::cerr << "Error: Invalid defense deck name/hash " << deck_parsed.first << ".\n";
             print_available_decks(decks, true);
-            return(5);
+            return(0);
         }
         if(def_deck->decktype == DeckType::raid)
         {
@@ -1266,19 +1266,19 @@ int main(int argc, char** argv)
             catch(const std::runtime_error& e)
             {
                 std::cerr << "Error: Achievement " << argv[argIndex + 1] << ": " << e.what() << std::endl;
-                return(1);
+                return(0);
             }
             for(auto def_deck: def_decks)
             {
                 if(def_deck->decktype != DeckType::mission)
                 {
                     std::cerr << "Error: Enemy's deck must be mission for achievement." << std::endl;
-                    return(1);
+                    return(0);
                 }
                 if(!achievement.mission_condition.check(def_deck->id))
                 {
                     std::cerr << "Error: Wrong mission [" << def_deck->name << "] for achievement." << std::endl;
-                    return(1);
+                    return(0);
                 }
             }
             argIndex += 1;
@@ -1293,9 +1293,9 @@ int main(int argc, char** argv)
             auto x = effect_map.find(arg_effect);
             if(x == effect_map.end())
             {
-                std::cout << "The effect '" << arg_effect << "' was not found. ";
+                if(strcmp(argv[argIndex + 1], "list") != 0){ std::cout << "The effect '" << arg_effect << "' was not found. "; }
                 print_available_effects();
-                return(6);
+                return(0);
             }
             effect = static_cast<enum Effect>(x->second);
             argIndex += 1;
@@ -1437,7 +1437,7 @@ int main(int argc, char** argv)
         else
         {
             std::cerr << "Error: Unknown option " << argv[argIndex] << std::endl;
-            return(1);
+            return(0);
         }
     }
 
