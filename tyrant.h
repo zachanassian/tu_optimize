@@ -28,7 +28,8 @@ enum Skill
     augment, backfire, chaos, cleanse, enfeeble, freeze, heal, infuse, jam,
     mimic, protect, rally, recharge, repair, rush, shock, siege, split, strike, summon, supply,
     trigger_regen, // not actually a skill; handles regeneration after strike/siege
-    weaken, enhance_armored, enhance_poison, enhance_berserk, enhance_leech, enhance_counter, enhance_evade,
+    weaken, enhance_armored, enhance_heal, enhance_poison, enhance_berserk, enhance_leech, 
+    enhance_counter, enhance_evade,
     // Combat-Modifier:
     antiair, burst, fear, flurry, pierce, swipe, valor,
     // Damage-Dependant:
@@ -88,6 +89,9 @@ extern std::string decktype_names[DeckType::num_decktypes];
 
 enum Effect {
     none,
+    heal_1,
+    heal_2,
+    heal_3,
     leech_1,
     leech_2,
     leech_3,

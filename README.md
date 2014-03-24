@@ -25,6 +25,16 @@ win%: 22.3022 (223022 / 1000000)
 stall%: 1.0532 (10532 / 1000000)
 loss%: 76.6446 (766446 / 1000000)
 </pre>
+* Added battleground effect Heal 1-3
+<pre>
+tu_optimize "Alaric, Vigil(5)" "Obama, Terraformer(5)" -e "Heal 1" sim 100000
+Your Deck: [RECd+l] Alaric, Vigil, Vigil, Vigil, Vigil, Vigil
+Enemy's Deck: [SoOe+l] Barracus, Terraformer, Terraformer, Terraformer, Terraformer, Terraformer
+Effect: Heal 1
+win%: 98.553 (98553 / 100000)
+stall%: 1.39 (1390 / 100000)
+loss%: 0.057 (57 / 100000)
+</pre>
 
 ##Version 0.10.1
 * [FIX] Played cards started with evade_left 0

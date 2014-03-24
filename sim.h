@@ -152,6 +152,7 @@ struct CardStatus
     bool m_sundered;
     unsigned m_weakened;
     unsigned m_enhance_armored;
+    unsigned m_enhance_heal;
     unsigned m_enhance_poison;
     unsigned m_enhance_berserk;
     unsigned m_enhance_leech;

@@ -29,6 +29,7 @@ public:
         m_flurry(0),
         m_flying(false),
         m_fusion(false),
+        m_heal(0),
         m_health(0),
         m_hidden(0),
         m_id(0),
@@ -96,6 +97,7 @@ public:
     unsigned m_flurry;
     bool m_flying;
     bool m_fusion;
+    unsigned m_heal;
     unsigned m_health;
     unsigned m_hidden;
     unsigned m_id;

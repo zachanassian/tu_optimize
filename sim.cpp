@@ -107,6 +107,7 @@ CardStatus::CardStatus(const Card* card) :
     m_sundered(false),
     m_weakened(0),
     m_enhance_armored(0),
+    m_enhance_heal(0),
     m_enhance_poison(0),
     m_enhance_berserk(0),
     m_enhance_leech(0),
@@ -154,6 +155,7 @@ inline void CardStatus::set(const Card& card)
     m_temporary_split = false;
     m_weakened = 0;
     m_enhance_armored = 0;
+    m_enhance_heal = 0;
     m_enhance_poison = 0;
     m_enhance_berserk = 0;
     m_enhance_leech = 0;
@@ -317,6 +319,7 @@ std::string CardStatus::description()
     if(m_protected > 0) { desc += ", protected " + to_string(m_protected); }
     if(m_stunned > 0) { desc += ", stunned " + to_string(m_stunned); }
     if(m_enhance_armored > 0) { desc += ", enhance armored " + to_string(m_enhance_armored); }
+    if(m_enhance_heal > 0) { desc += ", enhance heal " + to_string(m_enhance_heal); }
     if(m_enhance_poison > 0) { desc += ", enhance poison " + to_string(m_enhance_poison); }
     if(m_enhance_berserk > 0) { desc += ", enhance berserk " + to_string(m_enhance_berserk); }
     if(m_enhance_leech > 0) { desc += ", enhance leech " + to_string(m_enhance_leech); }
@@ -419,7 +422,10 @@ bool may_change_skill(const Field* fd, const CardStatus* status, const SkillMod:
             switch (status->m_card->m_type)
             {
                 case CardType::commander:
-                    return (fd->effect == Effect::leech_1 ||
+                    return (fd->effect == Effect::heal_1 ||
+                            fd->effect == Effect::heal_2 ||
+                            fd->effect == Effect::heal_3 ||
+                            fd->effect == Effect::leech_1 ||
                             fd->effect == Effect::leech_2 ||
                             fd->effect == Effect::leech_3 ||
                             fd->effect == Effect::poison_1 ||
@@ -453,14 +459,17 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
     unsigned skill_value = 0;
     switch (fd->effect)
     {
+        case Effect::heal_1:
         case Effect::leech_1:
         case Effect::poison_1:
             skill_value = 1;
             break;
+        case Effect::heal_2:
         case Effect::leech_2:    
         case Effect::poison_2:
             skill_value = 2;
             break;
+        case Effect::heal_3:    
         case Effect::leech_3:    
         case Effect::poison_3:
             skill_value = 3;
@@ -470,15 +479,15 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
     }
     switch (fd->effect)
     {
-        case Effect::poison_1:
-        case Effect::poison_2:
-        case Effect::poison_3:
+        case Effect::heal_1:
+        case Effect::heal_2:
+        case Effect::heal_3:
             if(skill == new_skill)
             {
                 need_add_skill = false;
-                return SkillSpec(enhance_poison, skill_value, allfactions, true, mod);
+                return SkillSpec(enhance_heal, skill_value, allfactions, true, mod);
             }
-            break;
+            break;        
         case Effect::leech_1:
         case Effect::leech_2:
         case Effect::leech_3:
@@ -487,7 +496,16 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
                 need_add_skill = false;
                 return SkillSpec(enhance_leech, skill_value, allfactions, true, mod);
             }
-            break;            
+            break;        
+        case Effect::poison_1:
+        case Effect::poison_2:
+        case Effect::poison_3:
+            if(skill == new_skill)
+            {
+                need_add_skill = false;
+                return SkillSpec(enhance_poison, skill_value, allfactions, true, mod);
+            }
+            break;    
         case Effect::time_surge:
             // replace other instance of the skill
             if(skill == rush || skill == new_skill)
@@ -1291,6 +1309,7 @@ void turn_start_phase(Field* fd)
             status.m_protected = 0;
             //reset enhance_...
             status.m_enhance_armored = 0;
+            status.m_enhance_heal = 0;
             status.m_enhance_poison = 0;
             status.m_enhance_berserk = 0;
             status.m_enhance_leech = 0;
@@ -2032,6 +2051,17 @@ inline bool skill_predicate<enhance_armored>(Field* fd, CardStatus* src, CardSta
 { return(c->m_card->m_armored > 0); }
 
 template<>
+inline bool skill_predicate<enhance_heal>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
+{ 
+    //copied and adopted from rally
+    const auto& mod = std::get<4>(s);
+    return(c->m_card->m_heal > 0 && can_attack(c) && !c->m_sundered &&  // (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)));
+        (src->m_player != c->m_player || mod == SkillMod::on_death ? (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)) :
+         mod == SkillMod::on_attacked ? is_active_next_turn(c) :
+         is_active(c) && !is_attacking_or_has_attacked(c)));
+}
+
+template<>
 inline bool skill_predicate<enhance_poison>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
 { 
     //copied and adopted from rally
@@ -2124,7 +2154,7 @@ inline void perform_skill<freeze>(Field* fd, CardStatus* c, unsigned v)
 template<>
 inline void perform_skill<heal>(Field* fd, CardStatus* c, unsigned v)
 {
-    add_hp(fd, c, v);
+    add_hp(fd, c, v + c->m_enhance_heal);
 }
 
 template<>
@@ -2199,6 +2229,12 @@ template<>
 inline void perform_skill<enhance_armored>(Field* fd, CardStatus* c, unsigned v)
 {
     c->m_enhance_armored += v;
+}
+
+template<>
+inline void perform_skill<enhance_heal>(Field* fd, CardStatus* c, unsigned v)
+{
+    c->m_enhance_heal += v;
 }
 
 template<>
@@ -2335,6 +2371,9 @@ template<> std::vector<CardStatus*>& skill_targets<siege>(Field* fd, CardStatus*
 { return(skill_targets_hostile_structure(fd, src_status)); }
 
 template<> std::vector<CardStatus*>& skill_targets<enhance_armored>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_allied_assault(fd, src_status)); }
+
+template<> std::vector<CardStatus*>& skill_targets<enhance_heal>(Field* fd, CardStatus* src_status)
 { return(skill_targets_allied_assault(fd, src_status)); }
 
 template<> std::vector<CardStatus*>& skill_targets<enhance_poison>(Field* fd, CardStatus* src_status)
@@ -2789,6 +2828,7 @@ void fill_skill_table()
     skill_table[trigger_regen] = perform_trigger_regen;
     skill_table[weaken] = perform_targetted_hostile_fast<weaken>;
     skill_table[enhance_armored] = perform_targetted_allied_fast<enhance_armored>;
+    skill_table[enhance_heal] = perform_targetted_allied_fast<enhance_heal>;
     skill_table[enhance_poison] = perform_targetted_allied_fast<enhance_poison>;
     skill_table[enhance_berserk] = perform_targetted_allied_fast<enhance_berserk>;
     skill_table[enhance_leech] = perform_targetted_allied_fast<enhance_leech>;

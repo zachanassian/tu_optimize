@@ -15,7 +15,8 @@ std::string skill_names[Skill::num_skills] =
     "Mimic", "Protect", "Rally", "Recharge", "Repair", "Rush", "Shock",
     "Siege", "Split", "Strike", "Summon", "Supply",
     "trigger_regen",
-    "Weaken", "Enhance Armored", "Enhance Poison", "Enhance Berserk", "Enhance Leech", "Enhance Counter", "Enhance Evade",
+    "Weaken", "Enhance Armored", "Enhance Heal", "Enhance Poison", "Enhance Berserk", "Enhance Leech", 
+    "Enhance Counter", "Enhance Evade",
     // Combat-Modifier:
     "AntiAir", "Burst", "Fear", "Flurry", "Pierce", "Swipe", "Valor",
     // Damage-Dependant:
@@ -44,6 +45,9 @@ std::string decktype_names[DeckType::num_decktypes]{"Deck", "Mission", "Raid", "
 
 std::string effect_names[Effect::num_effects] = {
     "None",
+    "Heal 1",
+    "Heal 2",
+    "Heal 3",
     "Leech 1",
     "Leech 2",
     "Leech 3",

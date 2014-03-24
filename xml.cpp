@@ -347,7 +347,10 @@ void read_cards(Cards& cards)
                         if(strcmp(skill->first_attribute("id")->value(), "freeze") == 0)
                         { handle_skill<freeze>(skill, c); }
                         if(strcmp(skill->first_attribute("id")->value(), "heal") == 0)
-                        { handle_skill<heal>(skill, c); }
+                        { 
+                          c->m_heal = atoi(skill->first_attribute("x")->value());
+                          handle_skill<heal>(skill, c); 
+                        }
                         if(strcmp(skill->first_attribute("id")->value(), "infuse") == 0)
                         { handle_skill<infuse>(skill, c); }
                         if(strcmp(skill->first_attribute("id")->value(), "jam") == 0)
@@ -393,6 +396,8 @@ void read_cards(Cards& cards)
                         { handle_skill<weaken>(skill, c); }
                         if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) && (strcmp(skill->first_attribute("s")->value(), "armored") == 0))
                         { handle_skill<enhance_armored>(skill, c); }
+                        if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) && (strcmp(skill->first_attribute("s")->value(), "heal") == 0))
+                        { handle_skill<enhance_heal>(skill, c); }
                         if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) && (strcmp(skill->first_attribute("s")->value(), "poison") == 0))
                         { handle_skill<enhance_poison>(skill, c); }
                         if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) && (strcmp(skill->first_attribute("s")->value(), "berserk") == 0))
