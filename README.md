@@ -7,7 +7,7 @@ Deck Simulator and Optimizer for Tyrant Unleashed!
 * SimpleTUOptimizeStarter Help to show build in help
 * SimpleTUOptimizeStarter Web to open http://zachanassian.github.io/tu_optimize/
 * [FIX] SimpleTUOptimizeStarter output window should no longer close immediatly
-* ownedcards.txt sigle copy of a card no longer requires count (1)
+* ownedcards.txt single copy of a card no longer requires count (1)
 * Added battleground effect Poison 1-3
 <pre>
 tu_optimize.exe "Barracus, Starformer(2)" "Constantine, Vigil(10)" -e "Poison 2" sim 10000
