@@ -88,6 +88,9 @@ extern std::string decktype_names[DeckType::num_decktypes];
 
 enum Effect {
     none,
+    leech_1,
+    leech_2,
+    leech_3,
     poison_1,
     poison_2,
     poison_3,

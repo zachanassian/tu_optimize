@@ -1112,7 +1112,8 @@ void usage(int argc, char** argv)
         "\n"
         "Flags:\n"
         //"  -A <achievement>: optimize for the achievement specified by either id or name.\n"
-        //"  -e <effect>: set the battleground effect. effect is automatically set when applicable.\n"
+        "  -e <effect>: set the battleground effect.\n"
+        "               use \"tu_optimize Po Po -e test\" to get a list of all available effects.\n" 
         "  -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).\n"
         "  -s: use surge (default is fight).\n"
         "  -t <num>: set the number of threads, default is 4.\n"
@@ -1136,8 +1137,8 @@ void usage(int argc, char** argv)
 #ifndef NDEBUG
         "  debug: testing purpose only. very verbose output. only one battle.\n"
         "  debuguntil <min> <max>: testing purpose only. fight until the last fight results in range [<min>, <max>]. recommend to redirect output.\n"
-        "  example: debuguntil 100 100 will run till first win.\n"
-        "  example: debuguntil 0 0 will run till first lose.\n"
+        "                          debuguntil 100 100 will run till first win.\n"
+        "                          debuguntil 0 0 will run till first lose.\n"
 #endif
         ;
 }

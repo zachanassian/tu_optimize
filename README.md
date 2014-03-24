@@ -15,6 +15,16 @@ win%: 99.75 (9975 / 10000)
 stall%: 0.07 (7 / 10000)
 loss%: 0.18 (18 / 10000)
 </pre>
+* Added battleground effect Leech 1-3
+<pre>
+tu_optimize.exe "Nex, Apex(10)" "Obama, SF(5)" -e "Leech 3" sim 1000000
+Your Deck: [S0CC+q] Nexor, Apex, Apex, Apex, Apex, Apex, Apex, Apex, Apex, Apex, Apex
+Enemy's Deck: [SoO6+l] Barracus, Starformer, Starformer, Starformer, Starformer, Starformer
+Effect: Leech 3
+win%: 22.3022 (223022 / 1000000)
+stall%: 1.0532 (10532 / 1000000)
+loss%: 76.6446 (766446 / 1000000)
+</pre>
 
 ##Version 0.10.1
 * [FIX] Played cards started with evade_left 0

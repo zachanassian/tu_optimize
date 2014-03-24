@@ -419,7 +419,10 @@ bool may_change_skill(const Field* fd, const CardStatus* status, const SkillMod:
             switch (status->m_card->m_type)
             {
                 case CardType::commander:
-                    return (fd->effect == Effect::poison_1 ||
+                    return (fd->effect == Effect::leech_1 ||
+                            fd->effect == Effect::leech_2 ||
+                            fd->effect == Effect::leech_3 ||
+                            fd->effect == Effect::poison_1 ||
                             fd->effect == Effect::poison_2 ||
                             fd->effect == Effect::poison_3 ||
                             fd->effect == Effect::time_surge ||
@@ -447,29 +450,44 @@ bool may_change_skill(const Field* fd, const CardStatus* status, const SkillMod:
 SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, const SkillSpec& ss, const SkillMod::SkillMod mod, bool& need_add_skill)
 {
     const auto& skill = std::get<0>(ss);
+    unsigned skill_value = 0;
+    switch (fd->effect)
+    {
+        case Effect::leech_1:
+        case Effect::poison_1:
+            skill_value = 1;
+            break;
+        case Effect::leech_2:    
+        case Effect::poison_2:
+            skill_value = 2;
+            break;
+        case Effect::leech_3:    
+        case Effect::poison_3:
+            skill_value = 3;
+            break;
+        default:
+            break;    
+    }
     switch (fd->effect)
     {
         case Effect::poison_1:
-            if(skill == new_skill)
-            {
-                need_add_skill = false;
-                return SkillSpec(enhance_poison, 1, allfactions, true, mod);
-            }
-            break;
         case Effect::poison_2:
-            if(skill == new_skill)
-            {
-                need_add_skill = false;
-                return SkillSpec(enhance_poison, 2, allfactions, true, mod);
-            }
-            break;
         case Effect::poison_3:
             if(skill == new_skill)
             {
                 need_add_skill = false;
-                return SkillSpec(enhance_poison, 3, allfactions, true, mod);
+                return SkillSpec(enhance_poison, skill_value, allfactions, true, mod);
             }
             break;
+        case Effect::leech_1:
+        case Effect::leech_2:
+        case Effect::leech_3:
+            if(skill == new_skill)
+            {
+                need_add_skill = false;
+                return SkillSpec(enhance_leech, skill_value, allfactions, true, mod);
+            }
+            break;            
         case Effect::time_surge:
             // replace other instance of the skill
             if(skill == rush || skill == new_skill)

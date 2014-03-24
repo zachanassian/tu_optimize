@@ -44,6 +44,9 @@ std::string decktype_names[DeckType::num_decktypes]{"Deck", "Mission", "Raid", "
 
 std::string effect_names[Effect::num_effects] = {
     "None",
+    "Leech 1",
+    "Leech 2",
+    "Leech 3",
     "Poison 1",
     "Poison 2",
     "Poison 3",
