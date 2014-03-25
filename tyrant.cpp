@@ -11,12 +11,13 @@ std::string skill_names[Skill::num_skills] =
     "0",
     // Activation (Including Destroyed):
     "Augment", "Backfire", "Chaos", "Cleanse", "Enfeeble",
+    "Enhance Armored", "Enhance Berserk", "Enhance Counter", "Enhance Evade",
+    "Enhance Leech", "Enhance Heal", "Enhance Poison",
     "Freeze", "Heal", "Infuse", "Jam",
     "Mimic", "Protect", "Rally", "Recharge", "Repair", "Rush", "Shock",
     "Siege", "Split", "Strike", "Summon", "Supply",
     "trigger_regen",
-    "Weaken", "Enhance Armored", "Enhance Heal", "Enhance Poison", "Enhance Berserk", "Enhance Leech", 
-    "Enhance Counter", "Enhance Evade",
+    "Weaken",
     // Combat-Modifier:
     "AntiAir", "Burst", "Fear", "Flurry", "Pierce", "Swipe", "Valor",
     // Damage-Dependant:

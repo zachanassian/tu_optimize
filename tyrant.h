@@ -25,11 +25,13 @@ enum Skill
     // Attack:
     attack,
     // Activation (including Destroyed):
-    augment, backfire, chaos, cleanse, enfeeble, freeze, heal, infuse, jam,
+    augment, backfire, chaos, cleanse, enfeeble,
+    enhance_armored, enhance_berserk, enhance_counter, enhance_evade,
+    enhance_leech, enhance_heal, enhance_poison,
+    freeze, heal, infuse, jam,
     mimic, protect, rally, recharge, repair, rush, shock, siege, split, strike, summon, supply,
     trigger_regen, // not actually a skill; handles regeneration after strike/siege
-    weaken, enhance_armored, enhance_heal, enhance_poison, enhance_berserk, enhance_leech, 
-    enhance_counter, enhance_evade,
+    weaken,
     // Combat-Modifier:
     antiair, burst, fear, flurry, pierce, swipe, valor,
     // Damage-Dependant:

@@ -135,6 +135,13 @@ struct CardStatus
     unsigned m_delay;
     bool m_diseased;
     unsigned m_enfeebled;
+    unsigned m_enhance_armored;
+    unsigned m_enhance_berserk;
+    unsigned m_enhance_counter;
+    unsigned m_enhance_evade;
+    unsigned m_enhance_heal;
+    unsigned m_enhance_leech;
+    unsigned m_enhance_poison;
     unsigned m_evades_left;
     Faction m_faction;
     bool m_frozen;
@@ -151,13 +158,6 @@ struct CardStatus
     unsigned m_stunned;
     bool m_sundered;
     unsigned m_weakened;
-    unsigned m_enhance_armored;
-    unsigned m_enhance_heal;
-    unsigned m_enhance_poison;
-    unsigned m_enhance_berserk;
-    unsigned m_enhance_leech;
-    unsigned m_enhance_counter;
-    unsigned m_enhance_evade;
     bool m_temporary_split;
     bool m_is_summoned; // is this card summoned (or split)?
     CardStep m_step;

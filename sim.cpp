@@ -90,6 +90,13 @@ CardStatus::CardStatus(const Card* card) :
     m_delay(card->m_delay),
     m_diseased(false),
     m_enfeebled(0),
+    m_enhance_armored(0),
+    m_enhance_berserk(0),
+    m_enhance_counter(0),
+    m_enhance_evade(0),
+    m_enhance_heal(0),
+    m_enhance_leech(0),
+    m_enhance_poison(0),
     m_evades_left(card->m_evade),
     m_faction(card->m_faction),
     m_frozen(false),
@@ -106,13 +113,6 @@ CardStatus::CardStatus(const Card* card) :
     m_stunned(0),
     m_sundered(false),
     m_weakened(0),
-    m_enhance_armored(0),
-    m_enhance_heal(0),
-    m_enhance_poison(0),
-    m_enhance_berserk(0),
-    m_enhance_leech(0),
-    m_enhance_counter(0),
-    m_enhance_evade(0),
     m_temporary_split(false),
     m_is_summoned(false),
     m_step(CardStep::none)
@@ -137,6 +137,13 @@ inline void CardStatus::set(const Card& card)
     m_delay = card.m_delay;
     m_diseased = false;
     m_enfeebled = 0;
+    m_enhance_armored = 0;
+    m_enhance_berserk = 0;
+    m_enhance_counter = 0;
+    m_enhance_evade = 0;
+    m_enhance_heal = 0;
+    m_enhance_leech = 0;
+    m_enhance_poison = 0;
     m_evades_left = card.m_evade,
     m_faction = card.m_faction;
     m_frozen = false;
@@ -154,13 +161,6 @@ inline void CardStatus::set(const Card& card)
     m_sundered = false;
     m_temporary_split = false;
     m_weakened = 0;
-    m_enhance_armored = 0;
-    m_enhance_heal = 0;
-    m_enhance_poison = 0;
-    m_enhance_berserk = 0;
-    m_enhance_leech = 0;
-    m_enhance_counter = 0;
-    m_enhance_evade = 0;
     m_is_summoned = false;
     m_step = CardStep::none;
 }
@@ -1273,9 +1273,6 @@ void turn_end_phase(Field* fd)
             ++index)
         {
             CardStatus& status(assaults[index]);
-            //status.m_index = index;
-            //status.m_enfeebled = 0;
-            //status.m_protected = 0;
             status.m_inhibited = 0;
             unsigned diff = safe_minus(status.m_poisoned, status.m_protected);
             //only cards that are still alive take poison damage
@@ -1309,12 +1306,12 @@ void turn_start_phase(Field* fd)
             status.m_protected = 0;
             //reset enhance_...
             status.m_enhance_armored = 0;
-            status.m_enhance_heal = 0;
-            status.m_enhance_poison = 0;
             status.m_enhance_berserk = 0;
-            status.m_enhance_leech = 0;
             status.m_enhance_counter = 0;
             status.m_enhance_evade = 0;
+            status.m_enhance_leech = 0;
+            status.m_enhance_heal = 0;
+            status.m_enhance_poison = 0;
             status.m_evades_left = status.m_card->m_evade;
             if(status.m_delay > 0 && !status.m_frozen)
             {
@@ -2809,6 +2806,13 @@ void fill_skill_table()
     skill_table[chaos] = perform_targetted_hostile_fast<chaos>;
     skill_table[cleanse] = perform_targetted_allied_fast<cleanse>;
     skill_table[enfeeble] = perform_targetted_hostile_fast<enfeeble>;
+    skill_table[enhance_armored] = perform_targetted_allied_fast<enhance_armored>;
+    skill_table[enhance_berserk] = perform_targetted_allied_fast<enhance_berserk>;
+    skill_table[enhance_counter] = perform_targetted_allied_fast<enhance_counter>;
+    skill_table[enhance_evade] = perform_targetted_allied_fast<enhance_evade>;
+    skill_table[enhance_leech] = perform_targetted_allied_fast<enhance_leech>;
+    skill_table[enhance_heal] = perform_targetted_allied_fast<enhance_heal>;
+    skill_table[enhance_poison] = perform_targetted_allied_fast<enhance_poison>;
     skill_table[freeze] = perform_targetted_hostile_fast<freeze>;
     skill_table[heal] = perform_targetted_allied_fast<heal>;
     skill_table[infuse] = perform_infuse;
@@ -2827,11 +2831,4 @@ void fill_skill_table()
     skill_table[summon] = perform_summon<summon>;
     skill_table[trigger_regen] = perform_trigger_regen;
     skill_table[weaken] = perform_targetted_hostile_fast<weaken>;
-    skill_table[enhance_armored] = perform_targetted_allied_fast<enhance_armored>;
-    skill_table[enhance_heal] = perform_targetted_allied_fast<enhance_heal>;
-    skill_table[enhance_poison] = perform_targetted_allied_fast<enhance_poison>;
-    skill_table[enhance_berserk] = perform_targetted_allied_fast<enhance_berserk>;
-    skill_table[enhance_leech] = perform_targetted_allied_fast<enhance_leech>;
-    skill_table[enhance_counter] = perform_targetted_allied_fast<enhance_counter>;
-    skill_table[enhance_evade] = perform_targetted_allied_fast<enhance_evade>;
 }
