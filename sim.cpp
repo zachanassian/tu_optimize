@@ -422,7 +422,19 @@ bool may_change_skill(const Field* fd, const CardStatus* status, const SkillMod:
             switch (status->m_card->m_type)
             {
                 case CardType::commander:
-                    return (fd->effect == Effect::heal_1 ||
+                    return (fd->effect == Effect::armored_1 ||
+                            fd->effect == Effect::armored_2 ||
+                            fd->effect == Effect::armored_3 ||
+                            fd->effect == Effect::berserk_1 ||
+                            fd->effect == Effect::berserk_2 ||
+                            fd->effect == Effect::berserk_3 ||
+                            fd->effect == Effect::counter_1 ||
+                            fd->effect == Effect::counter_2 ||
+                            fd->effect == Effect::counter_3 ||
+                            fd->effect == Effect::evade_1 ||
+                            fd->effect == Effect::evade_2 ||
+                            fd->effect == Effect::evade_3 ||
+                            fd->effect == Effect::heal_1 ||
                             fd->effect == Effect::heal_2 ||
                             fd->effect == Effect::heal_3 ||
                             fd->effect == Effect::leech_1 ||
@@ -459,16 +471,28 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
     unsigned skill_value = 0;
     switch (fd->effect)
     {
+        case Effect::armored_1:
+        case Effect::berserk_1:
+        case Effect::counter_1:
+        case Effect::evade_1:
         case Effect::heal_1:
         case Effect::leech_1:
         case Effect::poison_1:
             skill_value = 1;
             break;
+        case Effect::armored_2:
+        case Effect::berserk_2:
+        case Effect::counter_2:
+        case Effect::evade_2:
         case Effect::heal_2:
         case Effect::leech_2:    
         case Effect::poison_2:
             skill_value = 2;
             break;
+        case Effect::armored_3:
+        case Effect::berserk_3:
+        case Effect::counter_3:
+        case Effect::evade_3:
         case Effect::heal_3:    
         case Effect::leech_3:    
         case Effect::poison_3:
@@ -479,6 +503,42 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
     }
     switch (fd->effect)
     {
+        case Effect::armored_1:
+        case Effect::armored_2:
+        case Effect::armored_3:
+            if(skill == new_skill)
+            {
+                need_add_skill = false;
+                return SkillSpec(enhance_armored, skill_value, allfactions, true, mod);
+            }
+            break;
+        case Effect::berserk_1:
+        case Effect::berserk_2:
+        case Effect::berserk_3:
+            if(skill == new_skill)
+            {
+                need_add_skill = false;
+                return SkillSpec(enhance_berserk, skill_value, allfactions, true, mod);
+            }
+            break;
+        case Effect::counter_1:
+        case Effect::counter_2:
+        case Effect::counter_3:
+            if(skill == new_skill)
+            {
+                need_add_skill = false;
+                return SkillSpec(enhance_counter, skill_value, allfactions, true, mod);
+            }
+            break;
+        case Effect::evade_1:
+        case Effect::evade_2:
+        case Effect::evade_3:
+            if(skill == new_skill)
+            {
+                need_add_skill = false;
+                return SkillSpec(enhance_evade, skill_value, allfactions, true, mod);
+            }
+            break;
         case Effect::heal_1:
         case Effect::heal_2:
         case Effect::heal_3:
@@ -487,7 +547,7 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
                 need_add_skill = false;
                 return SkillSpec(enhance_heal, skill_value, allfactions, true, mod);
             }
-            break;        
+            break;
         case Effect::leech_1:
         case Effect::leech_2:
         case Effect::leech_3:
@@ -496,7 +556,7 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
                 need_add_skill = false;
                 return SkillSpec(enhance_leech, skill_value, allfactions, true, mod);
             }
-            break;        
+            break;
         case Effect::poison_1:
         case Effect::poison_2:
         case Effect::poison_3:
@@ -505,7 +565,7 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
                 need_add_skill = false;
                 return SkillSpec(enhance_poison, skill_value, allfactions, true, mod);
             }
-            break;    
+            break;
         case Effect::time_surge:
             // replace other instance of the skill
             if(skill == rush || skill == new_skill)

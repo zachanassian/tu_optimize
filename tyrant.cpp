@@ -46,6 +46,18 @@ std::string decktype_names[DeckType::num_decktypes]{"Deck", "Mission", "Raid", "
 
 std::string effect_names[Effect::num_effects] = {
     "None",
+    "Armor 1",
+    "Armor 2",
+    "Armor 3",
+    "Berserk 1",
+    "Berserk 2",
+    "Berserk 3",
+    "Counter 1",
+    "Counter 2",
+    "Counter 3",
+    "Evade 1",
+    "Evade 2",
+    "Evade 3",
     "Heal 1",
     "Heal 2",
     "Heal 3",

@@ -38,6 +38,46 @@ win%: 98.553 (98553 / 100000)
 stall%: 1.39 (1390 / 100000)
 loss%: 0.057 (57 / 100000)
 </pre>
+* Added battleground effect Evade 1-3
+<pre>
+tu_optimize "Alaric, Blitz(6)" "Barracus, Apex" -e "Evade 1" sim 10000
+Your Deck: [REIJ+m] Alaric, Blitz, Blitz, Blitz, Blitz, Blitz, Blitz
+Enemy's Deck: [SoCC] Barracus, Apex
+Effect: Evade 1
+win%: 100 (10000 / 10000)
+stall%: 0 (0 / 10000)
+loss%: 0 (0 / 10000)
+</pre>
+* Added battleground effect Counter 1-3
+<pre>
+tu_optimize "Alaric, Vigil(4)" "Halcyon, Windreaver(5)" -e "Counter 1" sim 10000
+Your Deck: [RECd+k] Alaric, Vigil, Vigil, Vigil, Vigil
+Enemy's Deck: [QEIP+l] Halcyon, Windreaver, Windreaver, Windreaver, Windreaver, Windreaver
+Effect: Counter 1
+win%: 25.08 (2508 / 10000)
+stall%: 1.29 (129 / 10000)
+loss%: 73.63 (7363 / 10000)
+</pre>
+* Added battleground effect Berserk 1-3
+<pre>
+tu_optimize "Vex, HA(5)" "Halcyon, Galereaver(3)" -e "Berserk 3" sim 10000
+Your Deck: [QKLQ+l] Typhon Vex, Havoc Alpha, Havoc Alpha, Havoc Alpha, Havoc Alpha, Havoc Alpha
+Enemy's Deck: [QE-QB+j] Halcyon, Galereaver, Galereaver, Galereaver
+Effect: Berserk 3
+win%: 11.92 (1192 / 10000)
+stall%: 15.05 (1505 / 10000)
+loss%: 73.03 (7303 / 10000)
+</pre>
+* Added battleground effect Armor 1-3
+<pre>
+tu_optimize "Alaric, Vigil(3)" "Obama, Apex(5)" -e "Armor 2" sim 10000
+Your Deck: [RECd+j] Alaric, Vigil, Vigil, Vigil
+Enemy's Deck: [SoCC+l] Barracus, Apex, Apex, Apex, Apex, Apex
+Effect: Armored 2
+win%: 73.12 (7312 / 10000)
+stall%: 25.31 (2531 / 10000)
+loss%: 1.57 (157 / 10000)
+</pre>
 
 ##Version 0.10.1
 * [FIX] Played cards started with evade_left 0
