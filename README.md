@@ -1,6 +1,84 @@
 #Tyrant Unleashed Optimizer
 Deck Simulator and Optimizer for Tyrant Unleashed!
 
+##Version 1.0[RC]
+* SimpleTUOptimizeStarter no longer needs quotes
+* SimpleTUOptimizeStarter will close all his opened output windows on exit or window close
+* SimpleTUOptimizeStarter Help to show build in help
+* SimpleTUOptimizeStarter Web to open http://zachanassian.github.io/tu_optimize/
+* [FIX] SimpleTUOptimizeStarter output window should no longer close immediatly
+* ownedcards.txt single copy of a card no longer requires count (1)
+* Added battleground effect Poison 1-3
+<pre>
+tu_optimize.exe "Barracus, Starformer(2)" "Constantine, Vigil(10)" -e "Poison 2" sim 10000
+Your Deck: [SoO6+i] Barracus, Starformer, Starformer
+Enemy's Deck: [S6Cd+q] Constantine, Vigil, Vigil, Vigil, Vigil, Vigil, Vigil, Vigil, Vigil, Vigil, Vigil
+Effect: Poison 2
+win%: 99.75 (9975 / 10000)
+stall%: 0.07 (7 / 10000)
+loss%: 0.18 (18 / 10000)
+</pre>
+* Added battleground effect Leech 1-3
+<pre>
+tu_optimize.exe "Nex, Apex(10)" "Obama, SF(5)" -e "Leech 3" sim 1000000
+Your Deck: [S0CC+q] Nexor, Apex, Apex, Apex, Apex, Apex, Apex, Apex, Apex, Apex, Apex
+Enemy's Deck: [SoO6+l] Barracus, Starformer, Starformer, Starformer, Starformer, Starformer
+Effect: Leech 3
+win%: 22.3022 (223022 / 1000000)
+stall%: 1.0532 (10532 / 1000000)
+loss%: 76.6446 (766446 / 1000000)
+</pre>
+* Added battleground effect Heal 1-3
+<pre>
+tu_optimize "Alaric, Vigil(5)" "Obama, Terraformer(5)" -e "Heal 1" sim 100000
+Your Deck: [RECd+l] Alaric, Vigil, Vigil, Vigil, Vigil, Vigil
+Enemy's Deck: [SoOe+l] Barracus, Terraformer, Terraformer, Terraformer, Terraformer, Terraformer
+Effect: Heal 1
+win%: 98.553 (98553 / 100000)
+stall%: 1.39 (1390 / 100000)
+loss%: 0.057 (57 / 100000)
+</pre>
+* Added battleground effect Evade 1-3
+<pre>
+tu_optimize "Alaric, Blitz(6)" "Barracus, Apex" -e "Evade 1" sim 10000
+Your Deck: [REIJ+m] Alaric, Blitz, Blitz, Blitz, Blitz, Blitz, Blitz
+Enemy's Deck: [SoCC] Barracus, Apex
+Effect: Evade 1
+win%: 100 (10000 / 10000)
+stall%: 0 (0 / 10000)
+loss%: 0 (0 / 10000)
+</pre>
+* Added battleground effect Counter 1-3
+<pre>
+tu_optimize "Alaric, Vigil(4)" "Halcyon, Windreaver(5)" -e "Counter 1" sim 10000
+Your Deck: [RECd+k] Alaric, Vigil, Vigil, Vigil, Vigil
+Enemy's Deck: [QEIP+l] Halcyon, Windreaver, Windreaver, Windreaver, Windreaver, Windreaver
+Effect: Counter 1
+win%: 25.08 (2508 / 10000)
+stall%: 1.29 (129 / 10000)
+loss%: 73.63 (7363 / 10000)
+</pre>
+* Added battleground effect Berserk 1-3
+<pre>
+tu_optimize "Vex, HA(5)" "Halcyon, Galereaver(3)" -e "Berserk 3" sim 10000
+Your Deck: [QKLQ+l] Typhon Vex, Havoc Alpha, Havoc Alpha, Havoc Alpha, Havoc Alpha, Havoc Alpha
+Enemy's Deck: [QE-QB+j] Halcyon, Galereaver, Galereaver, Galereaver
+Effect: Berserk 3
+win%: 11.92 (1192 / 10000)
+stall%: 15.05 (1505 / 10000)
+loss%: 73.03 (7303 / 10000)
+</pre>
+* Added battleground effect Armor 1-3
+<pre>
+tu_optimize "Alaric, Vigil(3)" "Obama, Apex(5)" -e "Armor 2" sim 10000
+Your Deck: [RECd+j] Alaric, Vigil, Vigil, Vigil
+Enemy's Deck: [SoCC+l] Barracus, Apex, Apex, Apex, Apex, Apex
+Effect: Armored 2
+win%: 73.12 (7312 / 10000)
+stall%: 25.31 (2531 / 10000)
+loss%: 1.57 (157 / 10000)
+</pre>
+
 ##Version 0.10.1
 * [FIX] Played cards started with evade_left 0
 <pre>

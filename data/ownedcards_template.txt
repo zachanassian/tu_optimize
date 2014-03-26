@@ -1,7 +1,7 @@
 //put all your cards in a file like this and name it ownedcards.txt
 //you have one copy of Alaric (Level6) and Cyrus (Level6)
-Alaric (1)
-Cyrus (1)
+Alaric
+Cyrus
 //you have two Indebted Vererans Level 1
 Indebted Veteran-1 (2)
 //you can also use abbreviations defined in cardabbrs.txt. Then this could be three Noble Defiances

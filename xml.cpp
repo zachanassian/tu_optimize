@@ -344,10 +344,34 @@ void read_cards(Cards& cards)
                         { handle_skill<cleanse>(skill, c); }
                         if(strcmp(skill->first_attribute("id")->value(), "enfeeble") == 0)
                         { handle_skill<enfeeble>(skill, c); }
+                        if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) &&
+                           (strcmp(skill->first_attribute("s")->value(), "armored") == 0))
+                        { handle_skill<enhance_armored>(skill, c); }
+                        if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) &&
+                           (strcmp(skill->first_attribute("s")->value(), "berserk") == 0))
+                        { handle_skill<enhance_berserk>(skill, c); }
+                        if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) &&
+                           (strcmp(skill->first_attribute("s")->value(), "counter") == 0))
+                        { handle_skill<enhance_counter>(skill, c); }
+                        if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) &&
+                           (strcmp(skill->first_attribute("s")->value(), "evade") == 0))
+                        { handle_skill<enhance_evade>(skill, c); }
+                        if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) &&
+                           (strcmp(skill->first_attribute("s")->value(), "leech") == 0))
+                        { handle_skill<enhance_leech>(skill, c); }
+                        if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) &&
+                           (strcmp(skill->first_attribute("s")->value(), "heal") == 0))
+                        { handle_skill<enhance_heal>(skill, c); }
+                        if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) &&
+                           (strcmp(skill->first_attribute("s")->value(), "poison") == 0))
+                        { handle_skill<enhance_poison>(skill, c); }
                         if(strcmp(skill->first_attribute("id")->value(), "freeze") == 0)
                         { handle_skill<freeze>(skill, c); }
                         if(strcmp(skill->first_attribute("id")->value(), "heal") == 0)
-                        { handle_skill<heal>(skill, c); }
+                        { 
+                          c->m_heal = atoi(skill->first_attribute("x")->value());
+                          handle_skill<heal>(skill, c); 
+                        }
                         if(strcmp(skill->first_attribute("id")->value(), "infuse") == 0)
                         { handle_skill<infuse>(skill, c); }
                         if(strcmp(skill->first_attribute("id")->value(), "jam") == 0)
@@ -391,18 +415,6 @@ void read_cards(Cards& cards)
                         { handle_skill<supply>(skill, c); }
                         if(strcmp(skill->first_attribute("id")->value(), "weaken") == 0)
                         { handle_skill<weaken>(skill, c); }
-                        if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) && (strcmp(skill->first_attribute("s")->value(), "armored") == 0))
-                        { handle_skill<enhance_armored>(skill, c); }
-                        if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) && (strcmp(skill->first_attribute("s")->value(), "poison") == 0))
-                        { handle_skill<enhance_poison>(skill, c); }
-                        if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) && (strcmp(skill->first_attribute("s")->value(), "berserk") == 0))
-                        { handle_skill<enhance_berserk>(skill, c); }
-                        if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) && (strcmp(skill->first_attribute("s")->value(), "leech") == 0))
-                        { handle_skill<enhance_leech>(skill, c); }
-                        if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) && (strcmp(skill->first_attribute("s")->value(), "counter") == 0))
-                        { handle_skill<enhance_counter>(skill, c); }
-                        if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) && (strcmp(skill->first_attribute("s")->value(), "evade") == 0))
-                        { handle_skill<enhance_evade>(skill, c); }                        
                     }
                     cards.cards.push_back(c);
                 } // end if 

@@ -1,7 +1,7 @@
 #ifndef TYRANT_H_INCLUDED
 #define TYRANT_H_INCLUDED
 
-#define TU_OPTIMIZER_VERSION "0.10.1"
+#define TU_OPTIMIZER_VERSION "1.0[RC]"
 
 #include <string>
 #include <set>
@@ -25,10 +25,13 @@ enum Skill
     // Attack:
     attack,
     // Activation (including Destroyed):
-    augment, backfire, chaos, cleanse, enfeeble, freeze, heal, infuse, jam,
+    augment, backfire, chaos, cleanse, enfeeble,
+    enhance_armored, enhance_berserk, enhance_counter, enhance_evade,
+    enhance_leech, enhance_heal, enhance_poison,
+    freeze, heal, infuse, jam,
     mimic, protect, rally, recharge, repair, rush, shock, siege, split, strike, summon, supply,
     trigger_regen, // not actually a skill; handles regeneration after strike/siege
-    weaken, enhance_armored, enhance_poison, enhance_berserk, enhance_leech, enhance_counter, enhance_evade,
+    weaken,
     // Combat-Modifier:
     antiair, burst, fear, flurry, pierce, swipe, valor,
     // Damage-Dependant:
@@ -88,6 +91,27 @@ extern std::string decktype_names[DeckType::num_decktypes];
 
 enum Effect {
     none,
+    armored_1,
+    armored_2,
+    armored_3,
+    berserk_1,
+    berserk_2,
+    berserk_3,
+    counter_1,
+    counter_2,
+    counter_3,
+    evade_1,
+    evade_2,
+    evade_3,
+    heal_1,
+    heal_2,
+    heal_3,
+    leech_1,
+    leech_2,
+    leech_3,
+    poison_1,
+    poison_2,
+    poison_3,
     time_surge,
     copycat,
     quicksilver,

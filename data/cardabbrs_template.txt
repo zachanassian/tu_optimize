@@ -1,7 +1,30 @@
-Pet: Petrisis
-HA: Havoc Alpha
-Obama: Barracus
-SF: Starformer
-Nex: Nexor
+AV: Ayrkrane Vik
+BC: Blight Crusher
+BCg: Bolt Crag
+BzP: Blitz Plate
+CA: Crushing Anvil
+CJ: Covert Jet
 Eerie: Narscious the Eerie
+GF: Garrison Fortifier
+HA: Havoc Alpha
+HD: Heart Devourer
+HG: Havoc Genesis
+IT: Indestructible Troop
+MJ: Mach Jet
+MwA: Masterwork Aegis
 NbD: Noble Defiance
+Nex: Nexor
+Obama: Barracus
+PD: Pantheon Disciple
+Pet: Petrisis
+SF: Starformer
+SR: Spiteful Raptor
+SacS: Sacred Sanctuary
+SS: Shining Sanctuary
+TB: Tartarus Brood
+TS: Tartarus Scion
+Vex: Typhon Vex
+VR: Venomous Raptor
+XO: Xeno Overlord
+XS: Xeno Suzerain
+ZH: Zodiac Harbinger
