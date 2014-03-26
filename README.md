@@ -1,7 +1,7 @@
 #Tyrant Unleashed Optimizer
 Deck Simulator and Optimizer for Tyrant Unleashed!
 
-##Version 1.0
+##Version 1.0[RC]
 * SimpleTUOptimizeStarter no longer needs quotes
 * SimpleTUOptimizeStarter will close all his opened output windows on exit or window close
 * SimpleTUOptimizeStarter Help to show build in help
