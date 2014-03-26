@@ -75,7 +75,7 @@ stall%: 0.014 (14 / 100000)
 loss%: 40.543 (40543 / 100000)
 </pre>
 <ul>
-<li>cards are identified by their name. By definition Cyrus means Cyrus Level 4. 
+<li>cards are identified by their name. By definition Cyrus means Cyrus at max Level (Level 4). 
 If you want to use Cyrus Level 1 use Cyrus-1</li>
 <li>if you have eg. three copies of Revolver use Revolver(3)</li>
 <li>by default your deck and enemy's deck are played in random order</li>
@@ -106,6 +106,22 @@ loss%: 35.019 (35019 / 100000)
 </pre>
 <ul>
 <li><code>-s</code> means enemy's deck starts in turn 1. You play your first card in turn 2</li>
+</ul>
+
+<h2><a name="battlegroundeffects" class="anchor" href="#battlegroundeffects">
+<span class="octicon octicon-link"></span></a>Simulate with battleground effects</h2>
+<pre>
+>tu_optimize "Alaric, Vigil(3)" "Barracus, Apex(5)" -e "Armor 2" sim 10000
+Your Deck: [RECd+j] Alaric, Vigil, Vigil, Vigil
+Enemy's Deck: [SoCC+l] Barracus, Apex, Apex, Apex, Apex, Apex
+Effect: Armored 2
+win%: 73.12 (7312 / 10000)
+stall%: 25.31 (2531 / 10000)
+loss%: 1.57 (157 / 10000)
+</pre>
+<ul>
+<li>To reduce typing effort <code>Armor 2</code> means <code>Enhance All Armor 2</code></li>
+<li>use <code>tu_optimize Po Po -e list</code> to get a list of all available effects.</li>
 </ul>
 
 <h2><a name="cardabbrs" class="anchor" href="#cardabbrs"><span class="octicon octicon-link"></span></a>Define and use your own card abbreviations</h2>
