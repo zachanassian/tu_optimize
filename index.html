@@ -61,12 +61,11 @@
 <p>Tyrant Unleashed Optimizer is a command line tool to simulate and optimize your tyrant unleashed deck 
 based on the famous <a href="http://www.kongregate.com/forums/65-tyrant/topics/257807-automatic-deck-optimization"
 target="_blank">tyrant_optimize</a> from flash Tyrant.</p>
-<p>Tyrant Unleashed Optimizer is in beta test at the moment. So please do not distribute the link yourself.</p> 
 <p>To start the command line interpreter in windows use Start: <code>cmd.exe</code>, navigate 
 to the folder containing <code>tu_optimizer.exe</code> and type one of the commands displayed below.</p> 
 <p>If you do not like the command line you can also use <code>SimpleTUoptimzeStarter.exe</code>. Click 
 <a href="install.html#simpleui">here</a> for more details.</p>
-<h2><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Simulate your deck against another deck</h2>
+<h2><a name="sim" class="anchor" href="#sim"><span class="octicon octicon-link"></span></a>Simulate your deck against another deck</h2>
 <pre>
 >tu_optimize "Cyrus, Medic, Revolver, Imperial APC" "Malika, Grunt, Blitz Armor" sim 100000
 Your Deck: [RWFDFhH3] Cyrus, Medic, Revolver, Imperial APC
@@ -82,7 +81,7 @@ If you want to use Cyrus Level 1 use Cyrus-1</li>
 <li>by default your deck and enemy's deck are played in random order</li>
 </ul>
 
-<h2><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Play your deck ordered</h2>
+<h2><a name="ordered" class="anchor" href="#ordered"><span class="octicon octicon-link"></span></a>Play your deck ordered</h2>
 <pre>
 >tu_optimize "Cyrus, Imperial APC, Revolver, Medic" "Malika, Grunt, Blitz Armor" -r sim 100000
 Your Deck: [RWFDH3Fh] Cyrus, Imperial APC, Revolver, Medic
@@ -96,7 +95,7 @@ loss%: 13.72 (13720 / 100000)
 <li>by default normal PVP mode is used. You play your first card in turn 1</li>
 </ul>
 
-<h2><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Play your deck in surge mode</h2>
+<h2><a name="surge" class="anchor" href="#surge"><span class="octicon octicon-link"></span></a>Play your deck in surge mode</h2>
 <pre>
 >tu_optimize "Cyrus, Imperial APC, Revolver, Medic" "Malika, Grunt, Blitz Armor" -r -s sim 100000
 Your Deck: [RWFDH3Fh] Cyrus, Imperial APC, Revolver, Medic
@@ -109,7 +108,7 @@ loss%: 35.019 (35019 / 100000)
 <li><code>-s</code> means enemy's deck starts in turn 1. You play your first card in turn 2</li>
 </ul>
 
-<h2><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Define and use your own card abbreviations</h2>
+<h2><a name="cardabbrs" class="anchor" href="#cardabbrs"><span class="octicon octicon-link"></span></a>Define and use your own card abbreviations</h2>
 <pre>
 >tu_optimize "Pet,HA(10)" "Obama, SF(5)" sim 100000
 Your Deck: [SuLQ+q] Petrisis, Havoc Alpha, Havoc Alpha, Havoc Alpha, Havoc Alpha, Havoc Alpha, Havoc Alpha, Havoc Alpha, Havoc Alpha, Havoc Alpha, Havoc Alpha
@@ -122,7 +121,7 @@ loss%: 57.168 (57168 / 100000)
 <li>you can define your own card abbreviations in file <code>data/cardabbrs.txt</code> and use them</li>
 </ul>
 
-<h2><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Define and use your own decks</h2>
+<h2><a name="owndecks" class="anchor" href="#owndecks"><span class="octicon octicon-link"></span></a>Define and use your own decks</h2>
 <pre>
 >tu_optimize mydeck nbd-spam sim 100000
 Your Deck: [SoO6iC-BQ-BW-GV-LB-LT] Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
@@ -135,7 +134,7 @@ loss%: 46.111 (46111 / 100000)
 <li>you can define your own decks in file <code>data/customdecks.txt</code> and use them</li>
 </ul>
 
-<h2><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Sim against a batch of decks</h2>
+<h2><a name="batch" class="anchor" href="#batch"><span class="octicon octicon-link"></span></a>Sim against a batch of decks</h2>
 <pre>
 >tu_optimize mydeck nbd-spam;eerie-spam -r sim 100000
 Your Deck: [So-BQ-BW-LB-LTO6-GViC] Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
@@ -146,7 +145,7 @@ stall%: 0.6215 (0 1243 / 100000)
 loss%: 59.0085 (32397 85620 / 100000)
 </pre>
 
-<h2><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Sim against mission decks</h2>
+<h2><a name="missions" class="anchor" href="#missions"><span class="octicon octicon-link"></span></a>Sim against mission decks</h2>
 <pre>
 >tu_optimize mydeck "94. Heart of Tartarus" -r sim 100000
 Your Deck: [So-BQ-BW-LB-LTO6-GViC] Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
@@ -159,7 +158,7 @@ loss%: 0 (0 / 100000)
 <li>use mission name as enemy's deck to sim against mission level 10</li>
 </ul>
 
-<h2><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Automatically optimize play order</h2>
+<h2><a name="optimize" class="anchor" href="#optimize"><span class="octicon octicon-link"></span></a>Automatically optimize play order</h2>
 <pre>
 >tu_optimize mydeck eerie-spam -r reorder 100000
 Your Deck: [So-BQ-BW-LB-LTO6-GViC] Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
@@ -180,7 +179,7 @@ Evaluated 68 decks (648999 + 539668 simulations).
 Optimized Deck: 27.43: Barracus, Tazerecca, Crushing Anvil, Tartarus Brood, Ayrkrane Vik, Mach Jet, Shining Sanctuary, Starformer
 </pre>
 
-<h2><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Automatically optimize using all cards from your card pool</h2>
+<h2><a name="ownedcards" class="anchor" href="#ownedcards"><span class="octicon octicon-link"></span></a>Automatically optimize using all cards from your card pool</h2>
 <pre>
 >tu_optimize mydeck nbd-spam -r -o climb 100000
 Your Deck: [So-BQ-BW-LB-LTO6-GViC] Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
@@ -247,10 +246,10 @@ Optimized Deck: 99.955: Barracus, Ayrkrane Vik, Starformer, Tazerecca, Tartarus 
 <li>use <code>data/ownedcards_template.txt</code> to get an idea how the data has to be entered.</li>
 </ul>
 
-<h2><a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Use build in help if you forget command syntax</h2>
+<h2><a name="help" class="anchor" href="#help"><span class="octicon octicon-link"></span></a>Use build in help if you forget command syntax</h2>
 <pre>
 >tu_optimize
-Tyrant Unleashed Optimizer 0.8
+Tyrant Unleashed Optimizer 1.0[RC] - Copyright (C) 2014 zachanassian
 usage: tu_optimize Your_Deck Enemy_Deck [Flags] [Operations]
 
 Your_Deck:
@@ -259,10 +258,12 @@ Your_Deck:
 Enemy_Deck:
   semicolon separated list of defense decks, syntax:
   deck1[:factor1];deck2[:factor2];...
-  where deck is the name/hash/cards of a mission, raid, quest or custom deck, and factor is optional. The default factor is 1.
+  where deck is the name/hash/cards of a mission or custom deck, and factor is optional. The default factor is 1.
   example: 'eerie-spam:0.2;nbd-spam:0.8' means eerie-spam is the defense deck 20% of the time, while nbd-spam is the defense deck 80% of the time.
 
 Flags:
+  -e <effect>: set the battleground effect.
+               use "tu_optimize Po Po -e list" to get a list of all available effects.
   -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).
   -s: use surge (default is fight).
   -t &lt;num&gt;: set the number of threads, default is 4.
