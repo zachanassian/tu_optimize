@@ -1,4 +1,13 @@
 @echo on
+tu_optimize "Constantine, Eviscerator Noz(4)" "Alaric, Noble Defiance(2)" sim 10000
+@echo off
+echo === Expected ===
+echo win%: 9.13 (913 / 10000)
+echo stall%: 2.29 (229 / 10000)
+echo loss%: 88.58 (8858 / 10000)
+echo
+
+@echo on
 tu_optimize.exe "Barracus, Starformer(2)" "Constantine, Vigil(10)" -e "Poison 2" sim 10000
 @echo off
 echo === Expected ===
