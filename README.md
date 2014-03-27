@@ -1,6 +1,9 @@
 #Tyrant Unleashed Optimizer
 Deck Simulator and Optimizer for Tyrant Unleashed!
 
+##Version 1.0
+* Added new cards.xml and missions.xml - Evrane
+
 ##Version 1.0[RC]
 * SimpleTUOptimizeStarter no longer needs quotes
 * SimpleTUOptimizeStarter will close all his opened output windows on exit or window close

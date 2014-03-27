@@ -45,6 +45,7 @@
 		<x>755</x>
 		<y>205</y>
 		<commander>1143</commander> <!-- Introduce Pierce and Armor -->
+		<desc>The Raider siege continues.  Katana and the Imperial forces push ahead in defense.</desc>
 		<speech>
 			<line commander='1029'>Your time is over, Halcyon! Our shells will punch through your armor. I will be triumphant!</line>
 		</speech>
@@ -9436,6 +9437,361 @@
 		</rewards>
 		<req>2106</req>
 	</mission>
+	
+	<!-- Week 2 -->
+	
+	<mission>
+        <id>2108</id>
+        <name>Reunited</name>
+        <picture>mission2108.jpg</picture>
+        <location_id>106</location_id>
+        <event_req>9</event_req>
+        <mission_type>4</mission_type>
+        <combatBG>CombatBGJungle</combatBG>
+        <energy>50</energy>
+        <x>690</x>
+        <y>360</y>
+        <commander>1283</commander>
+        <speech>
+            <line commander='1003'>Tabitha, I finally found you.</line>
+            <line commander='1998'>Octane, where have you been? Do you know what is happening?</line>
+            <line commander='1003'>I can explain everything, but we need to get moving.</line>
+        </speech>
+        <deck>
+            <card>5426</card>
+            <card>486</card>
+            <card>5329</card>
+            <card>627</card>
+            <card>140</card>
+            <card>143</card>
+            <card>146</card>
+            <card>133</card>
+            <card>137</card>
+            <card>2117</card>
+        </deck>
+        <rewards>
+            <gold>55</gold>
+            <card>200</card>
+            <item>1041</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2107</req>
+    </mission>
+
+    <mission>
+        <id>2109</id>
+        <name>Renewed Spirits</name>
+        <picture>mission2109.jpg</picture>
+        <location_id>106</location_id>
+        <event_req>9</event_req>
+        <mission_type>4</mission_type>
+        <combatBG>CombatBGJungle</combatBG>
+        <energy>55</energy>
+        <x>590</x>
+        <y>330</y>
+        <commander>1283</commander>
+        <speech>
+            <line commander='1003'>We originally separated during a battle. You were knocked out so I had the rest of your unit take you to safety.</line>
+            <line commander='1003'>Then these Fanatics showed up and wiped everyone out. I barely made it out alive.</line>
+        </speech>
+        <deck>
+            <card>5426</card>
+            <card>236</card>
+            <card>558</card>
+            <card>148</card>
+            <card>4065</card>
+            <card>179</card>
+            <card>200</card>
+            <card>201</card>
+            <card>555</card>
+            <card>2028</card>
+        </deck>
+        <rewards>
+            <gold>60</gold>
+            <card>137</card>
+            <item>1041</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2108</req>
+    </mission>
+
+    <mission>
+        <id>2110</id>
+        <name>Outcasts</name>
+        <picture>mission2110.jpg</picture>
+        <location_id>106</location_id>
+        <event_req>9</event_req>
+        <mission_type>4</mission_type>
+        <combatBG>CombatBGJungle</combatBG>
+        <energy>60</energy>
+        <x>490</x>
+        <y>315</y>
+        <commander>1283</commander>
+        <speech>
+            <line commander='1998'>What makes them different from any other Righteous?</line>
+            <line commander='1003'>They're outcasts because of their beliefs. Most Righteous worship the Pantheons and Sentinels. They worship something else entirely.</line>
+        </speech>
+        <deck>
+            <card>5426</card>
+            <card>4812</card>
+            <card>4963</card>
+            <card>328</card>
+            <card>374</card>
+            <card>376</card>
+            <card>140</card>
+            <card>134</card>
+            <card>2025</card>
+            <card>2039</card>
+        </deck>
+        <rewards>
+            <gold>66</gold>
+            <card>145</card>
+            <item>1042</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2109</req>
+    </mission>
+
+    <mission>
+        <id>2111</id>
+        <name>Armageddon</name>
+        <picture>mission2111.jpg</picture>
+        <location_id>106</location_id>
+        <event_req>9</event_req>
+        <mission_type>4</mission_type>
+        <combatBG>CombatBGJungle</combatBG>
+        <energy>60</energy>
+        <x>440</x>
+        <y>390</y>
+        <commander>1283</commander>
+        <speech>
+            <line commander='1003'>The Divine one, as they call it, won't just destroy all life on Acheron; it will destroy the planet.</line>
+        </speech>
+        <deck>
+            <card>5426</card>
+            <card>642</card>
+            <card>519</card>
+            <card>4414</card>
+            <card>626</card>
+            <card>140</card>
+            <card>135</card>
+            <card>179</card>
+            <card>145</card>
+            <card>2117</card>
+        </deck>
+        <rewards>
+            <gold>66</gold>
+            <card>178</card>
+            <item>1042</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2110</req>
+    </mission>
+
+    <mission>
+        <id>2112</id>
+        <name>Carried Away</name>
+        <picture>mission2112.jpg</picture>
+        <location_id>106</location_id>
+        <event_req>9</event_req>
+        <mission_type>4</mission_type>
+        <combatBG>CombatBGJungle</combatBG>
+        <energy>65</energy>
+        <x>380</x>
+        <y>320</y>
+        <commander>1283</commander>
+        <speech>
+            <line commander='1998'>That's insane! They will die with the planet.</line>
+            <line commander='1003'>Talking sense into them is not an option. We have to destroy them before they get to the ritual ground.</line>
+        </speech>
+        <deck>
+            <card>5426</card>
+            <card>5091</card>
+            <card>149</card>
+            <card>328</card>
+            <card>4414</card>
+            <card>146</card>
+            <card>143</card>
+            <card>201</card>
+            <card>2027</card>
+            <card>2349</card>
+        </deck>
+        <rewards>
+            <gold>71</gold>
+            <card>2027</card>
+            <item>1043</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2111</req>
+    </mission>
+
+    <mission>
+        <id>2113</id>
+        <name>Retaliation</name>
+        <picture>mission2113.jpg</picture>
+        <location_id>106</location_id>
+        <event_req>9</event_req>
+        <mission_type>4</mission_type>
+        <combatBG>CombatBGJungle</combatBG>
+        <energy>70</energy>
+        <x>370</x>
+        <y>210</y>
+        <commander>1283</commander>
+        <speech>
+            <line commander='1281'>Your persistence is becoming tiresome. No matter, Evrane will destroy you as it brings us closer to achieving our salvation.</line>
+        </speech>
+        <deck>
+            <card>5426</card>
+            <card>152</card>
+            <card>627</card>
+            <card>558</card>
+            <card>4963</card>
+            <card>5329</card>
+            <card>135</card>
+            <card>140</card>
+            <card>179</card>
+            <card>178</card>
+        </deck>
+        <rewards>
+            <gold>77</gold>
+            <card>139</card>
+            <item>1043</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2112</req>
+    </mission>
+
+    <mission>
+        <id>2114</id>
+        <name>Glimmer of Hope</name>
+        <picture>mission2114.jpg</picture>
+        <location_id>106</location_id>
+        <event_req>9</event_req>
+        <mission_type>4</mission_type>
+        <combatBG>CombatBGJungle</combatBG>
+        <energy>75</energy>
+        <x>300</x>
+        <y>160</y>
+        <commander>1283</commander>
+        <speech>
+            <line commander='1003'>Evrane is their Carrier. It is said only those that arrive to the holy site on its back will be taken to salvation.</line>
+            <line commander='1998'>So if we destroy that we might be able to stop this before it begins!?</line>
+        </speech>
+        <deck>
+            <card>5426</card>
+            <card>666</card>
+            <card>559</card>
+            <card>329</card>
+            <card>518</card>
+            <card>140</card>
+            <card>135</card>
+            <card>146</card>
+            <card>4469</card>
+            <card>2039</card>
+        </deck>
+        <rewards>
+            <gold>82</gold>
+            <card>134</card>
+            <item>1044</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2113</req>
+    </mission>
+
+    <mission>
+        <id>2115</id>
+        <name>Evrane</name>
+        <picture>mission2115.jpg</picture>
+        <location_id>106</location_id>
+        <monster>rightboss2</monster>
+        <event_req>9</event_req>
+        <mission_type>2</mission_type>
+        <monster>rightboss2</monster>
+        <combatBG>CombatBGJungle</combatBG>
+        <energy>75</energy>
+        <x>240</x>
+        <y>250</y>
+        <commander>1285</commander>
+        <speech>
+            <line commander='1281'>Resistance is futile, the tribute will begin soon.</line>
+            <line commander='1003'>We'll bring you down with Evrane!</line>
+        </speech>
+        <deck>
+            <card>5426</card>
+            <card>5426</card>
+            <card>5402</card>
+            <card>654</card>
+            <card>4394</card>
+            <card>5197</card>
+            <card>4812</card>
+            <card>557</card>
+            <card>440</card>
+            <card>2062</card>
+        </deck>
+        <rewards>
+            <gold>90</gold>
+            <card>518</card>
+            <item>1045</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2114</req>
+    </mission>
 	
 	<!-- END March 2014 Missions -->
 
