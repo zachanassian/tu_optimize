@@ -1107,7 +1107,7 @@ void usage(int argc, char** argv)
         "Enemy_Deck:\n"
         "  semicolon separated list of defense decks, syntax:\n"
         "  deck1[:factor1];deck2[:factor2];...\n"
-        "  where deck is the name/hash/cards of a mission, raid, quest or custom deck, and factor is optional. The default factor is 1.\n"
+        "  where deck is the name/hash/cards of a mission or custom deck, and factor is optional. The default factor is 1.\n"
         "  example: \'eerie-spam:0.2;nbd-spam:0.8\' means eerie-spam is the defense deck 20% of the time, while nbd-spam is the defense deck 80% of the time.\n"
         "\n"
         "Flags:\n"
