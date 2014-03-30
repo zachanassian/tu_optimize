@@ -423,7 +423,7 @@ void thread_evaluate(boost::barrier& main_barrier,
                         {
                             score_accum_d += thread_score_local[i] * sim.factors[i];
                         }
-                        score_accum_d /= std::accumulate(sim.factors.begin(), sim.factors.end(), .0d);
+                        score_accum_d /= std::accumulate(sim.factors.begin(), sim.factors.end(), .0);
                         score_accum = score_accum_d;
                     }
                     else

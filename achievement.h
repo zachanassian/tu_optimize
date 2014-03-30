@@ -58,8 +58,9 @@ public:
     }
 };
 
-struct Achievement
+class Achievement
 {
+public:
     unsigned id;
     std::string name;
     Counter mission_condition;

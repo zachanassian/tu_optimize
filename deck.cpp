@@ -10,6 +10,8 @@
 #include "cards.h"
 #include "read.h"
 
+std::map<signed, char> empty_marks;
+
 template<class RandomAccessIterator, class UniformRandomNumberGenerator>
 void partial_shuffle(RandomAccessIterator first, RandomAccessIterator middle,
                      RandomAccessIterator last,
@@ -177,7 +179,7 @@ const std::pair<std::vector<unsigned>, std::map<signed, char>> string_to_ids(con
 
 namespace range = boost::range;
 
-void Deck::set(const Cards& all_cards, const std::vector<unsigned>& ids, const std::map<signed, char> marks)
+void Deck::set(const Cards& all_cards, const std::vector<unsigned>& ids, const std::map<signed, char> &marks)
 {
     commander = nullptr;
     strategy = DeckStrategy::random;

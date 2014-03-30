@@ -1132,12 +1132,6 @@ inline bool skill_check<evade>(Field* fd, CardStatus* c, CardStatus* ref)
     return(c->m_player != ref->m_player);
 }
 
-template<>
-inline bool skill_check<flying>(Field* fd, CardStatus* c, CardStatus* ref)
-{
-    return(!ref->m_card->m_flying && !ref->m_card->m_antiair > 0);
-}
-
 // Not yet support on Attacked/on Death.
 template<>
 inline bool skill_check<immobilize>(Field* fd, CardStatus* c, CardStatus* ref)
