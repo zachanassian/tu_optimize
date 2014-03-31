@@ -1,6 +1,9 @@
 #Tyrant Unleashed Optimizer
 Deck Simulator and Optimizer for Tyrant Unleashed!
 
+##Version 1.0.1
+* Added patch to avoid compiler errors on Mac OSX - credits ksvintsov
+
 ##Version 1.0
 * Added new cards.xml and missions.xml - Evrane
 
