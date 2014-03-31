@@ -7,6 +7,7 @@
 #include <deque>
 #include <tuple>
 #include <vector>
+#include <random>
 
 #include "tyrant.h"
 

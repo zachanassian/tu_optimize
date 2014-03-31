@@ -29,8 +29,12 @@ enum DeckStrategy
 }
 //------------------------------------------------------------------------------
 // No support for ordered raid decks
-struct Deck
+
+
+extern std::map<signed, char> empty_marks;
+class Deck
 {
+public:
     DeckType::DeckType decktype;
     unsigned id;
     std::string name;
@@ -82,7 +86,7 @@ struct Deck
         mission_req = mission_req_;
     }
 
-    void set(const Cards& all_cards, const std::vector<unsigned>& ids, const std::map<signed, char> marks = {});
+    void set(const Cards& all_cards, const std::vector<unsigned>& ids, const std::map<signed, char> &marks = empty_marks);
     void set(const Cards& all_cards, const std::string& deck_string_);
     void resolve(const Cards& all_cards);
     void set_given_hand(const Cards& all_cards, const std::string& deck_string_);
@@ -110,8 +114,9 @@ struct Deck
 };
 
 // + also the custom decks
-struct Decks
+class Decks
 {
+public:
     std::list<Deck> decks;
     std::map<std::pair<DeckType::DeckType, unsigned>, Deck*> by_type_id;
     std::map<std::string, Deck*> by_name;

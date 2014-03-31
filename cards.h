@@ -7,8 +7,9 @@
 
 class Card;
 
-struct Cards
+class Cards
 {
+public:
     ~Cards();
 
     std::vector<Card*> cards;
