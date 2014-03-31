@@ -1,6 +1,9 @@
 #Tyrant Unleashed Optimizer
 Deck Simulator and Optimizer for Tyrant Unleashed!
 
+##Version 1.0.2
+* [FIX] Halycon-1 was treated as non player card Halcyon[1997] - https://github.com/zachanassian/tu_optimize/issues/10
+
 ##Version 1.0.1
 * Added patch to avoid compiler errors on Mac OSX - credits ksvintsov
 

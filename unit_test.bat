@@ -1,4 +1,15 @@
 @echo on
+tu_optimize.exe "Halcyon-1, Nimbus-4" "Halcyon, Nimbus-4" sim 10000
+@echo off
+echo === Expected ===
+echo Your Deck: [P/Ad] Halcyon-1, Nimbus-4
+echo Enemy's Deck: [QEAd] Halcyon, Nimbus-4
+echo win%: 0 (0 / 10)
+echo stall%: 0 (0 / 10)
+echo loss%: 100 (10000 / 10000)
+echo.
+
+@echo on
 tu_optimize "Constantine, Eviscerator Noz(4)" "Alaric, Noble Defiance(2)" sim 10000
 @echo off
 echo === Expected ===

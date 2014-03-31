@@ -219,7 +219,11 @@ void read_cards(Cards& cards)
                       c->m_name = ss.str();              
                     } else {
                       c->m_name = name_node->value(); //Barracus
-                      cards.player_cards_abbr[ss.str()] = c->m_name; //Barracus-6 will also be recognized as Barracus
+                      if(set != 0){
+                        //Barracus-6 will also be recognized as Barracus
+                        //Do this only for player obtainable cards => https://github.com/zachanassian/tu_optimize/issues/10
+                        cards.player_cards_abbr[ss.str()] = c->m_name;
+                      }
                     }
                     //std::cout << "created card: " << c->m_name << " max_level_id:" << max_level_card_id << "\n";
                     // So far, commanders have attack_node (value == 0)
