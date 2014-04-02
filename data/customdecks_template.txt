@@ -1,3 +1,134 @@
 mydeck: Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
 eerie-spam: Barracus, Eerie(10)
 nbd-spam: Alaric, Noble Defiance(10)
+example_group:  eerie-spam:0.2, nbd-spam:0.8
+GT12Sk01: Barracus-6, Noxious Tank-6, Spiteful Raptor-6, Deranged Malgoth-6, Spiteful Raptor-6, Tazerecca-6, Entrails Bog-6, Omniphet-6, Xeno Suzerain-6, Spiteful Raptor-6, Sculpted Aegis-6
+GT12Sk02: Halcyon-6, Indestructible Troop-6, Indestructible Troop-6, Neocyte Resonator-6, Neocyte Resonator-6, Omniphet-6, Garrison Fortifier-6, Agrius Maximus-6, Galereaver-6, Flux Station-6, Arthurian Monarch-6
+GT12Sk03: Barracus-6, Narscious the Eerie-6, Warp Alchemist-6, Narscious the Eerie-6, Warp Alchemist-6, Bolt Crag-6, Sacred Sanctuary-6, Lord Hades-6, Mawnage-6, Noble Defiance-6
+GT12Sk04: Halcyon-6, Galereaver-6, Galereaver-6, Neocyte Resonator-6, Galereaver-6, Neocyte Resonator-6, Galereaver-6, Agrius Maximus-6, Galereaver-6, Agrius Maximus-6, Galereaver-6
+GT12Sk05: Barracus-6, Charincinerator-6, Heart Devourer-6, Heart Devourer-6, Heart Devourer-6, Remote Rig-6, Heart Devourer-6, Loaded Warehouse-6, Heart Devourer-6, Heart Devourer-6, Heart Devourer-6
+GT12Sk06: Barracus-6, Narscious the Eerie-6, Warp Alchemist-6, Narscious the Eerie-6, Warp Alchemist-6, Sacred Sanctuary-6, Heart Devourer-6, Loaded Warehouse-6, Charincinerator-6, Heart Devourer-6, Charincinerator-6
+GT12Sk07: Alaric-6, Flash Deity-6, Bolt Crag-6, Flash Deity-6, Heart Devourer-6, Noble Defiance-6, Sacred Sanctuary-6, Noble Defiance-6, Pure Benediction-6, Pure Benediction-6, Shining Sanctuary-6
+GT12Sk08: Barracus-6, Narscious the Eerie-6, Warp Alchemist-6, Narscious the Eerie-6, Warp Alchemist-6, Narscious the Eerie-6, Vicious Borg-6, Charincinerator-6, Vicious Borg-6, Charincinerator-6, Sacred Sanctuary-6
+GT12Sk09: Barracus-6, Narscious the Eerie-6, Charincinerator-6, Omega Nexus-6, Agrius Maximus-6, Agrius Maximus-6, Sacred Sanctuary-6, Valence-6, Sacred Sanctuary-6, Tazerecca-6, Ayrkrane Vik-6
+GT12Sk10: Alaric-6, Charincinerator-6, Charincinerator-6, Heart Devourer-6, Flash Deity-6, Noble Defiance-6, Noble Defiance-6, Grand Templar-6, Noble Defiance-6, Noble Defiance-6, Mawnage-6
+GT12Sk11: Nexor-6, Heart Devourer-6, Noxious Tank-6, Tartarus Obelisk-6, Rift Awakener-6, Xeno Suzerain-6, Tazerecca-6, Lord Hades-6, Noble Defiance-6, Sacred Sanctuary-6, Grand Templar-6
+GT12Sk12: Barracus-6, Narscious the Eerie-6, Warp Alchemist-6, Bolt Crag-6, Noxious Tank-6, Noble Defiance-6, Noble Defiance-6, Tazerecca-6, Xeno Suzerain-6, Sacred Sanctuary-6, Sculpted Aegis-6
+GT1OOk01: Barracus-6, Crushing Anvil-6, Noble Defiance-6, Defiance-5, Masterwork Aegis-6, Spiteful Raptor-6, Xeno Overlord-6, Forsaken Beetle-6
+GT1OOk02: Barracus-6, Noxious Tank-6, Sacred Sanctuary-6, Tazerok-6, Noble Defiance-6, Noble Defiance-6, Sculpted Aegis-6, Havoc Genesis-6
+GT1OOk03: Barracus-6, Ayrkrane Vik-6, Spiteful Raptor-6, Blitz Plate-4, Apex-6, Apex-6, Blight Demolisher-4
+GT1OOk04: Barracus-6, Tartarus Brood-6, Charincinerator-6, Bolt Crag-6, Starformer-6, Indestructible Troop-6, Spiteful Raptor-6, Heart Devourer-6, Masterwork Aegis-6
+GT1OOk05: Barracus-6, Apex-6, Charigniter-6, Noble Defiance-6, Sacred Sanctuary-6, Immense Ospry-6, Omniseer-6, Ayrkrane Vik-6
+GT1OOk06: Barracus-6, Gornivorous-6, Havoc Genesis-6, Xeno Suzerain-6, Noble Defiance-6, Tartarus Scion-6, Charigniter-6, Arcane Dreadship-6, Cryptic Niaq-6, Apex Overdrive-6, Ironclad Troop-6
+GT1OOk07: Barracus-6, Tazerecca-6, Vicious Borg-6, Charincinerator-6, Havoc Genesis-6, Nimbus Wonder-6, Incinerator Rig-6, Drake Scouter-6
+GT1OOk08: Alaric-6, Flash Deity-6, Flash Deity-6, Noble Defiance-6, Noble Defiance-6, Heart Devourer-6, Heart Devourer-6, Sacred Sanctuary-6, Mawnage-6, Pure Benediction-6, Tantzumeca-6
+GT1OOk09: Barracus-6, Apex Overdrive-6, Sacred Sanctuary-6, Defiance-6, Mach Jet-6, Crushing Anvil-6, Tazerecca-6, Tartarus Brood-6
+GT1OOk10: Halcyon-6, Neocyte Resonator-6, Indestructible Troop-6, Neocyte Resonator-6, Arthurian Monarch-6, Noble Defiance-6, Agrius Maximus-6, Sacred Sanctuary-6, Indestructible Troop-6, Omniphet-6, Garrison Fortifier-6
+GT1OOk11: Barracus-6, Havoc Alpha-6, Defiance-6, Tazerecca-5, Stealth Dreadship-6, Toxic Tank-6, Ayrkrane Vik-6, Xeno Suzerain-6, Tikalan-6
+GT1OOk12: Alaric-6, Noble Defiance-6, Anvil-6, Crushing Anvil-6, Defiance-6, Ayrkrane Vik-6, Tikalan-6
+GT1OOk13: Typhon Vex-6, Remote Rig-6, Spiteful Raptor-6, Pack Dozer-6, Noble Defiance-6, Crushing Anvil-6, Havoc Genesis-6, Havoc Genesis-6, Havoc Genesis-6, Havoc Genesis-6, Tazerecca-6
+GT1OOk14: Typhon Vex-6, Sacred Sanctuary-6, Tazerecca-6, Charincinerator-6, Havoc Genesis-6, Mobile Base-6, Indestructible Troop-6
+GT1OOk15: Nexor-6, Sacred Sanctuary-6, Sculpted Aegis-6, Xeno Suzerain-6, Xeno Suzerain-6, Corrupted Daemon-6, Indestructible Troop-6, Apex Dynamo-6, Tazerecca-6
+GT1OOk16: Barracus-6, Ayrkrane Vik-6, Heart Devourer-6, Tantzumeca-6, Tazerok-6, Noble Defiance-6, Ferocious Brute-6, Sacred Sanctuary-6
+GT1OOk17: Halcyon-4, Sacred Sanctuary-6, Omniphet-6, Crushing Anvil-5, Indestructible Troop-4, Tartarus Scion-6, Sculpted Aegis-6, Stronghold Fortifier-6
+GT1OOk18: Barracus-6, Charincinerator-6, Noble Defiance-6, Tazerecca-6, Starformer-6, Forsaken Beetle-6, Contaminant Purge-6
+GT1OOk19: Halcyon-6, Noble Defiance-6, Tartarus Brood-6, Indestructible Troop-6, Garrison Fortifier-6, Heart Devourer-6, Shining Sanctuary-6, Barricade Slasher-4
+GT1OOk20: Barracus-5, Sacred Sanctuary-6, Noble Defiance-6, Charincinerator-6, Heart Devourer-6, Spiteful Raptor-6, Lord Hades-6, Mawnage-6
+GT1OOk21: Constantine-6, Noble Defiance-6, Noble Defiance-6, Sacred Sanctuary-6, Ayrkrane Vik-6, Hypersonic Deity-6, Heart Devourer-6, Grand Templar-6, Zodiac Harbinger-6
+GT1OOk22: Barracus-6, Crushing Anvil-6, Tartarus Brood-6, Defiance-6, Noble Defiance-6, Spiteful Raptor-6, Ayrkrane Vik-6, Forsaken Beetle-6
+GT1OOk23: Nexor-5, Apex Overdrive-6, Zarak Overcharged-6, Tazerecca-6, Worldformer-6, Starformer-6, Xeno Suzerain-6, Xeno Suzerain-6, Azure Reveler-6
+GT1OOk24: Barracus-6, Sculpted Aegis-6, Howling Malgoth-6, Spiteful Raptor-6, Spiteful Raptor-6, Noble Defiance-6
+GT1OOk25: Typhon Vex-6, Charincinerator-6, Charincinerator-6, Tazerok-6, Zealous Pursuer-6, Mobile Base-6, Havoc Genesis-6
+GT1OOk26: Alaric-6, Noble Defiance-6, Spiteful Raptor-6, Tazerok-6, Indestructible Troop-6, Shining Sanctuary-6
+GT1OOk27: Dracorex-5, Spiteful Raptor-6, Spiteful Raptor-6, Lord Hades-6, Tartarus Obelisk-6, Deranged Malgoth-6, Heart Devourer-6, Entrails Bog-6
+GT1OOk28: Halcyon-6, Mammoth Titan-6, Neocyte Resonator-6, Neocyte Resonator-6, Neocyte Resonator-6, Garrison Fortifier-6, Garrison Fortifier-6, Arthurian Monarch-6, Indestructible Troop-6, Indestructible Troop-6, Indestructible Troop-6
+GT1OOk29: Barracus-6, Indestructible Troop-4, Spiteful Raptor-6, Shining Sanctuary-6, Tazerecca-6, Crushing Anvil-6, Omniphet-6, Noble Defiance-6
+GT1OOk30: Barracus-6, Tartarus Brood-6, Crushing Anvil-6, Contaminant Purge-6, Sacred Sanctuary-6, Arcane Dreadship-6, Tiamat Destructor-6, Tazerecca-6, Ayrkrane Vik-6
+GT1OOk31: Barracus-6, Tartarus Brood-6, Tazerecca-6, Masterwork Aegis-6, Tikalan-6, Defiance-6, Crushing Anvil-6, Spiteful Raptor-6
+GT1OOk32: Alaric-6, Ayrkrane Vik-6, Noble Defiance-6, Noble Defiance-6, Tazerecca-6, Xeno Suzerain-6, Zodiac Harbinger-6, Omniphet-6
+GT1OOk33: Typhon Vex-6, Omega Nexite-6, Ayrkrane Vik-6, Havoc Alpha-6, Tazerecca-6, Crushing Anvil-6, Omniphet-6, Xeno Suzerain-6, Tartarus Brood-6, Spiteful Raptor-6
+GT1OOk34: Nexor-5, Omniphet-6, Spiteful Raptor-6, Havoc Genesis-6, Tartarus Brood-6, Worldformer-6, Forsaken Beetle-6
+GT1OOk35: Dracorex-6, Entrails Pool-6, Spiteful Raptor-6, Spiteful Raptor-6, Crushing Anvil-6, Masterwork Aegis-6, Deranged Malgoth-6
+GT1OOk36: Alaric-6, Noble Defiance-6, Noble Defiance-6, Noble Defiance-6, Noble Defiance-6, Sacred Sanctuary-6, Sacred Sanctuary-6, Heart Devourer-6
+GT1OOk37: Barracus-6, Noble Defiance-6, Noble Defiance-6, Sacred Sanctuary-6, Omniphet-6, Spiteful Raptor-6, Spiteful Raptor-6, Spiteful Raptor-6, Xeno Suzerain-6, Xeno Suzerain-6
+GT1OOk38: Barracus-6, Shining Sanctuary-6, Charincinerator-6, Charigniter-6, Omniphet-6, Omega Nexite-6, Noble Defiance-6, Noble Defiance-6
+GT1OOk39: Halcyon-6, Indestructible Troop-6, Indestructible Troop-6, Immense Ospry-6, Noble Defiance-6, Sculpted Aegis-6, Heart Shredder-6, Neocyte Cultivator-6
+GT1OOk40: Barracus-6, Heart Devourer-6, Heart Devourer-6, Charincinerator-6, Charincinerator-6, Charincinerator-6, Mobile Encampment-6, Sacred Sanctuary-6
+GT1OOk41: Barracus-6, Ayrkrane Vik-6, Noble Defiance-6, Lord Hades-6, Indestructible Troop-6, Bolt Crag-6, Razogoth's Majesty-6, Worldformer-6, Mawnage-6
+GT1OOk42: Barracus-6, Bolt Crag-6, Noble Defiance-6, Noble Defiance-6, Spiteful Raptor-6, Indestructible Troop-6, Xeno Suzerain-6, Sculpted Aegis-6, Tazerecca-6, Noxious Tank-6, Sacred Sanctuary-6
+GT1OOk43: Nexor-6, Omniphet-6, Noble Defiance-6, Crushing Anvil-6, Tazerecca-6, Apex-6, Xeno Suzerain-6
+GT1OOk44: Barracus-6, Tazerecca-6, Spiteful Raptor-6, Spiteful Raptor-6, Ayrkrane Vik-6, Charincinerator-6, Sacred Sanctuary-6, Sacred Sanctuary-6, Agrius Maximus-6, Narscious the Eerie-6, Drake Scouter-6
+GT1OOk45: Barracus-6, Crushing Anvil-6, Sculpted Aegis-6, Havoc Genesis-6, Shining Sanctuary-6, Defiance-6, Spiteful Raptor-6, Spiteful Raptor-6, Tazerecca-6
+GT1OOk46: Typhon Vex-6, Lord Hades-6, Lord Hades-6, Delphan Inflamed-6, Bolt Crag-6, Bolt Crag-6, Vicious Borg-6, Charincinerator-6, Charincinerator-6, Narscious the Eerie-6, Sacred Sanctuary-6
+GT1OOk47: Halcyon-6, Heart Shredder-6, Hephatat Fury-6, Indestructible Troop-6, Indestructible Troop-6, Garrison Fortifier-6, Galereaver-6, Neocyte Extractor-6
+GT1OOk48: Barracus-6, Tazerecca-6, Worldformer-6, Noble Defiance-6, Xeno Suzerain-6, Sculpted Aegis-6, Charincinerator-6, Forsaken Beetle-6, Apex Overdrive-6
+GT1OOk49: Petrisis-6, Ayrkrane-6, Earnest Pursuer-6, Tazerok-6, Earnest Pursuer-6
+GT1OOk50: Halcyon-6, Zealous Pursuer-6, Apex Overdrive-6, Noble Defiance-6, Masterwork Aegis-6, Indestructible Troop-6, Garrison Fortifier-6, Tazerecca-6, Arthurian King-6, Slug Borg-6, Neocyte Cultivator-6
+GT1OOk51: Barracus-6, Ayrkrane Vik-6, Tazerecca-6, Mach Jet-6, Tartarus Brood-6, Shining Sanctuary-6, Crushing Anvil-6, Apex-6
+GT1OOk52: Alaric-6, Tikalan-6, Defiance-6, Sacred Sanctuary-6, Ayrkrane Vik-6, Pantheon Disciple-6, Crushing Anvil-6
+GT1OOk53: Barracus-6, Spiteful Raptor-6, Shining Sanctuary-6, Defiance-6, Crushing Anvil-6, Masterwork Aegis-6, Tartarus Brood-6
+GT1OOk54: Barracus-6, Spiteful Raptor-6, Crushing Anvil-6, Tartarus Brood-6, Sacred Sanctuary-6, Toxic Tank-6, Tazerecca-6, Omniseer-6, Ayrkrane Vik-6
+GT1OOk55: Halcyon-6, Neocyte Resonator-6, Immense Ospry-6, Tikalan-6, Noble Defiance-6, Garrison Fortifier-6, Garrison Fortifier-6, Heart Devourer-6, Indestructible Troop-6, Arthurian Monarch-6
+GT1OOk56: Barracus-6, Havoc Genesis-6, Shining Sanctuary-6, Defiance-5, Spiteful Raptor-6, Ironclad Troop-6, Sculpted Aegis-6, Noble Defiance-6
+GT1OOk57: Halcyon-6, Tikalan-6, Xeno Suzerain-6, Xeno Suzerain-6, Crushing Anvil-6, Sculpted Aegis-6, Mach Jet-6, Pantheon Disciple-6, Ospry-6, Havoc Alpha-6, Omniphet-6
+GT1OOk58: Typhon Vex-6, Heart Devourer-6, Heart Devourer-6, Heart Devourer-6, Heart Devourer-6, Heart Devourer-6, Heart Devourer-6, Heart Devourer-6, Heart Devourer-6, Remote Rig-6, Remote Rig-6
+GT1OOk59: Dracorex-6, Spiteful Raptor-6, Spiteful Raptor-6, Deranged Malgoth-6, Howling Malgoth-6, Apex Overdrive-6, Razogoth's Majesty-6, Tartarus Brood-6, Draconian Sovereign-6, Blight Crusher-6, Lord Hades-6
+GT1OOk60: Halcyon-6, Indestructible Troop-6, Colossal Titan-6, Drake Scouter-6, Masterwork Aegis-6, Immense Ospry-6, Hephatat Fury-6, Covert Jet-6, Worldformer-6, Tazerok-6, Defiance-6
+GT1OOk61: Barracus-4, Omniphet-5, Spiteful Raptor-6, Spiteful Raptor-6, Ayrkrane Vik-6, Tartarus Brood-5, Tazerecca-5, Entrails Pool-4
+GT1OOk62: Barracus-6, Starformer-6, Tartarus Brood-6, Apex-6, Shining Sanctuary-6, Defiance-6, Ayrkrane Vik-6
+GT1OOk63: Barracus-6, Crushing Anvil-6, Xeno Suzerain-6, Omniphet-6, Spiteful Raptor-6, Tikalan-6, Apex Overdrive-6, Tazerecca-6
+GT1OOk64: Alaric-6, Zodiac Harbinger-6, Zodiac Harbinger-6, Zodiac Harbinger-6, Ayrkrane Vik-6, Defiance-6, Tikalan-6, Zodiac-6, Lightning Crag-6
+GT1OOk65: Alaric-6, Noble Defiance-6, Immense Ospry-6, Noble Defiance-6, Pantheon Disciple-6, Spiteful Raptor-6, Noble Defiance-6
+GT1OOk66: Barracus-6, Tazerecca-6, Spiteful Raptor-6, Spiteful Raptor-6, Spiteful Raptor-6, Entrails Bog-6, Deranged Malgoth-6, Havoc Genesis-6, Noxious Tank-6, Sculpted Aegis-6
+GT1OOk67: Barracus-6, Crushing Anvil-6, Venomous Raptor-6, Apex Overdrive-6, Tazerecca-6, Ayrkrane Vik-6, Xeno Suzerain-6
+GT1OOk68: Constantine-6, Noble Defiance-6, Shining Sanctuary-6, Sacred Equalizer-6, Omniphet-6, Zodiac Harbinger-6, Ayrkrane Vik-6, Bolt Crag-6
+GT1OOk69: Dracorex-6, Draconian Sovereign-6, Sculpted Aegis-6, Crushing Anvil-6, Omniphet-6, Deranged Malgoth-6, Noble Defiance-6, Tartarus Brood-6, Noxious Tank-6
+GT1OOk70: Barracus-6, Tazerok-5, Tazerok-5, Spiteful Raptor-6, Xeno Suzerain-6, Indestructible Troop-6, Crushing Anvil-6, Masterwork Aegis-6
+GT1OOk71: Barracus-6, Crushing Anvil-6, Xeno Suzerain-6, Tikalan-6, Tazerecca-6, Tartarus Brood-6, Havoc Genesis-6, Ayrkrane Vik-6, Omniseer-6, Defiance-6, Sacred Sanctuary-6
+GT1OOk72: Barracus-6, Forsaken Beetle-6, Tazerok-6, Crushing Anvil-6, Spiteful Raptor-6, Defiance-6, Defiance-6, Ayrkrane Vik-6
+GT1OOk73: Dracorex-6, Sacred Sanctuary-6, Crushing Anvil-6, Gornivorous-6, Deranged Malgoth-6, Spiteful Raptor-6, Spiteful Raptor-6, Tartarus Brood-6
+GT1OOk74: Barracus-6, Deranged Malgoth-6, Deranged Malgoth-6, Deranged Malgoth-6, Omniphet-6, Razogoth's Majesty-6, Incinerator Rig-6, Draconian Sovereign-6, Wurmsleth Infested-6, Sacred Sanctuary-6, Sacred Sanctuary-6
+GT1OOk75: Constantine-6, Sacred Sanctuary-6, Ayrkrane Vik-6, Noble Defiance-6, Noble Defiance-6, Zodiac Harbinger-4, Reckless Fanatic-6
+GT1OOk76: Dracorex-6, Deranged Malgoth-6, Deranged Malgoth-6, Sacred Sanctuary-6, Lord Hades-6, Spiteful Raptor-6, Spiteful Raptor-6, Entrails Bog-6, Noble Defiance-6, Noble Defiance-6
+GT1OOk77: Barracus-6, Spiteful Raptor-6, Noble Defiance-6, Apex Overdrive-6, Tazerok-6, Defiance-6, Crushing Anvil-6, Forsaken Beetle-6
+GT1OOk78: Alaric-6, Heart Devourer-6, Noble Defiance-6, Noble Defiance-6, Noble Defiance-6, Noble Defiance-6, Grand Templar-6, Flash Deity-6, Mawnage-6, Charincinerator-6, Pure Benediction-6
+GT1OOk79: Alaric-5, Crushing Anvil-6, Shining Sanctuary-6, Xeno Suzerain-6, Omniphet-6, Tartarus Brood-6, Ayrkrane Vik-6, Noble Defiance-6
+GT1OOk80: Halcyon-6, Neocyte Resonator-6, Neocyte Resonator-6, Indestructible Troop-6, Indestructible Troop-6, Indestructible Troop-6, Indestructible Troop-6, Indestructible Troop-6, Swift Hellion-6, Agrius Maximus-6, Agrius Maximus-6
+GT1OOk81: Alaric-6, Sculpted Aegis-6, Apex Dynamo-6, Deranged Malgoth-6, Noble Defiance-6, Noble Defiance-6, Spiteful Raptor-6
+GT1OOk82: Empress-6, Zodiac Harbinger-6, High Templar-6, Hypersonic Deity-6, Noble Defiance-6, Sacred Sanctuary-6, Sacred Sanctuary-6, Bolt Crag-6, Bolt Crag-6
+GT1OOk83: Halcyon-6, Zealous Pursuer-6, Masterwork Aegis-6, Indestructible Troop-6, Xeno Suzerain-6, Shining Sanctuary-6, Noble Defiance-6, Bolt Crag-6, Bolt Crag-6
+GT1OOk84: Halcyon-6, Neocyte Resonator-6, Sculpted Aegis-6, Indestructible Troop-6, Indestructible Troop-6, Indestructible Troop-6, Garrison Fortifier-6, Garrison Fortifier-6, Mach Jet-6
+GT1OOk85: Constantine-6, Tikalan-6, Vicious Borg-6, Soulsteel Mount-6, Ayrkrane Vik-6, Noble Defiance-6, Noble Defiance-6, Noble Defiance-6, Zodiac Harbinger-6, Sacred Sanctuary-6, Flash Deity-6
+GT1OOk86: Typhon Vex-5, Havoc Genesis-6, Charincinerator-6, Bolt Crag-5, Noble Defiance-6, Indestructible Troop-6
+GT1OOk87: Barracus-6, Mobile Bastion-6, Crushing Anvil-6, Worldformer-6, Interstellar Cannon-6, Charincinerator-6
+GT1OOk88: Barracus-5, Tazerecca-6, Ayrkrane Vik-6, Worldformer-6, Havoc Alpha-6, Bolt Crag-6, Charigniter-6, Earnest Pursuer-6
+GT1OOk89: Barracus-6, Ironclad Troop-6, Crushing Anvil-6, Starformer-6, Spiteful Raptor-6, Noble Defiance-6
+GT1OOk90: Nexor-5, Sacred Sanctuary-6, Apex Dynamo-6, Crushing Anvil-6, Noble Defiance-6, Spiteful Raptor-6, Xeno Suzerain-6, Tazerecca-6
+GT1OOk91: Barracus-6, Crushing Anvil-6, Tartarus Brood-6, Mach Jet-6, Ayrkrane Vik-6, Lightning Crag-6, Tazerecca-6, Venomous Raptor-6, Sacred Sanctuary-6
+GT1OOk92: Alaric-6, Mach Jet-6, Defiance-6, Tazerecca-6, Crushing Anvil-6, Havoc Genesis-6, Apex Overdrive-6, Tartarus Brood-6, Blisandrake-6
+GT1OOk93: Petrisis-5, Brutal Beholder-6, Xeno Suzerain-6, Sculpted Aegis-6, Omniphet-6, Sacred Sanctuary-6, Azure Reveler-6, Spiteful Raptor-6, Garrison Fortifier-6, Earnest Pursuer-6
+GT1OOk94: Petrisis-6, Lord Hades-6, Lord Hades-6, Sacred Sanctuary-6, Deranged Malgoth-6, Deranged Malgoth-6, Mawnage-6, Noble Defiance-6, Noble Defiance-6
+GT1OOk95: Nexor-6, Tazerecca-6, Noble Defiance-6, Lord Hades-6, Xeno Suzerain-6, Shining Sanctuary-6, Rift Awakener-6, High Templar-6, Heart Devourer-6, Incinerator Rig-6, Omniphet-6
+GT01: Ascaris-4, Blight Crusher-6, Brood Lackey-4, Redeemer-3, Scarab-4, Corpulent Barrier-4, Lummox-4, Acid Spewer-3, Rabid Corruptor-3, Carcass Scrounge-3, Locust Swarm-3
+GT02: Cyrus-4, Windreaver-6, Terminator X-4, Ion Strykers-3, Dreadnaught-3, Imperial APC-4, Dominator-4, Terminator-4, Regeneration Bay-4, Twinblade-4, Revolver-3
+GT03: Maion-4, Honor-Bound Veteran-4, Sanctuary-6, Angelwing-4, Adytum-4, Ion Strykers-3, Knight-4, Cannon Walker-4, Peacekeeper-3, Honor Guard-4, Credo Defender-3
+GT04: Malika-4, Iron Maiden-6, Blitz Guard-4, Blitz Armor-4, Assembly Plant-4, Gunjack-3, Carbine-4, Hydra-4, Bombardment Tanks-3, Shrapnel Engine-3, Hydroblade-3
+GT05: Terrogor-4, Stealthy Niaq-6, Enclave Vestige-4, Glaive-4, Xeno Singularis-4, Swarmling-3, Pathrazer-4, Spectre-4, Enclave Parasite-3, Exogrunt-3, Enfeebler-3
+GT06: Brood Mother-6, Gorivore-6, Draconian Queen-6, Smog Tank-6, Brood Lackey-4, Conversion Hall-4, Scarab-4, Redeemer-3, Ion Strykers-3
+GT07: Empress-6, Dutiful Veteran-4, Vigil-6, Ayrkrane-6, Tempest Hold-6, Equalizer-6, Honor-Bound Veteran-4, Angelwing-4, Knight-4, Adytum-4
+GT08: Octane-6, Aegis-6, Fighter Jet-6, Terminator Mech-4, Hephatat-6, Tiamat-6, Windreaver-6, Ion Strykers-3, Regeneration Bay-4
+GT09: Vyander-6, Apex-6, Gorivore-6, Xeno Overlord-6, Dreadship-6, Stealthy Niaq-6, Enclave Vestige-4, Xeno Singularis-4, Ion Strykers-3
+GT10: Yurich-6, Anvil-6, Blitz Plate-4, Havoc-6, Iron Maiden-6, Blitz Guard-4, Sanctuary-6, Carbine-4
+GT11: Alaric-6, Defiance-6, Lightning Crag-6, Pantheon Disciple-6, Dutiful Veteran-4, Covert Jet-6, Shining Sanctuary-6, Ayrkrane Vik-6
+GT12: Dracorex-6, Howling Malgoth-6, Mawcor-6, Venomous Raptor-6, Gornivorous-6, Entrails Pool-6, Draconian Matriarch-6
+GT13: Halcyon-6, Swift Hellion-6, Mach Jet-6, Crushing Anvil, Pantheon Disciple-6, Ospry-6, Xeno Overlord-6, Masterwork Aegis-6, Hephatat Fury-6
+GT14: Typhon Vex-6, Havoc Alpha-6, Lightning Crag-6, Stag Beetle-6, Crushing Anvil-6, Pantheon Disciple-6, Blitz Plate-4, Ayrkrane Vik-6
+GT15: Krellus-6, Defiance-6, Mach Jet-6, Xeno Overlord-6, Tikalan-6, Tazerecca-6, Apex-6, Cryptic Niaq-6
+GT16: Barracus-6, Deranged Malgoth-6, Noxious Tank-6, Lord Hades-6, Lord Hades-6, Mawnage-6, Narscious the Eerie-6, Blighted Obelisk-6, Spiteful Raptor-6
+GT17: Nexor-6, Worldformer-6, Rift Awakener-6, Apex Dynamo-6, SkyCom Perfect-6, Azure Reveler-6, Despoil Predator-6, Despoil Predator-6
+GT18: Petrisis-6, Charincinerator-6, Heart Devourer-6, Heart Devourer-6, Havoc Genesis-6, Mobile Encampment-6, Forsaken Beetle-6, Crushing Anvil-6
+GT19: Tabitha-6, Zealous Pursuer-6, Garrison Fortifier-6, Agrius Maximus-6, Neocyte Resonator-6, Neocyte Resonator-6, Fusillade Bunker-6, Zealous Pursuer-6
+GT20: Constantine-6, Noble Defiance-6, Noble Defiance-6, Grand Templar-6, Tikalan-6, Ayrkrane Vik-6, Sacred Sanctuary-6, Utopia Pharos-6
+Gauntlet: /^GT\d\d$/
+GT125k: /^GT12Sk\d\d$/
+GT100k: /^GT1OOk\d\d$/

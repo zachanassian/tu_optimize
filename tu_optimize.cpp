@@ -1105,10 +1105,14 @@ void usage(int argc, char** argv)
         "  the name/hash/cards of a custom deck.\n"
         "\n"
         "Enemy_Deck:\n"
-        "  semicolon separated list of defense decks, syntax:\n"
-        "  deck1[:factor1];deck2[:factor2];...\n"
-        "  where deck is the name/hash/cards of a mission or custom deck, and factor is optional. The default factor is 1.\n"
-        "  example: \'eerie-spam:0.2;nbd-spam:0.8\' means eerie-spam is the defense deck 20% of the time, while nbd-spam is the defense deck 80% of the time.\n"
+        "  1) semicolon separated list of defense decks, syntax:\n"
+        "     deck1[:factor1];deck2[:factor2];...\n"
+        "     where deck is the name/hash/cards of a mission or custom deck, and factor is optional. The default factor is 1.\n"
+        "     example: \"94. Heart of Tartarus\" is the deck of mission 94. Heart of Tartarus at Level 10.\n"
+        "     example: \"eerie-spam:0.2;nbd-spam:0.8\" means eerie-spam is the defense deck 20% of the time, while nbd-spam is the defense deck 80% of the time.\n"
+        "  2) a regular expression surrounded by /.\n"
+        "     regular expression will be used to search all custom decks for matching keys.\n"
+        "     example: \"/^GT/\" will select all custom decks starting with the letters GT.\n"
         "\n"
         "Flags:\n"
         //"  -A <achievement>: optimize for the achievement specified by either id or name.\n"
@@ -1169,7 +1173,7 @@ int main(int argc, char** argv)
         return(0);
     }
     std::string att_deck_name{argv[1]};
-    auto deck_list_parsed = parse_deck_list(argv[2]);
+    auto deck_list_parsed = parse_deck_list(argv[2], decks);
 
     Deck* att_deck{nullptr};
     std::vector<Deck*> def_decks;

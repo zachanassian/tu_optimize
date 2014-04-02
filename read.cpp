@@ -2,6 +2,7 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/regex.hpp>
 #include <boost/tokenizer.hpp>
 #include <cstring>
 #include <vector>
@@ -13,6 +14,15 @@
 #include "cards.h"
 #include "deck.h"
 
+//minGW does not support std:to_string() w/o patch : http://stackoverflow.com/questions/12975341/to-string-is-not-a-member-of-std-says-so-g
+template<typename T>
+std::string to_string(T val)
+{
+    std::stringstream s;
+    s << val;
+    return s.str();
+}
+
 void load_decks(Decks& decks, Cards& cards)
 {
     if(boost::filesystem::exists("data/customdecks.txt"))
@@ -21,9 +31,43 @@ void load_decks(Decks& decks, Cards& cards)
     }
 }
 
-std::vector<std::pair<std::string, long double>> parse_deck_list(std::string list_string)
+std::vector<std::pair<std::string, long double>> parse_deck_list(std::string list_string, const Decks& decks)
 {
     std::vector<std::pair<std::string, long double>> res;
+    // allow arbitrary replacements from customdecks.txt eg. Gauntlet will be replaced by /^GT\d\d$/
+    auto user_defined_deck_group = decks.by_name.find(list_string);
+    if(user_defined_deck_group != decks.by_name.end() && user_defined_deck_group->second->decktype != DeckType::mission)
+    {
+      list_string = user_defined_deck_group->second->deck_string;
+    }
+    //check for regex pattern
+    //for some strange reason this code regex don't work as expected by me when using std::regex. using boost::regex works as expected
+    boost::regex rx ("/(.*)/");
+    boost::smatch sm;
+    boost::regex_match (list_string,sm,rx);
+    if(sm[1] != "")
+    {
+      std::cout << "Filtering user defined decks with regular expression: " << sm[1] << std::endl;
+      boost::regex group_rx (sm[1].str());
+      for(auto& deck: decks.decks)
+      {
+        if((deck.decktype != DeckType::mission) && boost::regex_search(to_string(deck.name),sm,group_rx))
+        {
+            std::cout << "Match: " << deck.short_description() << std::endl;
+            res.push_back(std::make_pair(deck.name, 1.0));
+        }
+      }
+      if(res.size() > 0)
+      {
+        return(res);
+      }
+      else
+      {
+         std::cerr << "Error: No deck matched filter" << std::endl;
+         exit(0);
+      }
+    }
+    //end regex pattern handling
     boost::tokenizer<boost::char_delimiters_separator<char>> list_tokens{list_string, boost::char_delimiters_separator<char>{false, ";", ""}};
     for(auto list_token = list_tokens.begin(); list_token != list_tokens.end(); ++list_token)
     {

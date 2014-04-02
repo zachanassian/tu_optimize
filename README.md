@@ -1,6 +1,13 @@
 #Tyrant Unleashed Optimizer
 Deck Simulator and Optimizer for Tyrant Unleashed!
 
+##Version 1.1
+* deck groups can be defined in <code>customdecks.txt</code>. Example: <code>example_group:  eerie-spam:0.2, nbd-spam:0.8</code>
+* regular expresions can be used as Enemy_Deck to find matching custom decks from <code>customdecks.txt</code>
+* regular expressions can be stored in <code>customdecks.txt</code> for easy reuse
+* <code>customdecks_template.txt</code> contains data for famous gauntlets (GT125k;GT100k;Gauntlet) from [Excel Sim] Version 6.2 - credits rbwabd. If copied 
+to your <code>customdecks.txt</code> you can now run <code>tu_optimize mydeck GT125k sim 10000</code>
+   
 ##Version 1.0.2
 * [FIX] Halycon-1 was treated as non player card Halcyon[1997] - https://github.com/zachanassian/tu_optimize/issues/10
 
