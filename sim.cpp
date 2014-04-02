@@ -97,6 +97,7 @@ CardStatus::CardStatus(const Card* card) :
     m_enhance_heal(0),
     m_enhance_leech(0),
     m_enhance_poison(0),
+    m_enhance_strike(0),
     m_evades_left(card->m_evade),
     m_faction(card->m_faction),
     m_frozen(false),
@@ -144,6 +145,7 @@ inline void CardStatus::set(const Card& card)
     m_enhance_heal = 0;
     m_enhance_leech = 0;
     m_enhance_poison = 0;
+    m_enhance_strike = 0;
     m_evades_left = card.m_evade,
     m_faction = card.m_faction;
     m_frozen = false;
@@ -319,12 +321,13 @@ std::string CardStatus::description()
     if(m_protected > 0) { desc += ", protected " + to_string(m_protected); }
     if(m_stunned > 0) { desc += ", stunned " + to_string(m_stunned); }
     if(m_enhance_armored > 0) { desc += ", enhance armored " + to_string(m_enhance_armored); }
-    if(m_enhance_heal > 0) { desc += ", enhance heal " + to_string(m_enhance_heal); }
-    if(m_enhance_poison > 0) { desc += ", enhance poison " + to_string(m_enhance_poison); }
     if(m_enhance_berserk > 0) { desc += ", enhance berserk " + to_string(m_enhance_berserk); }
-    if(m_enhance_leech > 0) { desc += ", enhance leech " + to_string(m_enhance_leech); }
     if(m_enhance_counter > 0) { desc += ", enhance counter " + to_string(m_enhance_counter); }
     if(m_enhance_evade > 0) { desc += ", enhance evade " + to_string(m_enhance_evade); }
+    if(m_enhance_heal > 0) { desc += ", enhance heal " + to_string(m_enhance_heal); }
+    if(m_enhance_leech > 0) { desc += ", enhance leech " + to_string(m_enhance_leech); }
+    if(m_enhance_poison > 0) { desc += ", enhance poison " + to_string(m_enhance_poison); }
+    if(m_enhance_strike > 0) { desc += ", enhance strike " + to_string(m_enhance_strike); }
 //    if(m_step != CardStep::none) { desc += ", Step " + to_string(static_cast<int>(m_step)); }
     desc += "]";
     return(desc);
@@ -443,6 +446,9 @@ bool may_change_skill(const Field* fd, const CardStatus* status, const SkillMod:
                             fd->effect == Effect::poison_1 ||
                             fd->effect == Effect::poison_2 ||
                             fd->effect == Effect::poison_3 ||
+                            fd->effect == Effect::strike_1 ||
+                            fd->effect == Effect::strike_2 ||
+                            fd->effect == Effect::strike_3 ||
                             fd->effect == Effect::time_surge ||
                             fd->effect == Effect::friendly_fire ||
                             fd->effect == Effect::genesis ||
@@ -478,6 +484,7 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
         case Effect::heal_1:
         case Effect::leech_1:
         case Effect::poison_1:
+        case Effect::strike_1:
             skill_value = 1;
             break;
         case Effect::armored_2:
@@ -487,6 +494,7 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
         case Effect::heal_2:
         case Effect::leech_2:    
         case Effect::poison_2:
+        case Effect::strike_2:
             skill_value = 2;
             break;
         case Effect::armored_3:
@@ -496,6 +504,7 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
         case Effect::heal_3:    
         case Effect::leech_3:    
         case Effect::poison_3:
+        case Effect::strike_3:
             skill_value = 3;
             break;
         default:
@@ -564,6 +573,15 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
             {
                 need_add_skill = false;
                 return SkillSpec(enhance_poison, skill_value, allfactions, true, mod);
+            }
+            break;
+        case Effect::strike_1:
+        case Effect::strike_2:
+        case Effect::strike_3:
+            if(skill == new_skill)
+            {
+                need_add_skill = false;
+                return SkillSpec(enhance_strike, skill_value, allfactions, true, mod);
             }
             break;
         case Effect::time_surge:
@@ -1372,6 +1390,7 @@ void turn_start_phase(Field* fd)
             status.m_enhance_leech = 0;
             status.m_enhance_heal = 0;
             status.m_enhance_poison = 0;
+            status.m_enhance_strike = 0;
             status.m_evades_left = status.m_card->m_evade;
             if(status.m_delay > 0 && !status.m_frozen)
             {
@@ -2108,33 +2127,30 @@ inline bool skill_predicate<enhance_armored>(Field* fd, CardStatus* src, CardSta
 { return(c->m_card->m_armored > 0); }
 
 template<>
-inline bool skill_predicate<enhance_heal>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
-{ 
-    //copied and adopted from rally
-    const auto& mod = std::get<4>(s);
-    return(c->m_card->m_heal > 0 && can_attack(c) && !c->m_sundered &&  // (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)));
-        (src->m_player != c->m_player || mod == SkillMod::on_death ? (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)) :
-         mod == SkillMod::on_attacked ? is_active_next_turn(c) :
-         is_active(c) && !is_attacking_or_has_attacked(c)));
-}
-
-template<>
-inline bool skill_predicate<enhance_poison>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
-{ 
-    //copied and adopted from rally
-    const auto& mod = std::get<4>(s);
-    return(c->m_card->m_poison > 0 && can_attack(c) && !c->m_sundered &&  // (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)));
-        (src->m_player != c->m_player || mod == SkillMod::on_death ? (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)) :
-         mod == SkillMod::on_attacked ? is_active_next_turn(c) :
-         is_active(c) && !is_attacking_or_has_attacked(c)));
-}
-
-template<>
 inline bool skill_predicate<enhance_berserk>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
 { 
     //copied and adopted from rally
     const auto& mod = std::get<4>(s);
     return(c->m_card->m_berserk > 0 && can_attack(c) && !c->m_sundered &&  // (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)));
+        (src->m_player != c->m_player || mod == SkillMod::on_death ? (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)) :
+         mod == SkillMod::on_attacked ? is_active_next_turn(c) :
+         is_active(c) && !is_attacking_or_has_attacked(c)));
+}
+
+template<>
+inline bool skill_predicate<enhance_counter>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
+{ return(c->m_card->m_counter > 0); }
+
+template<>
+inline bool skill_predicate<enhance_evade>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
+{ return(c->m_card->m_evade > 0); }
+
+template<>
+inline bool skill_predicate<enhance_heal>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
+{ 
+    //copied and adopted from rally
+    const auto& mod = std::get<4>(s);
+    return(c->m_card->m_heal > 0 && can_attack(c) && !c->m_sundered &&  // (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)));
         (src->m_player != c->m_player || mod == SkillMod::on_death ? (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)) :
          mod == SkillMod::on_attacked ? is_active_next_turn(c) :
          is_active(c) && !is_attacking_or_has_attacked(c)));
@@ -2152,12 +2168,26 @@ inline bool skill_predicate<enhance_leech>(Field* fd, CardStatus* src, CardStatu
 }
 
 template<>
-inline bool skill_predicate<enhance_counter>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
-{ return(c->m_card->m_counter > 0); }
+inline bool skill_predicate<enhance_poison>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
+{ 
+    //copied and adopted from rally
+    const auto& mod = std::get<4>(s);
+    return(c->m_card->m_poison > 0 && can_attack(c) && !c->m_sundered &&  // (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)));
+        (src->m_player != c->m_player || mod == SkillMod::on_death ? (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)) :
+         mod == SkillMod::on_attacked ? is_active_next_turn(c) :
+         is_active(c) && !is_attacking_or_has_attacked(c)));
+}
 
 template<>
-inline bool skill_predicate<enhance_evade>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
-{ return(c->m_card->m_evade > 0); }
+inline bool skill_predicate<enhance_strike>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
+{
+    //copied and adopted from rally
+    const auto& mod = std::get<4>(s);
+    return(c->m_card->m_strike > 0 && can_attack(c) && !c->m_sundered &&  // (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)));
+        (src->m_player != c->m_player || mod == SkillMod::on_death ? (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)) :
+         mod == SkillMod::on_attacked ? is_active_next_turn(c) :
+         is_active(c) && !is_attacking_or_has_attacked(c)));
+}
 
 template<unsigned skill_id>
 inline void perform_skill(Field* fd, CardStatus* c, unsigned v)
@@ -2289,21 +2319,28 @@ inline void perform_skill<enhance_armored>(Field* fd, CardStatus* c, unsigned v)
 }
 
 template<>
-inline void perform_skill<enhance_heal>(Field* fd, CardStatus* c, unsigned v)
-{
-    c->m_enhance_heal += v;
-}
-
-template<>
-inline void perform_skill<enhance_poison>(Field* fd, CardStatus* c, unsigned v)
-{
-    c->m_enhance_poison += v;
-}
-
-template<>
 inline void perform_skill<enhance_berserk>(Field* fd, CardStatus* c, unsigned v)
 {
     c->m_enhance_berserk += v;
+}
+
+template<>
+inline void perform_skill<enhance_counter>(Field* fd, CardStatus* c, unsigned v)
+{
+    c->m_enhance_counter += v;
+}
+
+template<>
+inline void perform_skill<enhance_evade>(Field* fd, CardStatus* c, unsigned v)
+{
+    c->m_enhance_evade += v;
+    c->m_evades_left += v;
+}
+
+template<>
+inline void perform_skill<enhance_heal>(Field* fd, CardStatus* c, unsigned v)
+{
+    c->m_enhance_heal += v;
 }
 
 template<>
@@ -2313,15 +2350,15 @@ inline void perform_skill<enhance_leech>(Field* fd, CardStatus* c, unsigned v)
 }
 
 template<>
-inline void perform_skill<enhance_counter>(Field* fd, CardStatus* c, unsigned v)
+inline void perform_skill<enhance_poison>(Field* fd, CardStatus* c, unsigned v)
 {
-    c->m_enhance_counter += v;
+    c->m_enhance_poison += v;
 }
+
 template<>
-inline void perform_skill<enhance_evade>(Field* fd, CardStatus* c, unsigned v)
+inline void perform_skill<enhance_strike>(Field* fd, CardStatus* c, unsigned v)
 {
-    c->m_enhance_evade += v;
-    c->m_evades_left += v;
+    c->m_enhance_strike += v;
 }
     
 template<unsigned skill_id>
@@ -2386,6 +2423,30 @@ template<> std::vector<CardStatus*>& skill_targets<cleanse>(Field* fd, CardStatu
 template<> std::vector<CardStatus*>& skill_targets<enfeeble>(Field* fd, CardStatus* src_status)
 { return(skill_targets_hostile_assault(fd, src_status)); }
 
+template<> std::vector<CardStatus*>& skill_targets<enhance_armored>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_allied_assault(fd, src_status)); }
+
+template<> std::vector<CardStatus*>& skill_targets<enhance_berserk>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_allied_assault(fd, src_status)); }
+
+template<> std::vector<CardStatus*>& skill_targets<enhance_counter>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_allied_assault(fd, src_status)); }
+
+template<> std::vector<CardStatus*>& skill_targets<enhance_evade>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_allied_assault(fd, src_status)); }
+
+template<> std::vector<CardStatus*>& skill_targets<enhance_heal>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_allied_assault(fd, src_status)); }
+
+template<> std::vector<CardStatus*>& skill_targets<enhance_leech>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_allied_assault(fd, src_status)); }
+
+template<> std::vector<CardStatus*>& skill_targets<enhance_poison>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_allied_assault(fd, src_status)); }
+
+template<> std::vector<CardStatus*>& skill_targets<enhance_strike>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_allied_assault(fd, src_status)); }
+
 template<> std::vector<CardStatus*>& skill_targets<freeze>(Field* fd, CardStatus* src_status)
 { return(skill_targets_hostile_assault(fd, src_status)); }
 
@@ -2426,27 +2487,6 @@ template<> std::vector<CardStatus*>& skill_targets<weaken>(Field* fd, CardStatus
 
 template<> std::vector<CardStatus*>& skill_targets<siege>(Field* fd, CardStatus* src_status)
 { return(skill_targets_hostile_structure(fd, src_status)); }
-
-template<> std::vector<CardStatus*>& skill_targets<enhance_armored>(Field* fd, CardStatus* src_status)
-{ return(skill_targets_allied_assault(fd, src_status)); }
-
-template<> std::vector<CardStatus*>& skill_targets<enhance_heal>(Field* fd, CardStatus* src_status)
-{ return(skill_targets_allied_assault(fd, src_status)); }
-
-template<> std::vector<CardStatus*>& skill_targets<enhance_poison>(Field* fd, CardStatus* src_status)
-{ return(skill_targets_allied_assault(fd, src_status)); }
-
-template<> std::vector<CardStatus*>& skill_targets<enhance_berserk>(Field* fd, CardStatus* src_status)
-{ return(skill_targets_allied_assault(fd, src_status)); }
-
-template<> std::vector<CardStatus*>& skill_targets<enhance_leech>(Field* fd, CardStatus* src_status)
-{ return(skill_targets_allied_assault(fd, src_status)); }
-
-template<> std::vector<CardStatus*>& skill_targets<enhance_counter>(Field* fd, CardStatus* src_status)
-{ return(skill_targets_allied_assault(fd, src_status)); }
-
-template<> std::vector<CardStatus*>& skill_targets<enhance_evade>(Field* fd, CardStatus* src_status)
-{ return(skill_targets_allied_assault(fd, src_status)); }
 
 template<typename T>
 void maybeTriggerRegen(Field* fd)
@@ -2514,8 +2554,16 @@ bool check_and_perform_skill(Field* fd, CardStatus* src_status, CardStatus* dst_
         {
             count_achievement<skill_id>(fd, src_status);
         }
-        _DEBUG_MSG(1, "%s %s (%u) on %s\n", status_description(src_status).c_str(), skill_names[skill_id].c_str(), std::get<1>(s), status_description(dst_status).c_str());
-        perform_skill<skill_id>(fd, dst_status, std::get<1>(s));
+        //src_status->m_enhance_strike can't be accessed in perform_skill. Only dst_status is available.
+        //general problem for all enhanced hostile targeted skills like strike (not damage dependent like poison)
+        //Ugly enhance strike is added here
+        unsigned skill_value(std::get<1>(s));
+        if(skill_id == strike)
+        {
+          skill_value += src_status->m_enhance_strike;
+        }
+        _DEBUG_MSG(1, "%s %s (%u) on %s\n", status_description(src_status).c_str(), skill_names[skill_id].c_str(), skill_value, status_description(dst_status).c_str());
+        perform_skill<skill_id>(fd, dst_status, skill_value);
         return(true);
     }
     return(false);
@@ -2873,6 +2921,7 @@ void fill_skill_table()
     skill_table[enhance_leech] = perform_targetted_allied_fast<enhance_leech>;
     skill_table[enhance_heal] = perform_targetted_allied_fast<enhance_heal>;
     skill_table[enhance_poison] = perform_targetted_allied_fast<enhance_poison>;
+    skill_table[enhance_strike] = perform_targetted_allied_fast<enhance_strike>;
     skill_table[freeze] = perform_targetted_hostile_fast<freeze>;
     skill_table[heal] = perform_targetted_allied_fast<heal>;
     skill_table[infuse] = perform_infuse;

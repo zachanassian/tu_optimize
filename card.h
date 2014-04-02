@@ -53,6 +53,7 @@ public:
         m_set(0),
         m_siphon(0),
         m_split(false),
+        m_strike(0),
         m_stun(false),
         m_sunder(false),
         m_sunder_oa(false),
@@ -123,6 +124,7 @@ public:
     unsigned m_set;
     unsigned m_siphon;
     bool m_split;
+    unsigned m_strike;
     bool m_stun;
     bool m_sunder;
     bool m_sunder_oa;

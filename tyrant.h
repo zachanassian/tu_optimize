@@ -27,7 +27,7 @@ enum Skill
     // Activation (including Destroyed):
     augment, backfire, chaos, cleanse, enfeeble,
     enhance_armored, enhance_berserk, enhance_counter, enhance_evade,
-    enhance_leech, enhance_heal, enhance_poison,
+    enhance_leech, enhance_heal, enhance_poison, enhance_strike,
     freeze, heal, infuse, jam,
     mimic, protect, rally, recharge, repair, rush, shock, siege, split, strike, summon, supply,
     trigger_regen, // not actually a skill; handles regeneration after strike/siege
@@ -112,6 +112,9 @@ enum Effect {
     poison_1,
     poison_2,
     poison_3,
+    strike_1,
+    strike_2,
+    strike_3,
     time_surge,
     copycat,
     quicksilver,

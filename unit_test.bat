@@ -1,4 +1,16 @@
 @echo on
+tu_optimize.exe "Nex, Apex(10)" "Obama, SF(5)" -e "Strike 2" sim 10000
+@echo off
+echo === Expected ===
+echo Your Deck: [S0CC+q] Nexor, Apex, Apex, Apex, Apex, Apex, Apex, Apex, Apex, Apex, Apex
+echo Enemy's Deck: [SoO6+l] Barracus, Starformer, Starformer, Starformer, Starformer, Starformer
+echo Effect: Strike 2
+echo win%: 20.07 (2007 / 10000)
+echo stall%: 0.04 (4 / 10000)
+echo loss%: 79.89 (7989 / 10000)
+echo.
+
+@echo on
 tu_optimize So-Iq-SI-MJ-Ss-LBO6-GV-LT GT125k -r sim 1000
 @echo off
 echo === Expected ===
