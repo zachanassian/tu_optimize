@@ -265,18 +265,22 @@ the decks found are really good. So do not worry to much about this.
 <h2><a name="help" class="anchor" href="#help"><span class="octicon octicon-link"></span></a>Use build in help if you forget command syntax</h2>
 <pre>
 >tu_optimize
-Tyrant Unleashed Optimizer 1.0 - Copyright (C) 2014 zachanassian
+Tyrant Unleashed Optimizer 1.1 - Copyright (C) 2014 zachanassian
 usage: tu_optimize Your_Deck Enemy_Deck [Flags] [Operations]
 
 Your_Deck:
   the name/hash/cards of a custom deck.
 
 Enemy_Deck:
-  semicolon separated list of defense decks, syntax:
-  deck1[:factor1];deck2[:factor2];...
-  where deck is the name/hash/cards of a mission or custom deck, and factor is optional. The default factor is 1.
-  example: 'eerie-spam:0.2;nbd-spam:0.8' means eerie-spam is the defense deck 20% of the time, while nbd-spam is the defense deck 80% of the time.
-
+  1) semicolon separated list of defense decks, syntax:
+     deck1[:factor1];deck2[:factor2];...
+     where deck is the name/hash/cards of a mission or custom deck, and factor is optional. The default factor is 1.
+     example: "94. Heart of Tartarus" is the deck of mission 94. Heart of Tartarus at Level 10.
+     example: "eerie-spam:0.2;nbd-spam:0.8" means eerie-spam is the defense deck 20% of the time, while nbd-spam is the defense deck 80% of the time.
+  2) a regular expression surrounded by /.
+     regular expression will be used to search all custom decks for matching keys.
+     example: "/^GT/" will select all custom decks starting with the letters GT.
+     
 Flags:
   -e <effect>: set the battleground effect.
                use "tu_optimize Po Po -e list" to get a list of all available effects.
