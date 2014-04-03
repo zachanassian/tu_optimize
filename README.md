@@ -8,6 +8,7 @@ Deck Simulator and Optimizer for Tyrant Unleashed!
 * <code>customdecks_template.txt</code> contains data for famous gauntlets (GT125k, GT100k, Gauntlet) from [Excel Sim] Version 6.2 - credits rbwabd. If copied 
 to your <code>customdecks.txt</code> you can run <code>tu_optimize mydeck GT125k sim 10000</code>
 * Added battleground effect Strike 1-3
+* Added new cards.xml and missions.xml - Shiva
    
 ##Version 1.0.2
 * [FIX] Halycon-1 was treated as non player card Halcyon[1997] - https://github.com/zachanassian/tu_optimize/issues/10

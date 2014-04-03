@@ -91,7 +91,7 @@
 		</deck>
 		<rewards>
 			<gold>13</gold>
-			<card>2999</card>
+			<card>12</card>
 			<item>1053</item>
 			<star>
 				<id>2</id>
@@ -188,6 +188,7 @@
 		<speech>
 			<line commander='1023'>Typhon Vex has retreated! We must find the vermin. Destroy all Raider bases in sight.</line>
 		</speech>
+		<splash image="battle_nexus" text="The siege was won, and the Asphodelians were banished.  Thirty years pass..." />
 		<deck>
 			<card>34</card>
 			<card>35</card>
@@ -197,7 +198,7 @@
 		</deck>
 		<rewards>
 			<gold>15</gold>
-			<card>2999</card>
+			<card>106</card>
 			<item>1061</item>
 			<star>
 				<id>2</id>
@@ -366,9 +367,8 @@
 		<name>11. Typhon's Path</name>
 		<picture>mission11.jpg</picture>
 		<location_id>1</location_id>
-		<mission_type>2</mission_type>
 		<combatBG>CombatBGSnow</combatBG>
-		<energy>35</energy>
+		<energy>23</energy>
 		<x>280</x>
 		<y>548</y>
 		<commander>1143</commander>
@@ -387,8 +387,8 @@
 			<card>2006</card>
 		</deck>
 		<rewards>
-			<gold>32</gold>
-			<card>106</card>
+			<gold>21</gold>
+			<card>2999</card>
 			<item>1031</item>
 			<star>
 				<id>2</id>
@@ -608,7 +608,8 @@
 		<location_id>1</location_id>
 		<mission_type>2</mission_type>
 		<combatBG>CombatBGSnow</combatBG>
-		<energy>100</energy>
+		<!-- <monster flip_x='1'>harvest_tank</monster> -->
+		<energy>40</energy>
 		<x>180</x>
 		<y>200</y>
 		<commander>1144</commander>
@@ -628,7 +629,7 @@
 			<card>2006</card>
 		</deck>
 		<rewards>
-			<gold>90</gold>
+			<gold>36</gold>
 			<card>148</card>
 			<item>1043</item>
 			<star>
@@ -653,6 +654,7 @@
 		<x>800</x>
 		<y>180</y>
 		<commander>1148</commander> <!-- Introduce Leech, First BTs -->
+		<splash image="broodmother" text="The Raiders have been pushed back, but the Swamps of Andar have even greater threats..." />
 		<speech>
 			<line commander='1023'>Vex, the fool. He released a powerful Bloodthirsty into the ranks of his own men to keep us distracted. The Broodmother will shred both our ranks.</line>
 		</speech>
@@ -9755,7 +9757,6 @@
         <monster>rightboss2</monster>
         <event_req>9</event_req>
         <mission_type>2</mission_type>
-        <monster>rightboss2</monster>
         <combatBG>CombatBGJungle</combatBG>
         <energy>75</energy>
         <x>240</x>
@@ -9791,6 +9792,354 @@
             </star>
         </rewards>
         <req>2114</req>
+    </mission>
+    
+    <mission>
+        <id>2116</id>
+        <name>Halt Advance</name>
+        <picture>mission2116.jpg</picture>
+        <location_id>106</location_id>
+        <event_req>9</event_req>
+        <mission_type>4</mission_type>
+        <combatBG>CombatBGJungle</combatBG>
+        <energy>75</energy>
+        <x>470</x>
+        <y>180</y>
+        <commander>1284</commander>
+        <speech>
+            <line commander='1003'>Evrane has fallen.</line>
+            <line commander='1281'>We have been carried far enough to begin the ritual. Shiva will incinerate this world.</line>
+        </speech>
+        <deck>
+            <card>5476</card>
+            <card>486</card>
+            <card>4838</card>
+            <card>149</card>
+            <card>518</card>
+            <card>4414</card>
+            <card>378</card>
+            <card>142</card>
+            <card>137</card>
+            <card>2118</card>
+        </deck>
+        <rewards>
+            <gold>82</gold>
+            <card>133</card>
+            <item>1041</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2115</req>
+    </mission>
+
+    <mission>
+        <id>2117</id>
+        <name>Fool's Wish</name>
+        <picture>mission2117.jpg</picture>
+        <location_id>106</location_id>
+        <event_req>9</event_req>
+        <mission_type>4</mission_type>
+        <combatBG>CombatBGJungle</combatBG>
+        <energy>80</energy>
+        <x>550</x>
+        <y>240</y>
+        <commander>1284</commander>
+        <speech>
+            <line commander='1998'>This is foolish. You will die with the planet!</line>
+        </speech>
+        <deck>
+            <card>5476</card>
+            <card>642</card>
+            <card>627</card>
+            <card>558</card>
+            <card>4065</card>
+            <card>328</card>
+            <card>135</card>
+            <card>179</card>
+            <card>139</card>
+            <card>2062</card>
+        </deck>
+        <rewards>
+            <gold>88</gold>
+            <card>142</card>
+            <item>1041</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2116</req>
+    </mission>
+
+    <mission>
+        <id>2118</id>
+        <name>Phoenix</name>
+        <picture>mission2118.jpg</picture>
+        <location_id>106</location_id>
+        <event_req>9</event_req>
+        <mission_type>4</mission_type>
+        <combatBG>CombatBGJungle</combatBG>
+        <energy>85</energy>
+        <x>620</x>
+        <y>190</y>
+        <commander>1284</commander>
+        <speech>
+            <line commander='1281'>Out of the ashes Shiva will rise carrying our corpses to a beautiful new world. Where upon we will be resurrected with immortality.</line>
+        </speech>
+        <deck>
+            <card>5476</card>
+            <card>392</card>
+            <card>666</card>
+            <card>5091</card>
+            <card>149</card>
+            <card>5330</card>
+            <card>4962</card>
+            <card>374</card>
+            <card>200</card>
+            <card>2025</card>
+        </deck>
+        <rewards>
+            <gold>93</gold>
+            <card>134</card>
+            <item>1042</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2117</req>
+    </mission>
+
+    <mission>
+        <id>2119</id>
+        <name>Disturbed Ceremony</name>
+        <picture>mission2119.jpg</picture>
+        <location_id>106</location_id>
+        <event_req>9</event_req>
+        <mission_type>4</mission_type>
+        <combatBG>CombatBGJungle</combatBG>
+        <energy>85</energy>
+        <x>690</x>
+        <y>240</y>
+        <commander>1284</commander>
+        <speech>
+            <line commander='1003'>Told you it was no use. Take them out.</line>
+        </speech>
+        <deck>
+            <card>5476</card>
+            <card>840</card>
+            <card>4256</card>
+            <card>558</card>
+            <card>4414</card>
+            <card>201</card>
+            <card>374</card>
+            <card>142</card>
+            <card>2118</card>
+            <card>2039</card>
+        </deck>
+        <rewards>
+            <gold>93</gold>
+            <card>137</card>
+            <item>1042</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2118</req>
+    </mission>
+
+    <mission>
+        <id>2120</id>
+        <name>Devout Defenders</name>
+        <picture>mission2120.jpg</picture>
+        <location_id>106</location_id>
+        <event_req>9</event_req>
+        <mission_type>4</mission_type>
+        <combatBG>CombatBGJungle</combatBG>
+        <energy>90</energy>
+        <x>760</x>
+        <y>170</y>
+        <commander>1284</commander>
+        <speech>
+            <line commander='1003'>If they wish to lay down their lives then I say we take them.</line>
+        </speech>
+        <deck>
+            <card>5476</card>
+            <card>392</card>
+            <card>5092</card>
+            <card>627</card>
+            <card>148</card>
+            <card>179</card>
+            <card>145</card>
+            <card>134</card>
+            <card>2038</card>
+            <card>2350</card>
+        </deck>
+        <rewards>
+            <gold>99</gold>
+            <card>2024</card>
+            <item>1043</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2119</req>
+    </mission>
+
+    <mission>
+        <id>2121</id>
+        <name>Shiva’s Presence</name>
+        <picture>mission2121.jpg</picture>
+        <location_id>106</location_id>
+        <event_req>9</event_req>
+        <mission_type>4</mission_type>
+        <combatBG>CombatBGJungle</combatBG>
+        <energy>90</energy>
+        <x>870</x>
+        <y>180</y>
+        <commander>1284</commander>
+        <speech>
+       		<line commander='1998'>A strange aura is blocking our shots. We cannot break through.</line>       
+    		<line commander='1281'>The time has come. You shall bear witness to the end.</line>       
+		</speech>
+        <deck>
+            <card>5476</card>
+            <card>643</card>
+            <card>666</card>
+            <card>4067</card>
+            <card>329</card>
+            <card>4065</card>
+            <card>557</card>
+            <card>140</card>
+            <card>138</card>
+            <card>2028</card>
+        </deck>
+        <rewards>
+            <gold>99</gold>
+            <card>138</card>
+            <item>1044</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2120</req>
+    </mission>
+
+    <mission>
+        <id>2122</id>
+        <name>Sacrifice</name>
+        <picture>mission2122.jpg</picture>
+        <location_id>106</location_id>
+        <event_req>9</event_req>
+        <mission_type>4</mission_type>
+        <combatBG>CombatBGJungle</combatBG>
+        <energy>95</energy>
+        <x>950</x>
+        <y>300</y>
+        <commander>1284</commander>
+        <speech>
+            <line commander='1281'>We forfeit our lives so that you may rain your fury from the sky. We call on you now, Shiva!</line>
+        </speech>
+        <deck>
+            <card>5476</card>
+            <card>153</card>
+            <card>4813</card>
+            <card>440</card>
+            <card>558</card>
+            <card>4962</card>
+            <card>374</card>
+            <card>140</card>
+            <card>178</card>
+            <card>2040</card>
+        </deck>
+        <rewards>
+            <gold>104</gold>
+            <card>178</card>
+            <item>1045</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2121</req>
+    </mission>
+
+    <mission>
+        <id>2123</id>
+        <name>Shiva</name>
+        <picture>mission2123.jpg</picture>
+        <location_id>106</location_id>
+        <monster>rightboss3</monster>
+        <event_req>9</event_req>
+        <mission_type>2</mission_type>
+        <combatBG>CombatBGJungle</combatBG>
+        <energy>100</energy>
+        <x>840</x>
+        <y>280</y>
+        <commander>1291</commander>
+        <speech>
+            <line commander='1998'>It is coming from the sky.</line>
+        	<line commander='1003'>Intercept it. We cannot let it reach the ground.</line>
+        </speech>
+        <deck>
+            <card>5476</card>
+            <card>5476</card>
+            <card>5426</card>
+            <card>5402</card>
+            <card>885</card>
+            <card>5197</card>
+            <card>5482</card>
+            <card>4928</card>
+            <card>4250</card>
+            <card>4256</card>
+        </deck>
+        <rewards>
+            <gold>120</gold>
+            <card>557</card>
+            <item>1046</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2122</req>
     </mission>
 	
 	<!-- END March 2014 Missions -->
