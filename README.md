@@ -1,5 +1,7 @@
 #Tyrant Unleashed Optimizer
 Deck Simulator and Optimizer for Tyrant Unleashed!
+##Version 1.1.2
+* [FIX] Corrected <code>GT04</code> to use <code>Bombardment Tank-3</code>
 
 ##Version 1.1.1
 * [FIX] <code>example_group</code> syntax corrected in <code>customdecks_template.txt</code>
