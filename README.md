@@ -1,6 +1,9 @@
 #Tyrant Unleashed Optimizer
 Deck Simulator and Optimizer for Tyrant Unleashed!
 
+##Version 1.1.1
+* [FIX] <code>example_group</code> syntax corrected in <code>customdecks_template.txt</code>
+  
 ##Version 1.1
 * deck groups can be defined in <code>customdecks.txt</code>. Example: <code>example_group:  eerie-spam:0.2, nbd-spam:0.8</code>
 * regular expresions can be used as Enemy_Deck to find matching custom decks from <code>customdecks.txt</code>

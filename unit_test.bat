@@ -1,4 +1,13 @@
 @echo on
+tu_optimize So-Iq-SI-MJ-Ss-LBO6-GV-LT example_group -r sim 10000
+@echo off
+echo === Expected ===
+echo win%: 75.538 (561 9302 / 10000)
+echo stall%: 0.188 (94 0 / 10000)
+echo loss%: 24.274 (9345 698 / 10000)
+echo.
+
+@echo on
 tu_optimize.exe "Nex, Apex(10)" "Obama, SF(5)" -e "Strike 2" sim 10000
 @echo off
 echo === Expected ===

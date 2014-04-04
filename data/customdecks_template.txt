@@ -1,7 +1,7 @@
 mydeck: Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
 eerie-spam: Barracus, Eerie(10)
 nbd-spam: Alaric, Noble Defiance(10)
-example_group:  eerie-spam:0.2, nbd-spam:0.8
+example_group: eerie-spam:0.2;nbd-spam:0.8
 GT12Sk01: Barracus-6, Noxious Tank-6, Spiteful Raptor-6, Deranged Malgoth-6, Spiteful Raptor-6, Tazerecca-6, Entrails Bog-6, Omniphet-6, Xeno Suzerain-6, Spiteful Raptor-6, Sculpted Aegis-6
 GT12Sk02: Halcyon-6, Indestructible Troop-6, Indestructible Troop-6, Neocyte Resonator-6, Neocyte Resonator-6, Omniphet-6, Garrison Fortifier-6, Agrius Maximus-6, Galereaver-6, Flux Station-6, Arthurian Monarch-6
 GT12Sk03: Barracus-6, Narscious the Eerie-6, Warp Alchemist-6, Narscious the Eerie-6, Warp Alchemist-6, Bolt Crag-6, Sacred Sanctuary-6, Lord Hades-6, Mawnage-6, Noble Defiance-6
