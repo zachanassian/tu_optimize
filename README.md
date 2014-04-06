@@ -1,6 +1,55 @@
 #Tyrant Unleashed Optimizer
 Deck Simulator and Optimizer for Tyrant Unleashed!
 
+##Usage
+<pre>
+usage: tu_optimize.exe Your_Deck Enemy_Deck [Flags] [Operations]
+
+Your_Deck:
+  the name/hash/cards of a custom deck.
+
+Enemy_Deck:
+  1) semicolon separated list of defense decks, syntax:
+     deck1[:factor1];deck2[:factor2];...
+     where deck is the name/hash/cards of a mission or custom deck, and factor is optional. The default factor is 1.
+     example: "94. Heart of Tartarus" is the deck of mission 94. Heart of Tartarus at Level 10.
+     example: "eerie-spam:0.2;nbd-spam:0.8" means eerie-spam is the defense deck 20% of the time, while nbd-spam is the defense deck 80% of
+the time.
+  2) a regular expression surrounded by /.
+     regular expression will be used to search all custom decks for matching keys.
+     example: "/^GT/" will select all custom decks starting with the letters GT.
+
+Flags:
+  -e &lt;effect&gt;: set the battleground effect.
+               use "tu_optimize Po Po -e list" to get a list of all available effects.
+  -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).
+  -s: use surge (default is fight).
+  -t &lt;num&gt;: set the number of threads, default is 4.
+  -turnlimit &lt;num&gt;: set the number of turns in a battle, default is 50.
+  win:     simulate/optimize for win rate. [default].
+  defense: simulate/optimize for win rate + stall rate. can be used for defending deck.
+Flags for climb:
+  -c: don't try to optimize the commander.
+  -L &lt;min&gt; &lt;max&gt;: restrict deck size between &lt;min&gt; and &lt;max&gt;.
+  -o: restrict to the owned cards listed in "data/ownedcards.txt".
+  -o=&lt;filename&gt;: restrict to the owned cards listed in &lt;filename&gt;.
+  target &lt;num&gt;: stop as soon as the score reaches &lt;num&gt;.
+
+Operations:
+  sim &lt;num&gt;: simulate &lt;num&gt; battles to evaluate a deck.
+  climb &lt;num&gt;: perform hill-climbing starting from the given attack deck, using up to &lt;num&gt; battles to evaluate a deck.
+  reorder &lt;num&gt;: optimize the order for given attack deck, using up to &lt;num&gt; battles to evaluate an order.
+  debug: testing purpose only. very verbose output. only one battle.
+  debuguntil &lt;min&gt; &lt;max&gt;: testing purpose only. fight until the last fight results in range [&lt;min&gt;, &lt;max&gt;]. recommend to redirect output.
+                          debuguntil 100 100 will run till first win.
+                          debuguntil 0 0 will run till first lose.
+</pre>
+
+Remark: Due to html character escaping this might read awkward in readme.txt. 
+Open https://github.com/zachanassian/tu_optimize/blob/master/README.md to get latest version in formatted view.
+
+##Changelog
+
 ##Version 1.1.2
 * [FIX] Corrected <code>GT04</code> to use <code>Bombardment Tank-3</code>
 
