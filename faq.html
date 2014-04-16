@@ -156,8 +156,22 @@ Just give it a try.
 Typical Optimizer Settings</h2>
 <p>The following examples assume you have defined <code>mydeck</code>, created a group of decks <code>edecks</code> and
 wants to optimize your deck for typical situations using <code>X</code> simulations at max for each enemy deck</p>
+<h3>PVP attack - play your cards random(auto)</h3>
+<code>tu_optimize mydeck edecks -o climb X</code>
 <h3>PVP attack - play your cards ordered</h3>
-<code>tu_optimize mydeck edeck -r -o climb X</code>
+<code>tu_optimize mydeck edecks -r -o climb X</code>
+<h3>PVP defense - play enemy decks random(auto)</h3>
+<code>tu_optimize mydeck edecks defense -s -o climb X</code>
+<h3>PVP defense - play enemy decks ordered</h3>
+<code>tu_optimize mydeck edecks defense defender:ordered -s -o climb X</code>
+<h3>Guild War attack - play your cards random(auto)</h3>
+<code>tu_optimize mydeck edecks -s -o climb X</code>
+<h3>Guild War attack - play your cards ordered</h3>
+<code>tu_optimize mydeck edecks -s -r -o climb X</code>
+<h3>Guild War defense - play enemy decks random(auto)</h3>
+<code>tu_optimize mydeck edecks defense -o climb X</code>
+<h3>Guild War defense - play enemy decks ordered</h3>
+<code>tu_optimize mydeck edecks defense defender:ordered -o climb X</code>
 
         </section>
 
