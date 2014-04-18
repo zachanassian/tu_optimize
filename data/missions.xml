@@ -608,7 +608,7 @@
 		<location_id>1</location_id>
 		<mission_type>2</mission_type>
 		<combatBG>CombatBGSnow</combatBG>
-		<!-- <monster flip_x='1'>harvest_tank</monster> -->
+		<monster flip_x='1'>harvest_tank</monster>
 		<energy>40</energy>
 		<x>180</x>
 		<y>200</y>
@@ -3889,18 +3889,526 @@
 		</rewards>
 		<req>93</req>
 	</mission>
+
+	<mission>
+		<id>95</id>
+		<name>95. Cold Reception</name>
+		<picture>mission95.jpg</picture>
+		<location_id>8</location_id>
+		<combatBG>CombatBGSnow</combatBG>
+		<energy>100</energy>
+		<x>485</x>
+		<y>461</y>
+		<commander>1196</commander>
+		<speech>
+			<line commander='1999'>Ugh, what happened? Why is it so cold?</line>
+			<line commander='1053'>We're back in Arctis, and some friends followed.</line>
+		</speech>
+		<deck>
+			<card>863</card>
+			<card>184</card>
+			<card>633</card>
+			<card>4758</card>
+			<card>5078</card>
+			<card>5273</card>
+			<card>4027</card>
+			<card>389</card>
+			<card>2072</card>
+			<card>2431</card>
+		</deck>
+		<rewards>
+			<gold>130</gold>
+			<card>2012</card>
+			<item>1025</item>
+			<star>
+				<id>2</id>
+				<req type='5' compare='great_equal' amount='5' />
+			</star>
+			<star>
+				<id>3</id>
+				<req type='5' compare='great_equal' amount='10' />
+			</star>
+		</rewards>
+		<req>94</req>
+	</mission>
+
+	<mission>
+		<id>96</id>
+		<name>96. Infested Tail</name>
+		<picture>mission96.jpg</picture>
+		<location_id>8</location_id>
+		<combatBG>CombatBGSnow</combatBG>
+		<energy>105</energy>
+		<x>440</x>
+		<y>371</y>
+		<commander>1196</commander>
+		<speech>
+			<line commander='1999'>How did we end up here?</line>
+			<line commander='1053'>Typhon merging with the core caused a powerful reaction. It killed most of our unit and knocked others out cold along with you.</line>
+			<line commander='1053'>Then portals began opening all over Tartarus. Those of us that remained grabbed who we could and jumped through. Unfortunately the Bloodthirsty followed.</line>
+		</speech>
+		<deck>
+			<card>424</card>
+			<card>4715</card>
+			<card>251</card>
+			<card>723</card>
+			<card>336</card>
+			<card>252</card>
+			<card>4895</card>
+			<card>95</card>
+			<card>2129</card>
+			<card>2237</card>
+		</deck>
+		<rewards>
+			<gold>136</gold>
+			<card>67</card>
+			<item>1012</item>
+			<star>
+				<id>2</id>
+				<req type='5' compare='great_equal' amount='5' />
+			</star>
+			<star>
+				<id>3</id>
+				<req type='5' compare='great_equal' amount='10' />
+			</star>
+		</rewards>
+		<req>95</req>
+	</mission>
+
+	<mission>
+		<id>97</id>
+		<name>97. Enemy Emerges</name>
+		<picture>mission97.jpg</picture>
+		<location_id>8</location_id>
+		<combatBG>CombatBGSnow</combatBG>
+		<energy>110</energy>
+		<x>330</x>
+		<y>300</y>
+		<commander>1208</commander>
+		<speech>
+			<line commander='1053'>I don't know what happened to Typhon though.</line>
+			<line commander='1205'>He remains trapped in Tartarus while he gathers power you send him. You must be perished.</line>
+		</speech>
+		<deck>
+			<card>4846</card>
+			<card>805</card>
+			<card>395</card>
+			<card>490</card>
+			<card>4816</card>
+			<card>156</card>
+			<card>899</card>
+			<card>161</card>
+			<card>4397</card>
+			<card>2066</card>
+		</deck>
+		<rewards>
+			<gold>143</gold>
+			<card>139</card>
+			<item>1041</item>
+			<star>
+				<id>2</id>
+				<req type='5' compare='great_equal' amount='5' />
+			</star>
+			<star>
+				<id>3</id>
+				<req type='5' compare='great_equal' amount='10' />
+			</star>
+		</rewards>
+		<req>96</req>
+	</mission>
+
+	<mission>
+		<id>98</id>
+		<name>98. Syphon</name>
+		<picture>mission98.jpg</picture>
+		<location_id>8</location_id>
+		<combatBG>CombatBGSnow</combatBG>
+		<energy>115</energy>
+		<x>200</x>
+		<y>230</y>
+		<commander>1208</commander>
+		<speech>
+			<line commander='1999'>We aren't giving Typhon power. We were trying to stop that madman.</line>
+			<line commander='1205'>Your intentions are irrelevant. To stop the Bloodthirsty resurrection, we must prevent the spread of the Blight.</line>
+		</speech>
+		<deck>
+			<card>470</card>
+			<card>939</card>
+			<card>240</card>
+			<card>843</card>
+			<card>670</card>
+			<card>4260</card>
+			<card>245</card>
+			<card>4931</card>
+			<card>2265</card>
+			<card>2353</card>
+		</deck>
+		<rewards>
+			<gold>149</gold>
+			<card>137</card>
+			<item>1042</item>
+			<star>
+				<id>2</id>
+				<req type='5' compare='great_equal' amount='5' />
+			</star>
+			<star>
+				<id>3</id>
+				<req type='5' compare='great_equal' amount='10' />
+			</star>
+		</rewards>
+		<req>97</req>
+	</mission>
+
+	<mission>
+		<id>99</id>
+		<name>99. Old Acquaintance</name>
+		<picture>mission99.jpg</picture>
+		<location_id>8</location_id>
+		<combatBG>CombatBGSnow</combatBG>
+		<energy>120</energy>
+		<x>310</x>
+		<y>180</y>
+		<commander>1190</commander>
+		<speech>
+			<line commander='1999'>Typhon, Blight, none of this makes sense.</line>
+			<line commander='1053'>Barracus has also escaped from Tartarus. He must know something, make him talk.</line>
+		</speech>
+		<deck>
+			<card>4057</card>
+			<card>5311</card>
+			<card>5098</card>
+			<card>342</card>
+			<card>57</card>
+			<card>663</card>
+			<card>4803</card>
+			<card>347</card>
+			<card>2046</card>
+			<card>2339</card>
+		</deck>
+		<rewards>
+			<gold>156</gold>
+			<card>35</card>
+			<item>1065</item>
+			<star>
+				<id>2</id>
+				<req type='5' compare='great_equal' amount='5' />
+			</star>
+			<star>
+				<id>3</id>
+				<req type='5' compare='great_equal' amount='10' />
+			</star>
+		</rewards>
+		<req>98</req>
+	</mission>
+
+	<mission>
+		<id>100</id>
+		<name>100. Truth Unveiled</name>
+		<picture>mission100.jpg</picture>
+		<location_id>8</location_id>
+		<combatBG>CombatBGSnow</combatBG>
+		<energy>125</energy>
+		<x>420</x>
+		<y>210</y>
+		<commander>1208</commander>
+		<speech>
+			<line commander='1053'>Why are you here Barracus? To follow us?</line>
+			<line commander='1187'>Ha! You always were short-sighted Yurich. Fine since you stopped me from completing my mission maybe you will do it for me.</line>
+			<line commander='1187'>The Righteous are summoning a Sentinel. It will eradicate all life on Acheron. No life, no Blight. It is the only way to stop Typhon, but you aren't willing to let everyone die are you?</line>
+		</speech>
+		<deck>
+			<card>468</card>
+			<card>939</card>
+			<card>156</card>
+			<card>5383</card>
+			<card>240</card>
+			<card>670</card>
+			<card>900</card>
+			<card>4931</card>
+			<card>245</card>
+			<card>2175</card>
+		</deck>
+		<rewards>
+			<gold>162</gold>
+			<card>178</card>
+			<item>1043</item>
+			<star>
+				<id>2</id>
+				<req type='5' compare='great_equal' amount='5' />
+			</star>
+			<star>
+				<id>3</id>
+				<req type='5' compare='great_equal' amount='10' />
+			</star>
+		</rewards>
+		<req>99</req>
+	</mission>
+
+	<mission>
+		<id>101</id>
+		<name>101. Unwelcome Guests</name>
+		<picture>mission101.jpg</picture>
+		<location_id>8</location_id>
+		<combatBG>CombatBGSnow</combatBG>
+		<energy>130</energy>
+		<x>560</x>
+		<y>300</y>
+		<commander>1203</commander>
+		<speech>
+			<line commander='1053'>Barracus is getting away.</line>
+			<line commander='1999'>We got bigger problems. Xeno scouts up ahead. They must have detected the energy signals from the portals.</line>
+		</speech>
+		<deck>
+			<card>925</card>
+			<card>462</card>
+			<card>4286</card>
+			<card>4582</card>
+			<card>4976</card>
+			<card>4312</card>
+			<card>4914</card>
+			<card>542</card>
+			<card>5361</card>
+			<card>2108</card>
+		</deck>
+		<rewards>
+			<gold>169</gold>
+			<card>175</card>
+			<item>1036</item>
+			<star>
+				<id>2</id>
+				<req type='5' compare='great_equal' amount='5' />
+			</star>
+			<star>
+				<id>3</id>
+				<req type='5' compare='great_equal' amount='10' />
+			</star>
+		</rewards>
+		<req>100</req>
+	</mission>
+
+	<mission>
+		<id>102</id>
+		<name>102. Halcyon's Folly</name>
+		<picture>mission102.jpg</picture>
+		<location_id>8</location_id>
+		<combatBG>CombatBGSnow</combatBG>
+		<energy>135</energy>
+		<x>650</x>
+		<y>410</y>
+		<commander>1027</commander>
+		<speech>
+			<line commander='1023'>So the traitor emerges. If you were hoping to harvest the Pantheon's energy to use against me don't bother. The Righteous have it heavily guarded.</line>
+			<line commander='1999'>Only you would devise a plan so foul. The Pantheon must be destroyed and I will take you out with it if I have to.</line>
+		</speech>
+		<deck>
+			<card>4424</card>
+			<card>787</card>
+			<card>5223</card>
+			<card>408</card>
+			<card>5014</card>
+			<card>676</card>
+			<card>4860</card>
+			<card>5152</card>
+			<card>5292</card>
+			<card>2052</card>
+		</deck>
+		<rewards>
+			<gold>175</gold>
+			<card>15</card>
+			<item>1056</item>
+			<star>
+				<id>2</id>
+				<req type='5' compare='great_equal' amount='5' />
+			</star>
+			<star>
+				<id>3</id>
+				<req type='5' compare='great_equal' amount='10' />
+			</star>
+		</rewards>
+		<req>101</req>
+	</mission>
+
+	<mission>
+		<id>103</id>
+		<name>103. Impassioned Boast</name>
+		<picture>mission103.jpg</picture>
+		<location_id>8</location_id>
+		<combatBG>CombatBGSnow</combatBG>
+		<energy>140</energy>
+		<x>730</x>
+		<y>510</y>
+		<commander>1209</commander>
+		<speech>
+			<line commander='1053'>We've reached the Pantheon, but their defenses are as strong as Halcyon claimed.</line>
+			<line commander='1205'>The Bloodthirsty must be stopped. Your intervention endangers all of Acheron.</line>
+			<line commander='1999'>We'll find another way. Your barbaric ritual will end before it begins.</line>
+		</speech>
+		<deck>
+			<card>733</card>
+			<card>4527</card>
+			<card>4846</card>
+			<card>646</card>
+			<card>4260</card>
+			<card>843</card>
+			<card>5200</card>
+			<card>658</card>
+			<card>2267</card>
+			<card>2355</card>
+		</deck>
+		<rewards>
+			<gold>182</gold>
+			<card>138</card>
+			<item>1044</item>
+			<star>
+				<id>2</id>
+				<req type='5' compare='great_equal' amount='5' />
+			</star>
+			<star>
+				<id>3</id>
+				<req type='5' compare='great_equal' amount='10' />
+			</star>
+		</rewards>
+		<req>102</req>
+	</mission>
+
+	<mission>
+		<id>104</id>
+		<name>104. Breached Perimeter</name>
+		<picture>mission104.jpg</picture>
+		<location_id>8</location_id>
+		<combatBG>CombatBGSnow</combatBG>
+		<energy>145</energy>
+		<x>600</x>
+		<y>600</y>
+		<commander>1191</commander>
+		<speech>
+			<line commander='1187'>Thanks for clearing out that front line for us. We'll take it from here.</line>
+		</speech>
+		<deck>
+			<card>867</card>
+			<card>4055</card>
+			<card>5026</card>
+			<card>4360</card>
+			<card>4491</card>
+			<card>4614</card>
+			<card>4878</card>
+			<card>347</card>
+			<card>2147</card>
+			<card>2046</card>
+		</deck>
+		<rewards>
+			<gold>188</gold>
+			<card>45</card>
+			<item>1066</item>
+			<star>
+				<id>2</id>
+				<req type='5' compare='great_equal' amount='5' />
+			</star>
+			<star>
+				<id>3</id>
+				<req type='5' compare='great_equal' amount='10' />
+			</star>
+		</rewards>
+		<req>103</req>
+	</mission>
+
+	<mission>
+		<id>105</id>
+		<name>105. Cutting it Close</name>
+		<picture>mission105.jpg</picture>
+		<location_id>8</location_id>
+		<combatBG>CombatBGSnow</combatBG>
+		<energy>150</energy>
+		<x>500</x>
+		<y>620</y>
+		<commander>1209</commander>
+		<speech>
+			<line commander='1053'>The Pantheon is charging up. The Sentinel will be here soon. Any idea how to stop it?</line>
+			<line commander='1999'>Blow it to Tartarus. Kill any that stand in our way.</line>
+		</speech>
+		<deck>
+			<card>937</card>
+			<card>4525</card>
+			<card>4818</card>
+			<card>875</card>
+			<card>5387</card>
+			<card>4842</card>
+			<card>490</card>
+			<card>162</card>
+			<card>4650</card> 
+			<card>2500</card>
+		</deck>
+		<rewards>
+			<gold>195</gold>
+			<card>2024</card>
+			<item>1045</item>
+			<star>
+				<id>2</id>
+				<req type='5' compare='great_equal' amount='5' />
+			</star>
+			<star>
+				<id>3</id>
+				<req type='5' compare='great_equal' amount='10' />
+			</star>
+		</rewards>
+		<req>104</req>
+	</mission>
+
+	<mission>
+		<id>106</id>
+		<name>106. World's End</name>
+		<picture>mission106.jpg</picture>
+		<location_id>8</location_id>
+		<combatBG>CombatBGSnow</combatBG>
+		<mission_type>2</mission_type>
+		<energy>200</energy>
+		<x>350</x>
+		<y>590</y>
+		<commander>1210</commander>
+		<speech>
+			<line commander='1205'>Stopping the Pantheon now would be catastrophic. You are on a path that only leads to your doom.</line>
+			<line commander='1999'>I will not stand by and watch this world die. This ends now!</line>
+			<line commander='1053'>Once the Pantheon is destroyed we need to retreat. The reaction caused by its destruction could wipe us out.</line>
+		</speech>
+		<deck>
+			<card>4376</card>
+			<card>4147</card>
+			<card>4525</card>
+			<card>5385</card>
+			<card>749</card>
+			<card>875</card>
+			<card>4401</card>
+			<card>5203</card>
+			<card>4652</card> 
+			<card>2175</card>
+		</deck>
+		<rewards>
+			<gold>320</gold>
+			<card>518</card>
+			<item>1046</item>
+			<star>
+				<id>2</id>
+				<req type='5' compare='great_equal' amount='5' />
+			</star>
+			<star>
+				<id>3</id>
+				<req type='5' compare='great_equal' amount='10' />
+			</star>
+		</rewards>
+		<req>105</req>
+	</mission>
 	
 	<lockedMission>
-		<id>95</id>
-		<name>Gore Typhon - Coming Soon!</name>
+		<id>107</id>
+		<name>Worldship - Coming Soon!</name>
 		<picture>banner_comingsoon.png</picture>
-		<location_id>7</location_id>
+		<location_id>8</location_id>
 		<energy>50</energy>
-		<x>250</x>
+		<x>180</x>
 		<y>550</y>
 		<commander>1034</commander>
-		<desc>An ancient power is awakened and controlled by Acheron's most feared enemy.</desc>
-		<req>94</req>
+		<desc>A new force emerges to threaten all of Acheron.</desc>
+		<req>106</req>
 	</lockedMission>
 <!-- END MISSIONS -->
 
@@ -4044,7 +4552,7 @@
 		<y>570</y>
 		<commander>1098</commander>
 		<speech>
-			<line commander='1029'>There are larger threats than you out there. You need to learn your place.</line>
+			<line commander='1023'>There are larger threats than you out there. You need to learn your place.</line>
 		</speech>
 		<deck>
 			<card>323</card>
@@ -9130,7 +9638,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>14</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -9173,7 +9681,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2100</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -9217,7 +9725,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2101</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -9261,7 +9769,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2102</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -9304,7 +9812,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2103</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -9348,7 +9856,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2104</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -9391,7 +9899,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2105</req>
+		<req>-1</req>
 	</mission>
 
 	<mission>
@@ -9400,7 +9908,7 @@
 		<picture>mission2107.jpg</picture>
 		<location_id>106</location_id>
 		<event_req>9</event_req>
-		<monster>rightboss1</monster>
+		<!-- <monster>rightboss1</monster> -->
 		<mission_type>2</mission_type>
 		<combatBG>CombatBGJungle</combatBG>
 		<energy>50</energy>
@@ -9437,7 +9945,7 @@
 				<req type='5' compare='great_equal' amount='10' />
 			</star>
 		</rewards>
-		<req>2106</req>
+		<req>-1</req>
 	</mission>
 	
 	<!-- Week 2 -->
@@ -9484,7 +9992,7 @@
                 <req type='5' compare='great_equal' amount='10' />
             </star>
         </rewards>
-        <req>2107</req>
+        <req>-1</req>
     </mission>
 
     <mission>
@@ -9528,7 +10036,7 @@
                 <req type='5' compare='great_equal' amount='10' />
             </star>
         </rewards>
-        <req>2108</req>
+        <req>-1</req>
     </mission>
 
     <mission>
@@ -9572,7 +10080,7 @@
                 <req type='5' compare='great_equal' amount='10' />
             </star>
         </rewards>
-        <req>2109</req>
+        <req>-1</req>
     </mission>
 
     <mission>
@@ -9615,7 +10123,7 @@
                 <req type='5' compare='great_equal' amount='10' />
             </star>
         </rewards>
-        <req>2110</req>
+        <req>-1</req>
     </mission>
 
     <mission>
@@ -9659,7 +10167,7 @@
                 <req type='5' compare='great_equal' amount='10' />
             </star>
         </rewards>
-        <req>2111</req>
+        <req>-1</req>
     </mission>
 
     <mission>
@@ -9702,7 +10210,7 @@
                 <req type='5' compare='great_equal' amount='10' />
             </star>
         </rewards>
-        <req>2112</req>
+        <req>-1</req>
     </mission>
 
     <mission>
@@ -9746,7 +10254,7 @@
                 <req type='5' compare='great_equal' amount='10' />
             </star>
         </rewards>
-        <req>2113</req>
+        <req>-1</req>
     </mission>
 
     <mission>
@@ -9754,7 +10262,7 @@
         <name>Evrane</name>
         <picture>mission2115.jpg</picture>
         <location_id>106</location_id>
-        <monster>rightboss2</monster>
+        <!-- <monster>rightboss2</monster> -->
         <event_req>9</event_req>
         <mission_type>2</mission_type>
         <combatBG>CombatBGJungle</combatBG>
@@ -9791,7 +10299,7 @@
                 <req type='5' compare='great_equal' amount='10' />
             </star>
         </rewards>
-        <req>2114</req>
+        <req>-1</req>
     </mission>
     
     <mission>
@@ -9835,7 +10343,7 @@
                 <req type='5' compare='great_equal' amount='10' />
             </star>
         </rewards>
-        <req>2115</req>
+        <req>-1</req>
     </mission>
 
     <mission>
@@ -9878,7 +10386,7 @@
                 <req type='5' compare='great_equal' amount='10' />
             </star>
         </rewards>
-        <req>2116</req>
+        <req>-1</req>
     </mission>
 
     <mission>
@@ -9921,7 +10429,7 @@
                 <req type='5' compare='great_equal' amount='10' />
             </star>
         </rewards>
-        <req>2117</req>
+        <req>-1</req>
     </mission>
 
     <mission>
@@ -9964,7 +10472,7 @@
                 <req type='5' compare='great_equal' amount='10' />
             </star>
         </rewards>
-        <req>2118</req>
+        <req>-1</req>
     </mission>
 
     <mission>
@@ -10007,7 +10515,7 @@
                 <req type='5' compare='great_equal' amount='10' />
             </star>
         </rewards>
-        <req>2119</req>
+        <req>-1</req>
     </mission>
 
     <mission>
@@ -10051,7 +10559,7 @@
                 <req type='5' compare='great_equal' amount='10' />
             </star>
         </rewards>
-        <req>2120</req>
+        <req>-1</req>
     </mission>
 
     <mission>
@@ -10094,7 +10602,7 @@
                 <req type='5' compare='great_equal' amount='10' />
             </star>
         </rewards>
-        <req>2121</req>
+        <req>-1</req>
     </mission>
 
     <mission>
@@ -10102,7 +10610,7 @@
         <name>Shiva</name>
         <picture>mission2123.jpg</picture>
         <location_id>106</location_id>
-        <monster>rightboss3</monster>
+        <!-- <monster>rightboss3</monster> -->
         <event_req>9</event_req>
         <mission_type>2</mission_type>
         <combatBG>CombatBGJungle</combatBG>
@@ -10139,7 +10647,7 @@
                 <req type='5' compare='great_equal' amount='10' />
             </star>
         </rewards>
-        <req>2122</req>
+        <req>-1</req>
     </mission>
 	
 	<!-- END March 2014 Missions -->
@@ -10192,60 +10700,68 @@
 		<req>28</req> <!-- TBD -->
 	</location>
 	
-	<!-- <location>
+	<location>
+		<id>8</id>
+		<name>Arctis</name>
+		<mapBG>ArctisMap</mapBG>
+		<req>94</req>
+	</location>
+	
+	<location>
 		<id>100</id>
 		<name>Tartarus Depths</name>
 		<event_req>1</event_req>
 		<mapBG>map7</mapBG>
 		<req>-1</req>
-	</location> -->
+	</location>
 	
-	<!-- <location>
+	<location>
 		<id>101</id>
 		<name>Wasteland Invaded</name>
 		<event_req>2</event_req>
 		<mapBG>map3</mapBG>
 		<req>21</req>
-	</location> -->
+	</location>
 	
 	<!-- <location>
 		<id>102</id>
 		<name>Arctis</name>
 		<mapBG>ArctisMap</mapBG>
 		<req>1</req>
-	</location> -->
+	</location>
 	
-	<!-- <location>
+	<location>
 		<id>103</id>
 		<name>Xeno Homeworld</name>
 		<mapBG>xeno_home_map</mapBG>
 		<req>1</req>
-	</location> -->
+	</location>
 	
-	<!-- <location>
+	<location>
 		<id>104</id>
 		<name>Razogoth's Grave</name>
 		<mapBG>map6</mapBG>
 		<req>18</req>
-	</location> -->
+	</location>
 	
-	<!-- <location>
+	<location>
 		<id>105</id>
 		<name>Ashrock</name>
 		<mapBG>map1</mapBG>
 		<req>14</req>
-	</location> -->
+	</location>
 
 	<location>
 		<id>106</id>
 		<name>Swamp Lands</name>
+		<event_req>9</event_req>
 		<mapBG>map2</mapBG>
 		<req>14</req>
-	</location>
+	</location> -->
 	
 <!-- Event Portals -->
 
-	<portal>
+	<!-- <portal>
 		<location_id>1</location_id>
 		<destination_id>106</destination_id>
 		<event_req>9</event_req>
@@ -10309,12 +10825,21 @@
 	</portal>
 
 	<portal>
+		<location_id>8</location_id>
+		<destination_id>106</destination_id>
+		<event_req>9</event_req>
+		<req>14</req>
+		<x>840</x>
+		<y>230</y>
+	</portal>
+
+	<portal>
 		<location_id>106</location_id>
 		<destination_id>0</destination_id>
 		<event_req>9</event_req>
 		<x>150</x>
 		<y>590</y>
-	</portal>
+	</portal> -->
 
 <!-- END Event Portals -->
 	

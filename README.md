@@ -50,6 +50,12 @@ Open https://github.com/zachanassian/tu_optimize/blob/master/README.md to get la
 
 ##Changelog
 
+##Version 1.1.3
+* [FIX] Missing cards in <code>missions.xml</code> will no longer stop the program. Instead an error message like this will be displayed:
+<code>Exception [While trying to find the card with id 5603: no such key in the cards_by_id map.] while loading deck [Interruption] from file missions.xml. Skip loading this mission.</code>
+* Added last "good" version of <code>cards.xml</code> and <code>missions.xml</code> including 106. World's End
+* [FIX] Corrected "Enemy Deck(s)" in <code>SimpleTUOptimizeStarter</code>
+
 ##Version 1.1.2
 * [FIX] Corrected <code>GT04</code> to use <code>Bombardment Tank-3</code>
 

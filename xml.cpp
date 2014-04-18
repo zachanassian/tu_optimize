@@ -554,7 +554,17 @@ void read_missions(Decks& decks, const Cards& cards, std::string filename)
         unsigned id(id_node ? atoi(id_node->value()) : 0);
         xml_node<>* name_node(mission_node->first_node("name"));
         std::string deck_name{name_node->value()};
-        Deck* deck = read_deck(decks, cards, mission_node, DeckType::mission, id, deck_name);
+		Deck* deck;
+		try
+		{
+          deck = read_deck(decks, cards, mission_node, DeckType::mission, id, deck_name);
+		}
+		catch(const std::runtime_error& e)
+        {
+          std::cout << "Exception [" << e.what() << "] while loading deck [" << 
+		    deck_name << "] from file missions.xml. Skip loading this mission." << std::endl;
+	      continue;
+        }
         xml_node<>* effect_id_node(mission_node->first_node("effect"));
         if(effect_id_node)
         {
