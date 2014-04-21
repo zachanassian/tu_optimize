@@ -1145,8 +1145,8 @@ void usage(int argc, char** argv)
         "  reorder <num>: optimize the order for given attack deck, using up to <num> battles to evaluate an order.\n"
         //fortress modification
         "Fortress:\n"
-        "  astruct <cards of up to two fortrerss structures>"
-        "  dstruct <cards of up to two fortrerss structures>"
+        "  afort <cards of up to two fortrerss structures>"
+        "  dfort <cards of up to two fortrerss structures>"
 #ifndef NDEBUG
         "  debug: testing purpose only. very verbose output. only one battle.\n"
         "  debuguntil <min> <max>: testing purpose only. fight until the last fight results in range [<min>, <max>]. recommend to redirect output.\n"
@@ -1185,10 +1185,10 @@ int main(int argc, char** argv)
     auto deck_list_parsed = parse_deck_list(argv[2], decks);
 
     //fortress modification
-    Deck* astruct_deck{nullptr};
-    Deck* dstruct_deck{nullptr};
-    std::string astruct_name;
-    std::string dstruct_name;
+    Deck* afort_deck{nullptr};
+    Deck* dfort_deck{nullptr};
+    std::string afort_name;
+    std::string dfort_name;
 
     Deck* att_deck{nullptr};
     std::vector<Deck*> def_decks;
@@ -1454,76 +1454,76 @@ int main(int argc, char** argv)
             argIndex += 2;
         }
         //fortress modification
-        else if(strcmp(argv[argIndex], "astruct") == 0)
+        else if(strcmp(argv[argIndex], "afort") == 0)
         {
             try
             {
-                astruct_deck = find_deck(decks, cards, argv[argIndex + 1]);
+                afort_deck = find_deck(decks, cards, argv[argIndex + 1]);
             }
             catch(const std::runtime_error& e)
             {
                 // Ignore any Error will just try again with modifications
             }
-            if(astruct_deck == nullptr)
+            if(afort_deck == nullptr)
             {
                 try
                 {
-                    astruct_name = att_deck->get_commander()->m_name + ", " + argv[argIndex + 1];
-                    astruct_deck = find_deck(decks, cards, astruct_name);
+                    afort_name = att_deck->get_commander()->m_name + ", " + argv[argIndex + 1];
+                    afort_deck = find_deck(decks, cards, afort_name);
                 }
                 catch(const std::runtime_error& e)
                 {
-                    std::cerr << "Error: astruct " << argv[argIndex + 1] << ": " << e.what() << std::endl;
+                    std::cerr << "Error: afort " << argv[argIndex + 1] << ": " << e.what() << std::endl;
                     return(0);
                 }
             }
-            if(astruct_deck == nullptr)
+            if(afort_deck == nullptr)
             {
-                std::cerr << "Error: astruct " << argv[argIndex + 1] << std::endl;
+                std::cerr << "Error: afort " << argv[argIndex + 1] << std::endl;
                 return(0);
             }
-            att_deck->set_fortress1(astruct_deck->get_fortress1());
-            att_deck->set_fortress2(astruct_deck->get_fortress2());
-            if (astruct_deck->get_fortress1() != nullptr) 
+            att_deck->set_fortress1(afort_deck->get_fortress1());
+            att_deck->set_fortress2(afort_deck->get_fortress2());
+            if (afort_deck->get_fortress1() != nullptr) 
             {
                 std::cout << "Attacking Fortress Structure(s) Used: " << argv[argIndex + 1] << std::endl;
             }
             argIndex += 1;
         }
-        else if(strcmp(argv[argIndex], "dstruct") == 0)
+        else if(strcmp(argv[argIndex], "dfort") == 0)
         {
             try
             {
-                dstruct_deck = find_deck(decks, cards, argv[argIndex + 1]);
+                dfort_deck = find_deck(decks, cards, argv[argIndex + 1]);
             }
             catch(const std::runtime_error& e)
             {
                 // Ignore any Error will just try again with modifications
             }
-            if(dstruct_deck == nullptr)
+            if(dfort_deck == nullptr)
             {
                 try
                 {
-                    dstruct_name = att_deck->get_commander()->m_name + ", " + argv[argIndex + 1];
-                    dstruct_deck = find_deck(decks, cards, dstruct_name);
+                    dfort_name = att_deck->get_commander()->m_name + ", " + argv[argIndex + 1];
+                    dfort_deck = find_deck(decks, cards, dfort_name);
                 }
                 catch(const std::runtime_error& e)
                 {
-                    std::cerr << "Error: dstruct " << argv[argIndex + 1] << ": " << e.what() << std::endl;
+                    std::cerr << "Error: dfort " << argv[argIndex + 1] << ": " << e.what() << std::endl;
                     return(0);
                 }
             }
-            if(dstruct_deck == nullptr)
+            if(dfort_deck == nullptr)
             {
-                std::cerr << "Error: dstruct " << argv[argIndex + 1] << std::endl;
+                std::cerr << "Error: dfort " << argv[argIndex + 1] << std::endl;
                 return(0);
             }
             for(auto def_deck: def_decks)
             {
-                def_deck->set_fortress1(dstruct_deck->get_fortress1());
-                def_deck->set_fortress2(dstruct_deck->get_fortress2());                
+                def_deck->set_fortress1(dfort_deck->get_fortress1());
+                def_deck->set_fortress2(dfort_deck->get_fortress2());                
             }
-            if (dstruct_deck->get_fortress1() != nullptr) 
+            if (dfort_deck->get_fortress1() != nullptr) 
             {
                 std::cout << "Defending Fortress Structure(s) Used: " << argv[argIndex + 1] << std::endl;
             }
@@ -1569,15 +1569,15 @@ int main(int argc, char** argv)
             std::cout << "Your Fortress Card: " << att_deck->get_fortress1()->m_name << std::endl;
         }
     }
-    if (def_decks.back()->get_fortress1() != nullptr)
+    if (def_decks.front()->get_fortress1() != nullptr)
     {
-        if (def_decks.back()->get_fortress2() != nullptr)
+        if (def_decks.front()->get_fortress2() != nullptr)
         {
-            std::cout << "Enemy's Fortress Cards: " << def_decks.back()->get_fortress1()->m_name << ", " << def_decks.back()->get_fortress2()->m_name << std::endl;
+            std::cout << "Enemy's Fortress Cards: " + def_decks.front()->get_fortress1()->m_name + ", " + def_decks.front()->get_fortress2()->m_name << std::endl;
         }
         else
         {
-            std::cout << "Enemy's Fortress Card: " << def_decks.back()->get_fortress1()->m_name << std::endl;
+            std::cout << "Enemy's Fortress Card: " + def_decks.back()->get_fortress1()->m_name << std::endl;
         }
     }
     std::cout << "Your Deck: " << (debug_print ? att_deck->long_description(cards) : att_deck->medium_description()) << std::endl;
@@ -1605,7 +1605,7 @@ int main(int argc, char** argv)
             }
             case climb: {
                 //fortress modification
-                if(att_deck->fortress1 != nullptr && astruct_deck == nullptr)
+                if(att_deck->fortress1 != nullptr && afort_deck == nullptr)
                 {
                     std::cerr << "Error: climb not allowed when fortress cards are within a decks card list";
                     return(0);

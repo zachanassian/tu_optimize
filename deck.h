@@ -43,8 +43,8 @@ public:
 
     const Card* commander;
     //fortress modification
-    const Card* fortress1;
-    const Card* fortress2;
+    const Card* fortress1{nullptr};
+    const Card* fortress2{nullptr};
 
     std::vector<const Card*> cards;
 
