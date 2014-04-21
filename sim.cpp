@@ -924,6 +924,28 @@ Results<uint64_t> play(Field* fd)
     // Count commander as played for achievements (not count in type / faction / rarity requirements)
     fd->inc_counter(fd->achievement.unit_played, fd->players[0]->commander.m_card->m_id);
 
+    //fortress modification
+    if(fd->players[fd->tapi]->deck->fortress1 != nullptr)
+    {
+        PlayCard(fd->players[fd->tapi]->deck->fortress1, fd).op<CardType::structure>();
+    }
+    if(fd->players[fd->tapi]->deck->fortress2 != nullptr)
+    {
+        PlayCard(fd->players[fd->tapi]->deck->fortress2, fd).op<CardType::structure>();
+    }
+    std::swap(fd->tapi, fd->tipi);
+    std::swap(fd->tap, fd->tip);
+    if(fd->players[fd->tapi]->deck->fortress1 != nullptr)
+    {
+        PlayCard(fd->players[fd->tapi]->deck->fortress1, fd).op<CardType::structure>();
+    }
+    if(fd->players[fd->tapi]->deck->fortress2 != nullptr)
+    {
+        PlayCard(fd->players[fd->tapi]->deck->fortress2, fd).op<CardType::structure>();
+    }
+    std::swap(fd->tapi, fd->tipi);
+    std::swap(fd->tap, fd->tip);
+
     fd->set_counter(fd->achievement.misc_req, AchievementMiscReq::turns, 1);
     while(__builtin_expect(fd->turn <= turn_limit && !fd->end, true))
     {

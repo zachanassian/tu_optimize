@@ -167,6 +167,8 @@ void read_cards(Cards& cards)
             //std::cout << "id:" << id_node->value() << "\n";
             unsigned id(id_node ? atoi(id_node->value()) : 0);
             xml_node<>* name_node(card->first_node("name"));
+            //fortress modification
+            xml_node<>* fortress_node(card->first_node("fortress_type"));
             xml_node<>* hidden_node(card->first_node("hidden")); //TU not used
             unsigned hidden(hidden_node ? atoi(hidden_node->value()) : 0);
             xml_node<>* replace_node(card->first_node("replace")); //TU not used
@@ -240,6 +242,8 @@ void read_cards(Cards& cards)
                     else
                     { c->m_type = cost_node ? (attack_node ? CardType::assault : CardType::structure) : (health_node ? CardType::commander : CardType::action); }
                     c->m_hidden = hidden;
+                    //fortress modification
+                    if(fortress_node) { c->m_fortress = atoi(fortress_node->value()); }
                     c->m_replace = replace_id;
                     if(attack_node) { c->m_attack = atoi(attack_node->value()); }
                     if(health_node) { c->m_health = atoi(health_node->value()); }

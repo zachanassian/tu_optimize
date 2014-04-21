@@ -42,6 +42,10 @@ public:
     Effect effect; // for quests
 
     const Card* commander;
+    //fortress modification
+    const Card* fortress1;
+    const Card* fortress2;
+
     std::vector<const Card*> cards;
 
     std::map<signed, char> card_marks;  // <positions of card, prefix mark>: -1 indicating the commander. E.g, used as a mark to be kept in attacking deck when optimizing.
@@ -108,6 +112,11 @@ public:
     std::string medium_description() const;
     std::string long_description(const Cards& all_cards) const;
     const Card* get_commander();
+    //fortress modification
+    const Card* get_fortress1();
+    void set_fortress1(const Card* card);
+    const Card* get_fortress2();
+    void set_fortress2(const Card* card);
     const Card* next();
     void shuffle(std::mt19937& re);
     void place_at_bottom(const Card* card);
