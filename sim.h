@@ -189,6 +189,10 @@ public:
 
     Deck* deck;
     CardStatus commander;
+    //fortress modification
+    CardStatus fortress1;
+    CardStatus fortress2;
+
     Storage<CardStatus> assaults;
     Storage<CardStatus> structures;
     unsigned available_summons;

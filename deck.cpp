@@ -182,6 +182,9 @@ namespace range = boost::range;
 void Deck::set(const Cards& all_cards, const std::vector<unsigned>& ids, const std::map<signed, char> &marks)
 {
     commander = nullptr;
+    //fortress modification
+    fortress1 = nullptr;
+    fortress2 = nullptr;
     strategy = DeckStrategy::random;
     for(auto id: ids)
     {
@@ -195,6 +198,22 @@ void Deck::set(const Cards& all_cards, const std::vector<unsigned>& ids, const s
             else
             {
                 throw std::runtime_error("While constructing a deck: two commanders detected (" + card->m_name + " and " + commander->m_name + ")");
+            }
+        }
+        //fortress modification
+        else if(card->m_fortress > 0)
+        {
+            if(fortress1 == nullptr)
+            {
+                fortress1 = card;
+            }
+            else if(fortress2 == nullptr)
+            {
+                fortress2 = card;
+            }
+            else
+            {
+                throw std::runtime_error("While constructing a deck: three fortress cards detected (" + card->m_name + ", " + fortress1->m_name + " and " + fortress2->m_name + ")");
             }
         }
         else
@@ -297,6 +316,7 @@ std::string Deck::medium_description() const
     {
         ios << "No commander";
     }
+
     if(!cards.empty() && !raid_cards.empty())
     {
         ios << "Always include: ";
@@ -325,6 +345,25 @@ Deck* Deck::clone() const
 const Card* Deck::get_commander()
 {
     return(commander);
+}
+
+//fortress modification
+const Card* Deck::get_fortress1()
+{
+    return(fortress1);
+}
+void Deck::set_fortress1(const Card* card)
+{
+    fortress1 = card;
+}
+
+const Card* Deck::get_fortress2()
+{
+    return(fortress2);
+}
+void Deck::set_fortress2(const Card* card)
+{
+    fortress2 = card;
 }
 
 const Card* Deck::next()
