@@ -1145,8 +1145,8 @@ void usage(int argc, char** argv)
         "  reorder <num>: optimize the order for given attack deck, using up to <num> battles to evaluate an order.\n"
         //fortress modification
         "Fortress:\n"
-        "  yfort <cards of up to two fortrerss structures>"
-        "  efort <cards of up to two fortrerss structures>"
+        "  yf <cards of up to two fortrerss structures>"
+        "  ef <cards of up to two fortrerss structures>"
 #ifndef NDEBUG
         "  debug: testing purpose only. very verbose output. only one battle.\n"
         "  debuguntil <min> <max>: testing purpose only. fight until the last fight results in range [<min>, <max>]. recommend to redirect output.\n"
@@ -1185,10 +1185,10 @@ int main(int argc, char** argv)
     auto deck_list_parsed = parse_deck_list(argv[2], decks);
 
     //fortress modification
-    Deck* yfort_deck{nullptr};
-    Deck* efort_deck{nullptr};
-    std::string yfort_name;
-    std::string efort_name;
+    Deck* yf_deck{nullptr};
+    Deck* ef_deck{nullptr};
+    std::string yf_name;
+    std::string ef_name;
 
     Deck* att_deck{nullptr};
     std::vector<Deck*> def_decks;
@@ -1454,76 +1454,76 @@ int main(int argc, char** argv)
             argIndex += 2;
         }
         //fortress modification
-        else if(strcmp(argv[argIndex], "yfort") == 0)
+        else if(strcmp(argv[argIndex], "yf") == 0)
         {
             try
             {
-                yfort_name = att_deck->get_commander()->m_name + ", " + argv[argIndex + 1];
-                yfort_deck = find_deck(decks, cards, yfort_name);
+                yf_name = att_deck->get_commander()->m_name + ", " + argv[argIndex + 1];
+                yf_deck = find_deck(decks, cards, yf_name);
             }
             catch(const std::runtime_error& e)
             {
                 // Ignore any Error will just try again with modifications
             }
-            if(yfort_deck == nullptr)
+            if(yf_deck == nullptr)
             {
                 try
                 {
-                    yfort_deck = find_deck(decks, cards, argv[argIndex + 1]);
+                    yf_deck = find_deck(decks, cards, argv[argIndex + 1]);
                 }
                 catch(const std::runtime_error& e)
                 {
-                    std::cerr << "Error: yfort " << argv[argIndex + 1] << ": " << e.what() << std::endl;
+                    std::cerr << "Error: yf " << argv[argIndex + 1] << ": " << e.what() << std::endl;
                     return(0);
                 }
             }
-            if(yfort_deck == nullptr)
+            if(yf_deck == nullptr)
             {
-                std::cerr << "Error: yfort " << argv[argIndex + 1] << std::endl;
+                std::cerr << "Error: yf " << argv[argIndex + 1] << std::endl;
                 return(0);
             }
-            att_deck->set_fortress1(yfort_deck->get_fortress1());
-            att_deck->set_fortress2(yfort_deck->get_fortress2());
-            if (yfort_deck->get_fortress1() != nullptr) 
+            att_deck->set_fortress1(yf_deck->get_fortress1());
+            att_deck->set_fortress2(yf_deck->get_fortress2());
+            if (yf_deck->get_fortress1() != nullptr) 
             {
                 std::cout << "Attacking Fortress Structure(s) Used: " << argv[argIndex + 1] << std::endl;
             }
             argIndex += 1;
         }
-        else if(strcmp(argv[argIndex], "efort") == 0)
+        else if(strcmp(argv[argIndex], "ef") == 0)
         {
             try
             {
-                efort_name = att_deck->get_commander()->m_name + ", " + argv[argIndex + 1];
-                efort_deck = find_deck(decks, cards, efort_name);
+                ef_name = att_deck->get_commander()->m_name + ", " + argv[argIndex + 1];
+                ef_deck = find_deck(decks, cards, ef_name);
             }
             catch(const std::runtime_error& e)
             {
                 // Ignore any Error will just try again with modifications
             }
-            if(efort_deck == nullptr)
+            if(ef_deck == nullptr)
             {
                 try
                 {
-                    efort_deck = find_deck(decks, cards, argv[argIndex + 1]);
+                    ef_deck = find_deck(decks, cards, argv[argIndex + 1]);
                 }
                 catch(const std::runtime_error& e)
                 {
-                    std::cerr << "Error: efort " << argv[argIndex + 1] << ": " << e.what() << std::endl;
+                    std::cerr << "Error: ef " << argv[argIndex + 1] << ": " << e.what() << std::endl;
                     return(0);
                 }
             }
-            if(efort_deck == nullptr)
+            if(ef_deck == nullptr)
             {
-                std::cerr << "Error: efort " << argv[argIndex + 1] << std::endl;
+                std::cerr << "Error: ef " << argv[argIndex + 1] << std::endl;
                 return(0);
             }
             for(auto def_deck: def_decks)
             {
-                def_deck->set_fortress1(efort_deck->get_fortress1());
-                def_deck->set_fortress2(efort_deck->get_fortress2());                
+                def_deck->set_fortress1(ef_deck->get_fortress1());
+                def_deck->set_fortress2(ef_deck->get_fortress2());                
             }
-            if (efort_deck->get_fortress1() != nullptr) 
+            if (ef_deck->get_fortress1() != nullptr) 
             {
                 std::cout << "Defending Fortress Structure(s) Used: " << argv[argIndex + 1] << std::endl;
             }
@@ -1605,7 +1605,7 @@ int main(int argc, char** argv)
             }
             case climb: {
                 //fortress modification
-                if(att_deck->fortress1 != nullptr && yfort_deck == nullptr)
+                if(att_deck->fortress1 != nullptr && yf_deck == nullptr)
                 {
                     std::cerr << "Error: climb not allowed when fortress cards are within a decks card list";
                     return(0);
