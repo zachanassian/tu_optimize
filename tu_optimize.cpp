@@ -1145,8 +1145,8 @@ void usage(int argc, char** argv)
         "  reorder <num>: optimize the order for given attack deck, using up to <num> battles to evaluate an order.\n"
         //fortress modification
         "Fortress:\n"
-        "  afort <cards of up to two fortrerss structures>"
-        "  dfort <cards of up to two fortrerss structures>"
+        "  yfort <cards of up to two fortrerss structures>"
+        "  efort <cards of up to two fortrerss structures>"
 #ifndef NDEBUG
         "  debug: testing purpose only. very verbose output. only one battle.\n"
         "  debuguntil <min> <max>: testing purpose only. fight until the last fight results in range [<min>, <max>]. recommend to redirect output.\n"
@@ -1185,10 +1185,10 @@ int main(int argc, char** argv)
     auto deck_list_parsed = parse_deck_list(argv[2], decks);
 
     //fortress modification
-    Deck* afort_deck{nullptr};
-    Deck* dfort_deck{nullptr};
-    std::string afort_name;
-    std::string dfort_name;
+    Deck* yfort_deck{nullptr};
+    Deck* efort_deck{nullptr};
+    std::string yfort_name;
+    std::string efort_name;
 
     Deck* att_deck{nullptr};
     std::vector<Deck*> def_decks;
@@ -1454,76 +1454,76 @@ int main(int argc, char** argv)
             argIndex += 2;
         }
         //fortress modification
-        else if(strcmp(argv[argIndex], "afort") == 0)
+        else if(strcmp(argv[argIndex], "yfort") == 0)
         {
             try
             {
-                afort_deck = find_deck(decks, cards, argv[argIndex + 1]);
+                yfort_name = att_deck->get_commander()->m_name + ", " + argv[argIndex + 1];
+                yfort_deck = find_deck(decks, cards, yfort_name);
             }
             catch(const std::runtime_error& e)
             {
                 // Ignore any Error will just try again with modifications
             }
-            if(afort_deck == nullptr)
+            if(yfort_deck == nullptr)
             {
                 try
                 {
-                    afort_name = att_deck->get_commander()->m_name + ", " + argv[argIndex + 1];
-                    afort_deck = find_deck(decks, cards, afort_name);
+                    yfort_deck = find_deck(decks, cards, argv[argIndex + 1]);
                 }
                 catch(const std::runtime_error& e)
                 {
-                    std::cerr << "Error: afort " << argv[argIndex + 1] << ": " << e.what() << std::endl;
+                    std::cerr << "Error: yfort " << argv[argIndex + 1] << ": " << e.what() << std::endl;
                     return(0);
                 }
             }
-            if(afort_deck == nullptr)
+            if(yfort_deck == nullptr)
             {
-                std::cerr << "Error: afort " << argv[argIndex + 1] << std::endl;
+                std::cerr << "Error: yfort " << argv[argIndex + 1] << std::endl;
                 return(0);
             }
-            att_deck->set_fortress1(afort_deck->get_fortress1());
-            att_deck->set_fortress2(afort_deck->get_fortress2());
-            if (afort_deck->get_fortress1() != nullptr) 
+            att_deck->set_fortress1(yfort_deck->get_fortress1());
+            att_deck->set_fortress2(yfort_deck->get_fortress2());
+            if (yfort_deck->get_fortress1() != nullptr) 
             {
                 std::cout << "Attacking Fortress Structure(s) Used: " << argv[argIndex + 1] << std::endl;
             }
             argIndex += 1;
         }
-        else if(strcmp(argv[argIndex], "dfort") == 0)
+        else if(strcmp(argv[argIndex], "efort") == 0)
         {
             try
             {
-                dfort_deck = find_deck(decks, cards, argv[argIndex + 1]);
+                efort_name = att_deck->get_commander()->m_name + ", " + argv[argIndex + 1];
+                efort_deck = find_deck(decks, cards, efort_name);
             }
             catch(const std::runtime_error& e)
             {
                 // Ignore any Error will just try again with modifications
             }
-            if(dfort_deck == nullptr)
+            if(efort_deck == nullptr)
             {
                 try
                 {
-                    dfort_name = att_deck->get_commander()->m_name + ", " + argv[argIndex + 1];
-                    dfort_deck = find_deck(decks, cards, dfort_name);
+                    efort_deck = find_deck(decks, cards, argv[argIndex + 1]);
                 }
                 catch(const std::runtime_error& e)
                 {
-                    std::cerr << "Error: dfort " << argv[argIndex + 1] << ": " << e.what() << std::endl;
+                    std::cerr << "Error: efort " << argv[argIndex + 1] << ": " << e.what() << std::endl;
                     return(0);
                 }
             }
-            if(dfort_deck == nullptr)
+            if(efort_deck == nullptr)
             {
-                std::cerr << "Error: dfort " << argv[argIndex + 1] << std::endl;
+                std::cerr << "Error: efort " << argv[argIndex + 1] << std::endl;
                 return(0);
             }
             for(auto def_deck: def_decks)
             {
-                def_deck->set_fortress1(dfort_deck->get_fortress1());
-                def_deck->set_fortress2(dfort_deck->get_fortress2());                
+                def_deck->set_fortress1(efort_deck->get_fortress1());
+                def_deck->set_fortress2(efort_deck->get_fortress2());                
             }
-            if (dfort_deck->get_fortress1() != nullptr) 
+            if (efort_deck->get_fortress1() != nullptr) 
             {
                 std::cout << "Defending Fortress Structure(s) Used: " << argv[argIndex + 1] << std::endl;
             }
@@ -1605,7 +1605,7 @@ int main(int argc, char** argv)
             }
             case climb: {
                 //fortress modification
-                if(att_deck->fortress1 != nullptr && afort_deck == nullptr)
+                if(att_deck->fortress1 != nullptr && yfort_deck == nullptr)
                 {
                     std::cerr << "Error: climb not allowed when fortress cards are within a decks card list";
                     return(0);
