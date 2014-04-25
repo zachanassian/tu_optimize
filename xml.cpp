@@ -242,7 +242,6 @@ void read_cards(Cards& cards)
                     else
                     { c->m_type = cost_node ? (attack_node ? CardType::assault : CardType::structure) : (health_node ? CardType::commander : CardType::action); }
                     c->m_hidden = hidden;
-                    //fortress modification
                     if(fortress_node) { c->m_fortress = atoi(fortress_node->value()); }
                     c->m_replace = replace_id;
                     if(attack_node) { c->m_attack = atoi(attack_node->value()); }

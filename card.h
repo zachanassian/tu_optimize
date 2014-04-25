@@ -28,7 +28,6 @@ public:
         m_fear(false),
         m_flurry(0),
         m_flying(false),
-        //fortress modification
         m_fortress(0),
         m_fusion(false),
         m_heal(0),
@@ -99,7 +98,6 @@ public:
     bool m_fear;
     unsigned m_flurry;
     bool m_flying;
-    //fortress modification
     unsigned m_fortress;
     bool m_fusion;
     unsigned m_heal;

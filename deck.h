@@ -42,7 +42,6 @@ public:
     Effect effect; // for quests
 
     const Card* commander;
-    //fortress modification
     const Card* fortress1{nullptr};
     const Card* fortress2{nullptr};
 
@@ -112,7 +111,6 @@ public:
     std::string medium_description() const;
     std::string long_description(const Cards& all_cards) const;
     const Card* get_commander();
-    //fortress modification
     const Card* get_fortress1();
     void set_fortress1(const Card* card);
     const Card* get_fortress2();

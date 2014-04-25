@@ -1121,6 +1121,8 @@ void usage(int argc, char** argv)
         "\n"
         "Flags:\n"
         //"  -A <achievement>: optimize for the achievement specified by either id or name.\n"
+        "  yfort <your_fortress_cards>:  your fortress structures. your_fortress_cards: the name/hash/cards of one or two fortress structures.\n"
+        "  efort <enemy_fortress_cards>:  enemy fortress structures. enemy_fortress_cards: the name/hash/cards of one or two fortress structures.\n"        
         "  -e <effect>: set the battleground effect.\n"
         "               use \"tu_optimize Po Po -e list\" to get a list of all available effects.\n" 
         "  -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).\n"
@@ -1143,10 +1145,6 @@ void usage(int argc, char** argv)
         "  sim <num>: simulate <num> battles to evaluate a deck.\n"
         "  climb <num>: perform hill-climbing starting from the given attack deck, using up to <num> battles to evaluate a deck.\n"
         "  reorder <num>: optimize the order for given attack deck, using up to <num> battles to evaluate an order.\n"
-        //fortress modification
-        "Fortress:\n"
-        "  yf <cards of up to two fortrerss structures>"
-        "  ef <cards of up to two fortrerss structures>"
 #ifndef NDEBUG
         "  debug: testing purpose only. very verbose output. only one battle.\n"
         "  debuguntil <min> <max>: testing purpose only. fight until the last fight results in range [<min>, <max>]. recommend to redirect output.\n"
@@ -1184,7 +1182,6 @@ int main(int argc, char** argv)
     std::string att_deck_name{argv[1]};
     auto deck_list_parsed = parse_deck_list(argv[2], decks);
 
-    //fortress modification
     Deck* yf_deck{nullptr};
     Deck* ef_deck{nullptr};
     std::string yf_name;
@@ -1453,8 +1450,7 @@ int main(int argc, char** argv)
             todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex + 1]), (unsigned)atoi(argv[argIndex + 2]), debuguntil));
             argIndex += 2;
         }
-        //fortress modification
-        else if(strcmp(argv[argIndex], "yf") == 0)
+        else if(strcmp(argv[argIndex], "yfort") == 0 || strcmp(argv[argIndex], "yf") == 0)
         {
             try
             {
@@ -1484,13 +1480,13 @@ int main(int argc, char** argv)
             }
             att_deck->set_fortress1(yf_deck->get_fortress1());
             att_deck->set_fortress2(yf_deck->get_fortress2());
-            if (yf_deck->get_fortress1() != nullptr) 
+            if (yf_deck->get_fortress1() != nullptr)
             {
                 std::cout << "Attacking Fortress Structure(s) Used: " << argv[argIndex + 1] << std::endl;
             }
             argIndex += 1;
         }
-        else if(strcmp(argv[argIndex], "ef") == 0)
+        else if(strcmp(argv[argIndex], "efort") == 0 || strcmp(argv[argIndex], "ef") == 0)
         {
             try
             {
@@ -1521,9 +1517,9 @@ int main(int argc, char** argv)
             for(auto def_deck: def_decks)
             {
                 def_deck->set_fortress1(ef_deck->get_fortress1());
-                def_deck->set_fortress2(ef_deck->get_fortress2());                
+                def_deck->set_fortress2(ef_deck->get_fortress2());
             }
-            if (ef_deck->get_fortress1() != nullptr) 
+            if (ef_deck->get_fortress1() != nullptr)
             {
                 std::cout << "Defending Fortress Structure(s) Used: " << argv[argIndex + 1] << std::endl;
             }
@@ -1557,7 +1553,6 @@ int main(int argc, char** argv)
     {
         min_deck_len = max_deck_len = att_deck->cards.size();
     }
-    //fortress modification
     if (att_deck->get_fortress1() != nullptr)
     {
         if (att_deck->get_fortress2() != nullptr)

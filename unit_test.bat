@@ -1,4 +1,13 @@
 @echo on
+tu_optimize So-BQ-BW-LB-LTO6-GViC SokU-DV-Dn-IA-Iw+j-LB-MJ-Mf yf "Minefield(2)" ef "Tesla Coil, Forcefield" -r sim 10000
+@echo off
+echo === Expected ===
+echo win%: 16.02 (1602 / 10000)
+echo stall%: 1.79 (179 / 10000)
+echo loss%: 82.19 (8219 / 10000)
+echo.
+
+@echo on
 tu_optimize So-Iq-SI-MJ-Ss-LBO6-GV-LT example_group -r sim 10000
 @echo off
 echo === Expected ===

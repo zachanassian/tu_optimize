@@ -200,7 +200,6 @@ void Deck::set(const Cards& all_cards, const std::vector<unsigned>& ids, const s
                 throw std::runtime_error("While constructing a deck: two commanders detected (" + card->m_name + " and " + commander->m_name + ")");
             }
         }
-        //fortress modification
         else if(card->m_fortress > 0)
         {
             if(fortress1 == nullptr)
@@ -347,7 +346,6 @@ const Card* Deck::get_commander()
     return(commander);
 }
 
-//fortress modification
 const Card* Deck::get_fortress1()
 {
     return(fortress1);

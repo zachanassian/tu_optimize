@@ -20,6 +20,8 @@ the time.
      example: "/^GT/" will select all custom decks starting with the letters GT.
 
 Flags:
+  yfort &lt;your_fortress_cards&gt;:  your fortress structures. your_fortress_cards: the name/hash/cards of one or two fortress structures.
+  efort &lt;enemy_fortress_cards&gt;:  enemy fortress structures. enemy_fortress_cards: the name/hash/cards of one or two fortress structures.
   -e &lt;effect&gt;: set the battleground effect.
                use "tu_optimize Po Po -e list" to get a list of all available effects.
   -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).
@@ -49,6 +51,13 @@ Remark: Due to html character escaping this might read awkward in readme.txt.
 Open https://github.com/zachanassian/tu_optimize/blob/master/README.md to get latest version in formatted view.
 
 ##Changelog
+
+##Version 1.2.0
+* Added support for Fortress Cards: - credits alessard(github)/AndyL161(kong)
+They will be played out along with a players commander and reduce their timer already on first turn
+Climb not supported if they are contained within a decks card list or <code>data/ownedcards.txt</code>
+New commandline arguments (yfort <cardlist>, efort <cardlist>) added to set global fortress cards which are used for all simulations including climb
+* Added current <code>cards.xml</code> and <code>missions.xml</code> - Rastax
 
 ##Version 1.1.3
 * [FIX] Missing cards in <code>missions.xml</code> will no longer stop the program. Instead an error message like this will be displayed:

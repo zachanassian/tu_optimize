@@ -924,7 +924,6 @@ Results<uint64_t> play(Field* fd)
     // Count commander as played for achievements (not count in type / faction / rarity requirements)
     fd->inc_counter(fd->achievement.unit_played, fd->players[0]->commander.m_card->m_id);
 
-    //fortress modification
     if(fd->players[fd->tapi]->deck->fortress1 != nullptr)
     {
         PlayCard(fd->players[fd->tapi]->deck->fortress1, fd).op<CardType::structure>();

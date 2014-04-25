@@ -189,7 +189,6 @@ public:
 
     Deck* deck;
     CardStatus commander;
-    //fortress modification
     CardStatus fortress1;
     CardStatus fortress2;
 
