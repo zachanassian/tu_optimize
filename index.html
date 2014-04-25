@@ -119,6 +119,24 @@ loss%: 1.57 (157 / 10000)
 <li>use <code>tu_optimize Po Po -e list</code> to get a list of all available effects.</li>
 </ul>
 
+<h2><a name="fortress" class="anchor" href="#fortress">
+<span class="octicon octicon-link"></span></a>Simulate with fortress structures</h2>
+<pre>
+>tu_optimize "Cyrus, Imperial APC, Revolver, Medic" "Malika, Grunt, Blitz Armor" yfort "Minefield(2)" efort "Tesla Coil, Forcefield" -r -s sim 10000
+Attacking Fortress Structure(s) Used: Minefield(2)
+Defending Fortress Structure(s) Used: Tesla Coil, Forcefield
+Your Fortress Cards: Minefield, Minefield
+Enemy's Fortress Cards: Tesla Coil, Forcefield
+Your Deck: [RWFDH3Fh] Cyrus, Imperial APC, Revolver, Medic
+Enemy's Deck: [PyA0Fl] Malika, Grunt, Blitz Armor
+win%: 91.69 (9169 / 10000)
+stall%: 8.31 (831 / 10000)
+loss%: 0 (0 / 10000)
+</pre>
+<ul>
+<li>To reduce typing effort <code>yf</code> and <code>ef</code> can be used</li>
+</ul>
+
 <h2><a name="cardabbrs" class="anchor" href="#cardabbrs"><span class="octicon octicon-link"></span></a>Define and use your own card abbreviations</h2>
 <pre>
 >tu_optimize "Pet,HA(10)" "Obama, SF(5)" sim 100000
