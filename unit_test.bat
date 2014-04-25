@@ -1,4 +1,13 @@
 @echo on
+tu_optimize SoHS-HE+i-H6 Rastax sim 10000
+@echo off
+echo === Expected ===
+echo win%: 50.13 (5013 / 10000)
+echo stall%: 5.43 (543 / 10000)
+echo loss%: 44.44 (4444 / 10000)
+echo.
+
+@echo on
 tu_optimize So-BQ-BW-LB-LTO6-GViC SokU-DV-Dn-IA-Iw+j-LB-MJ-Mf yf "Minefield(2)" ef "Tesla Coil, Forcefield" -r sim 10000
 @echo off
 echo === Expected ===

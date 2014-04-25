@@ -1390,6 +1390,8 @@ void turn_start_phase(Field* fd)
     remove_dead(fd->tip->assaults);
     remove_dead(fd->tip->structures);
     fd->fusion_count = 0;
+    // Active player's commander - increase jam charge
+    if(fd->tap->commander.m_card->m_jam > 0 && fd->tap->commander.m_jam_charge < fd->tap->commander.m_card->m_jam) {++fd->tap->commander.m_jam_charge;}
     // Active player's assault cards:
     // update index
     // remove enfeeble, protect; apply poison damage, reduce delay

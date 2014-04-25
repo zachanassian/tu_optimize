@@ -52,6 +52,9 @@ Open https://github.com/zachanassian/tu_optimize/blob/master/README.md to get la
 
 ##Changelog
 
+##Version 1.2.1
+* [FIX] Commanders jam was not recharged at start of turn
+
 ##Version 1.2.0
 * Added support for Fortress Cards: - credits alessard(github)/AndyL161(kong)
 They will be played out along with a players commander and reduce their timer already on first turn
