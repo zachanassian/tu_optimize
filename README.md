@@ -20,8 +20,8 @@ the time.
      example: "/^GT/" will select all custom decks starting with the letters GT.
 
 Flags:
-  yfort &lt;your_fortress_cards&gt;:  your fortress structures. your_fortress_cards: the name/hash/cards of one or two fortress structures.
-  efort &lt;enemy_fortress_cards&gt;:  enemy fortress structures. enemy_fortress_cards: the name/hash/cards of one or two fortress structures.
+  yfort &lt;your_fortress_cards&gt;: your fortress structures. your_fortress_cards: the name/hash/cards of one or two fortress structures.
+  efort &lt;enemy_fortress_cards&gt;: enemy fortress structures. enemy_fortress_cards: the name/hash/cards of one or two fortress structures.
   -e &lt;effect&gt;: set the battleground effect.
                use "tu_optimize Po Po -e list" to get a list of all available effects.
   -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).
