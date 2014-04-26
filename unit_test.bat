@@ -1,4 +1,13 @@
 @echo on
+tu_optimize "Dracorex, Defiler(3)" "Halcyon-4, Executioner(4)" -e "Strike 1" sim 10000
+@echo off
+echo === Expected ===
+echo win%: 0.09 (9 / 10000)
+echo stall%: 99.91 (9991 / 10000)
+echo loss%: 0 (0 / 10000)
+echo.
+
+@echo on
 tu_optimize SoHS-HE+i-H6 Rastax sim 10000
 @echo off
 echo === Expected ===

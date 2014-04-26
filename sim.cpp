@@ -746,14 +746,6 @@ void evaluate_skills(Field* fd, CardStatus* status, const std::vector<SkillSpec>
     assert(status);
     assert(fd->skill_queue.size() == 0);
     bool need_add_skill = may_change_skill(fd, status, mod);
-    for(auto& ss: skills)
-    {
-        auto& battleground_s = need_add_skill ? apply_battleground_effect(fd, status, ss, mod, need_add_skill) : ss;
-        _DEBUG_MSG(2, "Evaluating %s skill %s\n", status_description(status).c_str(), skill_description(fd->cards, battleground_s).c_str());
-        fd->skill_queue.emplace_back(status, battleground_s);
-        resolve_skill(fd);
-        if(__builtin_expect(fd->end, false)) { break; }
-    }
     if(need_add_skill)
     {
         auto battleground_s = apply_battleground_effect(fd, status, SkillSpec(new_skill, 0, allfactions, false, mod), mod, need_add_skill);
@@ -761,6 +753,14 @@ void evaluate_skills(Field* fd, CardStatus* status, const std::vector<SkillSpec>
         _DEBUG_MSG(2, "Evaluating %s skill %s\n", status_description(status).c_str(), skill_description(fd->cards, battleground_s).c_str());
         fd->skill_queue.emplace_back(status, battleground_s);
         resolve_skill(fd);
+    }
+    for(auto& ss: skills)
+    {
+        auto& battleground_s = need_add_skill ? apply_battleground_effect(fd, status, ss, mod, need_add_skill) : ss;
+        _DEBUG_MSG(2, "Evaluating %s skill %s\n", status_description(status).c_str(), skill_description(fd->cards, battleground_s).c_str());
+        fd->skill_queue.emplace_back(status, battleground_s);
+        resolve_skill(fd);
+        if(__builtin_expect(fd->end, false)) { break; }
     }
 }
 bool check_and_perform_blitz(Field* fd, CardStatus* src_status);

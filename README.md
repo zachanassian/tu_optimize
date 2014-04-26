@@ -52,6 +52,9 @@ Open https://github.com/zachanassian/tu_optimize/blob/master/README.md to get la
 
 ##Changelog
 
+##Version 1.2.2
+* [FIX] Battleground effects are now applied before commander skills
+
 ##Version 1.2.1
 * [FIX] Commanders jam was not recharged at start of turn
 
