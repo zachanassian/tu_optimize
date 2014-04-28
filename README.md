@@ -50,6 +50,7 @@ Open https://github.com/zachanassian/tu_optimize/blob/master/README.md to get la
 
 ##Version 2.0.0
 * [FIX] Battleground effects are now applied before commander skills
+* [FIX] performance housekeeping: if jam is not charged no targets will be selected
 * Removed debug option for an overall performance gain of 15-20%
 
 ##Version 1.2.1

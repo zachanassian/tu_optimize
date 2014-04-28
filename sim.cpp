@@ -2093,7 +2093,7 @@ template<>
 inline bool skill_predicate<jam>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
 {
     const auto& mod = std::get<4>(s);
-    return(can_act(c) &&  // (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)));
+    return( skill_check<jam>(fd, src, c) && can_act(c) &&
             (mod == SkillMod::on_attacked ? is_active(c) && c->m_index > fd->current_ci :
              mod == SkillMod::on_death ? c->m_index >= src->m_index && (fd->tapi != src->m_player ? is_active(c) : is_active_next_turn(c)) :
              is_active(c) || is_active_next_turn(c)));
