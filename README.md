@@ -41,10 +41,6 @@ Operations:
   sim &lt;num&gt;: simulate &lt;num&gt; battles to evaluate a deck.
   climb &lt;num&gt;: perform hill-climbing starting from the given attack deck, using up to &lt;num&gt; battles to evaluate a deck.
   reorder &lt;num&gt;: optimize the order for given attack deck, using up to &lt;num&gt; battles to evaluate an order.
-  debug: testing purpose only. very verbose output. only one battle.
-  debuguntil &lt;min&gt; &lt;max&gt;: testing purpose only. fight until the last fight results in range [&lt;min&gt;, &lt;max&gt;]. recommend to redirect output.
-                          debuguntil 100 100 will run till first win.
-                          debuguntil 0 0 will run till first lose.
 </pre>
 
 Remark: Due to html character escaping this might read awkward in readme.txt. 
@@ -52,8 +48,9 @@ Open https://github.com/zachanassian/tu_optimize/blob/master/README.md to get la
 
 ##Changelog
 
-##Version 1.2.2
+##Version 2.0.0
 * [FIX] Battleground effects are now applied before commander skills
+* Removed debug option for an overall performance gain of 15-20%
 
 ##Version 1.2.1
 * [FIX] Commanders jam was not recharged at start of turn

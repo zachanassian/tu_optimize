@@ -1,7 +1,8 @@
 #ifndef TYRANT_H_INCLUDED
 #define TYRANT_H_INCLUDED
 
-#define TU_OPTIMIZER_VERSION "1.2.2"
+#define TU_OPTIMIZER_VERSION "2.0.0"
+#define NDEBUG
 
 #include <string>
 #include <set>

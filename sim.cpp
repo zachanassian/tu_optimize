@@ -73,10 +73,12 @@ inline unsigned Field::make_selection_array(CardsIter first, CardsIter last, Fun
 }
 inline void Field::print_selection_array()
 {
+#ifndef NDEBUG
     for(auto c: this->selection_array)
     {
         _DEBUG_MSG(2, "+ %s\n", status_description(c).c_str());
     }
+#endif
 }
 //------------------------------------------------------------------------------
 CardStatus::CardStatus(const Card* card) :
