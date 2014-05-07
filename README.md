@@ -49,7 +49,8 @@ Open https://github.com/zachanassian/tu_optimize/blob/master/README.md to get la
 ##Changelog
 
 ##Version dev
-* [FIX] if "your deck" is also part of "enemy deck" batch the efort structures were also used as yfort structures - https://github.com/zachanassian/tu_optimize/issues/10
+* [FIX] if "your deck" is also part of "enemy deck" batch the efort structures were also used as yfort structures - https://github.com/zachanassian/tu_optimize/issues/24
+* Added current <code>cards.xml</code> and <code>missions.xml</code> - New fusions (e.g. Honorable Samurai)
 
 ##Version 2.0.0
 * [FIX] Battleground effects are now applied before commander skills

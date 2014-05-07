@@ -4397,9 +4397,53 @@
 		</rewards>
 		<req>105</req>
 	</mission>
+
+	<mission>
+		<id>107</id>
+		<name>Fake End Mission</name>
+		<picture>mission106.jpg</picture>
+		<location_id>106</location_id>
+		<combatBG>CombatBGSnow</combatBG>
+		<mission_type>2</mission_type>
+		<energy>200</energy>
+		<x>350</x>
+		<y>590</y>
+		<commander>1210</commander>
+		<speech>
+			<line commander='1205'>Stopping the Pantheon now would be catastrophic. You are on a path that only leads to your doom.</line>
+			<line commander='1999'>I will not stand by and watch this world die. This ends now!</line>
+			<line commander='1053'>Once the Pantheon is destroyed we need to retreat. The reaction caused by its destruction could wipe us out.</line>
+		</speech>
+		<deck>
+			<card>4376</card>
+			<card>4147</card>
+			<card>4525</card>
+			<card>5385</card>
+			<card>749</card>
+			<card>875</card>
+			<card>4401</card>
+			<card>5203</card>
+			<card>4652</card> 
+			<card>2175</card>
+		</deck>
+		<rewards>
+			<gold>1</gold>
+			<card>1</card>
+			<item>1041</item>
+			<star>
+				<id>2</id>
+				<req type='5' compare='great_equal' amount='5' />
+			</star>
+			<star>
+				<id>3</id>
+				<req type='5' compare='great_equal' amount='10' />
+			</star>
+		</rewards>
+		<req>-1</req>
+	</mission>
 	
 	<lockedMission>
-		<id>107</id>
+		<id>108</id>
 		<name>Worldship - Coming Soon!</name>
 		<picture>banner_comingsoon.png</picture>
 		<location_id>8</location_id>
@@ -4410,6 +4454,7 @@
 		<desc>A new force emerges to threaten all of Acheron.</desc>
 		<req>106</req>
 	</lockedMission>
+	
 <!-- END MISSIONS -->
 
 <!-- Side Missions -->
@@ -5119,6 +5164,46 @@
 			</star>
 		</rewards>
 		<req>94</req>
+	</mission>
+	
+	<mission>
+		<id>1018</id>
+		<name>Fake End Side Mission</name>
+		<picture>mission1018.jpg</picture>
+		<location_id>106</location_id>
+		<mission_type>3</mission_type>
+		<combatBG asset_bundle='4'>CombatBG_Kor</combatBG>
+		<energy>100</energy>
+		<x>540</x>
+		<y>575</y>
+		<commander>1026</commander>
+		<desc>Halcyon has been driven mad by rage. Strike him down.</desc>
+		<deck>
+			<card>4303</card>
+			<card>4132</card>
+			<card>713</card>
+			<card>4726</card>
+			<card>4335</card>
+			<card>4198</card>
+			<card>4102</card>
+			<card>4392</card>
+			<card>2183</card>
+			<card>2182</card>
+		</deck>
+		<rewards>
+			<gold>1</gold>
+			<card>1</card>
+			<item>1051</item>
+			<star>
+				<id>2</id>
+				<req type='5' compare='great_equal' amount='5' />
+			</star>
+			<star>
+				<id>3</id>
+				<req type='5' compare='great_equal' amount='10' />
+			</star>
+		</rewards>
+		<req>-1</req>
 	</mission>
 	
 <!-- END Side Missions -->
@@ -11358,6 +11443,397 @@
 	        </star>
 	    </rewards>
 	    <req>2138</req>
+	</mission>
+	
+	<mission>
+	    <id>2140</id>
+	    <name>Short Reprieve</name>
+	    <picture>mission2140.jpg</picture>
+	    <location_id>107</location_id>
+	    <event_req>11</event_req>
+	    <mission_type>4</mission_type>
+	    <combatBG asset_bundle='4'>combatbg_space</combatBG>
+	    <energy>75</energy>
+	    <x>730</x>
+	    <y>350</y>
+	    <commander>1018</commander>
+	    <speech>
+	        <line commander='1998'>The rest of Rastax's forces appear to be clearing out.</line>
+	    	<line commander='1003'>I'm bringing up the schematics for the Worldship now.</line>
+	    </speech>
+	    <deck>
+	        <card>5615</card>
+	        <card>119</card>
+	        <card>187</card>
+	        <card>318</card>
+	        <card>318</card>
+	        <card>115</card>
+	        <card>115</card>
+	        <card>107</card>
+	        <card>100</card>
+	        <card>437</card>
+	    </deck>
+	    <rewards>
+	        <gold>82</gold>
+	        <card>507</card>
+	        <item>1031</item>
+	        <star>
+	            <id>2</id>
+	            <req type='5' compare='great_equal' amount='5' />
+	        </star>
+	        <star>
+	            <id>3</id>
+	            <req type='5' compare='great_equal' amount='10' />
+	        </star>
+	    </rewards>
+	    <req>2139</req>
+	</mission>
+	
+	<mission>
+	    <id>2141</id>
+	    <name>Thread the Needle</name>
+	    <picture>mission2141.jpg</picture>
+	    <location_id>107</location_id>
+	    <event_req>11</event_req>
+	    <mission_type>4</mission_type>
+	    <combatBG asset_bundle='4'>combatbg_space</combatBG>
+	    <energy>80</energy>
+	    <x>810</x>
+	    <y>390</y>
+	    <commander>1018</commander>
+	    <speech>
+	        <line commander='1003'>Got it, looks like the Worldship has to stabilize itself in foreign atmospheres. We take out the stabilizer and the Worldship should come crashing down on its own.</line>
+	    </speech>
+	    <deck>
+	        <card>5615</card>
+	        <card>230</card>
+	        <card>187</card>
+	        <card>209</card>
+	        <card>209</card>
+	        <card>317</card>
+	        <card>514</card>
+	        <card>2019</card>
+	        <card>109</card>
+	        <card>175</card>
+	    </deck>
+	    <rewards>
+	        <gold>88</gold>
+	        <card>175</card>
+	        <item>1031</item>
+	        <star>
+	            <id>2</id>
+	            <req type='5' compare='great_equal' amount='5' />
+	        </star>
+	        <star>
+	            <id>3</id>
+	            <req type='5' compare='great_equal' amount='10' />
+	        </star>
+	    </rewards>
+	    <req>2140</req>
+	</mission>
+	
+	<mission>
+	    <id>2142</id>
+	    <name>Clear Coast</name>
+	    <picture>mission2142.jpg</picture>
+	    <location_id>107</location_id>
+	    <event_req>11</event_req>
+	    <mission_type>4</mission_type>
+	    <combatBG asset_bundle='4'>combatbg_space</combatBG>
+	    <energy>85</energy>
+	    <x>850</x>
+	    <y>475</y>
+	    <commander>1018</commander>
+	    <speech>
+	        <line commander='1998'>The Stabilizer will be heavily guarded, what is our approach?</line>
+	        <line commander='1003'>Only the exhaust will be heavily guarded. We will only encounter random patrols along the Stabilizer. We get past them and we can surprise the fleet stationed in front of the exhaust.</line>
+	    </speech>
+	    <deck>
+	        <card>5615</card>
+	        <card>119</card>
+	        <card>119</card>
+	        <card>116</card>
+	        <card>116</card>
+	        <card>515</card>
+	        <card>317</card>
+	        <card>2022</card>
+	        <card>2022</card>
+	        <card>105</card>
+	    </deck>
+	    <rewards>
+	        <gold>93</gold>
+	        <card>2021</card>
+	        <item>1032</item>
+	        <star>
+	            <id>2</id>
+	            <req type='5' compare='great_equal' amount='5' />
+	        </star>
+	        <star>
+	            <id>3</id>
+	            <req type='5' compare='great_equal' amount='10' />
+	        </star>
+	    </rewards>
+	    <req>2141</req>
+	</mission>
+	
+	<mission>
+	    <id>2143</id>
+	    <name>Close for Comfort</name>
+	    <picture>mission2143.jpg</picture>
+	    <location_id>107</location_id>
+	    <event_req>11</event_req>
+	    <mission_type>4</mission_type>
+	    <combatBG asset_bundle='4'>combatbg_space</combatBG>
+	    <energy>85</energy>
+	    <x>770</x>
+	    <y>490</y>
+	    <commander>1018</commander>
+	    <speech>
+	        <line commander='1003'>Be careful navigating near the Stabilizer. There is a reason it is not heavily guarded.</line>
+	    </speech>
+	    <deck>
+	        <card>5615</card>
+	        <card>188</card>
+	        <card>230</card>
+	        <card>515</card>
+	        <card>515</card>
+	        <card>209</card>
+	        <card>208</card>
+	        <card>101</card>
+	        <card>101</card>
+	        <card>175</card>
+	    </deck>
+	    <rewards>
+	        <gold>93</gold>
+	        <card>100</card>
+	        <item>1032</item>
+	        <star>
+	            <id>2</id>
+	            <req type='5' compare='great_equal' amount='5' />
+	        </star>
+	        <star>
+	            <id>3</id>
+	            <req type='5' compare='great_equal' amount='10' />
+	        </star>
+	    </rewards>
+	    <req>2142</req>
+	</mission>
+	
+	<mission>
+	    <id>2144</id>
+	    <name>Concentration</name>
+	    <picture>mission2144.jpg</picture>
+	    <location_id>107</location_id>
+	    <event_req>11</event_req>
+	    <mission_type>4</mission_type>
+	    <combatBG asset_bundle='4'>combatbg_space</combatBG>
+	    <energy>90</energy>
+	    <x>690</x>
+	    <y>540</y>
+	    <commander>1018</commander>
+	    <speech>
+	        <line commander='1023'>What is going on up there? We are getting beat back and you are going for a joy ride?</line>
+	        <line commander='1998'>Either we do this right or we hand over Acheron to the Xeno. Tabitha Out.</line>
+	    </speech>
+	    <deck>
+	        <card>5615</card>
+	        <card>231</card>
+	        <card>187</card>
+	        <card>319</card>
+	        <card>116</card>
+	        <card>208</card>
+	        <card>208</card>
+	        <card>113</card>
+	        <card>112</card>
+	        <card>112</card>
+	    </deck>
+	    <rewards>
+	        <gold>99</gold>
+	        <card>112</card>
+	        <item>1033</item>
+	        <star>
+	            <id>2</id>
+	            <req type='5' compare='great_equal' amount='5' />
+	        </star>
+	        <star>
+	            <id>3</id>
+	            <req type='5' compare='great_equal' amount='10' />
+	        </star>
+	    </rewards>
+	    <req>2143</req>
+	</mission>
+	
+	<mission>
+	    <id>2145</id>
+	    <name>Standing Up</name>
+	    <picture>mission2145.jpg</picture>
+	    <location_id>107</location_id>
+	    <event_req>11</event_req>
+	    <mission_type>4</mission_type>
+	    <combatBG asset_bundle='4'>combatbg_space</combatBG>
+	    <energy>90</energy>
+	    <x>580</x>
+	    <y>590</y>
+	    <commander>1018</commander>
+	    <speech>
+	        <line commander='1003'>He isn't going to like that.</line>
+	        <line commander='1998'>Ha! I guess I'll just have to wait for my Honor Day.</line>
+	    </speech>
+	    <deck>
+	        <card>5615</card>
+	        <card>120</card>
+	        <card>119</card>
+	        <card>516</card>
+	        <card>515</card>
+	        <card>317</card>
+	        <card>317</card>
+	        <card>438</card>
+	        <card>2019</card>
+	        <card>437</card>
+	    </deck>
+	    <rewards>
+	        <gold>99</gold>
+	        <card>2018</card>
+	        <item>1034</item>
+	        <star>
+	            <id>2</id>
+	            <req type='5' compare='great_equal' amount='5' />
+	        </star>
+	        <star>
+	            <id>3</id>
+	            <req type='5' compare='great_equal' amount='10' />
+	        </star>
+	    </rewards>
+	    <req>2144</req>
+	</mission>
+	
+	<mission>
+	    <id>2146</id>
+	    <name>Blitz</name>
+	    <picture>mission2146.jpg</picture>
+	    <location_id>107</location_id>
+	    <event_req>11</event_req>
+	    <mission_type>4</mission_type>
+	    <combatBG asset_bundle='4'>combatbg_space</combatBG>
+	    <energy>95</energy>
+	    <x>760</x>
+	    <y>610</y>
+	    <commander>1018</commander>
+	    <speech>
+	        <line commander='1998'>We're getting close, prepare the assault.</line>
+	    </speech>
+	    <deck>
+	        <card>5615</card>
+	        <card>188</card>
+	        <card>187</card>
+	        <card>4461</card>
+	        <card>319</card>
+	        <card>209</card>
+	        <card>514</card>
+	        <card>2022</card>
+	        <card>110</card>
+	        <card>106</card>
+	    </deck>
+	    <rewards>
+	        <gold>104</gold>
+	        <card>106</card>
+	        <item>1035</item>
+	        <star>
+	            <id>2</id>
+	            <req type='5' compare='great_equal' amount='5' />
+	        </star>
+	        <star>
+	            <id>3</id>
+	            <req type='5' compare='great_equal' amount='10' />
+	        </star>
+	    </rewards>
+	    <req>2145</req>
+	</mission>
+	
+	<mission>
+	    <id>2147</id>
+	    <name>Worldship</name>
+	    <picture>mission2147.jpg</picture>
+	    <location_id>107</location_id>
+	    <event_req>11</event_req>
+	    <mission_type>2</mission_type>
+	    <combatBG asset_bundle='4'>combatbg_space</combatBG>
+	    <energy>100</energy>
+	    <x>940</x>
+	    <y>505</y>
+	    <commander>1313</commander>
+	    <speech>
+	        <line commander='1998'>Main cannons focus on the exhaust; secondary weapons keep the fleet off of us. We're bringing this Worldship down.</line>
+	    </speech>
+	    <deck>
+	        <card>5615</card>
+	        <card>5615</card>
+	        <card>5609</card>
+	        <card>5603</card>
+	        <card>2185</card>
+	        <card>5503</card>
+	        <card>5539</card>
+	        <card>532</card>
+	        <card>4694</card>
+	        <card>579</card>
+	    </deck>
+	    <rewards>
+	        <gold>120</gold>
+	        <card>2034</card>
+	        <item>1036</item>
+	        <star>
+	            <id>2</id>
+	            <req type='5' compare='great_equal' amount='5' />
+	        </star>
+	        <star>
+	            <id>3</id>
+	            <req type='5' compare='great_equal' amount='10' />
+	        </star>
+	    </rewards>
+	    <req>2146</req>
+	</mission>
+	
+	<mission>
+	    <id>2148</id>
+	    <name>Worldship Fake</name>
+	    <picture>mission2147.jpg</picture>
+	    <location_id>106</location_id>
+	    <event_req>11</event_req>
+	    <mission_type>2</mission_type>
+	    <combatBG asset_bundle='4'>combatbg_space</combatBG>
+	    <energy>100</energy>
+	    <x>940</x>
+	    <y>505</y>
+	    <commander>1313</commander>
+	    <speech>
+	        <line commander='1998'>Main cannons focus on the exhaust; secondary weapons keep the fleet off of us. We're bringing this Worldship down.</line>
+	    </speech>
+	    <deck>
+	        <card>5615</card>
+	        <card>5615</card>
+	        <card>5609</card>
+	        <card>5603</card>
+	        <card>2185</card>
+	        <card>5503</card>
+	        <card>5539</card>
+	        <card>532</card>
+	        <card>4694</card>
+	        <card>579</card>
+	    </deck>
+	    <rewards>
+	        <gold>1</gold>
+	        <card>1</card>
+	        <item>1031</item>
+	        <star>
+	            <id>2</id>
+	            <req type='5' compare='great_equal' amount='5' />
+	        </star>
+	        <star>
+	            <id>3</id>
+	            <req type='5' compare='great_equal' amount='10' />
+	        </star>
+	    </rewards>
+	    <req>-1</req>
 	</mission>
 	
 	<!-- END April 2014 Missions -->
