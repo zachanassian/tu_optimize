@@ -48,6 +48,9 @@ Open https://github.com/zachanassian/tu_optimize/blob/master/README.md to get la
 
 ##Changelog
 
+##Version dev
+* [FIX] if "your deck" is also part of "enemy deck" batch the efort structures were also used as yfort structures - https://github.com/zachanassian/tu_optimize/issues/10
+
 ##Version 2.0.0
 * [FIX] Battleground effects are now applied before commander skills
 * [FIX] performance housekeeping: if jam is not charged no targets will be selected

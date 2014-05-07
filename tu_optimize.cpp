@@ -1197,6 +1197,8 @@ int main(int argc, char** argv)
     try
     {
         att_deck = find_deck(decks, cards, att_deck_name);
+        //fortress adds stuff to att_deck. att_deck and def_deck could point to same deck. Make sure att_deck is different
+        att_deck = att_deck->clone();
     }
     catch(const std::runtime_error& e)
     {
@@ -1479,10 +1481,6 @@ int main(int argc, char** argv)
             }
             att_deck->set_fortress1(yf_deck->get_fortress1());
             att_deck->set_fortress2(yf_deck->get_fortress2());
-            if (yf_deck->get_fortress1() != nullptr)
-            {
-                std::cout << "Attacking Fortress Structure(s) Used: " << argv[argIndex + 1] << std::endl;
-            }
             argIndex += 1;
         }
         else if(strcmp(argv[argIndex], "efort") == 0 || strcmp(argv[argIndex], "ef") == 0)
@@ -1517,10 +1515,6 @@ int main(int argc, char** argv)
             {
                 def_deck->set_fortress1(ef_deck->get_fortress1());
                 def_deck->set_fortress2(ef_deck->get_fortress2());
-            }
-            if (ef_deck->get_fortress1() != nullptr)
-            {
-                std::cout << "Defending Fortress Structure(s) Used: " << argv[argIndex + 1] << std::endl;
             }
             argIndex += 1;
         }

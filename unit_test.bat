@@ -235,3 +235,17 @@ echo win%: 68.75 (6875 / 10000)
 echo stall%: 31.25 (3125 / 10000)
 echo loss%: 0 (0 / 10000)
 echo.
+
+@echo on
+tu_optimize mydeck "mydeck;mydeck" yf "Sky Fortress(2)" ef "Minefield(2)" sim 10000
+@echo off
+echo === Expected ===
+echo Your Fortress Cards: Sky Fortress, Sky Fortress
+echo Enemy's Fortress Cards: Minefield, Minefield
+echo Your Deck: [SoO6iC-BQ-BW-GV-LB-LT] Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
+echo Enemy's Deck: [SoO6iC-BQ-BW-GV-LB-LT] Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
+echo Enemy's Deck: [SoO6iC-BQ-BW-GV-LB-LT] Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
+echo win%: 92.745 (9295 9254 / 10000)
+echo stall%: 0.215 (18 25 / 10000)
+echo loss%: 7.04 (687 721 / 10000)
+echo.
