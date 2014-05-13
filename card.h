@@ -17,6 +17,7 @@ public:
         m_berserk_oa(0),
         m_blitz(false),
         m_burst(0),
+        m_corrosive(0),
         m_counter(0),
         m_crush(0),
         m_delay(0),
@@ -87,6 +88,7 @@ public:
     unsigned m_berserk_oa;
     bool m_blitz;
     unsigned m_burst;
+    unsigned m_corrosive;
     unsigned m_counter;
     unsigned m_crush;
     unsigned m_delay;

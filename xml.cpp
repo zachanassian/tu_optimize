@@ -275,6 +275,8 @@ void read_cards(Cards& cards)
                         { c->m_blitz = true; }
                         if(strcmp(skill->first_attribute("id")->value(), "burst") == 0)
                         { c->m_burst = atoi(skill->first_attribute("x")->value()); }
+                        if(strcmp(skill->first_attribute("id")->value(), "corrosive") == 0)
+                        { c->m_corrosive = atoi(skill->first_attribute("x")->value()); }
                         if(strcmp(skill->first_attribute("id")->value(), "counter") == 0)
                         { c->m_counter = atoi(skill->first_attribute("x")->value()); }
                         if(strcmp(skill->first_attribute("id")->value(), "crush") == 0)

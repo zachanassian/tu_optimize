@@ -133,6 +133,8 @@ struct CardStatus
     unsigned m_berserk;
     bool m_blitzing;
     bool m_chaosed;
+    unsigned m_corroded;
+    unsigned m_corrosion_speed;
     unsigned m_delay;
     bool m_diseased;
     unsigned m_enfeebled;

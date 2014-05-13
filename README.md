@@ -48,6 +48,52 @@ Open https://github.com/zachanassian/tu_optimize/blob/master/README.md to get la
 
 ##Changelog
 
+##Version tbd
+* Added skill corrosive
+<pre>
+tu_optimize "Cyrus, Vigil" "Test Oracle, Medic" +v debug
+...
+TURN 21 begins for Commander [Cyrus hp:14]
+Evaluating Commander [Cyrus hp:14] skill Heal imperial 2
+Evaluating Commander [Cyrus hp:14] skill Siege 1
+Evaluating Assault 0 [Vigil att:5 hp:12, corroded 5 [speed:+1]] skill Heal all 1
+Evaluating Assault 0 [Vigil att:5 hp:12, corroded 5 [speed:+1]] skill Rally all righteous 1
+Possible targets of Rally:
+\+ Assault 0 [Vigil att:5 hp:12, corroded 5 [speed:+1]]
+Assault 0 [Vigil att:5 hp:12, corroded 5 [speed:+1]] Rally (1) on Assault 0 [Vigil att:5 hp:12, corroded 5 [speed:+1]]
+Assault 0 [Vigil att:5+1(rallied)=1 hp:12, corroded 5 [speed:+1]] attacks Commander [Test Oracle hp:24] for 1 damage
+Commander [Test Oracle hp:24] takes 1 damage
+TURN 21 ends for Commander [Cyrus hp:14]
+...
+Stall after 50 turns.
+win%: 0 (0 / 1)
+stall%: 100 (1 / 1)
+loss%: 0 (0 / 1)
+
+tu_optimize "Cyrus, Dread Panzer" "Test Oracle, Medic" +v debug
+...
+TURN 19 begins for Commander [Cyrus hp:14]
+Evaluating Commander [Cyrus hp:14] skill Heal imperial 2
+Evaluating Commander [Cyrus hp:14] skill Siege 1
+Assault 0 [Dread Panzer att:5 hp:6, corroded 4 [speed:+1]] attacks Commander [Test Oracle hp:30] for 1 damage
+Commander [Test Oracle hp:30] takes 1 damage
+TURN 19 ends for Commander [Cyrus hp:14]
+------------------------------------------------------------------------
+TURN 20 begins for Commander [Test Oracle hp:29]
+TURN 20 ends for Commander [Test Oracle hp:29]
+------------------------------------------------------------------------
+TURN 21 begins for Commander [Cyrus hp:14]
+Evaluating Commander [Cyrus hp:14] skill Heal imperial 2
+Evaluating Commander [Cyrus hp:14] skill Siege 1
+Assault 0 [Dread Panzer att:5 hp:6, corroded 5 [speed:+1]] does not attack and looses corrosion
+TURN 21 ends for Commander [Cyrus hp:14]
+...
+You win.
+win%: 100 (1 / 1)
+stall%: 0 (0 / 1)
+loss%: 0 (0 / 1)
+</pre>
+
 ##Version 2.0.1
 * [FIX] if "your deck" is also part of "enemy deck" batch the efort structures were also used as yfort structures - https://github.com/zachanassian/tu_optimize/issues/24
 * Added current <code>cards.xml</code> and <code>missions.xml</code> - New fusions (e.g. Honorable Samurai)

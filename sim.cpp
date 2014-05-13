@@ -89,6 +89,8 @@ CardStatus::CardStatus(const Card* card) :
     m_berserk(0),
     m_blitzing(false),
     m_chaosed(false),
+    m_corroded(0),
+    m_corrosion_speed(0),
     m_delay(card->m_delay),
     m_diseased(false),
     m_enfeebled(0),
@@ -137,6 +139,8 @@ inline void CardStatus::set(const Card& card)
     m_berserk = 0;
     m_blitzing = false;
     m_chaosed = false;
+    m_corroded = 0;
+    m_corrosion_speed = 0;
     m_delay = card.m_delay;
     m_diseased = false;
     m_enfeebled = 0;
@@ -171,7 +175,7 @@ inline void CardStatus::set(const Card& card)
 //------------------------------------------------------------------------------
 inline int attack_power(CardStatus* att)
 {
-    return(safe_minus(att->m_card->m_attack + att->m_berserk + att->m_rallied, att->m_weakened));
+    return(safe_minus(att->m_card->m_attack + att->m_berserk + att->m_rallied, att->m_weakened + att->m_corroded));
 }
 //------------------------------------------------------------------------------
 std::string skill_description(const Cards& cards, const SkillSpec& s)
@@ -229,6 +233,7 @@ std::string card_description(const Cards& cards, const Card* c)
     if(c->m_berserk > 0) { desc += ", berserk " + to_string(c->m_berserk); }
     if(c->m_blitz) { desc += ", blitz"; }
     if(c->m_burst > 0) { desc += ", burst " + to_string(c->m_burst); }
+    if(c->m_corrosive > 0) { desc += ", corrosive " + to_string(c->m_corrosive); }
     if(c->m_counter > 0) { desc += ", counter " + to_string(c->m_counter); }
     if(c->m_crush > 0) { desc += ", crush " + to_string(c->m_crush); }
     if(c->m_disease) { desc += ", disease"; }
@@ -306,6 +311,7 @@ std::string CardStatus::description()
         if(m_blitzing) { desc += "(blitzing)"; }
     }
     if(m_chaosed) { desc += ", chaosed"; }
+    if(m_corroded > 0) { desc += ", corroded " + to_string(m_corroded) + " [speed:+" + to_string(m_corrosion_speed) + "]"; }
     if(m_diseased) { desc += ", diseaseded"; }
     if(m_frozen) { desc += ", frozen"; }
     if(m_immobilized) { desc += ", immobilized"; }
@@ -877,6 +883,15 @@ void PlayCard::fieldEffects<CardType::assault>()
         status->m_diseased = true;
     }
 }
+void remove_corroded(CardStatus* att_status)
+{
+    if (att_status->m_corroded > 0 || att_status->m_corrosion_speed > 0)
+    {
+        _DEBUG_MSG(1, "%s does not attack and looses corrosion\n", status_description(att_status).c_str());
+        att_status->m_corroded = 0;
+        att_status->m_corrosion_speed = 0;
+    }
+}
 // action
 template <>
 void PlayCard::onPlaySkills<CardType::action>()
@@ -1033,6 +1048,7 @@ Results<uint64_t> play(Field* fd)
             if(!is_active(&current_status) || !can_act(&current_status))
             {
                 _DEBUG_MSG(2, "Assault %s cannot take action.\n", status_description(&current_status).c_str());
+                remove_corroded(&current_status);
                 current_status.m_step = CardStep::attacked;
                 continue;
             }
@@ -1590,6 +1606,7 @@ void remove_commander_hp(Field* fd, CardStatus& status, unsigned dmg, bool count
         fd->end = true;
     }
 }
+
 //------------------------------------------------------------------------------
 // implementation of one attack by an assault card, against either an enemy
 // assault card, the first enemy wall, or the enemy commander.
@@ -1609,7 +1626,13 @@ struct PerformAttack
     void op()
     {
         unsigned pre_modifier_dmg = attack_power(att_status);
-        if(pre_modifier_dmg == 0) { return; }
+        if(pre_modifier_dmg == 0)
+        {
+            //first impression this is never called, b/c void attack_phase(Field* fd) also checks attack_power
+            assert(false);
+            remove_corroded(att_status);
+            return;
+        }
         count_achievement<attack>(fd, att_status);
         // Evaluation order:
         // assaults only: fly check
@@ -1669,6 +1692,12 @@ struct PerformAttack
                     _DEBUG_MSG(1, "%s takes %u counter damage from %s\n", status_description(att_status).c_str(), counter_dmg, status_description(def_status).c_str());
                     remove_hp(fd, *att_status, counter_dmg);
                 }
+                if(def_status->m_card->m_corrosive > att_status->m_corrosion_speed && skill_check<corrosive>(fd, def_status, att_status))
+                {
+                    // perform_skill_corrosive
+                    _DEBUG_MSG(1, "%s corroded by %u from %s\n", status_description(att_status).c_str(), def_status->m_card->m_corrosive, status_description(def_status).c_str());
+                    att_status->m_corrosion_speed = def_status->m_card->m_corrosive;
+                }
                 if(att_status->m_card->m_berserk > 0 && skill_check<berserk>(fd, att_status, nullptr))
                 {
                     count_achievement<berserk>(fd, att_status);
@@ -1677,6 +1706,16 @@ struct PerformAttack
                 }
             }
             crush_leech<def_cardtype>();
+        }
+
+        if(att_status->m_corrosion_speed > 0)
+        {
+            att_status->m_corroded += att_status->m_corrosion_speed;
+            unsigned max_corroded = att_status->m_card->m_attack + att_status->m_berserk;
+            if(att_status->m_corroded > max_corroded)
+            {
+                att_status->m_corroded = max_corroded;
+            }
         }
 
         prepend_on_death(fd);
@@ -1931,7 +1970,11 @@ void attack_phase(Field* fd)
 {
     CardStatus* att_status(&fd->tap->assaults[fd->current_ci]); // attacking card
     Storage<CardStatus>& def_assaults(fd->tip->assaults);
-    if(attack_power(att_status) == 0) { return; }
+    if(attack_power(att_status) == 0)
+    {
+        remove_corroded(att_status);
+        return;
+    }
     unsigned num_attacks(1);
     if(att_status->m_card->m_flurry > 0 && fd->flip() && skill_check<flurry>(fd, att_status, nullptr))
     {

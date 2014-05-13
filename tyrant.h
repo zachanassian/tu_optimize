@@ -36,7 +36,7 @@ enum Skill
     // Combat-Modifier:
     antiair, burst, fear, flurry, pierce, swipe, valor,
     // Damage-Dependant:
-    berserk, crush, disease, immobilize, inhibit, leech, phase, poison, siphon, sunder,
+    berserk, corrosive, crush, disease, immobilize, inhibit, leech, phase, poison, siphon, sunder,
     // Defensive:
     armored, counter, emulate, evade, flying, intercept, payback, refresh, regenerate, stun, tribute, wall,
     // Triggered:
