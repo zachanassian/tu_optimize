@@ -608,7 +608,7 @@
 		<location_id>1</location_id>
 		<mission_type>2</mission_type>
 		<combatBG>CombatBGSnow</combatBG>
-		<monster flip_x='1'>harvest_tank</monster>
+		<monster>malika_boss</monster>
 		<energy>40</energy>
 		<x>180</x>
 		<y>200</y>
@@ -1068,9 +1068,10 @@
 		<location_id>2</location_id>
 		<mission_type>2</mission_type>
 		<combatBG>CombatBGJungle</combatBG>
+		<!-- <monster>brood_boss</monster> -->
 		<energy>100</energy>
-		<x>165</x>
-		<y>320</y>
+		<x>255</x>
+		<y>290</y>
 		<commander>1036</commander>
 		<speech>
 			<line commander='1023'>The Broodmother! Aim everything we have on her!</line>
@@ -1615,9 +1616,10 @@
 		<location_id>3</location_id>
 		<mission_type>2</mission_type>
 		<combatBG>CombatBGDesert</combatBG>
+		<monster>typhon_boss</monster>
 		<energy>100</energy>
 		<x>150</x>
-		<y>245</y>
+		<y>325</y>
 		<commander>1033</commander>
 		<speech>
 			<line commander='1029'>The Nexus shall ignite Acheron! We are nothing before its might!</line>
@@ -4722,7 +4724,7 @@
 		<combatBG>CombatBGJungle</combatBG>
 		<energy>100</energy>
 		<x>280</x>
-		<y>450</y>
+		<y>480</y>
 		<commander>1052</commander>
 		<speech>
 			<line commander='1047'>You will be cleansed by our divine weapons.</line>
@@ -4889,8 +4891,8 @@
 		<mission_type>3</mission_type>
 		<combatBG>CombatBGDesert</combatBG>
 		<energy>100</energy>
-		<x>510</x>
-		<y>435</y>
+		<x>420</x>
+		<y>480</y>
 		<commander>1046</commander>
 		<speech>
 			<line commander='1999'>The Xeno have mobilized heavy units. They want to protect this thing at all costs.</line>
@@ -4931,8 +4933,8 @@
 		<mission_type>3</mission_type>
 		<combatBG>CombatBGDesert</combatBG>
 		<energy>150</energy>
-		<x>450</x>
-		<y>360</y>
+		<x>350</x>
+		<y>430</y>
 		<commander>1046</commander>
 		<speech>
 			<line commander='1999'>Charges have been placed, Commander.</line>
@@ -5014,7 +5016,7 @@
 		<mission_type>3</mission_type>
 		<combatBG>CombatBGDesert</combatBG>
 		<energy>100</energy>
-		<x>130</x>
+		<x>860</x>
 		<y>360</y>
 		<commander>1177</commander>
 		<desc>Cyberius has regained power and has become stronger than ever. Power it down one last time!</desc>
@@ -11984,8 +11986,8 @@
 		<destination_id>107</destination_id>
 		<event_req>11</event_req>
 		<req>14</req>
-		<x>280</x>
-		<y>450</y>
+		<x>180</x>
+		<y>600</y>
 	</portal>
 
 	<portal>
