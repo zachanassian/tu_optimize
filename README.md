@@ -70,7 +70,7 @@ Stall after 50 turns.
 win%: 0 (0 / 1)
 stall%: 100 (1 / 1)
 loss%: 0 (0 / 1)
-
+...
 tu_optimize "Cyrus, Dread Panzer" "Test Oracle, Medic" +v debug
 ...
 TURN 19 begins for Commander [Cyrus hp:14]
