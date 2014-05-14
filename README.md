@@ -49,6 +49,7 @@ Open https://github.com/zachanassian/tu_optimize/blob/master/README.md to get la
 ##Changelog
 
 ##Version tbd
+* Added GT126k - credits [YWNM](http://www.kongregate.com//forums/338/topics/400905?page=1#posts-8034438)
 * Added skill corrosive
 <pre>
 tu_optimize "Cyrus, Vigil" "Test Oracle, Medic" +v debug
