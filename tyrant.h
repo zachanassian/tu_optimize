@@ -27,7 +27,7 @@ enum Skill
     attack,
     // Activation (including Destroyed):
     augment, backfire, chaos, cleanse, enfeeble,
-    enhance_armored, enhance_berserk, enhance_counter, enhance_evade,
+    enhance_armored, enhance_berserk, enhance_corrosive, enhance_counter, enhance_evade,
     enhance_leech, enhance_heal, enhance_poison, enhance_strike,
     freeze, heal, infuse, jam,
     mimic, protect, rally, recharge, repair, rush, shock, siege, split, strike, summon, supply,

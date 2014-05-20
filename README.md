@@ -48,6 +48,9 @@ Open https://github.com/zachanassian/tu_optimize/blob/master/README.md to get la
 
 ##Changelog
 
+##Version ...
+* Added skill Enhance Corrosive
+
 ##Version 2.1.0
 * Added GT126k - credits [YWNM](http://www.kongregate.com//forums/338/topics/400905?page=1#posts-8034438)
 * Added skill corrosive

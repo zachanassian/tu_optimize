@@ -96,6 +96,7 @@ CardStatus::CardStatus(const Card* card) :
     m_enfeebled(0),
     m_enhance_armored(0),
     m_enhance_berserk(0),
+    m_enhance_corrosive(0),
     m_enhance_counter(0),
     m_enhance_evade(0),
     m_enhance_heal(0),
@@ -146,6 +147,7 @@ inline void CardStatus::set(const Card& card)
     m_enfeebled = 0;
     m_enhance_armored = 0;
     m_enhance_berserk = 0;
+    m_enhance_corrosive = 0;
     m_enhance_counter = 0;
     m_enhance_evade = 0;
     m_enhance_heal = 0;
@@ -330,6 +332,7 @@ std::string CardStatus::description()
     if(m_stunned > 0) { desc += ", stunned " + to_string(m_stunned); }
     if(m_enhance_armored > 0) { desc += ", enhance armored " + to_string(m_enhance_armored); }
     if(m_enhance_berserk > 0) { desc += ", enhance berserk " + to_string(m_enhance_berserk); }
+    if(m_enhance_corrosive > 0) { desc += ", enhance corrosive " + to_string(m_enhance_corrosive); }
     if(m_enhance_counter > 0) { desc += ", enhance counter " + to_string(m_enhance_counter); }
     if(m_enhance_evade > 0) { desc += ", enhance evade " + to_string(m_enhance_evade); }
     if(m_enhance_heal > 0) { desc += ", enhance heal " + to_string(m_enhance_heal); }
@@ -1426,6 +1429,7 @@ void turn_start_phase(Field* fd)
             //reset enhance_...
             status.m_enhance_armored = 0;
             status.m_enhance_berserk = 0;
+            status.m_enhance_corrosive = 0;
             status.m_enhance_counter = 0;
             status.m_enhance_evade = 0;
             status.m_enhance_leech = 0;
@@ -1692,11 +1696,12 @@ struct PerformAttack
                     _DEBUG_MSG(1, "%s takes %u counter damage from %s\n", status_description(att_status).c_str(), counter_dmg, status_description(def_status).c_str());
                     remove_hp(fd, *att_status, counter_dmg);
                 }
-                if(def_status->m_card->m_corrosive > att_status->m_corrosion_speed && skill_check<corrosive>(fd, def_status, att_status))
+                unsigned total_corrosive(def_status->m_card->m_corrosive + def_status->m_enhance_corrosive);
+                if(total_corrosive > att_status->m_corrosion_speed && skill_check<corrosive>(fd, def_status, att_status))
                 {
                     // perform_skill_corrosive
-                    _DEBUG_MSG(1, "%s corroded by %u from %s\n", status_description(att_status).c_str(), def_status->m_card->m_corrosive, status_description(def_status).c_str());
-                    att_status->m_corrosion_speed = def_status->m_card->m_corrosive;
+                    _DEBUG_MSG(1, "%s corroded by %u from %s\n", status_description(att_status).c_str(), total_corrosive, status_description(def_status).c_str());
+                    att_status->m_corrosion_speed = total_corrosive;
                 }
                 if(att_status->m_card->m_berserk > 0 && skill_check<berserk>(fd, att_status, nullptr))
                 {
@@ -2206,6 +2211,10 @@ inline bool skill_predicate<enhance_berserk>(Field* fd, CardStatus* src, CardSta
 }
 
 template<>
+inline bool skill_predicate<enhance_corrosive>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
+{ return(c->m_card->m_corrosive > 0); }
+
+template<>
 inline bool skill_predicate<enhance_counter>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
 { return(c->m_card->m_counter > 0); }
 
@@ -2393,6 +2402,12 @@ inline void perform_skill<enhance_berserk>(Field* fd, CardStatus* c, unsigned v)
 }
 
 template<>
+inline void perform_skill<enhance_corrosive>(Field* fd, CardStatus* c, unsigned v)
+{
+    c->m_enhance_corrosive += v;
+}
+
+template<>
 inline void perform_skill<enhance_counter>(Field* fd, CardStatus* c, unsigned v)
 {
     c->m_enhance_counter += v;
@@ -2495,6 +2510,9 @@ template<> std::vector<CardStatus*>& skill_targets<enhance_armored>(Field* fd, C
 { return(skill_targets_allied_assault(fd, src_status)); }
 
 template<> std::vector<CardStatus*>& skill_targets<enhance_berserk>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_allied_assault(fd, src_status)); }
+
+template<> std::vector<CardStatus*>& skill_targets<enhance_corrosive>(Field* fd, CardStatus* src_status)
 { return(skill_targets_allied_assault(fd, src_status)); }
 
 template<> std::vector<CardStatus*>& skill_targets<enhance_counter>(Field* fd, CardStatus* src_status)
@@ -2984,6 +3002,7 @@ void fill_skill_table()
     skill_table[enfeeble] = perform_targetted_hostile_fast<enfeeble>;
     skill_table[enhance_armored] = perform_targetted_allied_fast<enhance_armored>;
     skill_table[enhance_berserk] = perform_targetted_allied_fast<enhance_berserk>;
+    skill_table[enhance_corrosive] = perform_targetted_allied_fast<enhance_corrosive>;
     skill_table[enhance_counter] = perform_targetted_allied_fast<enhance_counter>;
     skill_table[enhance_evade] = perform_targetted_allied_fast<enhance_evade>;
     skill_table[enhance_leech] = perform_targetted_allied_fast<enhance_leech>;

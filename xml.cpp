@@ -360,6 +360,9 @@ void read_cards(Cards& cards)
                            (strcmp(skill->first_attribute("s")->value(), "berserk") == 0))
                         { handle_skill<enhance_berserk>(skill, c); }
                         if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) &&
+                           (strcmp(skill->first_attribute("s")->value(), "corrosive") == 0))
+                        { handle_skill<enhance_corrosive>(skill, c); }
+                        if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) &&
                            (strcmp(skill->first_attribute("s")->value(), "counter") == 0))
                         { handle_skill<enhance_counter>(skill, c); }
                         if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) &&
