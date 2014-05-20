@@ -442,6 +442,9 @@ bool may_change_skill(const Field* fd, const CardStatus* status, const SkillMod:
                             fd->effect == Effect::berserk_1 ||
                             fd->effect == Effect::berserk_2 ||
                             fd->effect == Effect::berserk_3 ||
+                            fd->effect == Effect::corrosive_1 ||
+                            fd->effect == Effect::corrosive_2 ||
+                            fd->effect == Effect::corrosive_3 ||
                             fd->effect == Effect::counter_1 ||
                             fd->effect == Effect::counter_2 ||
                             fd->effect == Effect::counter_3 ||
@@ -490,6 +493,7 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
     {
         case Effect::armored_1:
         case Effect::berserk_1:
+        case Effect::corrosive_1:
         case Effect::counter_1:
         case Effect::evade_1:
         case Effect::heal_1:
@@ -500,6 +504,7 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
             break;
         case Effect::armored_2:
         case Effect::berserk_2:
+        case Effect::corrosive_2:
         case Effect::counter_2:
         case Effect::evade_2:
         case Effect::heal_2:
@@ -510,6 +515,7 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
             break;
         case Effect::armored_3:
         case Effect::berserk_3:
+        case Effect::corrosive_3:
         case Effect::counter_3:
         case Effect::evade_3:
         case Effect::heal_3:    
@@ -539,6 +545,15 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
             {
                 need_add_skill = false;
                 return SkillSpec(enhance_berserk, skill_value, allfactions, true, mod);
+            }
+            break;
+        case Effect::corrosive_1:
+        case Effect::corrosive_2:
+        case Effect::corrosive_3:
+            if(skill == new_skill)
+            {
+                need_add_skill = false;
+                return SkillSpec(enhance_corrosive, skill_value, allfactions, true, mod);
             }
             break;
         case Effect::counter_1:

@@ -50,6 +50,16 @@ Open https://github.com/zachanassian/tu_optimize/blob/master/README.md to get la
 
 ##Version ...
 * Added skill Enhance Corrosive
+* Added battleground effect Corrosive 1-3
+<pre>
+tu_optimize "Cyrus, Bolt Crag(5)" "Barracus, Mephalus Gorge(2), Noble Defiance" -e "Corrosive 3" sim 10000
+Your Deck: [RW-F9+l] Cyrus, Bolt Crag, Bolt Crag, Bolt Crag, Bolt Crag, Bolt Crag
+Enemy's Deck: [So-Iq-hY+i] Barracus, Mephalus Gorge, Mephalus Gorge, Noble Defiance
+Effect: Corrosive 3
+win%: 33.08 (3308 / 10000)
+stall%: 0 (0 / 10000)
+loss%: 66.92 (6692 / 10000)
+</pre>
 
 ##Version 2.1.0
 * Added GT126k - credits [YWNM](http://www.kongregate.com//forums/338/topics/400905?page=1#posts-8034438)

@@ -1,4 +1,22 @@
 @echo on
+tu_optimize "Cyrus, Bolt Crag(5)" "Barracus, Mephalus Gorge(2), Noble Defiance" -e "Corrosive 3" sim 10000
+@echo off
+echo === Expected ===
+echo win%: 33.08 (3308 / 10000)
+echo stall%: 0 (0 / 10000)
+echo loss%: 66.92 (6692 / 10000)
+echo.
+
+@echo on
+tu_optimize "Cyrus, Bolt Crag(5)" "Barracus, Mephalus Gorge(2), Noble Defiance" sim 10000
+@echo off
+echo === Expected ===
+echo win%: 66.33 (6633 / 10000)
+echo stall%: 0 (0 / 10000)
+echo loss%: 33.67 (3367 / 10000)
+echo.
+
+@echo on
 tu_optimize "Dracorex, Defiler(3)" "Halcyon-4, Executioner(4)" -e "Strike 1" sim 10000
 @echo off
 echo === Expected ===
