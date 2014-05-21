@@ -35,6 +35,7 @@ Flags for climb:
   -L &lt;min&gt; &lt;max&gt;: restrict deck size between &lt;min&gt; and &lt;max&gt;.
   -o: restrict to the owned cards listed in "data/ownedcards.txt".
   -o=&lt;filename&gt;: restrict to the owned cards listed in &lt;filename&gt;.
+                       example: -o=data/mycards.txt.
   target &lt;num&gt;: stop as soon as the score reaches &lt;num&gt;.
 
 Operations:
@@ -50,7 +51,8 @@ Open https://github.com/zachanassian/tu_optimize/blob/master/README.md to get la
 
 ##Version ...
 * Added skill Enhance Corrosive
-* Added battleground effect Corrosive 1-3
+* Added battleground effect Corrosive 1-3 - [Issue#27](https://github.com/zachanassian/tu_optimize/issues/27)
+* Added example for -o= - [Issue#28](https://github.com/zachanassian/tu_optimize/issues/28)
 <pre>
 tu_optimize "Cyrus, Bolt Crag(5)" "Barracus, Mephalus Gorge(2), Noble Defiance" -e "Corrosive 3" sim 10000
 Your Deck: [RW-F9+l] Cyrus, Bolt Crag, Bolt Crag, Bolt Crag, Bolt Crag, Bolt Crag
