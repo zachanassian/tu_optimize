@@ -20,6 +20,7 @@ enum Faction
     num_factions
 };
 extern const std::string faction_names[num_factions];
+extern bool verbose;
 
 enum Skill
 {

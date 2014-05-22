@@ -1,5 +1,5 @@
 @echo on
-tu_optimize "Cyrus, Bolt Crag(5)" "Barracus, Mephalus Gorge(2), Noble Defiance" -e "Corrosive 3" sim 10000
+tu_optimize "Cyrus, Bolt Crag(5)" "Barracus, Mephalus Gorge(2), Noble Defiance" -v -e "Corrosive 3" sim 10000
 @echo off
 echo === Expected ===
 echo win%: 33.08 (3308 / 10000)
@@ -8,7 +8,7 @@ echo loss%: 66.92 (6692 / 10000)
 echo.
 
 @echo on
-tu_optimize "Cyrus, Bolt Crag(5)" "Barracus, Mephalus Gorge(2), Noble Defiance" sim 10000
+tu_optimize "Cyrus, Bolt Crag(5)" "Barracus, Mephalus Gorge(2), Noble Defiance" -v sim 10000
 @echo off
 echo === Expected ===
 echo win%: 66.33 (6633 / 10000)
@@ -17,7 +17,7 @@ echo loss%: 33.67 (3367 / 10000)
 echo.
 
 @echo on
-tu_optimize "Dracorex, Defiler(3)" "Halcyon-4, Executioner(4)" -e "Strike 1" sim 10000
+tu_optimize "Dracorex, Defiler(3)" "Halcyon-4, Executioner(4)" -e "Strike 1" -v sim 10000
 @echo off
 echo === Expected ===
 echo win%: 0.09 (9 / 10000)
@@ -26,7 +26,7 @@ echo loss%: 0 (0 / 10000)
 echo.
 
 @echo on
-tu_optimize SoHS-HE+i-H6 Rastax sim 10000
+tu_optimize SoHS-HE+i-H6 Rastax -v sim 10000
 @echo off
 echo === Expected ===
 echo win%: 50.13 (5013 / 10000)
@@ -35,16 +35,16 @@ echo loss%: 44.44 (4444 / 10000)
 echo.
 
 @echo on
-tu_optimize So-BQ-BW-LB-LTO6-GViC SokU-DV-Dn-IA-Iw+j-LB-MJ-Mf yf "Minefield(2)" ef "Tesla Coil, Forcefield" -r sim 10000
+tu_optimize So-BQ-BW-LB-LTO6-GViC SokU-DV-Dn-IA-Iw+j-LB-MJ-Mf -v yf "Minefield(2)" ef "Tesla Coil, Forcefield" -r sim 10000
 @echo off
 echo === Expected ===
-echo win%: 16.02 (1602 / 10000)
-echo stall%: 1.79 (179 / 10000)
-echo loss%: 82.19 (8219 / 10000)
+echo win%: 41.04 (4104 / 10000)
+echo stall%: 3.15 (315 / 10000)
+echo loss%: 55.81 (5581 / 10000)
 echo.
 
 @echo on
-tu_optimize So-Iq-SI-MJ-Ss-LBO6-GV-LT example_group -r sim 10000
+tu_optimize So-Iq-SI-MJ-Ss-LBO6-GV-LT example_group -v -r sim 10000
 @echo off
 echo === Expected ===
 echo win%: 75.538 (561 9302 / 10000)
@@ -111,7 +111,7 @@ echo loss%: 100 (10000 / 10000)
 echo.
 
 @echo on
-tu_optimize "Constantine, Eviscerator Noz(4)" "Alaric, Noble Defiance(2)" sim 10000
+tu_optimize "Constantine, Eviscerator Noz(4)" "Alaric, Noble Defiance(2)" -v sim 10000
 @echo off
 echo === Expected ===
 echo win%: 9.13 (913 / 10000)
@@ -120,7 +120,7 @@ echo loss%: 88.58 (8858 / 10000)
 echo.
 
 @echo on
-tu_optimize.exe "Barracus, Starformer(2)" "Constantine, Vigil(10)" -e "Poison 2" sim 10000
+tu_optimize.exe "Barracus, Starformer(2)" "Constantine, Vigil(10)" -v -e "Poison 2" sim 10000
 @echo off
 echo === Expected ===
 echo win%: 99.75 (9975 / 10000)
@@ -129,7 +129,7 @@ echo loss%: 0.18 (18 / 10000)
 echo.
 
 @echo on
-tu_optimize.exe "Nex, Apex(10)" "Obama, SF(5)" -e "Leech 3" sim 10000
+tu_optimize.exe "Nex, Apex(10)" "Obama, SF(5)" -v -e "Leech 3" sim 10000
 @echo off
 echo === Expected ===
 echo win%: 22.30 (2230 / 10000)
@@ -138,7 +138,7 @@ echo loss%: 76.64 (7664 / 10000)
 echo.
 
 @echo on
-tu_optimize "Alaric, Vigil(5)" "Obama, Terraformer(5)" -e "Heal 1" sim 10000
+tu_optimize "Alaric, Vigil(5)" "Obama, Terraformer(5)" -v -e "Heal 1" sim 10000
 @echo off
 echo === Expected ===
 echo win%: 98.55 (9855 / 10000)
@@ -147,7 +147,7 @@ echo loss%: 0.06 (6 / 10000)
 echo.
 
 @echo on
-tu_optimize "Alaric, Blitz(6)" "Barracus, Apex" -e "Evade 1" sim 10000
+tu_optimize "Alaric, Blitz(6)" "Barracus, Apex" -v -e "Evade 1" sim 10000
 @echo off
 echo === Expected ===
 echo win%: 100 (10000 / 10000)
@@ -156,7 +156,7 @@ echo loss%: 0 (0 / 10000)
 echo.
 
 @echo on
-tu_optimize "Alaric, Vigil(4)" "Halcyon, Windreaver(5)" -e "Counter 1" sim 10000
+tu_optimize "Alaric, Vigil(4)" "Halcyon, Windreaver(5)" -v -e "Counter 1" sim 10000
 @echo off
 echo === Expected ===
 echo win%: 25.08 (2508 / 10000)
@@ -165,7 +165,7 @@ echo loss%: 73.63 (7363 / 10000)
 echo.
 
 @echo on
-tu_optimize "Vex, HA(5)" "Halcyon, Galereaver(3)" -e "Berserk 3" sim 10000
+tu_optimize "Vex, HA(5)" "Halcyon, Galereaver(3)" -v -e "Berserk 3" sim 10000
 @echo off
 echo === Expected ===
 echo win%: 11.92 (1192 / 10000)
@@ -174,7 +174,7 @@ echo loss%: 73.03 (7303 / 10000)
 echo.
 
 @echo on
-tu_optimize "Alaric, Vigil(3)" "Obama, Apex(5)" -e "Armor 2" sim 10000
+tu_optimize "Alaric, Vigil(3)" "Obama, Apex(5)" -v -e "Armor 2" sim 10000
 @echo off
 echo === Expected ===
 echo win%: 73.12 (7312 / 10000)
@@ -183,7 +183,7 @@ echo loss%: 1.57 (157 / 10000)
 echo.
 
 @echo on
-tu_optimize "Barracus, Noble Defiance, Xeno Suzerain, Starformer" Heimdal -r sim 10000
+tu_optimize "Barracus, Noble Defiance, Xeno Suzerain, Starformer" Heimdal -v -r sim 10000
 @echo off
 echo === Expected ===
 echo win%: 59.73 (5973 / 10000)
@@ -192,7 +192,7 @@ echo loss%: 23.06 (2306 / 10000)
 echo.
 
 @echo on
-tu_optimize.exe "Alaric, Revolver(3)" "Halcyon, Barrage Tank(3)" sim 10000
+tu_optimize.exe "Alaric, Revolver(3)" "Halcyon, Barrage Tank(3)" -v sim 10000
 @echo off
 echo === Expected ===
 echo win%: 99.572 (9957 / 10000)
@@ -201,7 +201,7 @@ echo loss%: 0.428 (43 / 10000)
 echo.
 
 @echo on
-tu_optimize.exe "Nex, Tazerecca(4)" "Halcyon, Tikalan(3)" sim 10000
+tu_optimize.exe "Nex, Tazerecca(4)" "Halcyon, Tikalan(3)" -v sim 10000
 @echo off
 echo === Expected ===
 echo win%: 67.752 (67752 / 100000)
@@ -210,7 +210,7 @@ echo loss%: 32.035 (32035 / 100000)
 echo.
 
 @echo on
-tu_optimize.exe "Nex, Apex(10)" "Obama, SF(5)" sim 10000
+tu_optimize.exe "Nex, Apex(10)" "Obama, SF(5)" -v sim 10000
 @echo off
 echo echo === Expected ===
 echo win%: 24.19 (2419 / 10000)
@@ -219,7 +219,7 @@ echo loss%: 75.06 (7506 / 10000)
 echo.
 
 @echo on
-tu_optimize.exe "Obama, Rabid Corruptor(10)" "Yurich,Dread Panzer-1(3)" sim 10000
+tu_optimize.exe "Obama, Rabid Corruptor(10)" "Yurich,Dread Panzer-1(3)" -v sim 10000
 @echo off
 echo === Expected ===
 echo win%: 2.168 (2168 / 100000)
@@ -228,7 +228,7 @@ echo loss%: 0 (0 / 100000)
 echo.
 
 @echo on
-tu_optimize.exe "Pet,HA(10)" "Obama, SF(5)" sim 10000
+tu_optimize.exe "Pet,HA(10)" "Obama, SF(5)" -v sim 10000
 @echo off
 echo === Expected ===
 echo win%: 21.37 (2137 / 10000)
@@ -237,7 +237,7 @@ echo loss%: 57.28 (5728 / 10000)
 echo.
 
 @echo on
-tu_optimize.exe "Barracus-6, Starformer-6" "Constantine-6, Pylon-3(6)" sim 10000
+tu_optimize.exe "Barracus-6, Starformer-6" "Constantine-6, Pylon-3(6)" -v sim 10000
 @echo off
 echo === Expected ===
 echo win%: 43.463 (43463 / 100000)
@@ -246,7 +246,7 @@ echo loss%: 12.623 (12623 / 100000)
 echo.
 
 @echo on
-tu_optimize.exe "Cyrus-1, Starformer-6" "Constantine-6, Pylon-3(2)" sim 10000
+tu_optimize.exe "Cyrus-1, Starformer-6" "Constantine-6, Pylon-3(2)" -v sim 10000
 @echo off
 echo === Expected ===
 echo win%: 68.75 (6875 / 10000)
@@ -263,7 +263,7 @@ echo Enemy's Fortress Cards: Minefield, Minefield
 echo Your Deck: [SoO6iC-BQ-BW-GV-LB-LT] Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
 echo Enemy's Deck: [SoO6iC-BQ-BW-GV-LB-LT] Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
 echo Enemy's Deck: [SoO6iC-BQ-BW-GV-LB-LT] Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
-echo win%: 92.745 (9295 9254 / 10000)
-echo stall%: 0.215 (18 25 / 10000)
-echo loss%: 7.04 (687 721 / 10000)
+echo win%: 90.84 (9095 9074 / 10000)
+echo stall%: 0.310 (30 32 / 10000)
+echo loss%: 8.847 (875 894 / 10000)
 echo.

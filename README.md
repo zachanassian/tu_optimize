@@ -28,6 +28,7 @@ Flags:
   -s: use surge (default is fight).
   -t &lt;num&gt;: set the number of threads, default is 4.
   -turnlimit &lt;num&gt;: set the number of turns in a battle, default is 50.
+  -v: less verbose output. Omits output about your and enemy's deck and fortress
   win:     simulate/optimize for win rate. [default].
   defense: simulate/optimize for win rate + stall rate. can be used for defending deck.
 Flags for climb:
@@ -53,6 +54,7 @@ Open https://github.com/zachanassian/tu_optimize/blob/master/README.md to get la
 * Added skill Enhance Corrosive
 * Added battleground effect Corrosive 1-3 - [Issue#27](https://github.com/zachanassian/tu_optimize/issues/27)
 * Added example for -o= - [Issue#28](https://github.com/zachanassian/tu_optimize/issues/28)
+* Added switch -v to removed output of enemy's (and your) deck - [Issue#29](https://github.com/zachanassian/tu_optimize/issues/29)
 <pre>
 tu_optimize "Cyrus, Bolt Crag(5)" "Barracus, Mephalus Gorge(2), Noble Defiance" -e "Corrosive 3" sim 10000
 Your Deck: [RW-F9+l] Cyrus, Bolt Crag, Bolt Crag, Bolt Crag, Bolt Crag, Bolt Crag

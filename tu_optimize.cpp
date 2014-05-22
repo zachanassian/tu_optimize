@@ -1128,6 +1128,7 @@ void usage(int argc, char** argv)
         "  -s: use surge (default is fight).\n"
         "  -t <num>: set the number of threads, default is 4.\n"
         "  -turnlimit <num>: set the number of turns in a battle, default is 50.\n"
+        "  -v: less verbose output. Omits output about your and enemy's deck and fortress.\n"
         "  win:     simulate/optimize for win rate. [default].\n"
         "  defense: simulate/optimize for win rate + stall rate. can be used for defending deck.\n"
         //"  raid:    simulate/optimize for average raid damage (ARD). default for raids.\n"
@@ -1178,6 +1179,14 @@ int main(int argc, char** argv)
     {
         print_available_decks(decks, true);
         return(0);
+    }
+    
+    for(int argIndex(3); argIndex < argc; ++argIndex)
+    {
+        if(strcmp(argv[argIndex], "-v") == 0)
+        {
+            verbose = false;
+        }
     }
     std::string att_deck_name{argv[1]};
     auto deck_list_parsed = parse_deck_list(argv[2], decks);
@@ -1413,6 +1422,10 @@ int main(int argc, char** argv)
         {
             ++ debug_print;
         }
+        else if(strcmp(argv[argIndex], "-v") == 0)
+        {
+            //do nothing, this flag is already checked above
+        }
         else if(strcmp(argv[argIndex], "hand") == 0)  // set initial hand for test
         {
             att_deck->set_given_hand(cards, argv[argIndex + 1]);
@@ -1547,36 +1560,39 @@ int main(int argc, char** argv)
     {
         min_deck_len = max_deck_len = att_deck->cards.size();
     }
-    if (att_deck->get_fortress1() != nullptr)
+    if (verbose)
     {
-        if (att_deck->get_fortress2() != nullptr)
+        if (att_deck->get_fortress1() != nullptr)
         {
-            std::cout << "Your Fortress Cards: " << att_deck->get_fortress1()->m_name << ", " << att_deck->get_fortress2()->m_name << std::endl;
+            if (att_deck->get_fortress2() != nullptr)
+            {
+                std::cout << "Your Fortress Cards: " << att_deck->get_fortress1()->m_name << ", " << att_deck->get_fortress2()->m_name << std::endl;
+            }
+            else
+            {
+                std::cout << "Your Fortress Card: " << att_deck->get_fortress1()->m_name << std::endl;
+            }
         }
-        else
+        if (def_decks.front()->get_fortress1() != nullptr)
         {
-            std::cout << "Your Fortress Card: " << att_deck->get_fortress1()->m_name << std::endl;
+            if (def_decks.front()->get_fortress2() != nullptr)
+            {
+                std::cout << "Enemy's Fortress Cards: " + def_decks.front()->get_fortress1()->m_name + ", " + def_decks.front()->get_fortress2()->m_name << std::endl;
+            }
+            else
+            {
+                std::cout << "Enemy's Fortress Card: " + def_decks.back()->get_fortress1()->m_name << std::endl;
+            }
         }
-    }
-    if (def_decks.front()->get_fortress1() != nullptr)
-    {
-        if (def_decks.front()->get_fortress2() != nullptr)
+        std::cout << "Your Deck: " << (debug_print ? att_deck->long_description(cards) : att_deck->medium_description()) << std::endl;
+        for(auto def_deck: def_decks)
         {
-            std::cout << "Enemy's Fortress Cards: " + def_decks.front()->get_fortress1()->m_name + ", " + def_decks.front()->get_fortress2()->m_name << std::endl;
+            std::cout << "Enemy's Deck: " << (debug_print ? def_deck->long_description(cards) : def_deck->medium_description()) << std::endl;
         }
-        else
+        if(effect != Effect::none)
         {
-            std::cout << "Enemy's Fortress Card: " + def_decks.back()->get_fortress1()->m_name << std::endl;
+            std::cout << "Effect: " << effect_names[effect] << std::endl;
         }
-    }
-    std::cout << "Your Deck: " << (debug_print ? att_deck->long_description(cards) : att_deck->medium_description()) << std::endl;
-    for(auto def_deck: def_decks)
-    {
-        std::cout << "Enemy's Deck: " << (debug_print ? def_deck->long_description(cards) : def_deck->medium_description()) << std::endl;
-    }
-    if(effect != Effect::none)
-    {
-        std::cout << "Effect: " << effect_names[effect] << std::endl;
     }
 
     Process p(num_threads, cards, decks, att_deck, def_decks, def_decks_factors, gamemode, effect, achievement);

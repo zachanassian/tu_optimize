@@ -2,6 +2,7 @@
 
 #include <string>
 
+bool verbose(true);
 const std::string faction_names[Faction::num_factions] =
 { "", "bloodthirsty", "imperial", "raider", "righteous", "xeno", "progenitor" };
 

@@ -10,6 +10,7 @@
 #include <iostream>
 #include <exception>
 
+#include "tyrant.h"
 #include "card.h"
 #include "cards.h"
 #include "deck.h"
@@ -47,13 +48,13 @@ std::vector<std::pair<std::string, long double>> parse_deck_list(std::string lis
     boost::regex_match (list_string,sm,rx);
     if(sm[1] != "")
     {
-      std::cout << "Filtering user defined decks with regular expression: " << sm[1] << std::endl;
+      if (verbose) { std::cout << "Filtering user defined decks with regular expression: " << sm[1] << std::endl; }
       boost::regex group_rx (sm[1].str());
       for(auto& deck: decks.decks)
       {
         if((deck.decktype != DeckType::mission) && boost::regex_search(to_string(deck.name),sm,group_rx))
         {
-            std::cout << "Match: " << deck.short_description() << std::endl;
+            if (verbose) { std::cout << "Match: " << deck.short_description() << std::endl; }
             res.push_back(std::make_pair(deck.name, 1.0));
         }
       }
