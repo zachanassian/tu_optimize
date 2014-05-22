@@ -366,7 +366,7 @@ the decks found are really good. So do not worry to much about this.
 <h2><a name="help" class="anchor" href="#help"><span class="octicon octicon-link"></span></a>Use build in help if you forget command syntax</h2>
 <pre>
 >tu_optimize
-Tyrant Unleashed Optimizer 2.0.0 - Copyright (C) 2014 zachanassian
+Tyrant Unleashed Optimizer 2.2.0 - Copyright (C) 2014 zachanassian
 usage: tu_optimize Your_Deck Enemy_Deck [Flags] [Operations]
 
 Your_Deck:
@@ -391,6 +391,7 @@ Flags:
   -s: use surge (default is fight).
   -t &lt;num&gt;: set the number of threads, default is 4.
   -turnlimit &lt;num&gt;: set the number of turns in a battle, default is 50 (can be used for speedy achievements).
+  -v: less verbose output. Omits output about your and enemy's deck and fortress.  
   win:     simulate/optimize for win rate. [default].
   defense: simulate/optimize for win rate + stall rate. can be used for defending deck.
 Flags for climb:
@@ -398,6 +399,7 @@ Flags for climb:
   -L &lt;min&gt; &lt;max&gt;: restrict deck size between &lt;min&gt; and &lt;max&gt;.
   -o: restrict to the owned cards listed in "data/ownedcards.txt".
   -o=&lt;filename&gt;: restrict to the owned cards listed in &lt;filename&gt;.
+                       example: -o=data/mycards.txt.
   target &lt;num&gt;: stop as soon as the score reaches &lt;num&gt;.
 
 Operations:
