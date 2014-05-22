@@ -50,7 +50,7 @@ Open https://github.com/zachanassian/tu_optimize/blob/master/README.md to get la
 
 ##Changelog
 
-##Version ...
+##Version 2.2.0
 * Added skill Enhance Corrosive
 * Added battleground effect Corrosive 1-3 - [Issue#27](https://github.com/zachanassian/tu_optimize/issues/27)
 * Added example for -o= - [Issue#28](https://github.com/zachanassian/tu_optimize/issues/28)
