@@ -55,6 +55,7 @@ Open https://github.com/zachanassian/tu_optimize/blob/master/README.md to get la
 * Added battleground effect Corrosive 1-3 - [Issue#27](https://github.com/zachanassian/tu_optimize/issues/27)
 * Added example for -o= - [Issue#28](https://github.com/zachanassian/tu_optimize/issues/28)
 * Added switch -v to removed output of enemy's (and your) deck - [Issue#29](https://github.com/zachanassian/tu_optimize/issues/29)
+* Added current <code>cards.xml</code> and <code>missions.xml</code> - mission Blightbloom
 <pre>
 tu_optimize "Cyrus, Bolt Crag(5)" "Barracus, Mephalus Gorge(2), Noble Defiance" -e "Corrosive 3" sim 10000
 Your Deck: [RW-F9+l] Cyrus, Bolt Crag, Bolt Crag, Bolt Crag, Bolt Crag, Bolt Crag

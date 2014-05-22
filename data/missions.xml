@@ -5168,7 +5168,7 @@
 		<req>94</req>
 	</mission>
 	
-	<mission>
+	<!-- <mission>
 		<id>1018</id>
 		<name>Fake End Side Mission</name>
 		<picture>mission1018.jpg</picture>
@@ -5206,7 +5206,7 @@
 			</star>
 		</rewards>
 		<req>-1</req>
-	</mission>
+	</mission> -->
 	
 <!-- END Side Missions -->
 
@@ -11795,7 +11795,7 @@
 	    <req>2146</req>
 	</mission>
 	
-	<mission>
+	<!-- <mission>
 	    <id>2148</id>
 	    <name>Worldship Fake</name>
 	    <picture>mission2147.jpg</picture>
@@ -11836,14 +11836,701 @@
 	        </star>
 	    </rewards>
 	    <req>-1</req>
-	</mission>
+	</mission> -->
+	
+	<mission>
+        <id>2148</id>
+        <name>To the Punch</name>
+        <picture>mission2148.jpg</picture>
+        <location_id>108</location_id>
+        <event_req>13</event_req>
+		<combatBG asset_bundle='4'>CombatBG_Kor</combatBG>
+        <energy>25</energy>
+        <x>100</x>
+        <y>420</y>
+        <commander>1147</commander>
+        <speech>
+            <line commander='1003'>The remains of the Worldship belong to the Imperials. This is an incredible victory.</line>
+            <line commander='1998'>It looks like we were beaten to it.</line>
+            <line commander='1003'>How is that possible? We beat everyone else back.</line>
+        </speech>
+        <deck>
+            <card>6207</card>
+            <card>504</card>
+            <card>504</card>
+            <card>78</card>
+            <card>75</card>
+            <card>72</card>
+            <card>67</card>
+            <card>362</card>
+            <card>73</card>
+            <card>2015</card>
+        </deck>
+        <rewards>
+            <gold>27</gold>
+            <card>75</card>
+            <item>1021</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>14</req>
+    </mission>
+
+    <mission>
+        <id>2149</id>
+        <name>Juggernaut</name>
+        <picture>mission2149.jpg</picture>
+        <location_id>108</location_id>
+        <event_req>13</event_req>
+		<combatBG asset_bundle='4'>CombatBG_Kor</combatBG>
+        <energy>27</energy>
+        <x>190</x>
+        <y>390</y>
+        <commander>1147</commander>
+        <speech>
+            <line commander='1998'>The Bloodthirsty are enveloping everything. Nothing is salvageable.</line>
+    		<line commander='1003'>It's beyond that. They are merging and mutating with it. We have to end this; Bloodthirsty infused with Xeno tech will be undefeatable.</line>
+        </speech>
+        <deck>
+            <card>6207</card>
+            <card>173</card>
+            <card>366</card>
+            <card>70</card>
+            <card>71</card>
+            <card>71</card>
+            <card>67</card>
+            <card>504</card>
+            <card>72</card>
+            <card>2013</card>
+        </deck>
+        <rewards>
+            <gold>30</gold>
+            <card>78</card>
+            <item>1021</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2148</req>
+    </mission>
+
+    <mission>
+        <id>2150</id>
+        <name>Last Ditch</name>
+        <picture>mission2150.jpg</picture>
+        <location_id>108</location_id>
+        <event_req>13</event_req>
+		<combatBG asset_bundle='4'>CombatBG_Kor</combatBG>
+        <energy>30</energy>
+        <x>270</x>
+        <y>360</y>
+        <commander>1147</commander>
+        <speech>
+            <line commander='1998'>They are coming at us from every angle. We need a plan.</line>
+        </speech>
+        <deck>
+            <card>6207</card>
+            <card>67</card>
+            <card>70</card>
+            <card>71</card>
+            <card>75</card>
+            <card>75</card>
+            <card>173</card>
+            <card>362</card>
+            <card>364</card>
+            <card>505</card>
+        </deck>
+        <rewards>
+            <gold>33</gold>
+            <card>72</card>
+            <item>1022</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2149</req>
+    </mission>
+
+    <mission>
+        <id>2151</id>
+        <name>Ruptured Core</name>
+        <picture>mission2151.jpg</picture>
+        <location_id>108</location_id>
+        <event_req>13</event_req>
+		<combatBG asset_bundle='4'>CombatBG_Kor</combatBG>
+        <energy>33</energy>
+        <x>250</x>
+        <y>250</y>
+        <commander>1148</commander>
+        <speech>
+            <line commander='1003'>There is a chance, the reactor is deep in the Worldship Core. If the Bloodthirsty haven't gotten to it we can trigger an explosion that will wipe them all out.</line>
+        </speech>
+        <deck>
+            <card>6207</card>
+            <card>79</card>
+            <card>362</card>
+            <card>71</card>
+            <card>78</card>
+            <card>172</card>
+            <card>70</card>
+            <card>72</card>
+            <card>324</card>
+            <card>2013</card>
+        </deck>
+        <rewards>
+            <gold>36</gold>
+            <card>71</card>
+            <item>1022</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2150</req>
+    </mission>
+
+ 	<mission>
+        <id>2152</id>
+        <name>Plans Unveiled</name>
+        <picture>mission2152.jpg</picture>
+        <location_id>108</location_id>
+        <event_req>13</event_req>
+		<combatBG asset_bundle='4'>CombatBG_Kor</combatBG>
+        <energy>35</energy>
+        <x>180</x>
+        <y>260</y>
+        <commander>1148</commander>
+        <speech>
+            <line commander='1998'>How can you be sure?</line>
+			<line commander='1003'>It was our backup plan if the Stabilizer didn't bring the Worldship down.</line>
+        </speech>
+        <deck>
+            <card>6207</card>
+            <card>550</card>
+            <card>70</card>
+            <card>72</card>
+            <card>72</card>
+            <card>172</card>
+            <card>505</card>
+            <card>505</card>
+            <card>68</card>
+            <card>79</card>
+        </deck>
+        <rewards>
+            <gold>38</gold>
+            <card>2012</card>
+            <item>1023</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2151</req>
+    </mission>
+
+ 	<mission>
+        <id>2153</id>
+        <name>Looming Depths</name>
+        <picture>mission2153.jpg</picture>
+        <location_id>108</location_id>
+        <event_req>13</event_req>
+		<combatBG asset_bundle='4'>CombatBG_Kor</combatBG>
+        <energy>40</energy>
+        <x>130</x>
+        <y>180</y>
+        <commander>1148</commander>
+        <speech>
+            <line commander='1003'>Wait, what was that?</line>
+			<line commander='1998'>The Kraken!? We must be near its nesting area and the mass of Bloodthirsty drew it over.</line>
+			<line commander='1023'>Tabitha, Octane come in. What is taking so long? We need those Xeno parts before the Raiders can regroup and form another offensive.</line>
+        </speech>
+        <deck>
+            <card>6207</card>
+            <card>5263</card>
+            <card>79</card>
+            <card>79</card>
+            <card>364</card>
+            <card>366</card>
+            <card>67</card>
+            <card>172</card>
+            <card>504</card>
+            <card>2013</card>
+        </deck>
+        <rewards>
+            <gold>45</gold>
+            <card>70</card>
+            <item>1023</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2152</req>
+    </mission>
+
+ 	<mission>
+        <id>2154</id>
+        <name>Critical</name>
+        <picture>mission2154.jpg</picture>
+        <location_id>108</location_id>
+        <event_req>13</event_req>
+		<combatBG asset_bundle='4'>CombatBG_Kor</combatBG>
+        <energy>45</energy>
+        <x>280</x>
+        <y>160</y>
+        <commander>1148</commander>
+        <speech>
+            <line commander='1998'>Situation is critical. Bloodthirsty have merged with everything from the Worldship. We cannot use any of it.</line>
+        </speech>
+        <deck>
+            <card>6207</card>
+            <card>5769</card>
+            <card>72</card>
+            <card>81</card>
+            <card>70</card>
+            <card>505</card>
+            <card>68</card>
+            <card>68</card>
+            <card>2016</card>
+            <card>2012</card>
+        </deck>
+        <rewards>
+            <gold>49</gold>
+            <card>172</card>
+            <item>1024</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2153</req>
+    </mission>
+    
+    <mission>
+        <id>2155</id>
+        <name>Kraken</name>
+        <picture>mission2155.jpg</picture>
+        <location_id>108</location_id>
+        <event_req>13</event_req>
+        <mission_type>2</mission_type>
+        <monster asset_bundle='14'>kraken</monster>
+		<combatBG asset_bundle='4'>CombatBG_Kor</combatBG>
+        <energy>50</energy>
+        <x>400</x>
+        <y>215</y>
+        <commander>1319</commander>
+        <speech>
+            <line commander='1023'>Abort the mission.</line>
+    		<line commander='1998'>That will have to wait until after we have dealt with the Kraken.</line>
+        </speech>
+        <deck>
+            <card>6207</card>
+            <card>6207</card>
+            <card>82</card>
+            <card>529</card>
+            <card>181</card>
+            <card>630</card>
+            <card>5271</card>
+            <card>648</card>
+            <card>2583</card>
+            <card>2297</card>
+        </deck>
+        <rewards>
+            <gold>60</gold>
+            <card>324</card>
+            <item>1024</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2154</req>
+    </mission>
+    
+    <mission>
+        <id>2156</id>
+        <name>Overwhelm</name>
+        <picture>mission2156.jpg</picture>
+        <location_id>108</location_id>
+        <event_req>13</event_req>
+        <combatBG asset_bundle='4'>CombatBG_Kor</combatBG>
+        <energy>50</energy>
+        <x>490</x>
+        <y>180</y>
+        <commander>1149</commander>
+        <speech>
+            <line commander='1023'>You're lucky to be alive. Now get out of there and report back your findings.</line>
+            <line commander='1998'>Negative, if we don't deal with this threat now it will overrun Acheron.</line>
+        </speech>
+        <deck>
+            <card>6213</card>
+            <card>5444</card>
+            <card>619</card>
+            <card>197</card>
+            <card>5375</card>
+            <card>366</card>
+            <card>79</card>
+            <card>67</card>
+            <card>172</card>
+            <card>2115</card>
+        </deck>
+        <rewards>
+            <gold>55</gold>
+            <card>172</card>
+            <item>1021</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2155</req>
+    </mission>
+
+	<mission>
+        <id>2157</id>
+        <name>Pass Off</name>
+        <picture>mission2157.jpg</picture>
+        <location_id>108</location_id>
+        <event_req>13</event_req>
+        <combatBG asset_bundle='4'>CombatBG_Kor</combatBG>
+        <energy>55</energy>
+        <x>620</x>
+        <y>180</y>
+        <commander>1149</commander>
+        <speech>
+            <line commander='1023'>You're in Kor territory; let the Raiders deal with the menace.  We have more important things to worry about.</line>
+        </speech>
+        <deck>
+            <card>6213</card>
+            <card>630</card>
+            <card>4330</card>
+            <card>5263</card>
+            <card>504</card>
+            <card>73</card>
+            <card>362</card>
+            <card>76</card>
+            <card>2016</card>
+            <card>2298</card>
+        </deck>
+        <rewards>
+            <gold>60</gold>
+            <card>2012</card>
+            <item>1021</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2156</req>
+    </mission>
+
+	<mission>
+        <id>2158</id>
+        <name>Defiance</name>
+        <picture>mission2158.jpg</picture>
+        <location_id>108</location_id>
+        <event_req>13</event_req>
+        <combatBG asset_bundle='4'>CombatBG_Kor</combatBG>
+        <energy>60</energy>
+        <x>750</x>
+        <y>180</y>
+        <commander>1149</commander>
+        <speech>
+            <line commander='1998'>You cannot see what we see. There is nothing more important right now. You are a fool to think otherwise.</line>
+            <line commander='1023'>Your insubordination has cross...</line>
+            <line commander='1998'>Tabitha out.</line>
+        </speech>
+        <deck>
+            <card>6213</card>
+            <card>86</card>
+            <card>83</card>
+            <card>5576</card>
+            <card>73</card>
+            <card>505</card>
+            <card>76</card>
+            <card>79</card>
+            <card>81</card>
+            <card>2030</card>
+        </deck>
+        <rewards>
+            <gold>66</gold>
+            <card>504</card>
+            <item>1022</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2157</req>
+    </mission>
+
+	<mission>
+        <id>2159</id>
+        <name>Determined</name>
+        <picture>mission2159.jpg</picture>
+        <location_id>108</location_id>
+        <event_req>13</event_req>
+        <combatBG asset_bundle='4'>CombatBG_Kor</combatBG>
+        <energy>60</energy>
+        <x>650</x>
+        <y>270</y>
+        <commander>1149</commander>
+        <speech>
+            <line commander='1003'>Are you prepared to continue on?</line>
+            <line commander='1998'>It was a distraction I will deal with later. Right now my focus is on the mission.</line>
+        </speech>
+        <deck>
+            <card>6213</card>
+            <card>5769</card>
+            <card>324</card>
+            <card>324</card>
+            <card>5263</card>
+            <card>78</card>
+            <card>173</card>
+            <card>364</card>
+            <card>505</card>
+            <card>2233</card>
+        </deck>
+        <rewards>
+            <gold>66</gold>
+            <card>75</card>
+            <item>1022</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2158</req>
+    </mission>
+
+	<mission>
+        <id>2160</id>
+        <name>Blood Source</name>
+        <picture>mission2160.jpg</picture>
+        <location_id>108</location_id>
+        <event_req>13</event_req>
+        <combatBG asset_bundle='4'>CombatBG_Kor</combatBG>
+        <energy>65</energy>
+        <x>510</x>
+        <y>360</y>
+        <commander>1149</commander>
+        <speech>
+            <line commander='1003'>The Bloodthirsty consumption is spreading too fast. We need to take out the source of the fervor, the Blightbloom.</line>
+        </speech>
+        <deck>
+            <card>6213</card>
+            <card>827</card>
+            <card>198</card>
+            <card>82</card>
+            <card>550</card>
+            <card>173</card>
+            <card>76</card>
+            <card>68</card>
+            <card>70</card>
+            <card>2398</card>
+        </deck>
+        <rewards>
+            <gold>71</gold>
+            <card>2015</card>
+            <item>1023</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2159</req>
+    </mission>
+
+	<mission>
+        <id>2161</id>
+        <name>Quick and Bloody</name>
+        <picture>mission2161.jpg</picture>
+        <location_id>108</location_id>
+        <event_req>13</event_req>
+        <combatBG asset_bundle='4'>CombatBG_Kor</combatBG>
+        <energy>70</energy>
+        <x>620</x>
+        <y>420</y>
+        <commander>1149</commander>
+        <speech>
+            <line commander='1003'>We either need to attack from a distance or take it out fast. We won't last too long near the Blightbloom.</line>
+            <line commander='1998'>Well, we are short on time anyway...</line>
+        </speech>
+        <deck>
+            <card>6213</card>
+            <card>4712</card>
+            <card>529</card>
+            <card>551</card>
+            <card>83</card>
+            <card>5575</card>
+            <card>73</card>
+            <card>76</card>
+            <card>364</card>
+            <card>2012</card>
+        </deck>
+        <rewards>
+            <gold>77</gold>
+            <card>71</card>
+            <item>1023</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2160</req>
+    </mission>
+
+	<mission>
+        <id>2162</id>
+        <name>Approval</name>
+        <picture>mission2162.jpg</picture>
+        <location_id>108</location_id>
+        <event_req>13</event_req>
+        <combatBG asset_bundle='4'>CombatBG_Kor</combatBG>
+        <energy>75</energy>
+        <x>730</x>
+        <y>360</y>
+        <commander>1149</commander>
+        <speech>
+            <line commander='1003'>Good, I was never one for the safe approach.</line>
+        </speech>
+        <deck>
+            <card>6213</card>
+            <card>5377</card>
+            <card>551</card>
+            <card>4331</card>
+            <card>197</card>
+            <card>362</card>
+            <card>79</card>
+            <card>73</card>
+            <card>434</card>
+            <card>2583</card>
+        </deck>
+        <rewards>
+            <gold>82</gold>
+            <card>67</card>
+            <item>1024</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2161</req>
+    </mission>
+
+	<mission>
+        <id>2163</id>
+        <name>Blightbloom</name>
+        <picture>mission2163.jpg</picture>
+        <location_id>108</location_id>
+        <event_req>13</event_req>
+        <combatBG asset_bundle='4'>CombatBG_Kor</combatBG>
+		<mission_type>2</mission_type>
+        <energy>75</energy>
+        <x>875</x>
+        <y>320</y>
+        <commander>1325</commander>
+        <speech>
+            <line commander='1003'>Hit it hard then fall back! The Bloodthirsty will be even more vicious near the Blightbloom.</line>
+        </speech>
+        <deck>
+            <card>6213</card>
+            <card>6213</card>
+            <card>6207</card>
+            <card>4898</card>
+            <card>585</card>
+            <card>5074</card>
+            <card>86</card>
+            <card>619</card>
+            <card>4453</card>
+            <card>2583</card>
+        </deck>
+        <rewards>
+            <gold>90</gold>
+            <card>2030</card>
+            <item>1025</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2162</req>
+    </mission>
 	
 	<!-- END April 2014 Missions -->
 
 	<location>
 		<id>1</id>
 		<name>Ashrock</name>
-		<mapBG>map1</mapBG>
+		<mapBG>map1</mapBG> <!-- map1 -->
 	</location>
 
 	<location>
@@ -11960,13 +12647,22 @@
         <asset_bundle>3</asset_bundle>
         <req>14</req>
     </location>
+    
+    <location>
+        <id>108</id>
+        <name>Worldship Wreckage</name>
+        <event_req>13</event_req>
+        <mapBG>map_crash</mapBG>
+        <asset_bundle>12</asset_bundle>
+        <req>14</req>
+    </location>
 	
 <!-- Event Portals -->
 
 	<portal>
 		<location_id>1</location_id>
-		<destination_id>107</destination_id>
-		<event_req>11</event_req>
+		<destination_id>108</destination_id>
+		<event_req>13</event_req>
 		<req>14</req>
 		<x>420</x>
 		<y>450</y>
@@ -11974,8 +12670,8 @@
 
 	<portal>
 		<location_id>2</location_id>
-		<destination_id>107</destination_id>
-		<event_req>11</event_req>
+		<destination_id>108</destination_id>
+		<event_req>13</event_req>
 		<req>14</req>
 		<x>650</x>
 		<y>250</y>
@@ -11983,8 +12679,8 @@
 
 	<portal>
 		<location_id>3</location_id>
-		<destination_id>107</destination_id>
-		<event_req>11</event_req>
+		<destination_id>108</destination_id>
+		<event_req>13</event_req>
 		<req>14</req>
 		<x>180</x>
 		<y>600</y>
@@ -11992,8 +12688,8 @@
 
 	<portal>
 		<location_id>4</location_id>
-		<destination_id>107</destination_id>
-		<event_req>11</event_req>
+		<destination_id>108</destination_id>
+		<event_req>13</event_req>
 		<req>14</req>
 		<x>270</x>
 		<y>270</y>
@@ -12001,8 +12697,8 @@
 
 	<portal>
 		<location_id>5</location_id>
-		<destination_id>107</destination_id>
-		<event_req>11</event_req>
+		<destination_id>108</destination_id>
+		<event_req>13</event_req>
 		<req>14</req>
 		<x>350</x>
 		<y>580</y>
@@ -12010,8 +12706,8 @@
 
 	<portal>
 		<location_id>6</location_id>
-		<destination_id>107</destination_id>
-		<event_req>11</event_req>
+		<destination_id>108</destination_id>
+		<event_req>13</event_req>
 		<req>14</req>
 		<x>500</x>
 		<y>600</y>
@@ -12019,8 +12715,8 @@
 
 	<portal>
 		<location_id>7</location_id>
-		<destination_id>107</destination_id>
-		<event_req>11</event_req>
+		<destination_id>108</destination_id>
+		<event_req>13</event_req>
 		<req>14</req>
 		<x>420</x>
 		<y>380</y>
@@ -12028,19 +12724,19 @@
 
 	<portal>
 		<location_id>8</location_id>
-		<destination_id>107</destination_id>
-		<event_req>11</event_req>
+		<destination_id>108</destination_id>
+		<event_req>13</event_req>
 		<req>14</req>
 		<x>840</x>
 		<y>230</y>
 	</portal>
 
 	<portal>
-		<location_id>107</location_id>
+		<location_id>108</location_id>
 		<destination_id>0</destination_id>
-		<event_req>11</event_req>
-		<x>840</x>
-		<y>230</y>
+		<event_req>13</event_req>
+		<x>180</x>
+		<y>530</y>
 	</portal>
 
 <!-- END Event Portals -->
