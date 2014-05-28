@@ -229,18 +229,7 @@ void read_cards(Cards& cards)
                     }
                     //std::cout << "created card: " << c->m_name << " max_level_id:" << max_level_card_id << "\n";
                     // So far, commanders have attack_node (value == 0)
-                    if(id < 1000)
-                    { c->m_type = CardType::assault; }
-                    else if(id < 2000)
-                    { c->m_type = CardType::commander; }
-                    else if(id < 3000)
-                    { c->m_type = CardType::structure; }
-                    else if(id < 4000)
-                    { c->m_type = CardType::action; }
-                    else if(id < 6000) //adjusted for TU pattern seems to be valid there as well
-                    { c->m_type = CardType::assault; }
-                    else
-                    { c->m_type = cost_node ? (attack_node ? CardType::assault : CardType::structure) : (health_node ? CardType::commander : CardType::action); }
+                    c->m_type = cost_node ? (attack_node ? CardType::assault : CardType::structure) : (health_node ? CardType::commander : CardType::action);
                     c->m_hidden = hidden;
                     if(fortress_node) { c->m_fortress = atoi(fortress_node->value()); }
                     c->m_replace = replace_id;

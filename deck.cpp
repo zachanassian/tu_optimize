@@ -10,6 +10,14 @@
 #include "cards.h"
 #include "read.h"
 
+template<typename T>
+std::string to_string(T val)
+{
+    std::stringstream s;
+    s << val;
+    return s.str();
+}
+
 std::map<signed, char> empty_marks;
 
 template<class RandomAccessIterator, class UniformRandomNumberGenerator>
@@ -34,7 +42,22 @@ void partial_shuffle(RandomAccessIterator first, RandomAccessIterator middle,
 //------------------------------------------------------------------------------
 std::string deck_hash(const Card* commander, std::vector<const Card*> cards, bool is_ordered)
 {
+/*
+enhancements for card_id > 4000 magic characters "-.~!*"
+card_id
+    0 -  4000: card_id encoded as two letter base64
+ 4001 -  8000: -(card_id-4000) encoded as two letter base64
+ 8001 - 12000: .(card_id-8000) encoded as two letter base64
+12001 - 16000: ~(card_id-12000) encoded as two letter base64
+16001 - 20000: !(card_id-20000) encoded as two letter base64
+20001 - 24000: *(card_id-4000) encoded as two letter base64
+
+if there is a base64 encoded two letter value > 4000 this means (value-4001) copied of last card
+*/
+
     std::string base64= "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    std::string magic_char= " -.~!*";
+
     std::stringstream ios;
     ios << base64[commander->m_id / 64];
     ios << base64[commander->m_id % 64];
@@ -60,10 +83,15 @@ std::string deck_hash(const Card* commander, std::vector<const Card*> cards, boo
             }
             last_id = card_id;
             num_repeat = 1;
-            if(card_id > 4000)
+            if(card_id > 24000)
             {
-                ios << '-';
-                card_id -= 4000;
+                throw std::runtime_error("Error for card [" + to_string(card_id) + "]. This deck encoding does not support card_ids greater then 24000.");
+            }
+            else if(card_id > 4000)
+            {
+                ios << magic_char[(card_id-1) / 4000]; //8000,12000 still gets index 1
+                card_id = card_id % 4000;
+                if(card_id == 0){ card_id = 4000; } ////8000,12000 are encoded as 4000 (+g)
             }
             ios << base64[card_id / 64];
             ios << base64[card_id % 64];
@@ -83,6 +111,7 @@ const char* base64_chars =
     "abcdefghijklmnopqrstuvwxyz"
     "0123456789+/";
 
+const char* magic_chars = "-.~!*";
 // Converts cards in `hash' to a deck.
 // Stores resulting card IDs in `ids'.
 void hash_to_ids(const char* hash, std::vector<unsigned>& ids)
@@ -93,10 +122,11 @@ void hash_to_ids(const char* hash, std::vector<unsigned>& ids)
     while(*pc)
     {
         unsigned id_plus = 0;
-        if(*pc == '-')
+        const char* pmagic = strchr(magic_chars, *pc);
+        if (pmagic)
         {
-            ++ pc;
-            id_plus = 4000;
+          ++pc;
+          id_plus = 4000*(pmagic-magic_chars+1);
         }
         if(!*pc || !*(pc + 1))
         {
