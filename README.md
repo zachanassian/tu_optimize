@@ -50,6 +50,9 @@ Open https://github.com/zachanassian/tu_optimize/blob/master/README.md to get la
 
 ##Changelog
 
+##Version 2.3.0
+* Added support for cards with id greater then 8046. New maximum card_id is 24000.
+
 ##Version 2.2.0
 * Added skill Enhance Corrosive
 * Added battleground effect Corrosive 1-3 - [Issue#27](https://github.com/zachanassian/tu_optimize/issues/27)
