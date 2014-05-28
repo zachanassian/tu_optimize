@@ -1187,6 +1187,10 @@ int main(int argc, char** argv)
         {
             verbose = false;
         }
+        if(strcmp(argv[argIndex], "ddd_b64") == 0)
+        {
+            deck_encoding = DeckEncoding::ddd_b64;
+        }
     }
     std::string att_deck_name{argv[1]};
     auto deck_list_parsed = parse_deck_list(argv[2], decks);
@@ -1422,7 +1426,7 @@ int main(int argc, char** argv)
         {
             ++ debug_print;
         }
-        else if(strcmp(argv[argIndex], "-v") == 0)
+        else if(strcmp(argv[argIndex], "-v") == 0 || strcmp(argv[argIndex], "ddd_b64") == 0)
         {
             //do nothing, this flag is already checked above
         }

@@ -27,9 +27,20 @@ enum DeckStrategy
     num_deckstrategies
 };
 }
+
+namespace DeckEncoding
+{
+enum DeckEncoding
+{
+    wmt_b64,
+    ddd_b64,
+    num_deckencodings
+};
+}
 //------------------------------------------------------------------------------
 // No support for ordered raid decks
 
+extern DeckEncoding::DeckEncoding deck_encoding;
 
 extern std::map<signed, char> empty_marks;
 class Deck
