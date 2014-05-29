@@ -150,6 +150,7 @@ struct CardStatus
     unsigned m_evades_left;
     Faction m_faction;
     bool m_frozen;
+    bool m_has_jammed;
     unsigned m_hp;
     bool m_immobilized;
     bool m_infused;

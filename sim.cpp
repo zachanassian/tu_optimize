@@ -106,6 +106,7 @@ CardStatus::CardStatus(const Card* card) :
     m_evades_left(card->m_evade),
     m_faction(card->m_faction),
     m_frozen(false),
+    m_has_jammed(false),
     m_hp(card->m_health),
     m_immobilized(false),
     m_infused(false),
@@ -157,6 +158,7 @@ inline void CardStatus::set(const Card& card)
     m_evades_left = card.m_evade,
     m_faction = card.m_faction;
     m_frozen = false;
+    m_has_jammed = false;
     m_hp = card.m_health;
     m_immobilized = false;
     m_infused = false;
@@ -1401,6 +1403,11 @@ void check_regeneration(Field* fd)
 }
 void turn_end_phase(Field* fd)
 {
+    if(fd->tap->commander.m_has_jammed)
+    {
+        fd->tap->commander.m_jam_charge = 0;
+        fd->tap->commander.m_has_jammed = false;
+    }
     {
         auto& assaults(fd->tap->assaults);
         for(unsigned index(0), end(assaults.size());
@@ -1409,6 +1416,11 @@ void turn_end_phase(Field* fd)
         {
             CardStatus& status(assaults[index]);
             status.m_inhibited = 0;
+            if(status.m_has_jammed)
+            {
+                status.m_jam_charge = 0;
+                status.m_has_jammed = false;
+            }
             unsigned diff = safe_minus(status.m_poisoned, status.m_protected);
             //only cards that are still alive take poison damage
             if(diff > 0 && status.m_hp > 0)
@@ -1418,6 +1430,21 @@ void turn_end_phase(Field* fd)
             }
         }
     }
+    {
+        auto& structures(fd->tap->structures);
+        for(unsigned index(0), end(structures.size());
+            index < end;
+            ++index)
+        {
+            CardStatus& status(structures[index]);
+            if(status.m_has_jammed)
+            {
+                status.m_jam_charge = 0;
+                status.m_has_jammed = false;
+            }
+        }
+    }
+
 }
 void turn_start_phase(Field* fd)
 {
@@ -2671,7 +2698,7 @@ bool check_and_perform_skill(Field* fd, CardStatus* src_status, CardStatus* dst_
 }
 
 //special implementation needed, because standard perform_skill<skill_id>(fd, dst_status, std::get<1>(s)); only allows to alter dst_status
-//but jam to change src_status as well (*1*)
+//but jam has to change src_status as well (*1*)
 template<>
 bool check_and_perform_skill<jam>(Field* fd, CardStatus* src_status, CardStatus* dst_status, const SkillSpec& s, bool is_evadable, bool is_count_achievement)
 {
@@ -2690,7 +2717,7 @@ bool check_and_perform_skill<jam>(Field* fd, CardStatus* src_status, CardStatus*
         }
         _DEBUG_MSG(1, "%s jams %s\n", status_description(src_status).c_str(), status_description(dst_status).c_str());
         perform_skill<jam>(fd, dst_status, std::get<1>(s));
-        src_status->m_jam_charge = 0; //(*1*)
+        src_status->m_has_jammed = true; //(*1*) m_has_jammed
         return(true);
     }
     return(false);
