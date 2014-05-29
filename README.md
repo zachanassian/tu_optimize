@@ -50,6 +50,10 @@ Open https://github.com/zachanassian/tu_optimize/blob/master/README.md to get la
 
 ##Changelog
 
+##Version 2.4.0
+* [FIX] jam all - [Issue#30](https://github.com/zachanassian/tu_optimize/issues/30)
+* Added current <code>cards.xml</code> and <code>missions.xml</code> - mission Infested Rastax
+
 ##Version 2.3.0
 * Added support for cards with id greater then 8046. New maximum card_id is 24000.
 
