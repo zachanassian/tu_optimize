@@ -1138,6 +1138,8 @@ void usage(int argc, char** argv)
         "  -o: restrict to the owned cards listed in \"data/ownedcards.txt\".\n"
         "  -o=<filename>: restrict to the owned cards listed in <filename>.\n"
         "                 example: -o=data/mycards.txt.\n"
+        "  -o=<cards>: restrict to the owned cards specified.\n"
+        "                 example: -o=\"Sacred Equalizer#2, Infantry\".\n"
         //"  fund <num>: fund <num> gold to buy/upgrade cards. prices are specified in ownedcards file.\n"
         "  target <num>: stop as soon as the score reaches <num>.\n"
         //"  -u: don't upgrade owned cards. (by default, upgrade owned cards when needed)\n"
