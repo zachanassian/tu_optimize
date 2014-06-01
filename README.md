@@ -37,6 +37,8 @@ Flags for climb:
   -o: restrict to the owned cards listed in "data/ownedcards.txt".
   -o=&lt;filename&gt;: restrict to the owned cards listed in &lt;filename&gt;.
                        example: -o=data/mycards.txt.
+  -o=&lt;cards&gt;: restrict to the owned cards specified.
+                 example: -o="Sacred Equalizer#2, Infantry".
   target &lt;num&gt;: stop as soon as the score reaches &lt;num&gt;.
 
 Operations:
