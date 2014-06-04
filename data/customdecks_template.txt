@@ -232,3 +232,8 @@ GT126k97: Typhon Vex, Bolt Crag, Charincinerator, Classified Rig, Delphan the Fu
 GT126k98: Typhon Vex, Bolt Crag, Charincinerator, Havoc Genesis, Judgment Nova, Razogoth's Majesty, Sacred Sanctuary (2), Sculpted Aegis, Veiled Defiler,
 GT126k99: Typhon Vex, Bolt Crag, Heart Devourer (4), Mobile Encampment, Promethium Solidus, Sculpted Aegis, Tempest Citadel, Yobedysseus,
 GT126k: /^GT126k\d\d$/
+Razogoth Mutant-1: [1337],[6367],[6367],[6373],[6373],[6379],[6379],[6391],[6391],[6385],[6385]
+Razogoth Mutant-2: [1338],[6368],[6368],[6374],[6374],[6380],[6380],[6392],[6392],[6386],[6386]
+Razogoth Mutant-3: [1339],[6369],[6369],[6375],[6375],[6381],[6381],[6393],[6393],[6387],[6387]
+Razogoth Mutant-4: [1340],[6370],[6370],[6376],[6376],[6382],[6382],[6394],[6394],[6388],[6388]
+Razogoth Mutant-5: [1341],[6371],[6371],[6377],[6377],[6383],[6383],[6395],[6395],[6389],[6389]

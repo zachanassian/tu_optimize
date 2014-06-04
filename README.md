@@ -37,6 +37,8 @@ Flags for climb:
   -o: restrict to the owned cards listed in "data/ownedcards.txt".
   -o=&lt;filename&gt;: restrict to the owned cards listed in &lt;filename&gt;.
                        example: -o=data/mycards.txt.
+  -o=&lt;cards&gt;: restrict to the owned cards specified.
+                 example: -o="Sacred Equalizer#2, Infantry".
   target &lt;num&gt;: stop as soon as the score reaches &lt;num&gt;.
 
 Operations:
@@ -49,6 +51,53 @@ Remark: Due to html character escaping this might read awkward in readme.txt.
 Open https://github.com/zachanassian/tu_optimize/blob/master/README.md to get latest version in formatted view.
 
 ##Changelog
+
+##Version 2.5.0
+* Added missions Razogoth Mutant-1 to Razogoth Mutant-5 to <code>data/customdecks_template.txt</code>. Eg. Razogoth Mutant-5 contains all Razogoth Mutant cards at level 5
+* Added option to specify owned cards at command line using -o=<cards>  - credits [draquila](https://github.com/zachanassian/tu_optimize/pull/31)
+<pre>
+>tu_optimize "Constantine, Bolt Crag#5, Tempest Citadel#2" "Razogoth Mutant" -o="Barracus, Insanitius, Arch Nova, Omega Nexus, Sacred Sanctuary, Tazerious, Ayrkrane Vik, Necropocalypse, Mawcor" -r climb 10000
+Your Deck: [S6-F9+loS+i] Constantine, Bolt Crag, Bolt Crag, Bolt Crag, Bolt Crag, Bolt Crag, Tempest Citadel, Tempest Citadel
+Enemy's Deck: [U+-lE+i-lK+i-lQ+i-lW+i-lc+i] Razogoth Mutant, Shadow Mutant, Shadow Mutant, Razoling Mutant, Razoling Mutant, Gloom Mutant, Gloom Mutant, Typhon's Mutant, Typhon's Mutant, Dream Mutator, Dream Mutator
+2.01 (201 / 10000)
+2.01: Constantine, Bolt Crag #5, Tempest Citadel #2
+Deck improved: S6-F9-cD-F9+joS+i 0 [4381] Bolt Crag -> 1 [5795] Tazerious: 2.05 (205 / 10000)
+2.05: Constantine, Bolt Crag, Tazerious, Bolt Crag #3, Tempest Citadel #2
+Deck improved: S6-F9+koS-F9oS 1 [5795] Tazerious -> 5 [4381] Bolt Crag: 2.12 (212 / 10000)
+2.12: Constantine, Bolt Crag #4, Tempest Citadel, Bolt Crag, Tempest Citadel
+Deck improved: S6-F9+koS+i-F9 5 [4381] Bolt Crag -> 6 [4381] Bolt Crag: 2.82 (282 / 10000)
+2.82: Constantine, Bolt Crag #4, Tempest Citadel #2, Bolt Crag
+Deck improved: S6-F9+i-c9-F9+ioS+i-F9 7 -void- -> 2 [5853] Arch Nova: 2.88 (288 / 10000)
+2.88: Constantine, Bolt Crag #2, Arch Nova, Bolt Crag #2, Tempest Citadel #2, Bolt Crag
+Deck improved: S6-F9-cD-F9-c9-F9+ioS+i-F9 8 -void- -> 1 [5795] Tazerious: 3.21 (321 / 10000)
+3.21: Constantine, Bolt Crag, Tazerious, Bolt Crag, Arch Nova, Bolt Crag #2, Tempest Citadel #2, Bolt Crag
+Deck improved: S6-F9-cD-F9-c9-F9+ioS+i-fN-F9 9 -void- -> 8 [5997] Insanitius: 3.47 (347 / 10000)
+3.47: Constantine, Bolt Crag, Tazerious, Bolt Crag, Arch Nova, Bolt Crag #2, Tempest Citadel #2, Insanitius, Bolt Crag
+Deck improved: S6-F9-cD-F9-c9-F9+ioS+i-F9-fN 9 [4381] Bolt Crag -> 8 [4381] Bolt Crag: 3.84 (384 / 10000)
+3.84: Constantine, Bolt Crag, Tazerious, Bolt Crag, Arch Nova, Bolt Crag #2, Tempest Citadel #2, Bolt Crag, Insanitius
+Deck improved: S6-F9+i-c9-F9+ikOoS+i-F9-fN 1 [5795] Tazerious -> 5 [2318] Sacred Sanctuary: 4.21 (421 / 10000)
+4.21: Constantine, Bolt Crag #2, Arch Nova, Bolt Crag #2, Sacred Sanctuary, Tempest Citadel #2, Bolt Crag, Insanitius
+Deck improved: S6-F9+kkOoS+i-GV-F9-fN 2 [5853] Arch Nova -> 7 [4405] Ayrkrane Vik: 5.97 (597 / 10000)
+5.97: Constantine, Bolt Crag #4, Sacred Sanctuary, Tempest Citadel #2, Ayrkrane Vik, Bolt Crag, Insanitius
+Deck improved: S6-F9+jkOoS-F9oS-GV-F9-fN 2 [4381] Bolt Crag -> 5 [4381] Bolt Crag: 5.98 (598 / 10000)
+5.98: Constantine, Bolt Crag #3, Sacred Sanctuary, Tempest Citadel, Bolt Crag, Tempest Citadel, Ayrkrane Vik, Bolt Crag, Insanitius
+Deck improved: S6-F9+joS-F9oSkO-GV-F9-fN 3 [2318] Sacred Sanctuary -> 6 [2318] Sacred Sanctuary: 6.1 (610 / 10000)
+6.1: Constantine, Bolt Crag #3, Tempest Citadel, Bolt Crag, Tempest Citadel, Sacred Sanctuary, Ayrkrane Vik, Bolt Crag, Insanitius
+Deck improved: S6-F9+joS+ikO-F9-GV-F9-fN 4 [4381] Bolt Crag -> 6 [4381] Bolt Crag: 6.31 (631 / 10000)
+6.31: Constantine, Bolt Crag #3, Tempest Citadel #2, Sacred Sanctuary, Bolt Crag, Ayrkrane Vik, Bolt Crag, Insanitius
+Deck improved: S6-F9+joS+ikO-F9-c9-F9-fN 7 [4405] Ayrkrane Vik -> 7 [5853] Arch Nova: 6.5 (650 / 10000)
+6.5: Constantine, Bolt Crag #3, Tempest Citadel #2, Sacred Sanctuary, Bolt Crag, Arch Nova, Bolt Crag, Insanitius
+Deck improved: S6-F9+joS+ikO-F9+i-c9-fN 7 [5853] Arch Nova -> 8 [5853] Arch Nova: 6.77 (677 / 10000)
+6.77: Constantine, Bolt Crag #3, Tempest Citadel #2, Sacred Sanctuary, Bolt Crag #2, Arch Nova, Insanitius
+Deck improved: S6-F9+koS+ikO-F9-c9-fN 7 [4381] Bolt Crag -> 0 [4381] Bolt Crag: 6.92 (692 / 10000)
+6.92: Constantine, Bolt Crag #4, Tempest Citadel #2, Sacred Sanctuary, Bolt Crag, Arch Nova, Insanitius
+Deck improved: S6-F9+koS+ikO-F9-cD-fN 8 [5853] Arch Nova -> 8 [5795] Tazerious: 7.38 (738 / 10000)
+7.38: Constantine, Bolt Crag #4, Tempest Citadel #2, Sacred Sanctuary, Bolt Crag, Tazerious, Insanitius
+Deck improved: S6-F9+koS+ikO-F9-c9-cD 9 [5997] Insanitius -> 8 [5853] Arch Nova: 7.54 (754 / 10000)
+7.54: Constantine, Bolt Crag #4, Tempest Citadel #2, Sacred Sanctuary, Bolt Crag, Arch Nova, Tazerious
+Evaluated 1250 decks (1681634 + 1362939 simulations).
+Optimized Deck: 7.54: Constantine, Bolt Crag #4, Tempest Citadel #2, Sacred Sanctuary, Bolt Crag, Arch Nova, Tazerious
+</pre>
 
 ##Version 2.4.0
 * [FIX] jam all - [Issue#30](https://github.com/zachanassian/tu_optimize/issues/30)
