@@ -346,7 +346,6 @@ void read_owned_cards(Cards& cards, std::map<unsigned, unsigned>& owned_cards, s
             for (; token_iter != card_tokens.end(); ++token_iter)
             {
                 std::string card_spec(*token_iter);
-                // try catch TODO
                 add_owned_card(cards, owned_cards, card_spec, buyable_cards);
             }
         } 
