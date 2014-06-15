@@ -1235,6 +1235,10 @@ int main(int argc, char** argv)
         std::cerr << "Error: Invalid attack deck " << att_deck_name << ": has optional cards.\n";
         att_deck = nullptr;
     }
+    else if(att_deck->cards.size() > 10)
+    {
+        std::cerr << "Warning: Attack deck " << att_deck_name << " has more then 10 cards. Use data/ownedcards.txt to store all your cards. Attack deck should be a valid TU deck. Commander plus max. 10 cards.\n";
+    }
     if(att_deck == nullptr)
     {
         print_available_decks(decks, false);
