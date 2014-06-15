@@ -1103,7 +1103,7 @@ void print_available_effects()
 
 void usage(int argc, char** argv)
 {
-    std::cout << "Tyrant Unleashed Optimizer " << TU_OPTIMIZER_VERSION << " - Copyright (C) 2014 zachanassian\nusage: " << argv[0] << " Your_Deck Enemy_Deck [Flags] [Operations]\n"
+    std::cout << "Tyrant Unleashed Optimizer " << TU_OPTIMIZER_VERSION << " - Copyright (C) 2014 zachanassian\nusage: " << argv[0] << " Your_Deck Enemy_Deck [Mode] [Order] [Flags] [Operations]\n"
         "\n"
         "Your_Deck:\n"
         "  the name/hash/cards of a custom deck.\n"
@@ -1118,24 +1118,28 @@ void usage(int argc, char** argv)
         "     regular expression will be used to search all custom decks for matching keys.\n"
         "     example: \"/^GT/\" will select all custom decks starting with the letters GT.\n"
         "\n"
+        "Mode:\n"
+        "  pvp: attacker goes first. Simulate/optimize for win rate. Normally used for missions or pvp. [default]\n"
+        "  pvp-defense: attacker goes second. Simulate/optimize for win rate + stall rate. Normally used for pvp defense.\n"
+        "  gw: attacker goes second. Simulate/optimize for win rate. Normally used for guild wars.\n"
+        "  gw-defense: attacker goes first. Simulate/optimize for win rate + stall rate. Normally used for gw defense.\n"
+        "Order:\n"
+        "  random: the attack deck is played randomly. [default]\n"
+        "  ordered: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).\n"
         "Flags:\n"
         //"  -A <achievement>: optimize for the achievement specified by either id or name.\n"
         "  yfort <your_fortress_cards>: your fortress structures. your_fortress_cards: the name/hash/cards of one or two fortress structures.\n"
         "  efort <enemy_fortress_cards>: enemy fortress structures. enemy_fortress_cards: the name/hash/cards of one or two fortress structures.\n"        
         "  -e <effect>: set the battleground effect.\n"
         "               use \"tu_optimize Po Po -e list\" to get a list of all available effects.\n" 
-        "  -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).\n"
-        "  -s: use surge (default is fight).\n"
         "  -t <num>: set the number of threads, default is 4.\n"
         "  -turnlimit <num>: set the number of turns in a battle, default is 50.\n"
         "  -v: less verbose output. Omits output about your and enemy's deck and fortress.\n"
-        "  win:     simulate/optimize for win rate. [default].\n"
-        "  defense: simulate/optimize for win rate + stall rate. can be used for defending deck.\n"
         //"  raid:    simulate/optimize for average raid damage (ARD). default for raids.\n"
         "Flags for climb:\n"
         "  -c: don't try to optimize the commander.\n"
         "  -L <min> <max>: restrict deck size between <min> and <max>.\n"
-        "  -o: restrict to the owned cards listed in \"data/ownedcards.txt\".\n"
+        "  -o: restrict to the owned cards listed in \"data/ownedcards.txt\". [default]\n"
         "  -o=<filename>: restrict to the owned cards listed in <filename>.\n"
         "                 example: -o=data/mycards.txt.\n"
         "  -o=<cards>: restrict to the owned cards specified.\n"
@@ -1208,6 +1212,7 @@ int main(int argc, char** argv)
     enum Effect effect(Effect::none);
     bool keep_commander{false};
     bool fixed_len{false};
+    bool implicit_ownedcards(true);
     std::vector<std::tuple<unsigned, unsigned, Operation>> todo;
 
     try
@@ -1275,7 +1280,27 @@ int main(int argc, char** argv)
 
     for(int argIndex(3); argIndex < argc; ++argIndex)
     {
-        if(strcmp(argv[argIndex], "win") == 0)
+        if(strcmp(argv[argIndex], "pvp") == 0)
+        {
+            gamemode = fight;
+            optimization_mode = OptimizationMode::winrate;
+        }
+        else if(strcmp(argv[argIndex], "pvp-defense") == 0)
+        {
+            gamemode = surge;
+            optimization_mode = OptimizationMode::defense;
+        }
+        else if(strcmp(argv[argIndex], "gw") == 0)
+        {
+            gamemode = surge;
+            optimization_mode = OptimizationMode::winrate;
+        }
+        else if(strcmp(argv[argIndex], "gw-defense") == 0)
+        {
+            gamemode = fight;
+            optimization_mode = OptimizationMode::defense;
+        }
+        else if(strcmp(argv[argIndex], "win") == 0)
         {
             optimization_mode = OptimizationMode::winrate;
         }
@@ -1347,11 +1372,17 @@ int main(int argc, char** argv)
         {
             read_owned_cards(cards, owned_cards, buyable_cards, "data/ownedcards.txt");
             use_owned_cards = true;
+            implicit_ownedcards = false;
         }
         else if(strncmp(argv[argIndex], "-o=", 3) == 0)
         {
             read_owned_cards(cards, owned_cards, buyable_cards, argv[argIndex] + 3);
             use_owned_cards = true;
+            implicit_ownedcards = false;
+        }
+        else if(strcmp(argv[argIndex], "-o-") == 0)
+        {
+            implicit_ownedcards = false;
         }
         else if(strncmp(argv[argIndex], "-o+", 3) == 0)
         {
@@ -1372,6 +1403,10 @@ int main(int argc, char** argv)
         {
             fund = atoi(argv[argIndex+1]);
             argIndex += 1;
+        }
+        else if(strcmp(argv[argIndex], "random") == 0)
+        {
+            att_strategy = DeckStrategy::random;
         }
         else if(strcmp(argv[argIndex], "-r") == 0 || strcmp(argv[argIndex], "ordered") == 0)
         {
@@ -1452,6 +1487,11 @@ int main(int argc, char** argv)
         }
         else if(strcmp(argv[argIndex], "climb") == 0)
         {
+            if(implicit_ownedcards)
+            {
+              read_owned_cards(cards, owned_cards, buyable_cards, "data/ownedcards.txt");
+              use_owned_cards = true;
+            }
             todo.push_back(std::make_tuple((unsigned)atoi(argv[argIndex + 1]), 0u, climb));
             argIndex += 1;
         }

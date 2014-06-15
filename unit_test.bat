@@ -35,7 +35,7 @@ echo loss%: 44.44 (4444 / 10000)
 echo.
 
 @echo on
-tu_optimize So-BQ-BW-LB-LTO6-GViC SokU-DV-Dn-IA-Iw+j-LB-MJ-Mf -v yf "Minefield(2)" ef "Tesla Coil, Forcefield" -r sim 10000
+tu_optimize So-BQ-BW-LB-LTO6-GViC SokU-DV-Dn-IA-Iw+j-LB-MJ-Mf ordered -v yf "Minefield(2)" ef "Tesla Coil, Forcefield" sim 10000
 @echo off
 echo === Expected ===
 echo win%: 41.04 (4104 / 10000)
@@ -44,7 +44,7 @@ echo loss%: 55.81 (5581 / 10000)
 echo.
 
 @echo on
-tu_optimize So-Iq-SI-MJ-Ss-LBO6-GV-LT example_group -v -r sim 10000
+tu_optimize So-Iq-SI-MJ-Ss-LBO6-GV-LT example_group ordered -v sim 10000
 @echo off
 echo === Expected ===
 echo win%: 75.538 (561 9302 / 10000)
@@ -65,7 +65,7 @@ echo loss%: 79.89 (7989 / 10000)
 echo.
 
 @echo on
-tu_optimize So-Iq-SI-MJ-Ss-LBO6-GV-LT GT125k -r sim 1000
+tu_optimize So-Iq-SI-MJ-Ss-LBO6-GV-LT GT125k ordered sim 1000
 @echo off
 echo === Expected ===
 echo Filtering user defined decks with regular expression: ^GT12Sk\d\d$
@@ -183,7 +183,7 @@ echo loss%: 1.57 (157 / 10000)
 echo.
 
 @echo on
-tu_optimize "Barracus, Noble Defiance, Xeno Suzerain, Starformer" Heimdal -v -r sim 10000
+tu_optimize "Barracus, Noble Defiance, Xeno Suzerain, Starformer" Heimdal ordered -v sim 10000
 @echo off
 echo === Expected ===
 echo win%: 59.73 (5973 / 10000)
