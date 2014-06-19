@@ -19,18 +19,22 @@ the time.
      regular expression will be used to search all custom decks for matching keys.
      example: "/^GT/" will select all custom decks starting with the letters GT.
 
+Mode:
+  pvp: attacker goes first. Simulate/optimize for win rate. Normally used for missions or pvp. [default]
+  pvp-defense: attacker goes second. Simulate/optimize for win rate + stall rate. Normally used for pvp defense.
+  gw: attacker goes second. Simulate/optimize for win rate. Normally used for guild wars.
+  gw-defense: attacker goes first. Simulate/optimize for win rate + stall rate. Normally used for gw defense.
+Order:
+  random: the attack deck is played randomly. [default]
+  ordered: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).
 Flags:
   yfort &lt;your_fortress_cards&gt;: your fortress structures. your_fortress_cards: the name/hash/cards of one or two fortress structures.
   efort &lt;enemy_fortress_cards&gt;: enemy fortress structures. enemy_fortress_cards: the name/hash/cards of one or two fortress structures.
   -e &lt;effect&gt;: set the battleground effect.
                use "tu_optimize Po Po -e list" to get a list of all available effects.
-  -r: the attack deck is played in order instead of randomly (respects the 3 cards drawn limit).
-  -s: use surge (default is fight).
   -t &lt;num&gt;: set the number of threads, default is 4.
   -turnlimit &lt;num&gt;: set the number of turns in a battle, default is 50.
   -v: less verbose output. Omits output about your and enemy's deck and fortress
-  win:     simulate/optimize for win rate. [default].
-  defense: simulate/optimize for win rate + stall rate. can be used for defending deck.
 Flags for climb:
   -c: don't try to optimize the commander.
   -L &lt;min&gt; &lt;max&gt;: restrict deck size between &lt;min&gt; and &lt;max&gt;.
@@ -51,6 +55,15 @@ Remark: Due to html character escaping this might read awkward in readme.txt.
 Open https://github.com/zachanassian/tu_optimize/blob/master/README.md to get latest version in formatted view.
 
 ##Changelog
+
+##Version 3.0.0
+* Got a mail from Alex Reeve CEO of synapse-games that tu_optimize does not violate any IP from synapse-games. Thank you! Big credits to synapse-games for creating this game. [Details](http://www.kongregate.com/forums/338-tyrant-unleashed/topics/407952)
+* Changed the command line syntax to allow easier commands for new users. New modes are pvp, pvp-defense, gw and gw-defense. Please check the usage info from above. The old commands will mostly (see below) still work so you have time to adapt to the new command. However old commands can be removed in next version without further notice.
+* Incompatible Change: The option -o is now used by default if operation climb is used.
+* If attack deck contains more the commander plus 10 cards a new warning message is issued.
+* <code>SimpleTUOptimizeStarter</code> now allows to configure most use cases without setting additional flags. Try it.
+* Added current <code>cards.xml</code> and <code>missions.xml</code> - mission Albatross.
+* [FIX] remove crash caused by new skill flurry.
 
 ##Version 2.5.0
 * Added missions Razogoth Mutant-1 to Razogoth Mutant-5 to <code>data/customdecks_template.txt</code>. Eg. Razogoth Mutant-5 contains all Razogoth Mutant cards at level 5
