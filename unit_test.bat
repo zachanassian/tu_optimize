@@ -38,9 +38,9 @@ echo.
 tu_optimize So-BQ-BW-LB-LTO6-GViC SokU-DV-Dn-IA-Iw+j-LB-MJ-Mf ordered -v yf "Minefield(2)" ef "Tesla Coil, Forcefield" sim 10000
 @echo off
 echo === Expected ===
-echo win%: 41.04 (4104 / 10000)
-echo stall%: 3.15 (315 / 10000)
-echo loss%: 55.81 (5581 / 10000)
+echo win%: 43.74 (4374 / 10000)
+echo stall%: 3.22 (322 / 10000)
+echo loss%: 53.04 (5304 / 10000)
 echo.
 
 @echo on
@@ -263,7 +263,7 @@ echo Enemy's Fortress Cards: Minefield, Minefield
 echo Your Deck: [SoO6iC-BQ-BW-GV-LB-LT] Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
 echo Enemy's Deck: [SoO6iC-BQ-BW-GV-LB-LT] Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
 echo Enemy's Deck: [SoO6iC-BQ-BW-GV-LB-LT] Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
-echo win%: 90.84 (9095 9074 / 10000)
-echo stall%: 0.310 (30 32 / 10000)
-echo loss%: 8.847 (875 894 / 10000)
+echo win%: 83.63 (8353 8373 / 10000)
+echo stall%: 0.48 (44 52 / 10000)
+echo loss%: 15.89 (1603 1575 / 10000)
 echo.
