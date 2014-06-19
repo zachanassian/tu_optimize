@@ -283,7 +283,7 @@ void read_cards(Cards& cards)
                         if(strcmp(skill->first_attribute("id")->value(), "fear") == 0)
                         { c->m_fear = true; }
                         if(strcmp(skill->first_attribute("id")->value(), "flurry") == 0)
-                        { c->m_flurry = atoi(skill->first_attribute("x")->value()); }
+                        { c->m_flurry = atoi(skill->first_attribute("c")->value()); }
                         if(strcmp(skill->first_attribute("id")->value(), "flying") == 0)
                         { c->m_flying = true; }
                         if(strcmp(skill->first_attribute("id")->value(), "fusion") == 0)
