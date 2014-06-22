@@ -58,6 +58,9 @@ If you receive virus warnings for <code>SimpleTUOptimizeStarter.exe</code> pleas
 
 ##Changelog
 
+##Version 3.2.0
+* <code>SimpleTUOptimizeStarter</code> allows to update <code>cards.xml</code> and <code>missions.xml</code>.
+
 ##Version 3.1.0
 * <code>SimpleTUOptimizeStarter</code> allows to configure number of threads used for simulations.
 * Option -o= can now be placed behind operations

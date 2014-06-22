@@ -6,6 +6,7 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
 Menu, MyMenu, Add, Help, MenuHelp
 Menu, MyMenu, Add, Web, MenuWeb
+Menu, MyMenu, Add, Update XMLs, MenuUpdate
 Gui, Menu, MyMenu
 Gui, Add, Text, r5, My Deck:
 Gui, Add, Text, r1, My Fortress:
@@ -64,6 +65,26 @@ return
 MenuWeb:
 Gui, Submit
 Run http://zachanassian.github.io/tu_optimize/
+Gui, Show
+return
+
+MenuUpdate:
+MsgBox, 0, Update started, Updating cards.xml and missions.xml.`nPlease wait at least 10 seconds. A new window should open soon.`nThis Window will auto close in 2 seconds. , 2
+UrlDownloadToFile, http://mobile.tyrantonline.com/assets/cards.xml, data\cards.xml
+had_error := false
+if ErrorLevel
+{
+    MsgBox, Error downloading cards.xml.
+    had_error := true
+}
+UrlDownloadToFile, http://mobile.tyrantonline.com/assets/missions.xml, data\missions.xml
+if ErrorLevel
+{
+    MsgBox, Error downloading missions.xml.
+    had_error := true
+}
+if !had_error
+    MsgBox, 0, Update finished, cards.xml and missions.xml successfully updated.`nThis Window will auto close in 2 seconds., 2
 Gui, Show
 return
 
