@@ -131,6 +131,17 @@ autohotkey script file <code>SimpleTUOptimizeStarter.ahk</code>. So if you are r
 from somebody you hardly know then you should install 
 <a href="http://www.autohotkey.com/">autohotkey</a>, check the script file and execute it directly.
 </p>
+<p>
+Due to the low level features of autohotkey compiled autohotkey script files like code>SimpleTUOptimizeStarter.ahk</code> can
+cause false positiv virus warnings in certain virus scanners. This was discussed 
+<a href="http://www.kongregate.com//forums/338/topics/390807?page=12#posts-8057829">here</a>. 
+Once again if you are reluctant to run an executable file
+from somebody you hardly know then you should install 
+<a href="http://www.autohotkey.com/">autohotkey</a>, check the script file and execute it directly.
+General remark: I do my very best to keep tu_optimize free of virus and any other maleware. 
+However I do not take any liabilities for this program. For details please check the license information 
+<a href="https://raw.githubusercontent.com/zachanassian/tu_optimize/master/tu_optimize_license.txt">16. Limitation of Liability.</a>.    
+</p>
 
 <h2><a name="public" class="anchor" href="#public"><span class="octicon octicon-link"></span></a>
 Why is it public</h2>
@@ -151,27 +162,6 @@ on kongregate</a>. You will need some C++ and git know how but when I started th
 with C++ was 15 years ago and I wanted to learn git and especially github and not C++. You see it is not that difficult. 
 Just give it a try.
 </p>
-
-<h2><a name="typicalsettings" class="anchor" href="#typicalsettings"><span class="octicon octicon-link"></span></a>
-Typical Optimizer Settings</h2>
-<p>The following examples assume you have defined <code>mydeck</code>, created a group of decks <code>edecks</code> and
-want to optimize your deck for typical situations using <code>X</code> simulations at max for each enemy deck.</p>
-<h3>PVP attack - play your cards random(auto)</h3>
-<code>tu_optimize mydeck edecks -o climb X</code>
-<h3>PVP attack - play your cards ordered</h3>
-<code>tu_optimize mydeck edecks -r -o climb X</code>
-<h3>PVP defense - play enemy decks random(auto)</h3>
-<code>tu_optimize mydeck edecks defense -s -o climb X</code>
-<h3>PVP defense - play enemy decks ordered</h3>
-<code>tu_optimize mydeck edecks defense defender:ordered -s -o climb X</code>
-<h3>Guild War attack - play your cards random(auto)</h3>
-<code>tu_optimize mydeck edecks -s -o climb X</code>
-<h3>Guild War attack - play your cards ordered</h3>
-<code>tu_optimize mydeck edecks -s -r -o climb X</code>
-<h3>Guild War defense - play enemy decks random(auto)</h3>
-<code>tu_optimize mydeck edecks defense -o climb X</code>
-<h3>Guild War defense - play enemy decks ordered</h3>
-<code>tu_optimize mydeck edecks defense defender:ordered -o climb X</code>
 
         </section>
 
