@@ -32,6 +32,8 @@ Gui, Add, Radio, r1 ys, Sim
 Gui, Add, Radio, r1 ys, Reorder
 Gui, Add, Text, r1 ys, Iterations:
 Gui, Add, Edit, vIterations w100 r1 ys-3, 10000
+Gui, Add, Text, r1 ys, Threads:
+Gui, Add, DropDownList, vThreads ys-3 w50 Choose4, 1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16
 Gui, Add, Edit, vSimOptions r1 xs w600,
 Gui, Add, Button, default r2 w100 x100 y+15 section, Simulate
 Gui, Add, Button, r2 w100 ys xs+200, Exit
@@ -46,9 +48,9 @@ selOperation :=  ( Operation == 1 ? "climb" : Operation == 2 ? "sim" : "reorder"
 selMySiege := ( MySiege == "" ? "" : "yfort """ MySiege """ ")
 selEnemySiege := ( EnemySiege == "" ? "" : "efort """ EnemySiege """ ")
 selEffect := ( Effect == "none" ? "" : "-e """ Effect """ ")
+selThreads := ( Threads == "4" ? "" : "-t " Threads " ")
 selSimOptions := ( SimOptions == "" ? "" : SimOptions " ")
-execString = tu_optimize "%MyDeck%" "%EnemiesDeck%" %selMode% %selOrder% %selMySiege%%selEnemySiege%%selEffect%%selSimOptions%%selOperation% %Iterations%
-;MsgBox, %execString% 
+execString = tu_optimize "%MyDeck%" "%EnemiesDeck%" %selMode% %selOrder% %selMySiege%%selEnemySiege%%selEffect%%selThreads%%selSimOptions%%selOperation% %Iterations% 
 Run, cmd.exe /c title TUOptimizeOutput && echo %execString% && %execString% && pause
 Gui, Show
 return
