@@ -4,9 +4,12 @@
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
+Menu, MyMenu, Add, ownedcards.txt, MenuOwnedcards
+Menu, MyMenu, Add, customdecks.txt, MenuCustomdecks
+Menu, MyMenu, Add, cardabbrs.txt, MenuCardabbrs
+Menu, MyMenu, Add, Update XMLs, MenuUpdate
 Menu, MyMenu, Add, Help, MenuHelp
 Menu, MyMenu, Add, Web, MenuWeb
-Menu, MyMenu, Add, Update XMLs, MenuUpdate
 Gui, Menu, MyMenu
 Gui, Add, Text, r5, My Deck:
 Gui, Add, Text, r1, My Fortress:
@@ -85,6 +88,24 @@ if ErrorLevel
 }
 if !had_error
     MsgBox, 0, Update finished, cards.xml and missions.xml successfully updated.`nThis Window will auto close in 2 seconds., 2
+Gui, Show
+return
+
+MenuOwnedcards:
+Gui, Submit
+Run, Notepad.exe data\ownedcards.txt
+Gui, Show
+return
+
+MenuCustomdecks:
+Gui, Submit
+Run, Notepad.exe data\customdecks.txt
+Gui, Show
+return
+
+MenuCardabbrs:
+Gui, Submit
+Run, Notepad.exe data\cardabbrs.txt
 Gui, Show
 return
 

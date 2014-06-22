@@ -60,6 +60,7 @@ If you receive virus warnings for <code>SimpleTUOptimizeStarter.exe</code> pleas
 
 ##Version 3.2.0
 * <code>SimpleTUOptimizeStarter</code> allows to update <code>cards.xml</code> and <code>missions.xml</code>.
+* <code>SimpleTUOptimizeStarter</code> allows to launch editor for <code>ownedcards.txt</code>, <code>customdeck.txt</code> and <code>cardabbrs.txt</code>.
 
 ##Version 3.1.0
 * <code>SimpleTUOptimizeStarter</code> allows to configure number of threads used for simulations.
