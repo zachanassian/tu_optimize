@@ -47,7 +47,7 @@ selMySiege := ( MySiege == "" ? "" : "yfort """ MySiege """ ")
 selEnemySiege := ( EnemySiege == "" ? "" : "efort """ EnemySiege """ ")
 selEffect := ( Effect == "none" ? "" : "-e """ Effect """ ")
 selSimOptions := ( SimOptions == "" ? "" : SimOptions " ")
-execString = tu_optimize "%MyDeck%" "%EnemiesDeck%" %selMode% %selOrder% %selMySiege%%selEnemySiege%%selEffect%%SimOptions%%selOperation% %Iterations%
+execString = tu_optimize "%MyDeck%" "%EnemiesDeck%" %selMode% %selOrder% %selMySiege%%selEnemySiege%%selEffect%%selSimOptions%%selOperation% %Iterations%
 ;MsgBox, %execString% 
 Run, cmd.exe /c title TUOptimizeOutput && echo %execString% && %execString% && pause
 Gui, Show
