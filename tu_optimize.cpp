@@ -1172,6 +1172,7 @@ int main(int argc, char** argv)
     unsigned num_threads = 4;
     DeckStrategy::DeckStrategy att_strategy(DeckStrategy::random);
     DeckStrategy::DeckStrategy def_strategy(DeckStrategy::random);
+    bool implicit_ownedcards(true);
     Cards cards;
     read_cards(cards);
     read_card_abbrs(cards, "data/cardabbrs.txt");
@@ -1193,9 +1194,21 @@ int main(int argc, char** argv)
         {
             verbose = false;
         }
-        if(strcmp(argv[argIndex], "ddd_b64") == 0)
+        else if(strcmp(argv[argIndex], "ddd_b64") == 0)
         {
             deck_encoding = DeckEncoding::ddd_b64;
+        }
+        else if(strcmp(argv[argIndex], "-o") == 0)
+        {
+            implicit_ownedcards = false;
+        }
+        else if(strncmp(argv[argIndex], "-o=", 3) == 0)
+        {
+            implicit_ownedcards = false;
+        }
+        else if(strcmp(argv[argIndex], "-o-") == 0)
+        {
+            implicit_ownedcards = false;
         }
     }
     std::string att_deck_name{argv[1]};
@@ -1212,7 +1225,6 @@ int main(int argc, char** argv)
     enum Effect effect(Effect::none);
     bool keep_commander{false};
     bool fixed_len{false};
-    bool implicit_ownedcards(true);
     std::vector<std::tuple<unsigned, unsigned, Operation>> todo;
 
     try
@@ -1376,17 +1388,15 @@ int main(int argc, char** argv)
         {
             read_owned_cards(cards, owned_cards, buyable_cards, "data/ownedcards.txt");
             use_owned_cards = true;
-            implicit_ownedcards = false;
         }
         else if(strncmp(argv[argIndex], "-o=", 3) == 0)
         {
             read_owned_cards(cards, owned_cards, buyable_cards, argv[argIndex] + 3);
             use_owned_cards = true;
-            implicit_ownedcards = false;
         }
         else if(strcmp(argv[argIndex], "-o-") == 0)
         {
-            implicit_ownedcards = false;
+            //do nothing, this flag is already checked above
         }
         else if(strncmp(argv[argIndex], "-o+", 3) == 0)
         {
