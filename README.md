@@ -54,7 +54,16 @@ Operations:
 Remark: Due to html character escaping this might read awkward in readme.txt. 
 Open https://github.com/zachanassian/tu_optimize/blob/master/README.md to get latest version in formatted view.
 
+If you receive virus warnings for <code>SimpleTUOptimizeStarter.exe</code> please read [here](http://zachanassian.github.io/tu_optimize/faq.html#ahk).
+
 ##Changelog
+
+##Version 3.1.0
+* <code>SimpleTUOptimizeStarter</code> allows to configure number of threads used for simulations.
+* Option -o= can now be placed behind operations
+* [FIX] last version of <code>SimpleTUOptimizeStarter</code> required to enter a SPACE after specifying <code>Flags:</code>. No longer needed.
+* Added link to virus warning explanation for <code>SimpleTUOptimizeStarter</code> to readme.txt
+* Added current <code>cards.xml</code> - 5 new basic epics eg. Sinew Feeder.
 
 ##Version 3.0.0
 * Got a mail from Alex Reeve CEO of synapse-games that tu_optimize does not violate any IP from synapse-games. Thank you! Big credits to synapse-games for creating this game. [Details](http://www.kongregate.com/forums/338-tyrant-unleashed/topics/407952)
