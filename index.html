@@ -73,12 +73,15 @@ loss%: 40.543 (40543 / 100000)
 <li>cards are identified by their name. By definition Cyrus means Cyrus at max Level (Level 4). 
 If you want to use Cyrus Level 1 use Cyrus-1</li>
 <li>if you have eg. three copies of Revolver use Revolver(3)</li>
+<li>the first deck (here <code>"Cyrus, Medic, Revolver, Imperial APC"</code>) is also referred to as <code>your deck</code></li>
+<li>the second deck (here <code>"Malika, Grunt, Blitz Armor"</code>) is also referred to as <code>enemy deck</code></li>
+<li>Mode <code>pvp</code> is used. Your deck plays a card at first turn and when optimizing (see below) only win% is maximized. This mode is default.</li>
 <li>by default your deck and enemy's deck are played in random order</li>
 </ul>
 
 <h2><a name="ordered" class="anchor" href="#ordered"><span class="octicon octicon-link"></span></a>Simulate your deck ordered</h2>
 <pre>
->tu_optimize "Cyrus, Imperial APC, Revolver, Medic" "Malika, Grunt, Blitz Armor" -r sim 100000
+>tu_optimize "Cyrus, Imperial APC, Revolver, Medic" "Malika, Grunt, Blitz Armor" ordered sim 100000
 Your Deck: [RWFDH3Fh] Cyrus, Imperial APC, Revolver, Medic
 Enemy's Deck: [PyA0Fl] Malika, Grunt, Blitz Armor
 win%: 86.192 (86192 / 100000)
@@ -86,13 +89,12 @@ stall%: 0.088 (88 / 100000)
 loss%: 13.72 (13720 / 100000)
 </pre>
 <ul>
-<li><code>-r</code> tries to play your card in the correct order still following the "three card hand limit" rule</li>
-<li>by default normal PVP mode is used. You play your first card in turn 1</li>
+<li><code>ordered</code> tries to play your card in the correct order still following the "three card hand limit" rule</li>
 </ul>
 
-<h2><a name="surge" class="anchor" href="#surge"><span class="octicon octicon-link"></span></a>Simulate your deck in surge mode</h2>
+<h2><a name="surge" class="anchor" href="#surge"><span class="octicon octicon-link"></span></a>Simulate your deck for guild war</h2>
 <pre>
->tu_optimize "Cyrus, Imperial APC, Revolver, Medic" "Malika, Grunt, Blitz Armor" -r -s sim 100000
+>tu_optimize "Cyrus, Imperial APC, Revolver, Medic" "Malika, Grunt, Blitz Armor" gw ordered sim 100000
 Your Deck: [RWFDH3Fh] Cyrus, Imperial APC, Revolver, Medic
 Enemy's Deck: [PyA0Fl] Malika, Grunt, Blitz Armor
 win%: 64.898 (64898 / 100000)
@@ -100,19 +102,21 @@ stall%: 0.083 (83 / 100000)
 loss%: 35.019 (35019 / 100000)
 </pre>
 <ul>
-<li><code>-s</code> means enemy's deck starts in turn 1. You play your first card in turn 2</li>
+<li></li>
+<li>Mode <code>gw</code> is used. Enemy deck plays a card at first turn. You play your first card in turn 2. When optimizing (see below) only win% is maximized. This mode is typical for guild war attacks.</li>
+<li>for historic reason this mode is also sometimes called surge mode</li>
 </ul>
 
 <h2><a name="battlegroundeffects" class="anchor" href="#battlegroundeffects">
 <span class="octicon octicon-link"></span></a>Simulate with battleground effects</h2>
 <pre>
->tu_optimize "Alaric, Vigil(3)" "Barracus, Apex(5)" -e "Armor 2" sim 10000
-Your Deck: [RECd+j] Alaric, Vigil, Vigil, Vigil
-Enemy's Deck: [SoCC+l] Barracus, Apex, Apex, Apex, Apex, Apex
-Effect: Armored 2
-win%: 73.12 (7312 / 10000)
-stall%: 25.31 (2531 / 10000)
-loss%: 1.57 (157 / 10000)
+>tu_optimize "Alaric, Vigil(4)" "Barracus, Apex(2)" gw -e "Armor 2" sim 10000
+Your Deck: [RECd+k] Alaric, Vigil, Vigil, Vigil, Vigil
+Enemy's Deck: [SoCC+i] Barracus, Apex, Apex
+Effect: Armor 2
+win%: 40.39 (4039 / 10000)
+stall%: 55.32 (5532 / 10000)
+loss%: 4.29 (429 / 10000)
 </pre>
 <ul>
 <li>To reduce typing effort <code>Armor 2</code> means <code>Enhance All Armor 2</code></li>
@@ -122,15 +126,13 @@ loss%: 1.57 (157 / 10000)
 <h2><a name="fortress" class="anchor" href="#fortress">
 <span class="octicon octicon-link"></span></a>Simulate with fortress structures</h2>
 <pre>
->tu_optimize "Cyrus, Imperial APC, Revolver, Medic" "Malika, Grunt, Blitz Armor" yfort "Minefield(2)" efort "Tesla Coil, Forcefield" -r -s sim 10000
-Attacking Fortress Structure(s) Used: Minefield(2)
-Defending Fortress Structure(s) Used: Tesla Coil, Forcefield
+>tu_optimize "Cyrus, Imperial APC, Revolver(2), Medic" "Malika, Grunt, Blitz Armor(2)" gw ordered yfort "Minefield(2)" efort "Tesla Coil, Forcefield" sim 10000
 Your Fortress Cards: Minefield, Minefield
 Enemy's Fortress Cards: Tesla Coil, Forcefield
-Your Deck: [RWFDH3Fh] Cyrus, Imperial APC, Revolver, Medic
-Enemy's Deck: [PyA0Fl] Malika, Grunt, Blitz Armor
-win%: 91.69 (9169 / 10000)
-stall%: 8.31 (831 / 10000)
+Your Deck: [RWFDH3+iFh] Cyrus, Imperial APC, Revolver, Revolver, Medic
+Enemy's Deck: [PyA0+iFl] Malika, Grunt, Blitz Armor, Blitz Armor
+win%: 2.09 (209 / 10000)
+stall%: 97.91 (9791 / 10000)
 loss%: 0 (0 / 10000)
 </pre>
 <ul>
@@ -165,7 +167,7 @@ loss%: 46.111 (46111 / 100000)
 
 <h2><a name="batch" class="anchor" href="#batch"><span class="octicon octicon-link"></span></a>Sim against a batch of decks</h2>
 <pre>
->tu_optimize mydeck nbd-spam;eerie-spam -r sim 100000
+>tu_optimize mydeck nbd-spam;eerie-spam ordered sim 100000
 Your Deck: [So-BQ-BW-LB-LTO6-GViC] Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
 Enemy's Deck: [RE-Iq+q] Alaric, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance
 Enemy's Deck: [So-KF+q] Barracus, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie
@@ -176,7 +178,7 @@ loss%: 59.0085 (32397 85620 / 100000)
 
 <h2><a name="regex" class="anchor" href="#regex"><span class="octicon octicon-link"></span></a>Define a batch of decks using regular expressions</h2>
 <pre>
->tu_optimize mydeck "/^GT12Sk\d\d$/" -r sim 10000
+>tu_optimize mydeck "/^GT12Sk\d\d$/" ordered sim 10000
 Filtering user defined decks with regular expression: ^GT12Sk\d\d$
 Match: Custom Deck #61 "GT12Sk01": Barracus-6, Noxious Tank-6, Spiteful Raptor-6, Deranged Malgoth-6, Spiteful Raptor-6, Tazerecca-6, Entrails Bog-6, Omniphet-6, Xeno Suzerain-6, Spiteful Raptor-6, Sculpted Aegis-6
 Match: Custom Deck #62 "GT12Sk02": Halcyon-6, Indestructible Troop-6, Indestructible Troop-6, Neocyte Resonator-6, Neocyte Resonator-6, Omniphet-6, Garrison Fortifier-6, Agrius Maximus-6, Galereaver-6, Flux Station-6, Arthurian Monarch-6
@@ -254,12 +256,13 @@ loss%: 26.6783 (81 982 4260 1392 2669 5562 2082 7860 2295 1585 716 2530 / 10000)
 use them immediatly.
 <li>the decks in these groups are the same as used by 
 <a href="http://www.kongregate.com/forums/338-tyrant-unleashed/topics/390004" target="_blank">excel sim 6.2</a> - 
-credits to rbwabd</li>
+credits to rbwabd</li>. They are outdated an no longer correspond to the BR mentioned. However they are the only public 
+available deck batches so far. If you have another batch list feel free to contribute. 
 </ul>
 
 <h2><a name="missions" class="anchor" href="#missions"><span class="octicon octicon-link"></span></a>Sim against mission decks</h2>
 <pre>
->tu_optimize mydeck "94. Heart of Tartarus" -r sim 100000
+>tu_optimize mydeck "94. Heart of Tartarus" ordered sim 100000
 Your Deck: [So-BQ-BW-LB-LTO6-GViC] Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
 Enemy's Deck: [RkBbBhC6D9+iFRGHGr+igZ] Petrisis, Blight Crusher, Blight Crusher, Smog Tank, Draconian Queen, Venomous Raptor, Venomous Raptor, Malgoth, Beholder, Mawcor, Blood Pool
 win%: 100 (100000 / 100000)
@@ -272,7 +275,7 @@ loss%: 0 (0 / 100000)
 
 <h2><a name="optimize" class="anchor" href="#optimize"><span class="octicon octicon-link"></span></a>Automatically optimize play order</h2>
 <pre>
->tu_optimize mydeck eerie-spam -r reorder 100000
+>tu_optimize mydeck eerie-spam ordered reorder 100000
 Your Deck: [So-BQ-BW-LB-LTO6-GViC] Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
 Enemy's Deck: [So-KF+q] Barracus, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie, Narscious the Eerie
 13.049 (13049 / 100000)
@@ -293,7 +296,7 @@ Optimized Deck: 27.43: Barracus, Tazerecca, Crushing Anvil, Tartarus Brood, Ayrk
 
 <h2><a name="ownedcards" class="anchor" href="#ownedcards"><span class="octicon octicon-link"></span></a>Automatically optimize using all cards from your card pool</h2>
 <pre>
->tu_optimize mydeck nbd-spam -r -o climb 100000
+>tu_optimize mydeck nbd-spam pvp-defense ordered climb 100000
 Your Deck: [So-BQ-BW-LB-LTO6-GViC] Barracus, Crushing Anvil, Tartarus Brood, Tazerecca, Mach Jet, Starformer, Ayrkrane Vik, Shining Sanctuary
 Enemy's Deck: [RE-Iq+q] Alaric, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance, Noble Defiance
 67.932 (67932 / 100000)
@@ -356,12 +359,19 @@ Optimized Deck: 99.955: Barracus, Ayrkrane Vik, Starformer, Tazerecca, Tartarus 
 <ul>
 <li>define your own cardpool in <code>data/ownedcards.txt</code>. tu_optimze will try to build a best deck for you.</li>
 <li>use <code>data/ownedcards_template.txt</code> to get an idea how the data has to be entered.</li>
+<li>in mode <code>pvp</code> and <code>gw</code> the win% is maximized by climb</li>
 <li>technically climb and reorder are using a hill climbing algorithm to reach the optimized deck. That means the 
 found optimized deck can not be further improved by adding, removing or swapping a single card. It is a local maximum
-but there could be still better decks if you change multiple cards. However experience from flash tyrant shows that
+but there could be still better decks if you change multiple cards. However experience from WMT tyrant shows that
 the decks found are really good. So do not worry to much about this.
 </li>
 </ul>
+
+<h2><a name="ownedcards" class="anchor" href="#ownedcards"><span class="octicon octicon-link"></span></a>Automatically optimize your pvp defense deck</h2>
+<pre>
+  
+</pre>
+
 
 <h2><a name="help" class="anchor" href="#help"><span class="octicon octicon-link"></span></a>Use build in help if you forget command syntax</h2>
 <pre>
