@@ -65,11 +65,9 @@ If you receive virus warnings for <code>SimpleTUOptimizeStarter.exe</code> pleas
 Your Deck: Deck: S6-MP
 Constantine hp:43 legendary righteous, Enhance Armored 2, Protect all righteous 1, Weaken 2
   Zodiac Harbinger 5/13/1 righteous, armored 3, Heal all righteous 2, Rally all righteous 2
-
 Enemy's Deck: Deck: S6-F9
 Constantine hp:43 legendary righteous, Enhance Armored 2, Protect all righteous 1, Weaken 2
-  Bolt Crag 4/14/1 righteous, armored 4, berserk 3, evade 4
-
+Bolt Crag 4/14/1 righteous, armored 4, berserk 3, evade 4
 Effect: Rally 2
 win%: 0 (0 / 1)
 stall%: 100 (1 / 1)
@@ -77,18 +75,15 @@ loss%: 0 (0 / 1)
 win%: 0 (0 / 1)
 stall%: 100 (1 / 1)
 loss%: 0 (0 / 1)
-
-
-
+</pre>
+<pre>
 ./tu_optimize "Constantine, Zodiac Harbinger" "Constantine, Bolt Crag" -e "Rally 3" +v debug sim 1
 Your Deck: Deck: S6-MP
 Constantine hp:43 legendary righteous, Enhance Armored 2, Protect all righteous 1, Weaken 2
   Zodiac Harbinger 5/13/1 righteous, armored 3, Heal all righteous 2, Rally all righteous 2
-
 Enemy's Deck: Deck: S6-F9
 Constantine hp:43 legendary righteous, Enhance Armored 2, Protect all righteous 1, Weaken 2
   Bolt Crag 4/14/1 righteous, armored 4, berserk 3, evade 4
-
 Effect: Rally 3
 win%: 100 (1 / 1)
 stall%: 0 (0 / 1)
@@ -96,7 +91,6 @@ loss%: 0 (0 / 1)
 win%: 100 (1 / 1)
 stall%: 0 (0 / 1)
 loss%: 0 (0 / 1)
-
 </pre>
 
 ##Version 3.2.0
