@@ -1,4 +1,22 @@
 @echo on
+tu_optimize "Constantine, Zodiac Harbinger" "Constantine, Bolt Crag" -e "Rally 2" -v sim 1000
+@echo off
+echo === Expected ===
+echo win%: 0 (0 / 1000)
+echo stall%: 100 (1000 / 1000)
+echo loss%: 0 (0 / 1000)
+echo.
+
+@echo on
+tu_optimize "Constantine, Zodiac Harbinger" "Constantine, Bolt Crag" -e "Rally 3" -v sim 1000
+@echo off
+echo === Expected ===
+echo win%: 100 (1000 / 1000)
+echo stall%: 0 (0 / 1000)
+echo loss%: 0 (0 / 1000)
+echo.
+
+@echo on
 tu_optimize "Cyrus, Bolt Crag(5)" "Barracus, Mephalus Gorge(2), Noble Defiance" -v -e "Corrosive 3" sim 10000
 @echo off
 echo === Expected ===
