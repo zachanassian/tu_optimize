@@ -59,6 +59,7 @@ If you receive virus warnings for <code>SimpleTUOptimizeStarter.exe</code> pleas
 ##Changelog
 
 ##Version 3.3.0
+* Added current <code>cards.xml</code> and <code>missions.xml</code> - Mission Balefire.
 * Added skill flurry
 <pre>
 >tu_optimize "Typhon Vex, Sphinxite" "Alaric, Zodiac Harbinger" -v sim 1000
