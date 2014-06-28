@@ -150,6 +150,7 @@ struct CardStatus
     unsigned m_enhance_strike;
     unsigned m_evades_left;
     Faction m_faction;
+    unsigned m_flurry_charge;
     bool m_frozen;
     bool m_has_jammed;
     unsigned m_hp;

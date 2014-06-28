@@ -59,6 +59,13 @@ If you receive virus warnings for <code>SimpleTUOptimizeStarter.exe</code> pleas
 ##Changelog
 
 ##Version 3.3.0
+* Added skill flurry
+<pre>
+>tu_optimize "Typhon Vex, Sphinxite" "Alaric, Zodiac Harbinger" -v sim 1000
+win%: 100 (1000 / 1000)
+stall%: 0 (0 / 1000)
+loss%: 0 (0 / 1000)
+</pre>
 * Added enhance rally battle ground effect: - [Issue#42](https://github.com/zachanassian/tu_optimize/issues/42) credits [grani](https://github.com/zachanassian/tu_optimize/pull/43)
 <pre>
 >tu_optimize "Constantine, Zodiac Harbinger" "Constantine, Bolt Crag" -e "Rally 2" sim 1000     

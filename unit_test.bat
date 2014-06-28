@@ -1,4 +1,13 @@
 @echo on
+tu_optimize "Typhon Vex, Sphinxite" "Alaric, Zodiac Harbinger" -v sim 1000
+@echo off
+echo === Expected ===
+echo win%: 100 (1000 / 1000)
+echo stall%: 0 (0 / 1000)
+echo loss%: 0 (0 / 1000)
+echo.
+
+@echo on
 tu_optimize "Constantine, Zodiac Harbinger" "Constantine, Bolt Crag" -e "Rally 2" -v sim 1000
 @echo off
 echo === Expected ===
