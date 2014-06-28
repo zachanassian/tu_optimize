@@ -58,6 +58,9 @@ If you receive virus warnings for <code>SimpleTUOptimizeStarter.exe</code> pleas
 
 ##Changelog
 
+##Version 3.3.1
+* [FIX] <code>SimpleTUOptimizeStarter</code> allows to select new bg effect rally 1-3.
+
 ##Version 3.3.0
 * Added current <code>cards.xml</code> and <code>missions.xml</code> - Mission Balefire.
 * Added skill flurry
