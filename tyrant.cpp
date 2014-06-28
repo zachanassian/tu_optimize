@@ -13,7 +13,7 @@ std::string skill_names[Skill::num_skills] =
     // Activation (Including Destroyed):
     "Augment", "Backfire", "Chaos", "Cleanse", "Enfeeble",
     "Enhance Armored", "Enhance Berserk", "Enhance Corrosive", "Enhance Counter", "Enhance Evade",
-    "Enhance Leech", "Enhance Heal", "Enhance Poison", "Enhance Strike",
+    "Enhance Leech", "Enhance Heal", "Enhance Poison", "Enhance Strike", "Enhance Rally",
     "Freeze", "Heal", "Infuse", "Jam",
     "Mimic", "Protect", "Rally", "Recharge", "Repair", "Rush", "Shock",
     "Siege", "Split", "Strike", "Summon", "Supply",
@@ -74,6 +74,9 @@ std::string effect_names[Effect::num_effects] = {
     "Strike 1",
     "Strike 2",
     "Strike 3",
+    "Rally 1",
+    "Rally 2",
+    "Rally 3",
     "Time Surge",
     "Copycat",
     "Quicksilver",

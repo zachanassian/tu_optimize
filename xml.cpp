@@ -364,6 +364,9 @@ void read_cards(Cards& cards)
                            (strcmp(skill->first_attribute("s")->value(), "heal") == 0))
                         { handle_skill<enhance_heal>(skill, c); }
                         if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) &&
+                           (strcmp(skill->first_attribute("s")->value(), "rally") == 0))
+                        { handle_skill<enhance_rally>(skill, c); }
+                        if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) &&
                            (strcmp(skill->first_attribute("s")->value(), "poison") == 0))
                         { handle_skill<enhance_poison>(skill, c); }
                         if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) &&
@@ -398,7 +401,11 @@ void read_cards(Cards& cards)
                         if(strcmp(skill->first_attribute("id")->value(), "protect") == 0)
                         { handle_skill<protect>(skill, c); }
                         if(strcmp(skill->first_attribute("id")->value(), "rally") == 0)
-                        { handle_skill<rally>(skill, c); }
+                        { 
+                            c->m_rally = atoi(skill->first_attribute("x")->value());
+                            handle_skill<rally>(skill, c); 
+
+                        }
                         if(strcmp(skill->first_attribute("id")->value(), "recharge") == 0)
                         { handle_skill<recharge>(skill, c); }
                         if(strcmp(skill->first_attribute("id")->value(), "repair") == 0)
