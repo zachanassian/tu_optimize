@@ -58,39 +58,25 @@ If you receive virus warnings for <code>SimpleTUOptimizeStarter.exe</code> pleas
 
 ##Changelog
 
-.Version 3.2.1
-* grani: added enhance rally battle ground effect 
+##Version 3.3.0
+* Added enhance rally battle ground effect: - [Issue#42](https://github.com/zachanassian/tu_optimize/issues/42) credits [grani](https://github.com/zachanassian/tu_optimize/pull/43)
 <pre>
-./tu_optimize "Constantine, Zodiac Harbinger" "Constantine, Bolt Crag" -e "Rally 2" +v debug sim 1     
+>tu_optimize "Constantine, Zodiac Harbinger" "Constantine, Bolt Crag" -e "Rally 2" sim 1000     
 Your Deck: Deck: S6-MP
-Constantine hp:43 legendary righteous, Enhance Armored 2, Protect all righteous 1, Weaken 2
-  Zodiac Harbinger 5/13/1 righteous, armored 3, Heal all righteous 2, Rally all righteous 2
 Enemy's Deck: Deck: S6-F9
-Constantine hp:43 legendary righteous, Enhance Armored 2, Protect all righteous 1, Weaken 2
-Bolt Crag 4/14/1 righteous, armored 4, berserk 3, evade 4
 Effect: Rally 2
-win%: 0 (0 / 1)
-stall%: 100 (1 / 1)
-loss%: 0 (0 / 1)
-win%: 0 (0 / 1)
-stall%: 100 (1 / 1)
-loss%: 0 (0 / 1)
+win%: 0 (0 / 1000)
+stall%: 100 (1000 / 1000)
+loss%: 0 (0 / 1000)
 </pre>
 <pre>
-./tu_optimize "Constantine, Zodiac Harbinger" "Constantine, Bolt Crag" -e "Rally 3" +v debug sim 1
+>tu_optimize "Constantine, Zodiac Harbinger" "Constantine, Bolt Crag" -e "Rally 3" sim 1000
 Your Deck: Deck: S6-MP
-Constantine hp:43 legendary righteous, Enhance Armored 2, Protect all righteous 1, Weaken 2
-  Zodiac Harbinger 5/13/1 righteous, armored 3, Heal all righteous 2, Rally all righteous 2
 Enemy's Deck: Deck: S6-F9
-Constantine hp:43 legendary righteous, Enhance Armored 2, Protect all righteous 1, Weaken 2
-  Bolt Crag 4/14/1 righteous, armored 4, berserk 3, evade 4
 Effect: Rally 3
-win%: 100 (1 / 1)
-stall%: 0 (0 / 1)
-loss%: 0 (0 / 1)
-win%: 100 (1 / 1)
-stall%: 0 (0 / 1)
-loss%: 0 (0 / 1)
+win%: 100 (1000 / 1000)
+stall%: 0 (0 / 1000)
+loss%: 0 (0 / 1000)
 </pre>
 
 ##Version 3.2.0

@@ -2,7 +2,7 @@
 #define TYRANT_H_INCLUDED
 
 #define TU_OPTIMIZER_VERSION "3.2.1"
-#define NDEBUG
+//#define NDEBUG
 
 #include <string>
 #include <set>
@@ -29,7 +29,7 @@ enum Skill
     // Activation (including Destroyed):
     augment, backfire, chaos, cleanse, enfeeble,
     enhance_armored, enhance_berserk, enhance_corrosive, enhance_counter, enhance_evade,
-    enhance_leech, enhance_heal,  enhance_poison, enhance_strike, enhance_rally,
+    enhance_leech, enhance_heal,  enhance_poison, enhance_rally, enhance_strike,
     freeze, heal, infuse, jam,
     mimic, protect, rally, recharge, repair, rush, shock, siege, split, strike, summon, supply,
     trigger_regen, // not actually a skill; handles regeneration after strike/siege
@@ -117,12 +117,12 @@ enum Effect {
     poison_1,
     poison_2,
     poison_3,
-    strike_1,
-    strike_2,
-    strike_3,
     rally_1,
     rally_2,
     rally_3,
+    strike_1,
+    strike_2,
+    strike_3,
     time_surge,
     copycat,
     quicksilver,

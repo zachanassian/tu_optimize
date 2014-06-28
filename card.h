@@ -32,7 +32,6 @@ public:
         m_fortress(0),
         m_fusion(false),
         m_heal(0),
-        m_rally(0),
         m_health(0),
         m_hidden(0),
         m_id(0),
@@ -49,6 +48,7 @@ public:
         m_poison(0),
         m_poison_oa(0),
         m_proto_id(0),
+        m_rally(0),
         m_rarity(1),
         m_refresh(false),
         m_regenerate(0),
@@ -104,7 +104,6 @@ public:
     unsigned m_fortress;
     bool m_fusion;
     unsigned m_heal;
-    unsigned m_rally;
     unsigned m_health;
     unsigned m_hidden;
     unsigned m_id;
@@ -122,6 +121,7 @@ public:
     unsigned m_poison;
     unsigned m_poison_oa;
     unsigned m_proto_id;  // The id of the prototype card (before upgraded) for an upgraded card. 0 otherwise.
+    unsigned m_rally;
     unsigned m_rarity;
     bool m_refresh;
     unsigned m_regenerate;

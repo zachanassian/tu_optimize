@@ -102,8 +102,8 @@ CardStatus::CardStatus(const Card* card) :
     m_enhance_heal(0),
     m_enhance_leech(0),
     m_enhance_poison(0),
+    m_enhance_rally(0),
     m_enhance_strike(0),
-    m_enhance_rally(0),//mg added
     m_evades_left(card->m_evade),
     m_faction(card->m_faction),
     m_frozen(false),
@@ -156,7 +156,7 @@ inline void CardStatus::set(const Card& card)
     m_enhance_leech = 0;
     m_enhance_poison = 0;
     m_enhance_strike = 0;
-    m_enhance_rally = 0; //mg added
+    m_enhance_rally = 0;
     m_evades_left = card.m_evade,
     m_faction = card.m_faction;
     m_frozen = false;
@@ -340,9 +340,9 @@ std::string CardStatus::description()
     if(m_enhance_counter > 0) { desc += ", enhance counter " + to_string(m_enhance_counter); }
     if(m_enhance_evade > 0) { desc += ", enhance evade " + to_string(m_enhance_evade); }
     if(m_enhance_heal > 0) { desc += ", enhance heal " + to_string(m_enhance_heal); }
-    if(m_enhance_rally> 0) { desc += ", enhance rally " + to_string(m_enhance_rally); }//mg added
     if(m_enhance_leech > 0) { desc += ", enhance leech " + to_string(m_enhance_leech); }
     if(m_enhance_poison > 0) { desc += ", enhance poison " + to_string(m_enhance_poison); }
+    if(m_enhance_rally> 0) { desc += ", enhance rally " + to_string(m_enhance_rally); }
     if(m_enhance_strike > 0) { desc += ", enhance strike " + to_string(m_enhance_strike); }
 //    if(m_step != CardStep::none) { desc += ", Step " + to_string(static_cast<int>(m_step)); }
     desc += "]";
@@ -459,15 +459,15 @@ bool may_change_skill(const Field* fd, const CardStatus* status, const SkillMod:
                             fd->effect == Effect::heal_1 ||
                             fd->effect == Effect::heal_2 ||
                             fd->effect == Effect::heal_3 ||
-                            fd->effect == Effect::rally_1 ||
-                            fd->effect == Effect::rally_2 ||
-                            fd->effect == Effect::rally_3 ||
                             fd->effect == Effect::leech_1 ||
                             fd->effect == Effect::leech_2 ||
                             fd->effect == Effect::leech_3 ||
                             fd->effect == Effect::poison_1 ||
                             fd->effect == Effect::poison_2 ||
                             fd->effect == Effect::poison_3 ||
+                            fd->effect == Effect::rally_1 ||
+                            fd->effect == Effect::rally_2 ||
+                            fd->effect == Effect::rally_3 ||
                             fd->effect == Effect::strike_1 ||
                             fd->effect == Effect::strike_2 ||
                             fd->effect == Effect::strike_3 ||
@@ -507,8 +507,8 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
         case Effect::heal_1:
         case Effect::leech_1:
         case Effect::poison_1:
+        case Effect::rally_1:
         case Effect::strike_1:           
-        case Effect::rally_1://mg added
             skill_value = 1;
             break;
         case Effect::armored_2:
@@ -519,8 +519,8 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
         case Effect::heal_2:
         case Effect::leech_2:    
         case Effect::poison_2:
+        case Effect::rally_2:
         case Effect::strike_2:           
-        case Effect::rally_2://mg added
             skill_value = 2;
             break;
         case Effect::armored_3:
@@ -531,8 +531,8 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
         case Effect::heal_3:    
         case Effect::leech_3:    
         case Effect::poison_3:
+        case Effect::rally_3:
         case Effect::strike_3:            
-        case Effect::rally_3://mg added
             skill_value = 3;
             break;
 
@@ -591,7 +591,7 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
         case Effect::heal_3:
             if(skill == new_skill)
             {
-                need_add_skill = false;                
+                need_add_skill = false;
                 return SkillSpec(enhance_heal, skill_value, allfactions, true, mod);
             }
             break;
@@ -613,6 +613,15 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
                 return SkillSpec(enhance_poison, skill_value, allfactions, true, mod);
             }
             break;
+        case Effect::rally_1:
+        case Effect::rally_2:
+        case Effect::rally_3:
+            if(skill == new_skill)
+            {
+                need_add_skill = false;               
+                return SkillSpec(enhance_rally, skill_value, allfactions, true, mod);
+            }
+            break;
         case Effect::strike_1:
         case Effect::strike_2:
         case Effect::strike_3:
@@ -620,15 +629,6 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
             {
                 need_add_skill = false;
                 return SkillSpec(enhance_strike, skill_value, allfactions, true, mod);
-            }
-            break;
-        case Effect::rally_1://mg added
-        case Effect::rally_2:
-        case Effect::rally_3:
-            if(skill == new_skill)
-            {
-                need_add_skill = false;               
-                return SkillSpec(enhance_rally, skill_value, allfactions, true, mod);
             }
             break;
         case Effect::time_surge:
@@ -1495,8 +1495,8 @@ void turn_start_phase(Field* fd)
             status.m_enhance_evade = 0;
             status.m_enhance_leech = 0;
             status.m_enhance_heal = 0;
-            status.m_enhance_rally = 0;//mg added
             status.m_enhance_poison = 0;
+            status.m_enhance_rally = 0;
             status.m_enhance_strike = 0;
             status.m_evades_left = status.m_card->m_evade;
             if(status.m_delay > 0 && !status.m_frozen)
@@ -2296,17 +2296,6 @@ inline bool skill_predicate<enhance_heal>(Field* fd, CardStatus* src, CardStatus
 }
 
 template<>
-inline bool skill_predicate<enhance_rally>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
-{
-    const auto& mod = std::get<4>(s);
-    //do we need to make sure that the card has rally? if so, how :)
-    return(c->m_card->m_rally>0 && can_attack(c) && !c->m_sundered &&  // (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)));
-        (src->m_player != c->m_player || mod == SkillMod::on_death ? (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)) :
-         mod == SkillMod::on_attacked ? is_active_next_turn(c) :
-         is_active(c) && !is_attacking_or_has_attacked(c)));
-}
-
-template<>
 inline bool skill_predicate<enhance_leech>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
 { 
     //copied and adopted from rally
@@ -2323,6 +2312,17 @@ inline bool skill_predicate<enhance_poison>(Field* fd, CardStatus* src, CardStat
     //copied and adopted from rally
     const auto& mod = std::get<4>(s);
     return(c->m_card->m_poison > 0 && can_attack(c) && !c->m_sundered &&  // (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)));
+        (src->m_player != c->m_player || mod == SkillMod::on_death ? (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)) :
+         mod == SkillMod::on_attacked ? is_active_next_turn(c) :
+         is_active(c) && !is_attacking_or_has_attacked(c)));
+}
+
+template<>
+inline bool skill_predicate<enhance_rally>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
+{
+    const auto& mod = std::get<4>(s);
+    //do we need to make sure that the card has rally? if so, how :)
+    return(c->m_card->m_rally>0 && can_attack(c) && !c->m_sundered &&  // (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)));
         (src->m_player != c->m_player || mod == SkillMod::on_death ? (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)) :
          mod == SkillMod::on_attacked ? is_active_next_turn(c) :
          is_active(c) && !is_attacking_or_has_attacked(c)));
@@ -2603,13 +2603,13 @@ template<> std::vector<CardStatus*>& skill_targets<enhance_evade>(Field* fd, Car
 template<> std::vector<CardStatus*>& skill_targets<enhance_heal>(Field* fd, CardStatus* src_status)
 { return(skill_targets_allied_assault(fd, src_status)); }
 
-template<> std::vector<CardStatus*>& skill_targets<enhance_rally>(Field* fd, CardStatus* src_status)
-{ return(skill_targets_allied_assault(fd, src_status)); }// mg added 
-
 template<> std::vector<CardStatus*>& skill_targets<enhance_leech>(Field* fd, CardStatus* src_status)
 { return(skill_targets_allied_assault(fd, src_status)); }
 
 template<> std::vector<CardStatus*>& skill_targets<enhance_poison>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_allied_assault(fd, src_status)); }
+
+template<> std::vector<CardStatus*>& skill_targets<enhance_rally>(Field* fd, CardStatus* src_status)
 { return(skill_targets_allied_assault(fd, src_status)); }
 
 template<> std::vector<CardStatus*>& skill_targets<enhance_strike>(Field* fd, CardStatus* src_status)
@@ -3090,8 +3090,8 @@ void fill_skill_table()
     skill_table[enhance_leech] = perform_targetted_allied_fast<enhance_leech>;
     skill_table[enhance_heal] = perform_targetted_allied_fast<enhance_heal>;
     skill_table[enhance_poison] = perform_targetted_allied_fast<enhance_poison>;
+    skill_table[enhance_rally] = perform_targetted_allied_fast<enhance_rally>;
     skill_table[enhance_strike] = perform_targetted_allied_fast<enhance_strike>;
-    skill_table[enhance_rally] = perform_targetted_allied_fast<enhance_rally>; //mg added
     skill_table[freeze] = perform_targetted_hostile_fast<freeze>;
     skill_table[heal] = perform_targetted_allied_fast<heal>;
     skill_table[infuse] = perform_infuse;
