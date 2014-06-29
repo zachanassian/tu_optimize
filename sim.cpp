@@ -1321,6 +1321,32 @@ Results<uint64_t> play(Field* fd)
         ++fd->turn;
         fd->inc_counter(fd->achievement.misc_req, AchievementMiscReq::turns);
     }
+    if(fd->optimization_mode == OptimizationMode::gw_abp)
+    {
+        // you lose
+        if(fd->players[0]->commander.m_hp == 0)
+        {
+            _DEBUG_MSG(1, "You lose.\n");
+            return {0, 0, 1, 5, 0};
+        }
+        // you win
+        else if(fd->players[1]->commander.m_hp == 0)
+        {
+            _DEBUG_MSG(1, "You win.\n");
+            return {1, 0, 0, 80 - fd->turn, 0};
+        }
+        // draw
+        else if (fd->turn > turn_limit)
+        {
+            _DEBUG_MSG(1, "Stall after %u turns.\n", turn_limit);
+            return {0, 1, 0, 5, 0};
+        } else 
+        {
+            // Huh? How did we get here?
+            assert(false);
+            return {0, 0, 0, 0, 0};
+        }
+    }
     bool made_achievement = true;
     if(fd->optimization_mode == OptimizationMode::achievement)
     {

@@ -4,6 +4,9 @@
 #define TU_OPTIMIZER_VERSION "3.6.0"
 #define NDEBUG
 
+#undef TU_OPTIMIZER_VERSION
+#define TU_OPTIMIZER_VERSION "3.3.1(ec)"
+
 #include <string>
 #include <set>
 #include <tuple>
@@ -179,6 +182,7 @@ enum class OptimizationMode
     winrate,
     achievement,
     raid,
+    gw_abp,
     defense
 };
 

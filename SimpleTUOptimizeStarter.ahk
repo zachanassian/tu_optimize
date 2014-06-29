@@ -57,6 +57,7 @@ Gui, Add, Radio, vMode r1 %Mode1% section, PVP
 Gui, Add, Radio, ys %Mode2%, PVP (defense)
 Gui, Add, Radio, ys %Mode3%, Guildwar
 Gui, Add, Radio, ys %Mode4%, Guildwar (defense)
+Gui, Add, Radio, ys %Mode5%, Guildwar (Average Battle Points)
 Gui, Add, Radio, vOrder r2 xs Group %Order1% section, Random
 Gui, Add, Radio, r2 ys %Order2%, Ordered
 Gui, Add, Radio, vOperation r1 xs Group %Operation1% section, Climb
@@ -74,7 +75,7 @@ return
 
 ButtonSimulate:
 Gui, Submit
-selMode :=  ( Mode == 1 ? "pvp" : Mode == 2 ? "pvp-defense" : Mode == 3 ? "gw" : "gw-defense" )
+selMode :=  ( Mode == 1 ? "pvp" : Mode == 2 ? "pvp-defense" : Mode == 3 ? "gw" : Mode == 4 ? "gw-defense" : "gw-abp" )
 selOrder :=  ( Order == 1 ? "random" : "ordered" )
 selOperation :=  ( Operation == 1 ? "climb" : Operation == 2 ? "sim" : "reorder" )
 selMySiege := ( MySiege == "" ? "" : "yfort """ MySiege """ ")
