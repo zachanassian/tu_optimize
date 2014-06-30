@@ -2401,7 +2401,7 @@ inline void perform_skill<freeze>(Field* fd, CardStatus* c, unsigned v)
 template<>
 inline void perform_skill<heal>(Field* fd, CardStatus* c, unsigned v)
 {
-    add_hp(fd, c, v + c->m_enhance_heal);
+    add_hp(fd, c, v);
 }
 
 template<>
@@ -2426,7 +2426,7 @@ inline void perform_skill<protect>(Field* fd, CardStatus* c, unsigned v)
 template<>
 inline void perform_skill<rally>(Field* fd, CardStatus* c, unsigned v)
 {
-    c->m_rallied += v + c->m_enhance_rally;
+    c->m_rallied += v;
 }
 
 template<>
@@ -2735,10 +2735,21 @@ bool check_and_perform_skill(Field* fd, CardStatus* src_status, CardStatus* dst_
         //src_status->m_enhance_strike can't be accessed in perform_skill. Only dst_status is available.
         //general problem for all enhanced hostile targeted skills like strike (not damage dependent like poison)
         //Ugly enhance strike is added here
+        //same is true for enhance_heal and enhance_rally - https://github.com/zachanassian/tu_optimize/issues/44
         unsigned skill_value(std::get<1>(s));
-        if(skill_id == strike)
+        switch(skill_id)
         {
-          skill_value += src_status->m_enhance_strike;
+            case strike:
+               skill_value += src_status->m_enhance_strike;
+               break;
+            case rally:
+               skill_value += src_status->m_enhance_rally;
+               break;
+            case heal:
+               skill_value += src_status->m_enhance_heal;
+               break;
+            default:
+               break;
         }
         _DEBUG_MSG(1, "%s %s (%u) on %s\n", status_description(src_status).c_str(), skill_names[skill_id].c_str(), skill_value, status_description(dst_status).c_str());
         perform_skill<skill_id>(fd, dst_status, skill_value);
