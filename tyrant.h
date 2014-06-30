@@ -2,7 +2,7 @@
 #define TYRANT_H_INCLUDED
 
 #define TU_OPTIMIZER_VERSION "3.3.2"
-#define DEBUG
+#define NDEBUG
 
 #include <string>
 #include <set>
