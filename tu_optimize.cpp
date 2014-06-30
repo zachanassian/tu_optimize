@@ -436,7 +436,7 @@ void thread_evaluate(boost::barrier& main_barrier,
                         score_accum = thread_score_local[0];
                     }
                     bool compare_stop(false);
-                    long double best_possible = (optimization_mode == OptimizationMode::raid ? 250 : optimization_mode == OptimizationMode::gw_abp ? 66 : 100);
+                    long double best_possible = (optimization_mode == OptimizationMode::raid ? 250 : optimization_mode == OptimizationMode::gw_abp ? 79 : 100);
                     // Get a loose (better than no) upper bound. TODO: Improve it.
                     compare_stop = (boost::math::binomial_distribution<>::find_upper_bound_on_p(thread_total_local, score_accum / best_possible, 0.01) * best_possible < thread_prev_score);
                     if(compare_stop) {

@@ -5,7 +5,7 @@
 #define NDEBUG
 
 #undef TU_OPTIMIZER_VERSION
-#define TU_OPTIMIZER_VERSION "3.3.1(ec)"
+#define TU_OPTIMIZER_VERSION "3.3.2(ec)"
 
 #include <string>
 #include <set>
