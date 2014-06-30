@@ -58,6 +58,94 @@ If you receive virus warnings for <code>SimpleTUOptimizeStarter.exe</code> pleas
 
 ##Changelog
 
+## Version 3.3.2
+* [FIX] Rally and heal bug. Rally and heal have been enhanced only on units having this skill
+
+Command: Dont enhance structures
+<pre>
+>./tu_optimize "Constantine, Zodiac Harbinger, Sacred Sanctuary" "Constantine, Bolt Crag, Sacred Sanctuary" -e "Rally 3" ordered defender:ordered sim 1
+</pre>
+
+Details on Turn 9 with activated SS:
+<pre>
+TURN 9 begins for Commander [Constantine hp:43]
+Evaluating Commander [Constantine hp:43] skill Enhance Rally all 3
+Possible targets of Enhance Rally:
++ Assault 0 [Zodiac Harbinger att:5-6(weakened)=0 hp:13]
+Commander [Constantine hp:43] Enhance Rally (3) on Assault 0 [Zodiac Harbinger att:5-6(weakened)=0 hp:13]
+Evaluating Commander [Constantine hp:43] skill Enhance Armored 2
+Possible targets of Enhance Armored:
++ Assault 0 [Zodiac Harbinger att:5-6(weakened)=0 hp:13, enhance rally 3]
+Commander [Constantine hp:43] Enhance Armored (2) on Assault 0 [Zodiac Harbinger att:5-6(weakened)=0 hp:13, enhance rally 3]
+Evaluating Commander [Constantine hp:43] skill Protect all righteous 1
+Possible targets of Protect:
++ Assault 0 [Zodiac Harbinger att:5-6(weakened)=0 hp:13, enhance armored 2, enhance rally 3]
+Commander [Constantine hp:43] Protect (1) on Assault 0 [Zodiac Harbinger att:5-6(weakened)=0 hp:13, enhance armored 2, enhance rally 3]
+Evaluating Commander [Constantine hp:43] skill Weaken 2
+Possible targets of Weaken:
++ Assault 0 [Bolt Crag att:4 hp:12, evades left 4, protected 1, enhance armored 2]
+Commander [Constantine hp:43] Weaken (2) on Assault 0 [Bolt Crag att:4 hp:12, evades left 4, protected 1, enhance armored 2] but it evades
+Evaluating Structure 0 [Sacred Sanctuary hp:21] skill Heal all 3
+Evaluating Structure 0 [Sacred Sanctuary hp:21] skill Rally all 2
+Possible targets of Rally:
++ Assault 0 [Zodiac Harbinger att:5-6(weakened)=0 hp:13, protected 1, enhance armored 2, enhance rally 3]
+Structure 0 [Sacred Sanctuary hp:21] Rally (2) on Assault 0 [Zodiac Harbinger att:5-6(weakened)=0 hp:13, protected 1, enhance armored 2, enhance rally 3]
+Evaluating Structure 0 [Sacred Sanctuary hp:21] skill Weaken 4
+Possible targets of Weaken:
++ Assault 0 [Bolt Crag att:4 hp:12, evades left 3, protected 1, enhance armored 2]
+Structure 0 [Sacred Sanctuary hp:21] Weaken (4) on Assault 0 [Bolt Crag att:4 hp:12, evades left 3, protected 1, enhance armored 2] but it evades
+Evaluating Assault 0 [Zodiac Harbinger att:5+2(rallied)-6(weakened)=1 hp:13, protected 1, enhance armored 2, enhance rally 3] skill Heal all righteous 2
+Evaluating Assault 0 [Zodiac Harbinger att:5+2(rallied)-6(weakened)=1 hp:13, protected 1, enhance armored 2, enhance rally 3] skill Rally all righteous 2
+Possible targets of Rally:
++ Assault 0 [Zodiac Harbinger att:5+2(rallied)-6(weakened)=1 hp:13, protected 1, enhance armored 2, enhance rally 3]
+Assault 0 [Zodiac Harbinger att:5+2(rallied)-6(weakened)=1 hp:13, protected 1, enhance armored 2, enhance rally 3] Rally (5) on Assault 0 [Zodiac Harbinger att:5+2(rallied)-6(weakened)=1 hp:13, protected 1, enhance armored 2, enhance rally 3]
+Assault 0 [Zodiac Harbinger att:5+7(rallied)-6(weakened)=6 hp:13, protected 1, enhance armored 2, enhance rally 3] attacks Assault 0 [Bolt Crag att:4 hp:12, evades left 2, protected 1, enhance armored 2] for 6-[4(armored)+2(enhance_armored)+1(protected)]=0 damage
+TURN 9 ends for Commander [Constantine hp:43]
+</pre>
+
+Command 2: Rally non-rally cards
+<pre>
+./tu_optimize "Constantine, Zodiac Harbinger, Bolt Crag" "Constantine, Bolt Crag, Sacred Sanctuary" -e "Rally 3" ordered defender:ordered sim 1
+</pre>
+
+Evaluation of first turn Bolt Activates: 
+<pre>
+TURN 5 begins for Commander [Constantine hp:43]
+Assault 1 [Bolt Crag att:4 hp:14 cd:1, evades left 4] reduces its timer
+Evaluating Commander [Constantine hp:43] skill Enhance Rally all 3
+Possible targets of Enhance Rally:
++ Assault 0 [Zodiac Harbinger att:5 hp:13]
+Commander [Constantine hp:43] Enhance Rally (3) on Assault 0 [Zodiac Harbinger att:5 hp:13]
+Evaluating Commander [Constantine hp:43] skill Enhance Armored 2
+Possible targets of Enhance Armored:
++ Assault 0 [Zodiac Harbinger att:5 hp:13, enhance rally 3]
++ Assault 1 [Bolt Crag att:4 hp:14, evades left 4]
+Commander [Constantine hp:43] Enhance Armored (2) on Assault 0 [Zodiac Harbinger att:5 hp:13, enhance rally 3]
+Evaluating Commander [Constantine hp:43] skill Protect all righteous 1
+Possible targets of Protect:
++ Assault 0 [Zodiac Harbinger att:5 hp:13, enhance armored 2, enhance rally 3]
++ Assault 1 [Bolt Crag att:4 hp:14, evades left 4]
+Commander [Constantine hp:43] Protect (1) on Assault 0 [Zodiac Harbinger att:5 hp:13, enhance armored 2, enhance rally 3]
+Commander [Constantine hp:43] Protect (1) on Assault 1 [Bolt Crag att:4 hp:14, evades left 4]
+Evaluating Commander [Constantine hp:43] skill Weaken 2
+Possible targets of Weaken:
++ Assault 0 [Bolt Crag att:4 hp:13, evades left 4, protected 1, enhance armored 2]
+Commander [Constantine hp:43] Weaken (2) on Assault 0 [Bolt Crag att:4 hp:13, evades left 4, protected 1, enhance armored 2] but it evades
+Evaluating Assault 0 [Zodiac Harbinger att:5 hp:13, protected 1, enhance armored 2, enhance rally 3] skill Heal all righteous 2
+Evaluating Assault 0 [Zodiac Harbinger att:5 hp:13, protected 1, enhance armored 2, enhance rally 3] skill Rally all righteous 2
+Possible targets of Rally:
++ Assault 0 [Zodiac Harbinger att:5 hp:13, protected 1, enhance armored 2, enhance rally 3]
++ Assault 1 [Bolt Crag att:4 hp:14, evades left 4, protected 1]
+Assault 0 [Zodiac Harbinger att:5 hp:13, protected 1, enhance armored 2, enhance rally 3] Rally (5) on Assault 0 [Zodiac Harbinger att:5 hp:13, protected 1, enhance armored 2, enhance rally 3]
+Assault 0 [Zodiac Harbinger att:5+5(rallied)=10 hp:13, protected 1, enhance armored 2, enhance rally 3] Rally (5) on Assault 1 [Bolt Crag att:4 hp:14, evades left 4, protected 1]
+Assault 0 [Zodiac Harbinger att:5+5(rallied)=10 hp:13, protected 1, enhance armored 2, enhance rally 3] attacks Assault 0 [Bolt Crag att:4 hp:13, evades left 3, protected 1, enhance armored 2] for 10-[4(armored)+2(enhance_armored)+1(protected)]=3 damage
+Assault 0 [Bolt Crag att:4 hp:13, evades left 3, protected 1, enhance armored 2] takes 3 damage
+Assault 1 [Bolt Crag att:4+5(rallied)=9 hp:14, evades left 4, protected 1] attacks Commander [Constantine hp:43] for 9 damage
+Commander [Constantine hp:43] takes 9 damage
+TURN 5 ends for Commander [Constantine hp:43]
+</pre>
+
+
 ##Version 3.3.1
 * [FIX] <code>SimpleTUOptimizeStarter</code> allows to select new bg effect rally 1-3.
 
