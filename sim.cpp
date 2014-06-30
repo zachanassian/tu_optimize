@@ -2426,7 +2426,7 @@ inline void perform_skill<protect>(Field* fd, CardStatus* c, unsigned v)
 template<>
 inline void perform_skill<rally>(Field* fd, CardStatus* c, unsigned v)
 {
-    c->m_rallied += v + c->m_enhance_rally;
+    c->m_rallied += v;
 }
 
 template<>
@@ -2739,6 +2739,15 @@ bool check_and_perform_skill(Field* fd, CardStatus* src_status, CardStatus* dst_
         if(skill_id == strike)
         {
           skill_value += src_status->m_enhance_strike;
+        }
+        //same as strike also goes to rally and heal, but only on the friendly side
+        if(skill_id == rally)
+        {         
+          skill_value += src_status->m_enhance_rally;
+        }        
+        if(skill_id == heal)
+        {
+          skill_value += src_status->m_enhance_heal;
         }
         _DEBUG_MSG(1, "%s %s (%u) on %s\n", status_description(src_status).c_str(), skill_names[skill_id].c_str(), skill_value, status_description(dst_status).c_str());
         perform_skill<skill_id>(fd, dst_status, skill_value);
