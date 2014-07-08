@@ -142,6 +142,7 @@ struct CardStatus
     unsigned m_enhance_berserk;
     unsigned m_enhance_corrosive;
     unsigned m_enhance_counter;
+    unsigned m_enhance_enfeeble;
     unsigned m_enhance_evade;
     unsigned m_enhance_heal;
     unsigned m_enhance_leech;

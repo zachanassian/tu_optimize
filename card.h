@@ -24,6 +24,7 @@ public:
         m_disease(false),
         m_disease_oa(false),
         m_emulate(false),
+        m_enfeeble(0),
         m_evade(0),
         m_faction(imperial),
         m_fear(false),
@@ -96,6 +97,7 @@ public:
     bool m_disease;
     bool m_disease_oa;
     bool m_emulate;
+    unsigned m_enfeeble;
     unsigned m_evade;
     Faction m_faction;
     bool m_fear;

@@ -24,7 +24,7 @@ Gui, Add, Edit, vMyDeck ym w600 r5, Cyrus, Medic, Revolver, Imperial APC, Medic,
 Gui, Add, Edit, vMySiege w600 r1,
 Gui, Add, Edit, vEnemiesDeck w600 r5, 94. Heart of Tartarus
 Gui, Add, Edit, vEnemySiege w600 r1,
-Gui, Add, DropDownList, vEffect Choose1, none|Armor 1|Armor 2|Armor 3|Berserk 1|Berserk 2|Berserk 3|Corrosive 1|Corrosive 2|Corrosive 3|Counter 1|Counter 2|Counter 3|Evade 1|Evade 2|Evade 3|Heal 1|Heal 2|Heal 3|Leech 1|Leech 2|Leech 3|Poison 1|Poison 2|Poison 3|Rally 1|Rally 2|Rally 3|Strike 1|Strike 2|Strike 3
+Gui, Add, DropDownList, vEffect Choose1, none|Armor 1|Armor 2|Armor 3|Berserk 1|Berserk 2|Berserk 3|Corrosive 1|Corrosive 2|Corrosive 3|Counter 1|Counter 2|Counter 3|Enfeeble 1|Enfeeble 2|Enfeeble 3|Evade 1|Evade 2|Evade 3|Heal 1|Heal 2|Heal 3|Leech 1|Leech 2|Leech 3|Poison 1|Poison 2|Poison 3|Rally 1|Rally 2|Rally 3|Strike 1|Strike 2|Strike 3
 Gui, Add, Radio, vMode r1 Checked section, PVP
 Gui, Add, Radio, ys, PVP (defense)
 Gui, Add, Radio, ys, Guildwar

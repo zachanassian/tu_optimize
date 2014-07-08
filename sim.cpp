@@ -98,6 +98,7 @@ CardStatus::CardStatus(const Card* card) :
     m_enhance_berserk(0),
     m_enhance_corrosive(0),
     m_enhance_counter(0),
+    m_enhance_enfeeble(0),
     m_enhance_evade(0),
     m_enhance_heal(0),
     m_enhance_leech(0),
@@ -152,6 +153,7 @@ inline void CardStatus::set(const Card& card)
     m_enhance_berserk = 0;
     m_enhance_corrosive = 0;
     m_enhance_counter = 0;
+    m_enhance_enfeeble = 0;
     m_enhance_evade = 0;
     m_enhance_heal = 0;
     m_enhance_leech = 0;
@@ -342,6 +344,7 @@ std::string CardStatus::description()
     if(m_enhance_corrosive > 0) { desc += ", enhance corrosive " + to_string(m_enhance_corrosive); }
     if(m_enhance_counter > 0) { desc += ", enhance counter " + to_string(m_enhance_counter); }
     if(m_enhance_evade > 0) { desc += ", enhance evade " + to_string(m_enhance_evade); }
+    if(m_enhance_enfeeble > 0) { desc += ", enhance enfeeble " + to_string(m_enhance_enfeeble); }
     if(m_enhance_heal > 0) { desc += ", enhance heal " + to_string(m_enhance_heal); }
     if(m_enhance_leech > 0) { desc += ", enhance leech " + to_string(m_enhance_leech); }
     if(m_enhance_poison > 0) { desc += ", enhance poison " + to_string(m_enhance_poison); }
@@ -456,6 +459,9 @@ bool may_change_skill(const Field* fd, const CardStatus* status, const SkillMod:
                             fd->effect == Effect::counter_1 ||
                             fd->effect == Effect::counter_2 ||
                             fd->effect == Effect::counter_3 ||
+                            fd->effect == Effect::enfeeble_1 ||
+                            fd->effect == Effect::enfeeble_2 ||
+                            fd->effect == Effect::enfeeble_3 ||
                             fd->effect == Effect::evade_1 ||
                             fd->effect == Effect::evade_2 ||
                             fd->effect == Effect::evade_3 ||
@@ -506,41 +512,44 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
         case Effect::berserk_1:
         case Effect::corrosive_1:
         case Effect::counter_1:
+        case Effect::enfeeble_1:
         case Effect::evade_1:
         case Effect::heal_1:
         case Effect::leech_1:
         case Effect::poison_1:
         case Effect::rally_1:
-        case Effect::strike_1:           
+        case Effect::strike_1:
             skill_value = 1;
             break;
         case Effect::armored_2:
         case Effect::berserk_2:
         case Effect::corrosive_2:
         case Effect::counter_2:
+        case Effect::enfeeble_2:
         case Effect::evade_2:
         case Effect::heal_2:
-        case Effect::leech_2:    
+        case Effect::leech_2:
         case Effect::poison_2:
         case Effect::rally_2:
-        case Effect::strike_2:           
+        case Effect::strike_2:
             skill_value = 2;
             break;
         case Effect::armored_3:
         case Effect::berserk_3:
         case Effect::corrosive_3:
         case Effect::counter_3:
+        case Effect::enfeeble_3:
         case Effect::evade_3:
-        case Effect::heal_3:    
-        case Effect::leech_3:    
+        case Effect::heal_3:
+        case Effect::leech_3:
         case Effect::poison_3:
         case Effect::rally_3:
-        case Effect::strike_3:            
+        case Effect::strike_3:
             skill_value = 3;
             break;
 
         default:
-            break;    
+            break;
     }
     switch (fd->effect)
     {
@@ -578,6 +587,15 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
             {
                 need_add_skill = false;
                 return SkillSpec(enhance_counter, skill_value, allfactions, true, mod);
+            }
+            break;
+        case Effect::enfeeble_1:
+        case Effect::enfeeble_2:
+        case Effect::enfeeble_3:
+            if(skill == new_skill)
+            {
+                need_add_skill = false;
+                return SkillSpec(enhance_enfeeble, skill_value, allfactions, true, mod);
             }
             break;
         case Effect::evade_1:
@@ -1520,6 +1538,7 @@ void turn_start_phase(Field* fd)
             status.m_enhance_berserk = 0;
             status.m_enhance_corrosive = 0;
             status.m_enhance_counter = 0;
+            status.m_enhance_enfeeble = 0;
             status.m_enhance_evade = 0;
             status.m_enhance_leech = 0;
             status.m_enhance_heal = 0;
@@ -2291,6 +2310,16 @@ inline bool skill_predicate<enhance_counter>(Field* fd, CardStatus* src, CardSta
 { return(c->m_card->m_counter > 0); }
 
 template<>
+inline bool skill_predicate<enhance_enfeeble>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
+{ 
+    const auto& mod = std::get<4>(s);
+    return(c->m_card->m_enfeeble > 0 && can_attack(c) && !c->m_sundered &&  // (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)));
+        (src->m_player != c->m_player || mod == SkillMod::on_death ? (fd->tapi == c->m_player ? is_active(c) && !is_attacking_or_has_attacked(c) : is_active_next_turn(c)) :
+         mod == SkillMod::on_attacked ? is_active_next_turn(c) :
+         is_active(c) && !is_attacking_or_has_attacked(c)));
+}
+
+template<>
 inline bool skill_predicate<enhance_evade>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
 { return(c->m_card->m_evade > 0); }
 
@@ -2497,6 +2526,12 @@ inline void perform_skill<enhance_counter>(Field* fd, CardStatus* c, unsigned v)
 }
 
 template<>
+inline void perform_skill<enhance_enfeeble>(Field* fd, CardStatus* c, unsigned v)
+{
+    c->m_enhance_enfeeble += v;
+}
+
+template<>
 inline void perform_skill<enhance_evade>(Field* fd, CardStatus* c, unsigned v)
 {
     c->m_enhance_evade += v;
@@ -2605,6 +2640,9 @@ template<> std::vector<CardStatus*>& skill_targets<enhance_corrosive>(Field* fd,
 { return(skill_targets_allied_assault(fd, src_status)); }
 
 template<> std::vector<CardStatus*>& skill_targets<enhance_counter>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_allied_assault(fd, src_status)); }
+
+template<> std::vector<CardStatus*>& skill_targets<enhance_enfeeble>(Field* fd, CardStatus* src_status)
 { return(skill_targets_allied_assault(fd, src_status)); }
 
 template<> std::vector<CardStatus*>& skill_targets<enhance_evade>(Field* fd, CardStatus* src_status)
@@ -2739,14 +2777,17 @@ bool check_and_perform_skill(Field* fd, CardStatus* src_status, CardStatus* dst_
         unsigned skill_value(std::get<1>(s));
         switch(skill_id)
         {
-            case strike:
-               skill_value += src_status->m_enhance_strike;
+            case enfeeble:
+               skill_value += src_status->m_enhance_enfeeble;
+               break;
+            case heal:
+               skill_value += src_status->m_enhance_heal;
                break;
             case rally:
                skill_value += src_status->m_enhance_rally;
                break;
-            case heal:
-               skill_value += src_status->m_enhance_heal;
+            case strike:
+               skill_value += src_status->m_enhance_strike;
                break;
             default:
                break;
@@ -3107,6 +3148,7 @@ void fill_skill_table()
     skill_table[enhance_berserk] = perform_targetted_allied_fast<enhance_berserk>;
     skill_table[enhance_corrosive] = perform_targetted_allied_fast<enhance_corrosive>;
     skill_table[enhance_counter] = perform_targetted_allied_fast<enhance_counter>;
+    skill_table[enhance_enfeeble] = perform_targetted_allied_fast<enhance_enfeeble>;
     skill_table[enhance_evade] = perform_targetted_allied_fast<enhance_evade>;
     skill_table[enhance_leech] = perform_targetted_allied_fast<enhance_leech>;
     skill_table[enhance_heal] = perform_targetted_allied_fast<enhance_heal>;

@@ -58,6 +58,9 @@ If you receive virus warnings for <code>SimpleTUOptimizeStarter.exe</code> pleas
 
 ##Changelog
 
+##Version 3.4.0
+* Add enhance enfeeble battle ground effect: - [Issue#46](https://github.com/zachanassian/tu_optimize/issues/46)
+
 ##Version 3.3.2
 * [FIX] Enhance Heal and Enhance Rally - [Issue#44](https://github.com/zachanassian/tu_optimize/issues/44)
 

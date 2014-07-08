@@ -341,7 +341,10 @@ void read_cards(Cards& cards)
                         if(strcmp(skill->first_attribute("id")->value(), "cleanse") == 0)
                         { handle_skill<cleanse>(skill, c); }
                         if(strcmp(skill->first_attribute("id")->value(), "enfeeble") == 0)
-                        { handle_skill<enfeeble>(skill, c); }
+                        {
+                          c->m_enfeeble = atoi(skill->first_attribute("x")->value());
+                          handle_skill<enfeeble>(skill, c);
+                        }
                         if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) &&
                            (strcmp(skill->first_attribute("s")->value(), "armored") == 0))
                         { handle_skill<enhance_armored>(skill, c); }
@@ -354,6 +357,9 @@ void read_cards(Cards& cards)
                         if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) &&
                            (strcmp(skill->first_attribute("s")->value(), "counter") == 0))
                         { handle_skill<enhance_counter>(skill, c); }
+                        if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) &&
+                           (strcmp(skill->first_attribute("s")->value(), "enfeeble") == 0))
+                        { handle_skill<enhance_enfeeble>(skill, c); }
                         if((strcmp(skill->first_attribute("id")->value(), "enhance") == 0) &&
                            (strcmp(skill->first_attribute("s")->value(), "evade") == 0))
                         { handle_skill<enhance_evade>(skill, c); }
