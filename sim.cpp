@@ -2243,6 +2243,10 @@ inline bool skill_predicate<mimic>(Field* fd, CardStatus* src, CardStatus* c, co
 { return(c->m_hp > 0); }
 
 template<>
+inline bool skill_predicate<overload>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
+{ return(c->m_hp > 0 && ( c->m_protected > 0 || c->m_evades_left > 0) ); }
+
+template<>
 inline bool skill_predicate<protect>(Field* fd, CardStatus* src, CardStatus* c, const SkillSpec& s)
 { return(c->m_hp > 0); }
 
@@ -2444,6 +2448,13 @@ template<>
 inline void perform_skill<jam>(Field* fd, CardStatus* c, unsigned v)
 {
     c->m_jammed = true;
+}
+
+template<>
+inline void perform_skill<overload>(Field* fd, CardStatus* c, unsigned v)
+{
+    c->m_protected = 0;
+    c->m_evades_left = 0;
 }
 
 template<>
@@ -2680,6 +2691,9 @@ template<> std::vector<CardStatus*>& skill_targets<mimic>(Field* fd, CardStatus*
     { return(skill_targets_hostile_assault(fd, src_status)); }
 }
 
+template<> std::vector<CardStatus*>& skill_targets<overload>(Field* fd, CardStatus* src_status)
+{ return(skill_targets_hostile_assault(fd, src_status)); }
+
 template<> std::vector<CardStatus*>& skill_targets<protect>(Field* fd, CardStatus* src_status)
 { return(skill_targets_allied_assault(fd, src_status)); }
 
@@ -2881,6 +2895,8 @@ void perform_targetted_hostile_fast(Field* fd, CardStatus* src_status, const Ski
         index_start = index_end = fd->rand(0, fd->selection_array.size() - 1);
     }
     bool is_count_achievement(true);
+    bool is_evadeable(true);
+    if(skill_id == overload) {is_evadeable = false;}
     for(unsigned s_index(index_start); s_index <= index_end; ++s_index)
     {
         if(!skill_roll<skill_id>(fd))
@@ -2889,7 +2905,7 @@ void perform_targetted_hostile_fast(Field* fd, CardStatus* src_status, const Ski
             continue;
         }
         CardStatus* c(std::get<3>(s) ? fd->selection_array[s_index] : select_interceptable(fd, src_status, s_index));
-        if(check_and_perform_skill<skill_id>(fd, src_status, c, s, true, is_count_achievement))
+        if(check_and_perform_skill<skill_id>(fd, src_status, c, s, is_evadeable, is_count_achievement))
         {
             // Count at most once even targeting "All"
             is_count_achievement = false;
@@ -3081,6 +3097,15 @@ void perform_shock(Field* fd, CardStatus* src_status, const SkillSpec& s)
     check_and_perform_skill<shock>(fd, src_status, &fd->tip->commander, s, false, true);
 }
 
+void perform_overload(Field* fd, CardStatus* src_status, const SkillSpec& s)
+{
+    unsigned skill_value(std::get<1>(s));
+    for(unsigned s_index(1); s_index <= skill_value; ++s_index)
+    {
+      perform_targetted_hostile_fast<overload>(fd, src_status, s);
+    }
+}
+
 // Special rules for mimic :
 // cannot mimic mimic,
 // structures cannot mimic supply,
@@ -3160,6 +3185,7 @@ void fill_skill_table()
     skill_table[infuse] = perform_infuse;
     skill_table[jam] = perform_targetted_hostile_fast<jam>;
     skill_table[mimic] = perform_mimic;
+    skill_table[overload] = perform_overload;
     skill_table[protect] = perform_targetted_allied_fast<protect>;
     skill_table[rally] = perform_targetted_allied_fast<rally>;
     skill_table[recharge] = perform_recharge;

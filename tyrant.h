@@ -1,8 +1,8 @@
 #ifndef TYRANT_H_INCLUDED
 #define TYRANT_H_INCLUDED
 
-#define TU_OPTIMIZER_VERSION "3.4.0"
-#define NDEBUG
+#define TU_OPTIMIZER_VERSION "3.5.0(pre)"
+//#define NDEBUG
 
 #include <string>
 #include <set>
@@ -31,7 +31,7 @@ enum Skill
     enhance_armored, enhance_berserk, enhance_corrosive, enhance_counter, enhance_enfeeble, enhance_evade,
     enhance_leech, enhance_heal,  enhance_poison, enhance_rally, enhance_strike,
     freeze, heal, infuse, jam,
-    mimic, protect, rally, recharge, repair, rush, shock, siege, split, strike, summon, supply,
+    mimic, overload, protect, rally, recharge, repair, rush, shock, siege, split, strike, summon, supply,
     trigger_regen, // not actually a skill; handles regeneration after strike/siege
     weaken,
     // Combat-Modifier:

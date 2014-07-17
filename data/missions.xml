@@ -13956,6 +13956,672 @@
     </mission>
 	
 	<!-- END June 2014 Missions -->
+	
+	<!-- July 2014 Missions -->
+	
+	<mission>
+        <id>2196</id>
+        <name>It Begins</name>
+        <location_id>110</location_id> 
+        <event_req>17</event_req> 
+        <combatBG>combatbg_prologue</combatBG> 
+        <energy>25</energy>
+        <x>260</x>
+        <y>650</y>
+        <commander>1297</commander> 
+        <speech>
+            <line commander='1997'>I am Halcyon and in the name of the Imperials I urge you to surrender Asphodel to me.</line>
+    		<line commander='1053'>The Imperials dare attack Asphodel?</line>
+        </speech>
+        <deck>
+            <card>739</card>
+            <card>314</card>
+            <card>314</card>
+            <card>42</card>
+            <card>42</card>
+            <card>39</card>
+            <card>38</card>
+            <card>35</card>
+            <card>47</card>
+            <card>360</card>
+        </deck>
+        <rewards>
+            <gold>27</gold>
+            <card>38</card> 
+            <item>1061</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>14</req>
+    </mission>
+ 
+    <mission>
+        <id>2197</id>
+        <name>On the Line</name>
+        <location_id>110</location_id> 
+        <event_req>17</event_req>
+        <combatBG>combatbg_prologue</combatBG>
+        <energy>27</energy>
+        <x>280</x>
+        <y>560</y>
+        <commander>1297</commander>
+        <speech>
+            <line commander='1297'>Yurich, go and warn Typhon. I will hold off Halcyon.</line>
+        </speech>
+        <deck>
+            <card>739</card>
+            <card>169</card>
+            <card>314</card>
+            <card>38</card>
+            <card>38</card>
+            <card>39</card>
+            <card>2009</card>
+            <card>2010</card>
+            <card>358</card>
+            <card>356</card>
+        </deck>
+        <rewards>
+            <gold>30</gold>
+            <card>39</card>
+            <item>1061</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2196</req>
+    </mission>
+
+    <mission>
+        <id>2198</id>
+        <name>Boast</name>
+        <location_id>110</location_id> 
+        <event_req>17</event_req>
+        <combatBG>combatbg_prologue</combatBG>
+        <energy>30</energy>
+        <x>360</x>
+        <y>640</y>
+        <commander>1297</commander>
+        <speech>
+            <line commander='1997'>Do you know who you are dealing with? I am the leader of the Imperials and the rightful ruler of all of Acheron.</line>
+        </speech>
+        <deck>
+            <card>739</card>
+            <card>39</card>
+            <card>39</card>
+            <card>2006</card>
+            <card>314</card>
+            <card>39</card>
+            <card>47</card>
+            <card>40</card>
+            <card>360</card>
+            <card>36</card>
+        </deck>
+        <rewards>
+            <gold>33</gold>
+            <card>42</card>
+            <item>1062</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2197</req>
+    </mission>
+
+    <mission>
+        <id>2199</id>
+        <name>United</name>
+        <location_id>110</location_id> 
+        <event_req>17</event_req>
+        <combatBG>combatbg_prologue</combatBG>
+        <energy>33</energy>
+        <x>360</x>
+        <y>520</y>
+        <commander>1298</commander>
+        <speech>
+            <line commander='1297'>Asphodel will remain free. It will never fall to the likes of you.</line>
+        </speech>
+        <deck>
+            <card>739</card>
+            <card>5466</card>
+            <card>39</card>
+            <card>46</card>
+            <card>46</card>
+            <card>42</card>
+            <card>42</card>
+            <card>2007</card>
+            <card>315</card>
+            <card>356</card>
+        </deck>
+        <rewards>
+            <gold>36</gold>
+            <card>314</card>
+            <item>1062</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2198</req>
+    </mission>
+
+    <mission>
+        <id>2200</id>
+        <name>Threats</name>
+        <location_id>110</location_id> 
+        <event_req>17</event_req>
+        <combatBG>combatbg_prologue</combatBG>
+        <energy>35</energy>
+        <x>435</x>
+        <y>560</y>
+        <commander>1298</commander>
+        <speech>
+            <line commander='1997'>You cannot stop my forces. Give up Asphodel or watch it burn to the ground.</line>
+        </speech>
+        <deck>
+            <card>739</card>
+            <card>4958</card>
+            <card>35</card>
+            <card>35</card>
+            <card>314</card>
+            <card>314</card>
+            <card>358</card>
+            <card>358</card>
+            <card>2007</card>
+            <card>40</card>
+        </deck>
+        <rewards>
+            <gold>38</gold>
+            <card>169</card>
+            <item>1063</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2199</req>
+    </mission>
+
+    <mission>
+        <id>2201</id>
+        <name>Ace in the Hole</name>
+        <location_id>110</location_id> 
+        <event_req>17</event_req>
+        <combatBG>combatbg_prologue</combatBG>
+        <energy>40</energy>
+        <x>450</x>
+        <y>650</y>
+        <commander>1298</commander>
+        <speech>
+            <line commander='1297'>We shall see how your forces match up against us while I pilot the Asphodel Defender.</line>
+        </speech>
+        <deck>
+            <card>739</card>
+            <card>6853</card>
+            <card>45</card>
+            <card>314</card>
+            <card>38</card>
+            <card>40</card>
+            <card>47</card>
+            <card>170</card>
+            <card>315</card>
+            <card>315</card>
+        </deck>
+        <rewards>
+            <gold>44</gold>
+            <card>46</card>
+            <item>1063</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2200</req>
+    </mission>
+
+    <mission>
+        <id>2202</id>
+        <name>Insult to Injury</name>
+        <location_id>110</location_id> 
+        <event_req>17</event_req>
+        <combatBG>combatbg_prologue</combatBG>
+        <energy>45</energy>
+        <x>460</x>
+        <y>470</y>
+        <commander>1298</commander>
+        <speech>
+            <line commander='1997'>That puny excuse for a mech stands no chance.</line>
+        </speech>
+        <deck>
+            <card>739</card>
+            <card>928</card>
+            <card>169</card>
+            <card>169</card>
+            <card>2006</card>
+            <card>38</card>
+            <card>40</card>
+            <card>40</card>
+            <card>358</card>
+            <card>47</card>
+        </deck>
+        <rewards>
+            <gold>49</gold>
+            <card>45</card>
+            <item>1064</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2201</req>
+    </mission>
+
+    <mission>
+        <id>2203</id>
+        <name>Asphodel Defender</name>
+        <location_id>110</location_id> 
+        <event_req>17</event_req>
+        <mission_type>2</mission_type>
+        <combatBG>combatbg_prologue</combatBG>
+        <monster asset_bundle='16' flip_x='1'>asphodel_captain</monster>
+        <energy>50</energy>
+        <x>540</x>
+        <y>510</y>
+        <commander>1355</commander>
+        <speech>
+            <line commander='1997'>Show this Asphodel trash what happens to those that dare oppose the Imperials!</line>
+        </speech>
+        <desc>The Captain has taken the controls of the Asphodel Defender, which stands between you and Asphodel. Destroy it now!</desc>
+        <deck>
+            <card>739</card>
+            <card>4445</card>
+            <card>561</card>
+            <card>4407</card>
+            <card>5002</card>
+            <card>7197</card>
+            <card>5629</card>
+            <card>2121</card>
+            <card>6671</card>
+        </deck>
+        <rewards>
+            <gold>60</gold>
+            <card>49</card>
+            <item>1064</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2202</req>
+    </mission>
+    
+    <mission>
+        <id>2204</id>
+        <name>Onward</name>
+        <location_id>110</location_id> 
+        <event_req>17</event_req> 
+        <combatBG>combatbg_prologue</combatBG> 
+        <energy>50</energy>
+        <x>630</x>
+        <y>550</y>
+        <commander>1299</commander>
+        <speech>
+            <line commander='1003'>Halcyon, we have confirmed that Typhon is converging on the Balefire.</line>
+    		<line commander='1997'>Excellent. We march for the gates of Asphodel.</line>
+        </speech>
+        <deck>
+            <card>7341</card>
+            <card>6561</card>
+            <card>5268</card>
+            <card>49</card>
+            <card>49</card>
+            <card>45</card>
+            <card>45</card>
+            <card>358</card>
+            <card>2007</card>
+            <card>43</card>
+        </deck>
+        <rewards>
+            <gold>55</gold>
+            <card>38</card> 
+            <item>1061</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2203</req>
+    </mission>
+ 
+    <mission>
+        <id>2205</id>
+        <name>Limited Time</name>
+        <location_id>110</location_id>
+        <event_req>17</event_req>
+        <combatBG>combatbg_prologue</combatBG>
+        <energy>55</energy>
+        <x>660</x>
+        <y>635</y>
+        <commander>1299</commander>
+        <speech>
+            <line commander='1997'>Balefire will only hold out so long. We must move quickly before Typhon is able to reinforce Asphodel.</line>
+        </speech>
+        <deck>
+            <card>7341</card>
+            <card>5094</card>
+            <card>4327</card>
+            <card>568</card>
+            <card>614</card>
+            <card>38</card>
+            <card>40</card>
+            <card>40</card>
+            <card>40</card>
+            <card>360</card>
+        </deck>
+        <rewards>
+            <gold>60</gold>
+            <card>39</card>
+            <item>1061</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2204</req>
+    </mission>
+
+    <mission>
+        <id>2206</id>
+        <name>Blockade</name>
+        <location_id>110</location_id>
+        <event_req>17</event_req>
+        <combatBG>combatbg_prologue</combatBG>
+        <energy>60</energy>
+        <x>720</x>
+        <y>650</y>
+        <commander>1299</commander>
+        <speech>
+            <line commander='1003'>It won't be easy. The quickest route is blocked by the Gauntlet.</line>
+        </speech>
+        <deck>
+            <card>7341</card>
+            <card>5307</card>
+            <card>5844</card>
+            <card>6854</card>
+            <card>6854</card>
+            <card>2009</card>
+            <card>36</card>
+            <card>36</card>
+            <card>360</card>
+            <card>315</card>
+        </deck>
+        <rewards>
+            <gold>66</gold>
+            <card>42</card>
+            <item>1062</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2205</req>
+    </mission>
+
+    <mission>
+        <id>2207</id>
+        <name>Reassured</name>
+        <location_id>110</location_id>
+        <event_req>17</event_req>
+        <combatBG>combatbg_prologue</combatBG>
+        <energy>60</energy>
+        <x>790</x>
+        <y>640</y>
+        <commander>1299</commander>
+        <speech>
+            <line commander='1997'>I have a plan to take down the Gauntlet and walk right in. Asphodel is as good as ours.</line>
+        </speech>
+        <deck>
+            <card>7341</card>
+            <card>416</card>
+            <card>49</card>
+            <card>49</card>
+            <card>49</card>
+            <card>928</card>
+            <card>39</card>
+            <card>47</card>
+            <card>2007</card>
+            <card>2007</card>
+        </deck>
+        <rewards>
+            <gold>66</gold>
+            <card>2006</card>
+            <item>1062</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2206</req>
+    </mission>
+
+    <mission>
+        <id>2208</id>
+        <name>Fool's Enlightenment</name>
+        <location_id>110</location_id>
+        <event_req>17</event_req>
+        <combatBG>combatbg_prologue</combatBG>
+        <energy>65</energy>
+        <x>860</x>
+        <y>590</y>
+        <commander>1299</commander>
+        <speech>
+            <line commander='1301'>Halcyon, you were always too much of a coward to face me head on!</line>
+        </speech>
+        <deck>
+            <card>7341</card>
+            <card>6857</card>
+            <card>614</card>
+            <card>614</card>
+            <card>4959</card>
+            <card>5467</card>
+            <card>42</card>
+            <card>358</card>
+            <card>358</card>
+            <card>47</card>
+        </deck>
+        <rewards>
+            <gold>71</gold>
+            <card>45</card>
+            <item>1063</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2207</req>
+    </mission>
+
+    <mission>
+        <id>2209</id>
+        <name>Claimed</name>
+        <location_id>110</location_id>
+        <event_req>17</event_req>
+        <combatBG>combatbg_prologue</combatBG>
+        <energy>70</energy>
+        <x>750</x>
+        <y>530</y>
+        <commander>1299</commander>
+        <speech>
+            <line commander='1997'>Your time is over Typhon. Asphodel and the Nexus belong to the Imperials.</line>
+        </speech>
+        <deck>
+            <card>7341</card>
+            <card>6409</card>
+            <card>2058</card>
+            <card>569</card>
+            <card>569</card>
+            <card>4407</card>
+            <card>45</card>
+            <card>36</card>
+            <card>170</card>
+            <card>170</card>
+        </deck>
+        <rewards>
+            <gold>77</gold>
+            <card>314</card>
+            <item>1063</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2208</req>
+    </mission>
+
+    <mission>
+        <id>2210</id>
+        <name>Divide and Conquer</name>
+        <location_id>110</location_id>
+        <event_req>17</event_req>
+        <combatBG>combatbg_prologue</combatBG>
+        <energy>75</energy>
+        <x>830</x>
+        <y>500</y>
+        <commander>1299</commander>
+        <speech>
+            <line commander='1997'>The Gauntlet's firepower is unmatched when focused on a single point. But attack it from multiple angles and the wall will crumble.</line>
+        </speech>
+        <deck>
+            <card>7341</card>
+            <card>5161</card>
+            <card>614</card>
+            <card>5467</card>
+            <card>5467</card>
+            <card>51</card>
+            <card>431</card>
+            <card>431</card>
+            <card>2007</card>
+            <card>2010</card>
+        </deck>
+        <rewards>
+            <gold>82</gold>
+            <card>169</card>
+            <item>1064</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2209</req>
+    </mission>
+
+    <mission>
+        <id>2211</id>
+        <name>Gauntlet</name>
+        <location_id>110</location_id>
+        <event_req>17</event_req>
+        <mission_type>2</mission_type>
+        <combatBG>combatbg_prologue</combatBG>
+        <monster asset_bundle='16'>gatling_wall</monster>
+        <energy>75</energy>
+        <x>700</x>
+        <y>360</y>
+        <commander>1361</commander>
+        <speech>
+            <line commander='1997'>Octane, attack the East side while I take down the West. We will march into Asphodel together.</line>
+        </speech>
+        <deck>
+            <card>739</card>
+            <card>7341</card>
+            <card>7341</card>
+            <card>7269</card>
+            <card>2121</card>
+            <card>6863</card>
+            <card>5629</card>
+            <card>5629</card>
+            <card>4445</card>
+            <card>2101</card>
+        </deck>
+        <rewards>
+            <gold>90</gold>
+            <card>561</card>
+            <item>1065</item>
+            <star>
+                <id>2</id>
+                <req type='5' compare='great_equal' amount='5' />
+            </star>
+            <star>
+                <id>3</id>
+                <req type='5' compare='great_equal' amount='10' />
+            </star>
+        </rewards>
+        <req>2210</req>
+    </mission>
+	
+	<!-- END July 2014 Missions -->
 
 	<location>
 		<id>1</id>
@@ -14094,13 +14760,21 @@
         <mapBG>map_prologue</mapBG>
         <req>14</req>
     </location>
+    
+    <location>
+        <id>110</id>
+        <name>Asphodel</name>
+        <event_req>17</event_req>
+        <mapBG>map_prologue</mapBG>
+        <req>14</req>
+    </location>
 	
 <!-- Event Portals -->
 
 	<portal>
 		<location_id>1</location_id>
-		<destination_id>109</destination_id>
-		<event_req>15</event_req>
+		<destination_id>110</destination_id>
+		<event_req>17</event_req>
 		<req>14</req>
 		<x>420</x>
 		<y>450</y>
@@ -14108,8 +14782,8 @@
 
 	<portal>
 		<location_id>2</location_id>
-		<destination_id>109</destination_id>
-		<event_req>15</event_req>
+		<destination_id>110</destination_id>
+		<event_req>17</event_req>
 		<req>14</req>
 		<x>650</x>
 		<y>250</y>
@@ -14117,8 +14791,8 @@
 
 	<portal>
 		<location_id>3</location_id>
-		<destination_id>109</destination_id>
-		<event_req>15</event_req>
+		<destination_id>110</destination_id>
+		<event_req>17</event_req>
 		<req>14</req>
 		<x>180</x>
 		<y>600</y>
@@ -14126,8 +14800,8 @@
 
 	<portal>
 		<location_id>4</location_id>
-		<destination_id>109</destination_id>
-		<event_req>15</event_req>
+		<destination_id>110</destination_id>
+		<event_req>17</event_req>
 		<req>14</req>
 		<x>270</x>
 		<y>270</y>
@@ -14135,8 +14809,8 @@
 
 	<portal>
 		<location_id>5</location_id>
-		<destination_id>109</destination_id>
-		<event_req>15</event_req>
+		<destination_id>110</destination_id>
+		<event_req>17</event_req>
 		<req>14</req>
 		<x>350</x>
 		<y>580</y>
@@ -14144,8 +14818,8 @@
 
 	<portal>
 		<location_id>6</location_id>
-		<destination_id>109</destination_id>
-		<event_req>15</event_req>
+		<destination_id>110</destination_id>
+		<event_req>17</event_req>
 		<req>14</req>
 		<x>500</x>
 		<y>600</y>
@@ -14153,8 +14827,8 @@
 
 	<portal>
 		<location_id>7</location_id>
-		<destination_id>109</destination_id>
-		<event_req>15</event_req>
+		<destination_id>110</destination_id>
+		<event_req>17</event_req>
 		<req>14</req>
 		<x>420</x>
 		<y>380</y>
@@ -14162,19 +14836,19 @@
 
 	<portal>
 		<location_id>8</location_id>
-		<destination_id>109</destination_id>
-		<event_req>15</event_req>
+		<destination_id>110</destination_id>
+		<event_req>17</event_req>
 		<req>14</req>
 		<x>840</x>
 		<y>230</y>
 	</portal>
 
 	<portal>
-		<location_id>109</location_id>
+		<location_id>110</location_id>
 		<destination_id>0</destination_id>
-		<event_req>15</event_req>
-		<x>180</x>
-		<y>220</y>
+		<event_req>17</event_req>
+		<x>140</x>
+		<y>580</y>
 	</portal>
 
 <!-- END Event Portals -->

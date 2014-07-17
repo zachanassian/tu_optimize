@@ -15,7 +15,7 @@ std::string skill_names[Skill::num_skills] =
     "Enhance Armored", "Enhance Berserk", "Enhance Corrosive", "Enhance Counter", "Enhance Enfeeble", "Enhance Evade",
     "Enhance Leech", "Enhance Heal", "Enhance Poison", "Enhance Rally", "Enhance Strike",
     "Freeze", "Heal", "Infuse", "Jam",
-    "Mimic", "Protect", "Rally", "Recharge", "Repair", "Rush", "Shock",
+    "Mimic", "Overload", "Protect", "Rally", "Recharge", "Repair", "Rush", "Shock",
     "Siege", "Split", "Strike", "Summon", "Supply",
     "trigger_regen",
     "Weaken",

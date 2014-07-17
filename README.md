@@ -58,6 +58,21 @@ If you receive virus warnings for <code>SimpleTUOptimizeStarter.exe</code> pleas
 
 ##Changelog
 
+##Version 3.5.0(pre)
+* Added current <code>cards.xml</code> and <code>missions.xml</code> - Mission Gauntlet + self defined card TestOverload.
+* Add first implementation of overload. Assumptions:
+..* targets only enemies cards that have evade charges left or are protected
+..* can not be evaded
+..* only works on assaults
+..* effect on target: sets all evade charges left and protection to zero
+<pre>
+>tu_optimize "Alaric, TestOverload #3" "Constantine, Bolt Crag #3" sim 10000
+Your Deck: [RE!+f+j] Alaric, TestOverload, TestOverload, TestOverload
+Enemy's Deck: [S6-F9+j] Constantine, Bolt Crag, Bolt Crag, Bolt Crag
+win%: 100 (10000 / 10000)
+stall%: 0 (0 / 10000)
+loss%: 0 (0 / 10000)
+</pre>
 ##Version 3.4.0
 * Add enhance enfeeble battle ground effect: - [Issue#46](https://github.com/zachanassian/tu_optimize/issues/46)
 * Add current <code>cards.xml</code>

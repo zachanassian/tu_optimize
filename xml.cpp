@@ -404,6 +404,8 @@ void read_cards(Cards& cards)
                         }
                         if(strcmp(skill->first_attribute("id")->value(), "mimic") == 0)
                         { handle_skill<mimic>(skill, c); }
+                        if(strcmp(skill->first_attribute("id")->value(), "overload") == 0)
+                        { handle_skill<overload>(skill, c); }
                         if(strcmp(skill->first_attribute("id")->value(), "protect") == 0)
                         { handle_skill<protect>(skill, c); }
                         if(strcmp(skill->first_attribute("id")->value(), "rally") == 0)
