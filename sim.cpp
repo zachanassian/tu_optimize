@@ -471,6 +471,9 @@ bool may_change_skill(const Field* fd, const CardStatus* status, const SkillMod:
                             fd->effect == Effect::leech_1 ||
                             fd->effect == Effect::leech_2 ||
                             fd->effect == Effect::leech_3 ||
+                            fd->effect == Effect::overload_1 ||
+                            fd->effect == Effect::overload_2 ||
+                            fd->effect == Effect::overload_3 ||
                             fd->effect == Effect::poison_1 ||
                             fd->effect == Effect::poison_2 ||
                             fd->effect == Effect::poison_3 ||
@@ -516,6 +519,7 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
         case Effect::evade_1:
         case Effect::heal_1:
         case Effect::leech_1:
+        case Effect::overload_1:
         case Effect::poison_1:
         case Effect::rally_1:
         case Effect::strike_1:
@@ -529,6 +533,7 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
         case Effect::evade_2:
         case Effect::heal_2:
         case Effect::leech_2:
+        case Effect::overload_2:
         case Effect::poison_2:
         case Effect::rally_2:
         case Effect::strike_2:
@@ -542,6 +547,7 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
         case Effect::evade_3:
         case Effect::heal_3:
         case Effect::leech_3:
+        case Effect::overload_3:
         case Effect::poison_3:
         case Effect::rally_3:
         case Effect::strike_3:
@@ -623,6 +629,15 @@ SkillSpec apply_battleground_effect(const Field* fd, const CardStatus* status, c
             {
                 need_add_skill = false;
                 return SkillSpec(enhance_leech, skill_value, allfactions, true, mod);
+            }
+            break;
+        case Effect::overload_1:
+        case Effect::overload_2:
+        case Effect::overload_3:
+            if(skill == new_skill)
+            {
+                need_add_skill = false;
+                return SkillSpec(overload, skill_value, allfactions, false, mod);
             }
             break;
         case Effect::poison_1:

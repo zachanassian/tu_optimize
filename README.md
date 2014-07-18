@@ -73,6 +73,8 @@ win%: 100 (10000 / 10000)
 stall%: 0 (0 / 10000)
 loss%: 0 (0 / 10000)
 </pre>
+* Add battleground effect overload.
+
 ##Version 3.4.0
 * Add enhance enfeeble battle ground effect: - [Issue#46](https://github.com/zachanassian/tu_optimize/issues/46)
 * Add current <code>cards.xml</code>

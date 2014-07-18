@@ -2,7 +2,7 @@
 #define TYRANT_H_INCLUDED
 
 #define TU_OPTIMIZER_VERSION "3.5.0(pre)"
-//#define NDEBUG
+#define NDEBUG
 
 #include <string>
 #include <set>
@@ -117,6 +117,9 @@ enum Effect {
     leech_1,
     leech_2,
     leech_3,
+    overload_1,
+    overload_2,
+    overload_3,
     poison_1,
     poison_2,
     poison_3,
