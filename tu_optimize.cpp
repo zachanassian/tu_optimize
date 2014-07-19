@@ -35,6 +35,7 @@
 #include "sim.h"
 #include "tyrant.h"
 #include "xml.h"
+#include "custom_card.h"
 //#include "timer.hpp"
 
 namespace {
@@ -1176,6 +1177,7 @@ int main(int argc, char** argv)
     Cards cards;
     read_cards(cards);
     read_card_abbrs(cards, "data/cardabbrs.txt");
+    process_args_for_custom_cards(cards, argc, argv); // have to do this early before att_deck/def_decks is processed
     Decks decks;
     Achievement achievement;
     load_decks_xml(decks, cards);
@@ -1592,18 +1594,9 @@ int main(int argc, char** argv)
             }
             argIndex += 1;
         }
-        else if (strcmp(argv[argIndex], "-C") == 0) 
+        else if (strncmp(argv[argIndex], "-C=", 3) == 0) 
         {
-            try
-            {
-                read_custom_cards(cards, argv[argIndex + 1]);
-            }
-            catch (const std::runtime_error& e)
-            {
-                std::cerr << "Error: -C " << argv[argIndex + 1] << ": " << e.what() << std::endl;
-                return(0);
-            }
-            argIndex += 1;
+            // just skip the argument since we have run process_args_for_custom_cards() already
         }
         else
         {
