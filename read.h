@@ -15,6 +15,5 @@ std::vector<std::pair<std::string, long double>> parse_deck_list(std::string lis
 unsigned read_custom_decks(Decks& decks, Cards& cards, std::string filename);
 void read_owned_cards(Cards& cards, std::map<unsigned, unsigned>& owned_cards, std::map<unsigned, unsigned>& buyable_cards, const char *filename);
 unsigned read_card_abbrs(Cards& cards, const std::string& filename);
-void read_custom_cards(Cards& cards, const char *filename);
 
 #endif

@@ -41,9 +41,7 @@ void partial_shuffle(RandomAccessIterator first, RandomAccessIterator middle,
     }
 }
 
-//------------------------------------------------------------------------------
-std::string deck_hash_wmt_b64(const Card* commander, std::vector<const Card*> cards, bool is_ordered)
-{
+void append_wmt_b64_card_id(std::stringstream& ios, unsigned card_id, bool repeat=false) {
 /*
 enhancements for card_id > 4000 magic characters "-.~!*"
 card_id
@@ -60,9 +58,26 @@ if there is a base64 encoded two letter value > 4000 this means (value-4001) cop
     std::string base64= "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     std::string magic_char= " -.~!*";
 
+    if(card_id > 24000)
+    {
+        throw std::runtime_error("Error for card [" + to_string(card_id) + "]. This deck encoding does not support card_ids greater then 24000.");
+    }
+    else if(!repeat && card_id > 4000)
+    {
+        ios << magic_char[(card_id-1) / 4000]; //8000,12000 still gets index 1
+        card_id = card_id % 4000;
+        if(card_id == 0){ card_id = 4000; } ////8000,12000 are encoded as 4000 (+g)
+    }
+    ios << base64[card_id / 64];
+    ios << base64[card_id % 64];
+}
+
+//------------------------------------------------------------------------------
+std::string deck_hash_wmt_b64(const Card* commander, std::vector<const Card*> cards, bool is_ordered)
+{
     std::stringstream ios;
-    ios << base64[commander->m_id / 64];
-    ios << base64[commander->m_id % 64];
+    // with custom cards, commander ids can be > 4000
+    append_wmt_b64_card_id(ios, commander->m_id);
     if(!is_ordered)
     {
         std::sort(cards.begin(), cards.end(), [](const Card* a, const Card* b) { return a->m_id < b->m_id; });
@@ -80,29 +95,16 @@ if there is a base64 encoded two letter value > 4000 this means (value-4001) cop
         {
             if(num_repeat > 1)
             {
-                ios << base64[(num_repeat + 4000) / 64];
-                ios << base64[(num_repeat + 4000) % 64];
+                append_wmt_b64_card_id(ios, num_repeat + 4000, true);
             }
             last_id = card_id;
             num_repeat = 1;
-            if(card_id > 24000)
-            {
-                throw std::runtime_error("Error for card [" + to_string(card_id) + "]. This deck encoding does not support card_ids greater then 24000.");
-            }
-            else if(card_id > 4000)
-            {
-                ios << magic_char[(card_id-1) / 4000]; //8000,12000 still gets index 1
-                card_id = card_id % 4000;
-                if(card_id == 0){ card_id = 4000; } ////8000,12000 are encoded as 4000 (+g)
-            }
-            ios << base64[card_id / 64];
-            ios << base64[card_id % 64];
+            append_wmt_b64_card_id(ios, card_id);
         }
     }
     if(num_repeat > 1)
     {
-        ios << base64[(num_repeat + 4000) / 64];
-        ios << base64[(num_repeat + 4000) % 64];
+        append_wmt_b64_card_id(ios, num_repeat + 4000, true);
     }
     return ios.str();
 }
