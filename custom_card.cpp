@@ -15,10 +15,9 @@
 //#define BOOST_SPIRIT_DEBUG
 
 #include <boost/tokenizer.hpp>
-//#include <boost/config/warning_disable.hpp>
+#include <boost/algorithm/string.hpp> // to_lower()
 #include <boost/spirit/include/qi.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
-//#include <boost/fusion/include/io.hpp>
 #include <boost/spirit/include/phoenix.hpp>
 
 #include <sstream>
@@ -26,7 +25,7 @@
 #include <iostream>
 #include <string>
 #include <complex>
-#include <unistd.h> // access
+#include <unistd.h> // access()
 
 #include "tyrant.h"
 #include "custom_card.h"
@@ -91,51 +90,6 @@ BOOST_FUSION_ADAPT_STRUCT
     (unsigned, value)
 )
 
-/* symbol tables */
-struct factions_ : qi::symbols<char, Faction>
-{
-    factions_() 
-    {
-        add
-            ("bloodthirsty", bloodthirsty)
-            ("imperial", imperial)
-            ("raider", raider)
-            ("righteous", righteous)
-            ("xeno", xeno)
-            ("progenitor", progenitor)
-        ;
-    }
-} factions;
-
-struct rarity_ : qi::symbols<char, int> 
-{
-    rarity_() 
-    {
-        add
-            ("common", 1)
-            ("rare", 2)
-            ("epic", 3)
-            ("legendary", 4)
-            ("vindicator", 5)
-        ;
-    }
-} rarity;
-
-/* TODO */
-struct skills_ : qi::symbols<char, Skill> 
-{
-    skills_() 
-    {
-        add
-            ("jam", jam)
-            ("rally", rally)
-            ("evade", evade)
-            ("heal", heal)
-            ("enhance counter", enhance_counter)
-        ;
-    }
-} skills;
-
 template <typename Iterator>
 struct CustomCardParser: qi::grammar<Iterator, CustomCard(), ascii::space_type> 
 {
@@ -147,6 +101,32 @@ struct CustomCardParser: qi::grammar<Iterator, CustomCard(), ascii::space_type>
         using qi::lexeme;
         using ascii::no_case;
 
+        // define the symbol tables using data from tyrant.h/cpp
+        // Factions
+        qi::symbols<char, Faction> faction_symbols;
+        for (int i = 1; i < Faction::num_factions - 1; i++) {
+            faction_symbols.add(faction_names[i].c_str(), (Faction)i);
+        }
+
+        // Rarities
+        qi::symbols<char, int> rarity_symbols;
+        rarity_symbols.add
+            ("common", 1)
+            ("rare", 2)
+            ("epic", 3)
+            ("legendary", 4)
+            ("vindicator", 5)
+            ;
+
+        // Skills
+        qi::symbols<char, Skill> skill_symbols;
+        for (int i = 1; i < Skill::num_skills - 1; i++) {
+            std::string skill(skill_names[i]);
+            boost::algorithm::to_lower(skill);
+            skill_symbols.add(skill.c_str(), (Skill)i);
+        }
+
+        // now the grammar rule definitions...
         // card name is a string
         card_name = lexeme [ +(qi::char_ - ',') ];
 
@@ -162,17 +142,17 @@ struct CustomCardParser: qi::grammar<Iterator, CustomCard(), ascii::space_type>
             ;
 
         // allow card info to be specified in any order
-        card_info = no_case[ factions ]
-            ^ no_case[ rarity ]
+        card_info = no_case[ faction_symbols ]
+            ^ no_case[ rarity_symbols ]
             ^ (card_stats | cmdr_stats)
             ;
 
-        // SkillName "all"? Faction? "every"? number
-        card_skill = no_case[ skills ]
+        // SkillName "all"? Faction? "every"? number?
+        card_skill = no_case[ skill_symbols ]
             >> -( qi::lit("all") >> qi::attr(true) )
-            >> -no_case[ factions ]
+            >> -no_case[ faction_symbols ]
             >> -qi::lit("every") // optional for jam
-            >> qi::int_
+            >> -qi::int_
             ;
 
         // name, (card_info|card_skill), ...
@@ -197,6 +177,8 @@ CustomCard::CustomCard(unsigned id, const std::string &card_spec): Card()
     m_max_level_id = id;
     m_set = CUSTOM_CARD_SET; // need to set this or organize() will ignore it
 
+    // FIXME a new parser is created for every card, not very efficient.
+    // But it's once off and the time is really minimal anyway
     CustomCardParser<std::string::const_iterator> parser;
     std::string::const_iterator iter = card_spec.begin();
     bool r = qi::phrase_parse(iter, card_spec.end(), parser, ascii::space, *this);
@@ -228,7 +210,7 @@ CustomCard::CustomCard(unsigned id, const std::string &card_spec): Card()
         m_attack = 0;
         m_delay = 0;
     }
-    debug(); // XXX
+    debug(); // XXX do only when -v is not set TODO
 }
 
 void CustomCard::debug() {
@@ -236,14 +218,57 @@ void CustomCard::debug() {
 }
 
 void CustomCard::add_skill(const custom_card_skill &skill) {
-    Card::add_skill(skill.skill, skill.value, skill.faction, skill.all);
+// passive skills, just assign member
+#define PASSIVE_SKILL(sk) \
+    case sk: \
+        m_ ## sk = skill.value; \
+        break
+// enhance skills, just add_skill() - also some active skills also do not have members in Card()
+#define ENHANCE_SKILL(sk) \
+    case sk: \
+        Card::add_skill(skill.skill, skill.value, skill.faction, skill.all); \
+        break
+// active skills, assign member + invoke add_skill()
+#define ACTIVE_SKILL(sk) \
+    case sk: \
+        m_## sk = skill.value; \
+        Card::add_skill(skill.skill, skill.value, skill.faction, skill.all); \
+        break
     switch (skill.skill) 
     {
-        case jam:
-            m_jam = skill.value;
-            break;
-            // TODO
+        PASSIVE_SKILL(armored);
+        PASSIVE_SKILL(berserk);
+        PASSIVE_SKILL(corrosive);
+        PASSIVE_SKILL(counter);
+        PASSIVE_SKILL(evade);
+        PASSIVE_SKILL(flurry);
+        PASSIVE_SKILL(inhibit);
+        PASSIVE_SKILL(leech);
+        PASSIVE_SKILL(pierce);
+        PASSIVE_SKILL(poison);
+        case wall: m_wall = true; break; // just a simple boolean
+        ACTIVE_SKILL(enfeeble);
+        ENHANCE_SKILL(enhance_armored);
+        ENHANCE_SKILL(enhance_berserk);
+        ENHANCE_SKILL(enhance_corrosive);
+        ENHANCE_SKILL(enhance_counter);
+        ENHANCE_SKILL(enhance_enfeeble);
+        ENHANCE_SKILL(enhance_evade);
+        ENHANCE_SKILL(enhance_leech);
+        ENHANCE_SKILL(enhance_heal);
+        ENHANCE_SKILL(enhance_poison);
+        ENHANCE_SKILL(enhance_rally);
+        ENHANCE_SKILL(enhance_strike);
+        ACTIVE_SKILL(heal);
+        ACTIVE_SKILL(jam);
+        ENHANCE_SKILL(protect); // there is no m_protect in Card?
+        ACTIVE_SKILL(rally);
+        ENHANCE_SKILL(siege);   // or m_siege
+        ACTIVE_SKILL(strike);
+        ENHANCE_SKILL(weaken);
         default:
+            // left out some skills not in TU
+            std::cerr << "Warning: Skill \"" << skill_names[skill.skill] << "\" in custom card is not supported by sim, ignoring!" << std::endl;
             break;
     }
 }
