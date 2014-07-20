@@ -1592,6 +1592,19 @@ int main(int argc, char** argv)
             }
             argIndex += 1;
         }
+        else if (strcmp(argv[argIndex], "-C") == 0) 
+        {
+            try
+            {
+                read_custom_cards(cards, argv[argIndex + 1]);
+            }
+            catch (const std::runtime_error& e)
+            {
+                std::cerr << "Error: -C " << argv[argIndex + 1] << ": " << e.what() << std::endl;
+                return(0);
+            }
+            argIndex += 1;
+        }
         else
         {
             std::cerr << "Error: Unknown option " << argv[argIndex] << std::endl;
