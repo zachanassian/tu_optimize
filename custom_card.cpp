@@ -58,7 +58,7 @@ BOOST_FUSION_ADAPT_STRUCT
     (unsigned, delay)
 )
 
-struct custom_card_info 
+struct custom_card_info
 {
     Faction faction;
     unsigned rarity;
@@ -91,9 +91,9 @@ BOOST_FUSION_ADAPT_STRUCT
 )
 
 template <typename Iterator>
-struct CustomCardParser: qi::grammar<Iterator, CustomCard(), ascii::space_type> 
+struct CustomCardParser: qi::grammar<Iterator, CustomCard(), ascii::space_type>
 {
-    CustomCardParser(): CustomCardParser::base_type(start) 
+    CustomCardParser(): CustomCardParser::base_type(start)
     {
         using qi::_val;
         using qi::_1;
@@ -104,7 +104,8 @@ struct CustomCardParser: qi::grammar<Iterator, CustomCard(), ascii::space_type>
         // define the symbol tables using data from tyrant.h/cpp
         // Factions
         qi::symbols<char, Faction> faction_symbols;
-        for (int i = 1; i < Faction::num_factions - 1; i++) {
+        for (int i = 1; i < Faction::num_factions - 1; i++)
+        {
             faction_symbols.add(faction_names[i].c_str(), (Faction)i);
         }
 
@@ -120,7 +121,8 @@ struct CustomCardParser: qi::grammar<Iterator, CustomCard(), ascii::space_type>
 
         // Skills
         qi::symbols<char, Skill> skill_symbols;
-        for (int i = 1; i < Skill::num_skills - 1; i++) {
+        for (int i = 1; i < Skill::num_skills - 1; i++)
+        {
             std::string skill(skill_names[i]);
             boost::algorithm::to_lower(skill);
             skill_symbols.add(skill.c_str(), (Skill)i);
@@ -170,12 +172,17 @@ struct CustomCardParser: qi::grammar<Iterator, CustomCard(), ascii::space_type>
     qi::rule<Iterator, custom_card_stats(), ascii::space_type> cmdr_stats;
 };
 
-CustomCard::CustomCard(unsigned id, const std::string &card_spec): Card() 
+CustomCard::CustomCard(unsigned id, const std::string &card_spec): Card()
 {
     m_id = id;
     m_base_id = id;
     m_max_level_id = id;
     m_set = CUSTOM_CARD_SET; // need to set this or organize() will ignore it
+    // fill in some dummy values so we know what hasn't been specified
+    m_attack = STAT_NOT_AVAILABLE;
+    m_health = STAT_NOT_AVAILABLE;
+    m_delay = STAT_NOT_AVAILABLE;
+    m_faction = allfactions;
 
     // FIXME a new parser is created for every card, not very efficient.
     // But it's once off and the time is really minimal anyway
@@ -183,41 +190,50 @@ CustomCard::CustomCard(unsigned id, const std::string &card_spec): Card()
     std::string::const_iterator iter = card_spec.begin();
     bool r = qi::phrase_parse(iter, card_spec.end(), parser, ascii::space, *this);
     // make sure the whole string has been parsed
-    if (!r || iter != card_spec.end()) 
+    if (!r || iter != card_spec.end())
     {
-        throw std::runtime_error("Failed to parse custom card: \"" + card_spec + "\"");
+        std::string remaining_unparsed(iter, card_spec.end());
+        throw std::runtime_error(card_spec + ": Custom card failed to parse after \"" + remaining_unparsed + "\"");
     }
 
     // we can only figure out the type after parsing
-    if (m_attack != STAT_NOT_AVAILABLE) 
+    if (m_attack != STAT_NOT_AVAILABLE)
     {
         // only assaults have attack stat
         m_type = CardType::assault;
-    } 
-    else if (m_delay != STAT_NOT_AVAILABLE) 
+    }
+    else if (m_delay != STAT_NOT_AVAILABLE)
     {
         // commanders have no delay, so this must be structure
         m_type = CardType::structure;
         m_attack = 0;
-    } 
-    else if (m_health == STAT_NOT_AVAILABLE || m_health == 0) 
+    }
+    else if (m_health == STAT_NOT_AVAILABLE || m_health == 0)
     {
         throw std::runtime_error("Custom card \"" + m_name + "\" has no health!");
-    } 
-    else 
+    }
+    else if (m_faction == allfactions)
+    {
+        throw std::runtime_error("Custom card \"" + m_name + "\" has no faction!");
+    }
+    else
     {
         m_type = CardType::commander;
         m_attack = 0;
         m_delay = 0;
     }
-    debug(); // XXX do only when -v is not set TODO
 }
 
-void CustomCard::debug() {
-    std::cout << "Custom Card \"" << m_name << "\" (" << m_id << ")" << std::endl;
+// from sim.cpp
+extern std::string card_description(const Cards& cards, const Card* c);
+
+void CustomCard::debug(const Cards& cards)
+{
+    std::cout << "Custom Card: [" << m_id << "]: " << card_description(cards, this) << std::endl;
 }
 
-void CustomCard::add_skill(const custom_card_skill &skill) {
+void CustomCard::add_skill(const custom_card_skill &skill)
+{
 // passive skills, just assign member
 #define PASSIVE_SKILL(sk) \
     case sk: \
@@ -234,7 +250,7 @@ void CustomCard::add_skill(const custom_card_skill &skill) {
         m_## sk = skill.value; \
         Card::add_skill(skill.skill, skill.value, skill.faction, skill.all); \
         break
-    switch (skill.skill) 
+    switch (skill.skill)
     {
         PASSIVE_SKILL(armored);
         PASSIVE_SKILL(berserk);
@@ -273,34 +289,43 @@ void CustomCard::add_skill(const custom_card_skill &skill) {
     }
 }
 
-void CustomCard::handle_info(const custom_card_info &info) {
-    if (info.faction != allfactions) 
+void CustomCard::handle_info(const custom_card_info &info)
+{
+    if (info.faction != allfactions)
     {
         m_faction = info.faction;
     }
-    if (info.rarity > 0) 
+    if (info.rarity > 0)
     {
         m_rarity = info.rarity;
     }
-    m_attack = info.stats.attack;
-    m_health = info.stats.health;
-    m_delay = info.stats.delay;
+    // only overwrite the stats if at least health is defined
+    if (info.stats.health != STAT_NOT_AVAILABLE) {
+        m_attack = info.stats.attack;
+        m_health = info.stats.health;
+        m_delay = info.stats.delay;
+    }
 }
 
-int parse_custom_cards(Cards& cards, unsigned id, const std::string& card_list) {
+void CustomCardReader::parse_custom_cards(const std::string& card_list)
+{
     boost::tokenizer<boost::char_delimiters_separator<char>> card_tokens{card_list, boost::char_delimiters_separator<char>{false, ":;", ""}};
 
     auto token_iter = card_tokens.begin();
     for (; token_iter != card_tokens.end(); ++token_iter)
     {
         std::string card_spec(*token_iter);
-        Card* custom_card(new CustomCard(id++, card_spec));
+        CustomCard* custom_card = new CustomCard(next_card_id++, card_spec);
+        if (!quiet)
+        {
+            custom_card->debug(cards);
+        }
         cards.cards.push_back(custom_card);
     }
-    return id;
 }
 
-void read_custom_cards_file(Cards& cards, unsigned id, const char *filename) {
+void CustomCardReader::read_custom_cards_file(const char *filename)
+{
     std::ifstream custom_cards_file{filename};
     if (!custom_cards_file.good())
     {
@@ -318,7 +343,7 @@ void read_custom_cards_file(Cards& cards, unsigned id, const char *filename) {
         }
         try
         {
-            id = parse_custom_cards(cards, id, card_spec);
+            parse_custom_cards(card_spec);
         }
         catch(std::exception& e)
         {
@@ -327,32 +352,52 @@ void read_custom_cards_file(Cards& cards, unsigned id, const char *filename) {
     }
 }
 
-void process_custom_cards(Cards& cards, const char *param) {
-    // maps are sorted so we can get biggest id this way
-    unsigned highest_id = (--cards.cards_by_id.end())->first;
-    // is the supplied argument an actual file?
+void CustomCardReader::process_custom_cards(const char *param)
+{
     if (access(param, R_OK) == 0)
     {
-        read_custom_cards_file(cards, highest_id+1, param);
+        // read the param as a file if it exists
+        read_custom_cards_file(param);
     }
     else
     {
-        parse_custom_cards(cards, highest_id+1, param);
+        // just parse the string otherwise
+        parse_custom_cards(param);
     }
-    // organize() again so the new cards are included
-    cards.organize();
 }
 
-void process_args_for_custom_cards(Cards& cards, int argc, char *argv[]) {
+CustomCardReader::CustomCardReader(Cards& cards): cards(cards), quiet(false)
+{
+    // give the custom cards the max card ID + 2
+    next_card_id = (--cards.cards_by_id.end())->first;
+    next_card_id++;
+}
+
+void CustomCardReader::process_args(int argc, char *argv[])
+{
+    const char *custom_cards = "data/customcards.txt";
+    bool use_custom_cards = false;
     for (int i = 1; i < argc; i++)
     {
         if (strcmp(argv[i], "-C") == 0)
         {
-            process_custom_cards(cards, "data/customcards.txt");
+            use_custom_cards = true;
         }
         else if (strncmp(argv[i], "-C=", 3) == 0)
         {
-            process_custom_cards(cards, argv[i]+3);
+            use_custom_cards = true;
+            custom_cards = argv[i] + 3;
         }
+        else if (strcmp(argv[i], "-v") == 0)
+        {
+            // bit ugly that we parse this flag in multiple places...
+            quiet = true;
+        }
+    }
+    if (use_custom_cards)
+    {
+        process_custom_cards(custom_cards);
+        // organize() again so the new cards are included
+        cards.organize();
     }
 }

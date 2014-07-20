@@ -2,4 +2,4 @@
 // Some valid examples:
 Gremlin, rare bloodthirsty 1/2/0, rally bloodthirsty 2, evade 2, berserk 3
 Commander Sheppard, vindicator imperial 100HP, jam all every 2, rally all 10
-Alcatraz, Wall, Protect 10, Jam 2, -/40/4, Righteous
+Alcatraz, WALL, PROTECT 10, EPIC, JAM 2, -/40/4, RIGHTEOUS

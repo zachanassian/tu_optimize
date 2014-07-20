@@ -13,7 +13,6 @@
 #include "tyrant.h"
 #include "card.h"
 #include "cards.h"
-#include "custom_card.h"
 #include "deck.h"
 
 //minGW does not support std:to_string() w/o patch : http://stackoverflow.com/questions/12975341/to-string-is-not-a-member-of-std-says-so-g
