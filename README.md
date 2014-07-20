@@ -44,8 +44,8 @@ Flags for climb:
   -o=&lt;cards&gt;: restrict to the owned cards specified.
                  example: -o="Sacred Equalizer#2, Infantry".
   -C: load custom cards from "data/customcards.txt".
-  -C=<filename>: load custom cards from <filename>.
-  -C=<cards>: load custom cards specified.
+  -C=&lt;filename&gt;: load custom cards from <filename>.
+  -C=&lt;cards&gt;: load custom cards specified.
               format:
                 CardName1, Rarity Faction attack/health/delay, skill 1, skill 2, ... ; CardName2, ...
               example:
