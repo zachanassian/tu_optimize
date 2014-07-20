@@ -1605,7 +1605,7 @@ int main(int argc, char** argv)
         }
         else if (strcmp(argv[argIndex], "-C") == 0 || strncmp(argv[argIndex], "-C=", 3) == 0) 
         {
-            // just skip the argument since we have run process_args_for_custom_cards() already
+            // just skip the argument since we have run CustomCardReader::process_args() already
         }
         else
         {
