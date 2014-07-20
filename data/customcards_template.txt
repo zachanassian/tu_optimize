@@ -1,0 +1,5 @@
+// CardName, Faction Rarity attack/health/delay, skill 1, skill 2, ...
+// Some valid examples:
+Gremlin, rare bloodthirsty 1/2/0, rally bloodthirsty 2, evade 2, berserk 3
+Commander Sheppard, vindicator imperial 100HP, jam all every 2, rally all 10
+Alcatraz, Wall, Protect 10, Jam 2, -/40/4, Righteous
