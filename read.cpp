@@ -13,6 +13,7 @@
 #include "tyrant.h"
 #include "card.h"
 #include "cards.h"
+#include "custom_card.h"
 #include "deck.h"
 
 //minGW does not support std:to_string() w/o patch : http://stackoverflow.com/questions/12975341/to-string-is-not-a-member-of-std-says-so-g
@@ -376,3 +377,12 @@ void read_owned_cards(Cards& cards, std::map<unsigned, unsigned>& owned_cards, s
     }
 }
 
+void read_custom_cards(Cards& cards, const char *filename) {
+    std::cerr << "TODO read " << filename << std::endl;
+    // this is called after real cards been read & organize()d
+    // maps are sorted so we can get biggest id this way
+    unsigned highest_id = (--cards.cards_by_id.end())->first;
+    // as a test, parse as a string instead of filename
+    Card* c(new CustomCard(++highest_id, filename));
+    cards.cards.push_back(c);
+}
