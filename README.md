@@ -65,9 +65,9 @@ If you receive virus warnings for <code>SimpleTUOptimizeStarter.exe</code> pleas
 
 ##Changelog
 
-##Version 3.5.0(pre)
+##Version 3.5.0
 * Add current <code>cards.xml</code> and <code>missions.xml</code> - Mission Gauntlet.
-* Add ability to specify custom cards from command line. Check new option -C in Usage - [Pull#51](https://github.com/zachanassian/tu_optimize/pull/51) credits draquila.
+* Add ability to specify custom cards from command line. Check new option -C in Usage. - [Pull#51](https://github.com/zachanassian/tu_optimize/pull/51) credits draquila.
 * Add first implementation of overload. Assumptions:
 ..* targets only enemies cards that have evade charges left or are protected
 ..* can not be evaded
@@ -82,6 +82,7 @@ stall%: 0 (0 / 10000)
 loss%: 0 (0 / 10000)
 </pre>
 * Add battleground effect overload.
+* [FIX] Abort execution for -o=[card_id] if card_id does not exist. - [Issue#52](https://github.com/zachanassian/tu_optimize/issues/52) credits [draquila](https://github.com/zachanassian/tu_optimize/pull/53).
 
 ##Version 3.4.0
 * Add enhance enfeeble battle ground effect: - [Issue#46](https://github.com/zachanassian/tu_optimize/issues/46)
