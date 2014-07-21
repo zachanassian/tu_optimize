@@ -129,7 +129,7 @@ GT17: Nexor-6, Worldformer-6, Rift Awakener-6, Apex Dynamo-6, SkyCom Perfect-6, 
 GT18: Petrisis-6, Charincinerator-6, Heart Devourer-6, Heart Devourer-6, Havoc Genesis-6, Mobile Encampment-6, Forsaken Beetle-6, Crushing Anvil-6
 GT19: Tabitha-6, Zealous Pursuer-6, Garrison Fortifier-6, Agrius Maximus-6, Neocyte Resonator-6, Neocyte Resonator-6, Fusillade Bunker-6, Zealous Pursuer-6
 GT20: Constantine-6, Noble Defiance-6, Noble Defiance-6, Grand Templar-6, Tikalan-6, Ayrkrane Vik-6, Sacred Sanctuary-6, Utopia Pharos-6
-Gauntlet: /^GT\d\d$/
+Gauntlet20: /^GT\d\d$/
 GT125k: /^GT12Sk\d\d$/
 GT100k: /^GT1OOk\d\d$/
 GT126k01: Alaric, Corrupted Daemon, Dutiful Veteran, Defiance, Messale, Reckless Fanatic, Sculpted Aegis, Shining Sanctuary, Tempest Hold, Toxic Tank, Xeno Suzerain,

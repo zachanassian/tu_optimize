@@ -83,6 +83,7 @@ loss%: 0 (0 / 10000)
 </pre>
 * Add battleground effect overload.
 * [FIX] Abort execution for -o=[card_id] if card_id does not exist. - [Issue#52](https://github.com/zachanassian/tu_optimize/issues/52) credits [draquila](https://github.com/zachanassian/tu_optimize/pull/53).
+* [FIX] rename <code>Gauntlet</code> to <code>Gauntlet20</code> in <code>data/customdecks_template.txt</code> to solve naming conflicts with Mission #2211 "Gauntlet" 
 
 ##Version 3.4.0
 * Add enhance enfeeble battle ground effect: - [Issue#46](https://github.com/zachanassian/tu_optimize/issues/46)
