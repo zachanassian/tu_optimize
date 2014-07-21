@@ -279,6 +279,7 @@ void CustomCard::add_skill(const custom_card_skill &skill)
         ACTIVE_SKILL(jam);
         ENHANCE_SKILL(protect); // there is no m_protect in Card?
         ACTIVE_SKILL(rally);
+        ENHANCE_SKILL(overload);
         ENHANCE_SKILL(siege);   // or m_siege
         ACTIVE_SKILL(strike);
         ENHANCE_SKILL(weaken);

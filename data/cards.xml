@@ -2,8 +2,8 @@
 <root>
 
 <!-- Lowest ID available 
-	Assault 7473 ends at 7999 continues at 10000 
-	Commander 1367 
+	Assault 7497 ends at 7999 continues at 10000 
+	Commander 1343 
 	Structures 8018 (end at 2699) Fortress 2701 -->
 
 <!-- SET 1000 - Standard -->
@@ -10883,7 +10883,7 @@
         <skill id='berserk' x='1' />
         <skill id='flurry' c='5' />
         <type>6</type>
-        <set>3000</set>
+        <set>3001</set>
         <upgrade>
             <level>2</level>
             <card_id>6934</card_id>
@@ -14015,7 +14015,7 @@
 		<skill id='enfeeble' x='1' />
 		<skill id='strike' x='1' />
 		<type>2</type>
-		<set>3000</set>
+		<set>3001</set>
 		<upgrade>
 			<level>2</level>
 			<card_id>834</card_id>
@@ -19965,7 +19965,7 @@
 		<skill id='wall' />
 		<skill id='weaken' x='1' />
 		<type>5</type>
-		<set>3000</set>
+		<set>3001</set>
 		<upgrade>
 			<level>2</level>
 			<card_id>2350</card_id>
@@ -33539,7 +33539,7 @@
         <skill id='corrosive' x='1' />
         <skill id='jam' c='6' />
         <type>2</type>
-        <set>3000</set>
+        <set>3001</set>
         <upgrade>
             <level>2</level>
             <card_id>6138</card_id>
@@ -33680,7 +33680,7 @@
         <skill id='counter' x='1' />
         <skill id='heal' x='2' />
         <type>1</type>
-        <set>3000</set>
+        <set>3001</set>
         <upgrade>
             <level>2</level>
             <card_id>2608</card_id>
@@ -36671,7 +36671,7 @@
         <skill id='jam' c='5' />
         <skill id='pierce' x='2' />
         <type>5</type>
-        <set>3000</set>
+        <set>3001</set>
         <upgrade>
             <level>2</level>
             <card_id>6712</card_id>
@@ -38395,7 +38395,7 @@
         <skill id='protect' x='1' y='1' />
         <skill id='rally' x='1' y='1' />
         <type>1</type>
-        <set>3000</set>
+        <set>3001</set>
         <upgrade>
             <level>2</level>
             <card_id>6982</card_id>
@@ -38680,7 +38680,7 @@
         <skill id='flurry' c='6' />
         <skill id='weaken' x='1' />
         <type>2</type>
-        <set>3000</set>
+        <set>3001</set>
         <upgrade>
             <level>2</level>
             <card_id>7018</card_id>
@@ -39290,7 +39290,7 @@
     
     <unit>
         <id>7077</id>
-        <name>World Burner</name> 
+        <name>World Burner</name> <!-- Battle Burner -->
         <picture>xenomonster_lv3</picture>
         <fusion_level>1</fusion_level>
         <attack>4</attack>
@@ -39337,7 +39337,7 @@
     
     <unit>
         <id>7083</id>
-        <name>Star Burner</name> 
+        <name>Star Burner</name> <!-- World Burner --> 
         <picture>xenomonster_lv6</picture>
         <fusion_level>2</fusion_level>
         <attack>4</attack>
@@ -39688,7 +39688,7 @@
 		<skill id='enfeeble' x='1' />
 		<skill id='strike' x='1' />
 		<type>4</type>
-		<set>3000</set>
+		<set>3001</set>
 		<upgrade>
 			<level>2</level>
 			<card_id>7162</card_id>
@@ -39839,7 +39839,7 @@
 		<skill id='protect' x='1' y='5' all='1' />
 		<skill id='jam' c='6' />
 		<type>5</type>
-		<set>3000</set>
+		<set>3001</set>
 		<upgrade>
 			<level>2</level>
 			<card_id>7180</card_id>
@@ -40187,7 +40187,7 @@
 		<skill id='strike' x='1' />
 		<skill id='jam' c='6' />
 		<type>6</type>
-		<set>3000</set>
+		<set>4000</set>
 		<upgrade>
 			<level>2</level>
 			<card_id>7246</card_id>
@@ -40388,7 +40388,7 @@
         <skill id='strike' x='1' />
         <skill id='flurry' c='6' />
         <type>1</type>
-        <set>3000</set>
+        <set>3001</set>
         <upgrade>
             <level>2</level>
             <card_id>7348</card_id>
@@ -40543,7 +40543,7 @@
         <skill id='strike' x='1' />
         <skill id='protect' x='3' />
         <type>2</type>
-        <set>3000</set>
+        <set>3001</set>
         <upgrade>
             <level>2</level>
             <card_id>7366</card_id>
@@ -40988,7 +40988,7 @@
         <rarity>4</rarity>
         <skill id='siege' x='1' />
         <type>5</type>
-        <set>3000</set>
+        <set>3001</set>
         <upgrade>
             <level>2</level>
             <card_id>7420</card_id>
@@ -41719,7 +41719,7 @@
         <skill id='strike' x='2' />
         <skill id='berserk' x='1' />
         <type>3</type>
-        <set>3000</set>
+        <set>3001</set>
         <upgrade>
             <level>2</level>
             <card_id>7282</card_id>
@@ -42902,7 +42902,7 @@
 	<unit> <!-- enhance test -->
 		<id>1087</id>
 		<name>Test Oracle</name>
-		<picture>raiderguard32.jpg</picture>
+		<picture>progyfroggy_lv1.jpg</picture>
 		<fusion_level>2</fusion_level>
 		<attack>0</attack>
 		<health>16</health>
@@ -42913,41 +42913,27 @@
 		<upgrade>
 			<level>2</level>
 			<card_id>1088</card_id>
-			<picture>shapeshifter_lv6.jpg</picture>
+			<picture>rightbattleship_lv3.jpg</picture>
 			<health>22</health>
 		</upgrade>
 		<upgrade>
 			<level>3</level>
-			<picture>xenocockatrice.jpg</picture>
+			<picture>raidflamethrower.jpg</picture>
 			<card_id>1089</card_id>
 			<health>28</health>
 		</upgrade>
 		<upgrade>
 			<level>4</level>
-			<picture>sideguntank_lv7.jpg</picture>
+			<picture>impmarine2_lv3.jpg</picture>
 			<card_id>1090</card_id>
 			<health>37</health>
 		</upgrade>
 		<upgrade>
 			<level>5</level>
 			<card_id>1091</card_id>
-			<picture>progfection_lv3.jpg</picture>
+			<picture>rightdroptroopers.jpg</picture>
 			<health>44</health>
 		</upgrade>
-	</unit>
-
-	<unit>
-		<id>19999</id>
-		<name>TestOverload</name>
-		<picture>knocker_lv6.jpg</picture>
-		<attack>4</attack>
-		<health>14</health>
-		<cost>1</cost>
-		<rarity>5</rarity>
-		<type>3</type>
-		<skill id='overload' x='2'/>
-        <skill id='strike' x='3' all='1'/>
-		<set>9999</set>
 	</unit>
 	
 	<unit>
@@ -42983,28 +42969,79 @@
 		</upgrade>
 	</unit>
 	
+	
 	<unit>
-		<id>7994</id>
-		<name>Test Card</name>
-		<picture>knocker_lv6.jpg</picture>
+		<id>7991</id>
+		<name>Test Card A</name>
+		<picture>progitly_lv1.jpg</picture>
 		<attack>3</attack>
-		<health>80</health>
+		<health>14</health>
 		<cost>1</cost>
 		<rarity>5</rarity>
-		<type>3</type>
-		<skill id='strike' x='1' all='1' />
+		<type>2</type>
+		<skill id='valor' x='1' all='1' />
+		<set>9999</set>
+		<upgrade>
+			<level>2</level>
+			<card_id>7992</card_id>
+			<attack>4</attack>
+			<picture>progitly_lv3.jpg</picture>
+		</upgrade>
+		<upgrade>
+			<level>3</level>
+			<card_id>7993</card_id>
+			<health>16</health>
+			<picture>progitly_lv6.jpg</picture>
+		</upgrade>
+	</unit>
+	
+	<unit>
+		<id>7994</id>
+		<name>Test Card B</name>
+		<picture>btfunkycreeper.jpg</picture>
+		<attack>3</attack>
+		<health>14</health>
+		<cost>1</cost>
+		<rarity>5</rarity>
+		<type>2</type>
+		<skill id='overload' x='1' all='1' />
 		<set>9999</set>
 		<upgrade>
 			<level>2</level>
 			<card_id>7995</card_id>
-			<attack>1</attack>
-			<skill id='corrosive' x='1' />
-			<cost>2</cost>
+			<attack>4</attack>
+			<picture>progyfroggy_lv3.jpg</picture>
 		</upgrade>
 		<upgrade>
 			<level>3</level>
 			<card_id>7996</card_id>
-			<skill id='flurry' c='3' />
+			<health>16</health>
+			<picture>progyfroggy_lv6.jpg</picture>
+		</upgrade>
+	</unit>
+	
+	<unit>
+		<id>7997</id>
+		<name>Test Card C</name>
+		<picture>proghast_lv1.jpg</picture>
+		<attack>3</attack>
+		<health>80</health>
+		<cost>1</cost>
+		<rarity>5</rarity>
+		<type>5</type>
+		<skill id='legion' x='3' />
+		<set>9999</set>
+		<upgrade>
+			<level>2</level>
+			<card_id>7998</card_id>
+			<attack>4</attack>
+			<picture>proghast_lv3.jpg</picture>
+		</upgrade>
+		<upgrade>
+			<level>3</level>
+			<card_id>7999</card_id>
+			<health>16</health>
+			<picture>proghast_lv6.jpg</picture>
 		</upgrade>
 	</unit>
 	
@@ -44343,6 +44380,34 @@ fortress_type 2 = siege
 		<desc>Turn the page, wash your hands.</desc>
 		<sound>PoisonSound</sound>
 	</skillType>
+	<skillType>
+		<id>valor</id>
+		<name>Valor</name>
+		<icon>PoisonSkillIcon</icon>
+		<anim>jam</anim>
+		<loop_anim>jam_loop</loop_anim>
+		<desc>Turn the page, wash your hands. A.</desc>
+		<sound>PoisonSound</sound>
+	</skillType>
+	<skillType>
+		<id>overload</id>
+		<name>Overload</name>
+		<icon>PoisonSkillIcon</icon>
+		<anim>jam</anim>
+		<loop_anim>jam_loop</loop_anim>
+		<desc>Turn the page, wash your hands. B.</desc>
+		<sound>PoisonSound</sound>
+	</skillType>
+	<skillType>
+		<id>legion</id>
+		<name>Legion</name>
+		<icon>PoisonSkillIcon</icon>
+		<anim>jam</anim>
+		<loop_anim>jam_loop</loop_anim>
+		<desc>Turn the page, wash your hands. C.</desc>
+		<sound>PoisonSound</sound>
+	</skillType>
+	
 
 
 	<cardSet>

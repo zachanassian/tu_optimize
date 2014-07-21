@@ -14578,48 +14578,48 @@
         <req>2209</req>
     </mission>
 
-    <mission>
-        <id>2211</id>
-        <name>Gauntlet</name>
-        <location_id>110</location_id>
-        <event_req>17</event_req>
-        <mission_type>2</mission_type>
-        <combatBG>combatbg_prologue</combatBG>
-        <monster asset_bundle='16'>gatling_wall</monster>
-        <energy>75</energy>
-        <x>700</x>
-        <y>360</y>
-        <commander>1361</commander>
-        <speech>
-            <line commander='1997'>Octane, attack the East side while I take down the West. We will march into Asphodel together.</line>
-        </speech>
-        <deck>
-            <card>739</card>
-            <card>7341</card>
-            <card>7341</card>
-            <card>7269</card>
-            <card>2121</card>
-            <card>6863</card>
-            <card>5629</card>
-            <card>5629</card>
-            <card>4445</card>
-            <card>2101</card>
-        </deck>
-        <rewards>
-            <gold>90</gold>
-            <card>561</card>
-            <item>1065</item>
-            <star>
-                <id>2</id>
-                <req type='5' compare='great_equal' amount='5' />
-            </star>
-            <star>
-                <id>3</id>
-                <req type='5' compare='great_equal' amount='10' />
-            </star>
-        </rewards>
-        <req>2210</req>
-    </mission>
+	<mission>
+		<id>2211</id>
+		<name>Gauntlet</name>
+		<location_id>110</location_id>
+		<event_req>17</event_req>
+		<mission_type>2</mission_type>
+		<combatBG>combatbg_prologue</combatBG>
+		<monster asset_bundle='16'>gatling_wall</monster>
+		<energy>75</energy>
+		<x>700</x>
+		<y>360</y>
+		<commander>1361</commander>
+		<speech>
+			<line commander='1997'>Octane, attack the East side while I take down the West. We will march into Asphodel together.</line>
+		</speech>
+		<deck>
+			<card>739</card>
+			<card>7341</card>
+			<card>7341</card>
+			<card>7269</card>
+			<card>2121</card>
+			<card>6863</card>
+			<card>5629</card>
+			<card>5629</card>
+			<card>4445</card>
+			<card>2101</card>
+		</deck>
+		<rewards>
+			<gold>90</gold>
+			<card>561</card>
+			<item>1065</item>
+			<star>
+				<id>2</id>
+				<req type='5' compare='great_equal' amount='5' />
+			</star>
+			<star>
+				<id>3</id>
+				<req type='5' compare='great_equal' amount='10' />
+			</star>
+		</rewards>
+		<req>2210</req>
+	</mission>
 	
 	<!-- END July 2014 Missions -->
 

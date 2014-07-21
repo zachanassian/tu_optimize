@@ -5,3 +5,4 @@
 Gremlin, rare bloodthirsty 1/2/0, rally bloodthirsty 2, evade 2, berserk 3
 Commander Sheppard, vindicator imperial 100HP, jam all every 2, rally all 10
 Tested Citadel, protect all 5, evade 5, epic, jam every 1, -/40/1, righteous
+TestOverload, raider 4/14/1, overload 2, strike all 3
