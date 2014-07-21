@@ -313,6 +313,7 @@ void add_owned_card(Cards& cards, std::map<unsigned, unsigned>& owned_cards, std
     char num_sign{0};
     char mark{0};
     parse_card_spec(cards, card_spec, card_id, card_num, num_sign, mark);
+    cards.by_id(card_id); // check that the id is valid
     assert(mark == 0);
     if(num_sign == 0)
     {
@@ -351,7 +352,8 @@ void read_owned_cards(Cards& cards, std::map<unsigned, unsigned>& owned_cards, s
         } 
         catch (std::exception& e)
         {
-            std::cerr << "Warning: Failed to parse owned cards: '" << filename << "' is neither a file nor a valid set of cards (" << e.what() << ")" << std::endl;
+            std::cerr << "Failed to parse owned cards: '" << filename << "' is neither a file nor a valid set of cards (" << e.what() << ")" << std::endl;
+            exit(0);
         }
         return;
     }
