@@ -1,5 +1,7 @@
-// CardName, Faction Rarity attack/health/delay, skill 1, skill 2, ...
+// CardName, Rarity Faction Attack/Health/Delay, Skill 1, Skill 2, ...
+// One card per line
+// Rarity is nonobligatory
 // Some valid examples:
 Gremlin, rare bloodthirsty 1/2/0, rally bloodthirsty 2, evade 2, berserk 3
 Commander Sheppard, vindicator imperial 100HP, jam all every 2, rally all 10
-Alcatraz, WALL, PROTECT 10, EPIC, JAM 2, -/40/4, RIGHTEOUS
+Tested Citadel, protect all 5, evade 5, epic, jam every 1, -/40/1, righteous

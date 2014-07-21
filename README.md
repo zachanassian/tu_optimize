@@ -81,6 +81,7 @@ stall%: 0 (0 / 10000)
 loss%: 0 (0 / 10000)
 </pre>
 * Add battleground effect overload.
+* Add ability to specify custom cards from command line. Check new option -C in Useage - [Pull#51](https://github.com/zachanassian/tu_optimize/pull/51) credits draquila
 
 ##Version 3.4.0
 * Add enhance enfeeble battle ground effect: - [Issue#46](https://github.com/zachanassian/tu_optimize/issues/46)
