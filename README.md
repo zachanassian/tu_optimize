@@ -67,6 +67,7 @@ If you receive virus warnings for <code>SimpleTUOptimizeStarter.exe</code> pleas
 
 ##Version 3.5.0
 * Add current <code>cards.xml</code> and <code>missions.xml</code> - Mission Gauntlet.
+* Add new batch <code>GT150k</code> to <code>data/customdecks_template.txt</code> - credits [HarlequinD](http://www.kongregate.com//forums/2468/topics/390807?page=20#posts-8235136)
 * Add ability to specify custom cards from command line. Check new option -C in Usage. - [Pull#51](https://github.com/zachanassian/tu_optimize/pull/51) credits draquila.
 * Add first implementation of overload. Assumptions:
 ..* targets only enemies cards that have evade charges left or are protected

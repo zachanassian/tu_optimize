@@ -237,3 +237,36 @@ Razogoth Mutant-2: [1338],[6368],[6368],[6374],[6374],[6380],[6380],[6392],[6392
 Razogoth Mutant-3: [1339],[6369],[6369],[6375],[6375],[6381],[6381],[6393],[6393],[6387],[6387]
 Razogoth Mutant-4: [1340],[6370],[6370],[6376],[6376],[6382],[6382],[6394],[6394],[6388],[6388]
 Razogoth Mutant-5: [1341],[6371],[6371],[6377],[6377],[6383],[6383],[6395],[6395],[6389],[6389]
+GT150k01:Nexor-6,Tazerious-6,Sculpted Aegis-6,Veiled Defiler-6,Xeno Suzerain-6,Deranged Malgoth-6,Xeno Suzerain-6,Noxious Tank-6,Bolt Crag-6,Sculpted Aegis-6,Tempest Citadel-6
+GT150k10:Alaric-6,Cryptic Niaq-6,Sacred Equalizer-6,Tazerious-6,Sacred Equalizer-6,Precursor Idealist-6,Noxious Tank-6,Sacred Sanctuary-6,Auger Bore-6
+GT150k11:Barracus-6,Narscious the Eerie-6,Dusk Shade-6,Dusk Shade-6,Executioner Hiborn-6,Narscious the Eerie-6,Grand Templar-6,Longshot Deadeye-6,Noble Defiance-6
+GT150k12:Barracus-6,Warp Alchemist-6,Deranged Malgoth-6,Araqualis-6,Narscious the Eerie-6,Warp Alchemist-6,Narscious the Eerie-6,Noxious Tank-6,Tempest Citadel-6,Withersnare-6,Tazerious-6
+GT150k13:Constantine-6,Contaminant Purifier-6,Honorable Samurai-6,Bolt Crag-6,Noble Defiance-6,Contaminant Purifier-6,Bolt Crag-6,Grand Templar-6,Noble Defiance-6,Tempest Citadel-6,Sacred Sanctuary-6
+GT150k14:Barracus-6,Tazerious-6,Contaminant Purifier-6,Trampling Anvil-6,Sacred Sanctuary-6,Noxious Tank-6,Noxious Tank-6,Steadfast Assailant-6
+GT150k15:Constantine-6,Zodiac Harbinger-6,Charincinerator-6,Grand Templar-6,Bolt Crag-6,Bolt Crag-6,Zodiac Harbinger-6,Tempest Citadel-6,Sacred Sanctuary-6,Longshot Deadeye-6,Bolt Crag-6
+GT150k16:Constantine-6,Bolt Crag-6,Bolt Crag-6,Bolt Crag-6,Zodiac Harbinger-6,Grand Templar-6,Tempest Citadel-6,Sacred Sanctuary-6
+GT150k17:Constantine-6,Zodiac Harbinger-6,Arc Mason-6,Tempest Citadel-6,Bolt Crag-6,Sacred Sanctuary-6,Zodiac Harbinger-6,Bolt Crag-6,Noble Defiance-6,Messale-6
+GT150k18:Constantine-6,Zodiac Harbinger-6,Zodiac Harbinger-6,Sacred Sanctuary-6,Noble Defiance-6,Dignified Vigil-6,Noble Defiance-6,Tempest Citadel-6
+GT150k19:Nexor-6,Xeno Suzerain-6,Auger Bore-6,Tazerious-6,Ayrkrane Vik-6,Corrupted Daemon-6,Neo Delver-6,Apex Dynamo-6,Starformer-6,Arch Nova Elite-6
+GT150k02:Constantine-6,Heart Devourer-6,Bolt Crag-6,Warp Alchemist-6,Heart Devourer-6,Remote Rig-6,Bolt Crag-6,Tazerious-6,Heart Devourer-6,Bolt Crag-6,Sacred Sanctuary-6
+GT150k20:Constantine-6,Longshot Deadeye-6,Longshot Deadeye-6,Bolt Crag-6,Grand Templar-6,Zodiac Harbinger-6,Noble Defiance-6,Noble Defiance-6,Sacred Sanctuary-6,Recovery Sanctum-6
+GT150k21:Halcyon-6,Tempest Citadel-6,Flux Station-6,Neocyte Resonator-6,Auger Bore-6,Garrison Fortifier-6,Steadfast Assailant-6,Galereaver-6,Sculpted Aegis-6,Drake Scouter-6
+GT150k22:Barracus-6,Charincinerator-6,Lord Hades-6,Tazerious-6,Bolt Crag-6,Tempest Citadel-6,Noble Defiance-6,Auger Bore-6,Veiled Defiler-6,Bolt Crag-6,Veiled Defiler-6
+GT150k23:Barracus-6,Noble Defiance-6,Samurai-6,Worldformer-6,Tazerious-6,Spiteful Raptor-6,Ayrkrane Vik-6,Auger Bore-6,Trampling Anvil-6
+GT150k24:Constantine-6,Longshot Deadeye-6,Noble Defiance-6,Bolt Crag-6,Grand Templar-6,Sultan-6,Noble Defiance-6,Sacred Sanctuary-6
+GT150k25:Barracus-6,Sacred Sanctuary-6,Tempest Citadel-6,Forsaken Beetle-6,Auger Bore-6,Ayrkrane Vik-6,Noble Defiance-6,Tazerecca-6,Crushing Anvil-6
+GT150k26:Nexor-6,Trampling Anvil-6,Grizrael the Reaper-6,Tazerious-6,Sacred Equalizer-6,Sacred Sanctuary-6,Noble Defiance-6,Auger Bore-6
+GT150k27:Constantine-6,Ayrkrane Vik-6,Contaminant Purifier-6,Zodiac Harbinger-6,Noble Defiance-6,Trampling Anvil-6,Sculpted Aegis-6,Noble Defiance-6,Warp Fuser-6
+GT150k28:Barracus-6,Sculpted Aegis-6,Ayrkrane Vik-6,Havoc Genesis-6,Tazerious-6,Trampling Anvil-6,Covert Jet-6,Messale-6,Auger Bore-6
+GT150k29:Barracus-6,Spiteful Raptor-6,Auger Bore-6,Honorable Samurai-6,Grizrael the Reaper-6,Sacred Sanctuary-6,Noble Defiance-6,Sacred Equalizer-6,Xeno Suzerain-6,Trampling Anvil-6,Tazerious-6
+GT150k03:Typhon Vex-6,Heart Devourer-6,Judgment Nova-6,Heart Devourer-6,Heart Devourer-6,Charincinerator-6,Grizrael the Reaper-6,Loaded Warehouse-6,Heart Devourer-6,Heart Devourer-6,Tempest Citadel-6
+GT150k30:Barracus-6,Noble Defiance-6,Cryptic Niaq-6,Noble Defiance-6,Auger Bore-6,Havoc Genesis-6,Xeno Suzerain-6,Arcane Dreadship-6
+GT150k31:Halcyon-6,Sculpted Aegis-6,Heart Devourer-6,Indestructible Troop-6,Bolt Crag-6,Tazerious-6,Charincinerator-6,Charincinerator-6,Sacred Sanctuary-6
+GT150k32:Constantine-6,Bolt Crag-6,Experiment Gasher-6,Bolt Crag-6,Bolt Crag-6,Bolt Crag-6,Zodiac Harbinger-6,Ayrkrane Vik-6,Sacred Sanctuary-6
+GT150k04:Barracus-6,Twindecimator-6,Bolt Crag-6,Experiment Gasher-6,Veiled Defiler-6,Tempest Citadel-6,Charincinerator-6,Omega Nexus-6,Noxious Tank-6
+GT150k05:Barracus-6,Warp Alchemist-6,Crogall Static-6,Narscious the Eerie-6,Narscious the Eerie-6,Noble Defiance-6,Tempest Citadel-6,Tazerious-6,Warp Alchemist-6,Heart Devourer-6,Tempest Citadel-6
+GT150k06:Halcyon-6,Sculpted Aegis-6,Galereaver-6,Steadfast Assailant-6,Steadfast Assailant-6,Sculpted Aegis-6,Tempest Citadel-6,Galereaver-6,Galereaver-6,Tempest Citadel-6,Sculpted Aegis-6
+GT150k07:Constantine-6,Longshot Deadeye-6,High Templar-6,Bolt Crag-6,Bolt Crag-6,Noble Defiance-6,Zodiac Harbinger-6,Zodiac Harbinger-6,Zodiac Harbinger-6
+GT150k08:Halcyon-6,Neocyte Cultivator-6,Sculpted Aegis-6,Indestructible Troop-6,Zealous Pursuer-6,Zealous Pursuer-6,Yobedisect-6,Blast Lancer-6,Auger Bore-6,Convictor-6,Steadfast Assailant-6
+GT150k09:Constantine-6,Tempest Citadel-6,Flash Deity-6,Grand Templar-6,Bolt Crag-6,Tempest Citadel-6,Bolt Crag-6,Conquest Mason-6,Bolt Crag-6,Crogall Static-6,Bolt Crag-6
+GT150k: /^GT150k\d\d$/
