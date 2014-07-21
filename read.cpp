@@ -375,4 +375,3 @@ void read_owned_cards(Cards& cards, std::map<unsigned, unsigned>& owned_cards, s
         }
     }
 }
-

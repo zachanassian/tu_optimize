@@ -35,6 +35,7 @@
 #include "sim.h"
 #include "tyrant.h"
 #include "xml.h"
+#include "custom_card.h"
 //#include "timer.hpp"
 
 namespace {
@@ -1144,6 +1145,13 @@ void usage(int argc, char** argv)
         "                 example: -o=data/mycards.txt.\n"
         "  -o=<cards>: restrict to the owned cards specified.\n"
         "                 example: -o=\"Sacred Equalizer#2, Infantry\".\n"
+        "  -C: load custom cards from \"data/customcards.txt\".\n"
+        "  -C=<filename>: load custom cards from <filename>.\n"
+        "  -C=<cards>: load custom cards specified.\n"
+        "              format:\n"
+        "                CardName1, Rarity Faction attack/health/delay, skill 1, skill 2, ... ; CardName2, ...\n"
+        "              example:\n"
+        "                -C=\"Commander Sheppard, Legendary Raider 100HP, rally all 3; Gremlin, common bloodthirsty 1/3/0, berserk 1, leech 1\"\n"
         //"  fund <num>: fund <num> gold to buy/upgrade cards. prices are specified in ownedcards file.\n"
         "  target <num>: stop as soon as the score reaches <num>.\n"
         //"  -u: don't upgrade owned cards. (by default, upgrade owned cards when needed)\n"
@@ -1176,6 +1184,9 @@ int main(int argc, char** argv)
     Cards cards;
     read_cards(cards);
     read_card_abbrs(cards, "data/cardabbrs.txt");
+    CustomCardReader reader(cards);
+    // have to process custom cards early before att_deck/def_decks are loaded
+    reader.process_args(argc, argv);
     Decks decks;
     Achievement achievement;
     load_decks_xml(decks, cards);
@@ -1591,6 +1602,10 @@ int main(int argc, char** argv)
                 def_deck->set_fortress2(ef_deck->get_fortress2());
             }
             argIndex += 1;
+        }
+        else if (strcmp(argv[argIndex], "-C") == 0 || strncmp(argv[argIndex], "-C=", 3) == 0) 
+        {
+            // just skip the argument since we have run CustomCardReader::process_args() already
         }
         else
         {
