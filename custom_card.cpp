@@ -193,7 +193,7 @@ CustomCard::CustomCard(unsigned id, const std::string &card_spec): Card()
     if (!r || iter != card_spec.end())
     {
         std::string remaining_unparsed(iter, card_spec.end());
-        throw std::runtime_error(card_spec + ": Custom card failed to parse after \"" + remaining_unparsed + "\"");
+        throw std::runtime_error("\"" + card_spec + "\": failed to parse after \"" + remaining_unparsed + "\"");
     }
 
     // we can only figure out the type after parsing
@@ -396,7 +396,16 @@ void CustomCardReader::process_args(int argc, char *argv[])
     }
     if (use_custom_cards)
     {
-        process_custom_cards(custom_cards);
+        try
+        {
+            process_custom_cards(custom_cards);
+        }
+        catch (std::runtime_error& e)
+        {
+            std::cerr << "Error parsing custom cards: " << e.what() << std::endl;
+            exit(0);
+        }
+
         // organize() again so the new cards are included
         cards.organize();
     }
