@@ -65,7 +65,7 @@ If you receive virus warnings for <code>SimpleTUOptimizeStarter.exe</code> pleas
 
 ##Changelog
 
-##Version 3.6.0(pre)
+##Version 3.6.0
 * OnExit: Save last used settings in <code>SimpleTUOptimizeStarter</code> - [Issue#49](https://github.com/zachanassian/tu_optimize/issues/49)
 * Add current <code>cards.xml</code> and <code>missions.xml</code> - Mission Protomech.
 * Add battleground effect Progenitor.
