@@ -4,7 +4,7 @@
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
-BGEffects := "none|Armor 1|Armor 2|Armor 3|Berserk 1|Berserk 2|Berserk 3|Corrosive 1|Corrosive 2|Corrosive 3|Counter 1|Counter 2|Counter 3|Enfeeble 1|Enfeeble 2|Enfeeble 3|Evade 1|Evade 2|Evade 3|Heal 1|Heal 2|Heal 3|Leech 1|Leech 2|Leech 3|Overload 1|Overload 2|Overload 3|Poison 1|Poison 2|Poison 3|Rally 1|Rally 2|Rally 3|Strike 1|Strike 2|Strike 3"
+BGEffects := "none|Armor 1|Armor 2|Armor 3|Berserk 1|Berserk 2|Berserk 3|Corrosive 1|Corrosive 2|Corrosive 3|Counter 1|Counter 2|Counter 3|Enfeeble 1|Enfeeble 2|Enfeeble 3|Evade 1|Evade 2|Evade 3|Heal 1|Heal 2|Heal 3|Leech 1|Leech 2|Leech 3|Overload 1|Overload 2|Overload 3|Poison 1|Poison 2|Poison 3|Progenitor|Rally 1|Rally 2|Rally 3|Strike 1|Strike 2|Strike 3"
 IniFileName := "data\SimpleTUOptimizeStarter.ini"
 IniSection := "onLoad"
 

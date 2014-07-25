@@ -2597,7 +2597,7 @@ inline void perform_skill<enhance_strike>(Field* fd, CardStatus* c, unsigned v)
 template<unsigned skill_id>
 inline unsigned select_fast(Field* fd, CardStatus* src_status, const std::vector<CardStatus*>& cards, const SkillSpec& s, bool is_helpful_skill)
 {
-    if(std::get<2>(s) == allfactions)
+    if(std::get<2>(s) == allfactions || fd->effect == Effect::bg_progenitor)
     {
         return(fd->make_selection_array(cards.begin(), cards.end(), [fd, src_status, s, is_helpful_skill](CardStatus* c){return(!(is_helpful_skill && c->m_phased) && skill_predicate<skill_id>(fd, src_status, c, s));}));
     }

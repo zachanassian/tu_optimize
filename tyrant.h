@@ -123,6 +123,7 @@ enum Effect {
     poison_1,
     poison_2,
     poison_3,
+    bg_progenitor,
     rally_1,
     rally_2,
     rally_3,

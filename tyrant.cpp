@@ -77,6 +77,7 @@ std::string effect_names[Effect::num_effects] = {
     "Poison 1",
     "Poison 2",
     "Poison 3",
+    "Progenitor",
     "Rally 1",
     "Rally 2",
     "Rally 3",
