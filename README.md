@@ -65,6 +65,9 @@ If you receive virus warnings for <code>SimpleTUOptimizeStarter.exe</code> pleas
 
 ##Changelog
 
+##Version 3.6.0(pre)
+* OnExit: Save last used settings in <code>SimpleTUOptimizeStarter</code> - [Issue#49](https://github.com/zachanassian/tu_optimize/issues/49)
+
 ##Version 3.5.0
 * Add current <code>cards.xml</code> and <code>missions.xml</code> - Mission Gauntlet.
 * Add new batch <code>GT150k</code> to <code>data/customdecks_template.txt</code> - credits [HarlequinD](http://www.kongregate.com//forums/2468/topics/390807?page=20#posts-8235136)
