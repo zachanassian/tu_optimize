@@ -23,6 +23,7 @@ Mode:
   pvp: attacker goes first. Simulate/optimize for win rate. Normally used for missions or pvp. [default]
   pvp-defense: attacker goes second. Simulate/optimize for win rate + stall rate. Normally used for pvp defense.
   gw: attacker goes second. Simulate/optimize for win rate. Normally used for guild wars.
+  gw-abp: attacker goes second. Simulate/optimize for average battle points. Normally used for guild wars.
   gw-defense: attacker goes first. Simulate/optimize for win rate + stall rate. Normally used for gw defense.
 Order:
   random: the attack deck is played randomly. [default]
@@ -64,6 +65,11 @@ Open https://github.com/zachanassian/tu_optimize/blob/master/README.md to get la
 If you receive virus warnings for <code>SimpleTUOptimizeStarter.exe</code> please read [here](http://zachanassian.github.io/tu_optimize/faq.html#ahk).
 
 ##Changelog
+
+##Version 3.7.0
+* Add new mode gw-abp. Simulate/optimize for average battle points. Due to gw scoring it is better to win 75% 60 points then to win 80% 50 points.
+* Add current <code>cards.xml</code>
+* Released zip file contains a new folder /src with tu_optimize source code
 
 ##Version 3.6.0
 * OnExit: Save last used settings in <code>SimpleTUOptimizeStarter</code> - [Issue#49](https://github.com/zachanassian/tu_optimize/issues/49)
