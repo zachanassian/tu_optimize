@@ -70,6 +70,7 @@ If you receive virus warnings for <code>SimpleTUOptimizeStarter.exe</code> pleas
 * Add new mode gw-abp. Simulate/optimize for average battle points. Due to gw scoring it is better to win 75% 60 points then to win 80% 50 points.
 * Add current <code>cards.xml</code>
 * Released zip file contains a new folder /src with tu_optimize source code
+* Add GTop201408 to <code>data/customdecks_template.txt</code> - credits [HarlequinD](http://www.kongregate.com/forums/2468/topics/390807?page=22#posts-8299419)
 
 ##Version 3.6.0
 * OnExit: Save last used settings in <code>SimpleTUOptimizeStarter</code> - [Issue#49](https://github.com/zachanassian/tu_optimize/issues/49)

@@ -270,3 +270,30 @@ GT150k07:Constantine-6,Longshot Deadeye-6,High Templar-6,Bolt Crag-6,Bolt Crag-6
 GT150k08:Halcyon-6,Neocyte Cultivator-6,Sculpted Aegis-6,Indestructible Troop-6,Zealous Pursuer-6,Zealous Pursuer-6,Yobedisect-6,Blast Lancer-6,Auger Bore-6,Convictor-6,Steadfast Assailant-6
 GT150k09:Constantine-6,Tempest Citadel-6,Flash Deity-6,Grand Templar-6,Bolt Crag-6,Tempest Citadel-6,Bolt Crag-6,Conquest Mason-6,Bolt Crag-6,Crogall Static-6,Bolt Crag-6
 GT150k: /^GT150k\d\d$/
+
+GTop20140801:Constantine,Tempest Citadel,Grand Templar,Zodiac Harbinger,Zodiac Harbinger,Bolt Crag,Bolt Crag,Bolt Crag,Sacred Sanctuary,Charincinerator
+GTop20140802:Constantine,Tempest Citadel,Demi Constrictor,Arch Zephyr Alpha,Grand Templar,Grand Templar,Conquest Mason,Grand Templar,Grand Templar,Noble Defiance,Tempest Citadel
+GTop20140803:Constantine,Tempest Citadel,Bolt Crag,Bolt Crag,Sacred Sanctuary,Zodiac Harbinger,Honorable Samurai,Noble Defiance,Crogall Static
+GTop20140804:Nexor,Demi Constrictor,Demi Constrictor,Sacred Sanctuary,Tempest Citadel,Demi Constrictor,Xeno Suzerain,Portal Noctil,Tazerious,Arch Nova Elite,Kezerus Loaded
+GTop20140805:Constantine,Tempest Citadel,Dignified Vigil,Noble Defiance,Dignified Vigil,Sacred Sanctuary,Dignified Vigil,Noble Defiance,Bolt Crag,Longshot Deadeye
+GTop20140806:Constantine,Noble Defiance,Tempest Citadel,Bolt Crag,Grand Templar,Tempest Citadel,Demi Constrictor,Bolt Crag,Contaminant Purifier,Crogall Static,Zodiac Harbinger
+GTop20140807:Constantine,Demi Constrictor,Tempest Citadel,Bolt Crag,Dignified Vigil,Bolt Crag,Sacred Sanctuary,Flame Wraith,Demi Constrictor,Steadfast Assailant,Cruise Launcher
+GTop20140808:Constantine,Zodiac Harbinger,Zodiac Harbinger,Contaminant Purifier,Zodiac Harbinger,Zodiac Harbinger,Zodiac Harbinger,Sacred Sanctuary,Honorable Samurai,Zodiac Harbinger
+GTop20140809:Halcyon,Galereaver,Tempest Citadel,Garrison Fortifier,Sculpted Aegis,Sculpted Aegis,Galereaver,Hephatat Stoic,Sculpted Aegis,Steadfast Assailant,Steadfast Assailant
+GTop20140810:Constantine,Grand Templar,Sacred Sanctuary,Bolt Crag,Bolt Crag,Zodiac Harbinger,Noble Defiance,Zodiac Harbinger,Bolt Crag,Longshot Deadeye
+GTop20140811:Constantine,Tempest Citadel,Grand Templar,Zodiac Harbinger,Zodiac Harbinger,Bolt Crag,Grand Templar,Bolt Crag,Noble Defiance,Sacred Sanctuary,Bolt Crag
+GTop20140812:Constantine,Tempest Citadel,Grand Templar,Dignified Vigil,Zodiac Harbinger,Bolt Crag,Zodiac Harbinger,Zodiac Harbinger,Contaminant Purifier,Noble Defiance,Contaminant Purifier
+GTop20140813:Constantine,Tempest Citadel,Demi Constrictor,Firestorm,Flame Wraith,Bolt Crag,Sacred Sanctuary,Bolt Crag,Mephalus Gorge,Demi Constrictor,Araqualis
+GTop20140814:Constantine,Heart Devourer,Bolt Crag,Warp Alchemist,Heart Devourer,Remote Rig,Bolt Crag,Tazerious,Heart Devourer,Bolt Crag,Sacred Sanctuary
+GTop20140815:Typhon Vex,Heart Devourer,Judgment Nova,Heart Devourer,Heart Devourer,Charincinerator,Grizrael the Reaper,Loaded Warehouse,Heart Devourer,Heart Devourer,Tempest Citadel
+GTop20140816:Halcyon,Sculpted Aegis,Galereaver,Steadfast Assailant,Steadfast Assailant,Sculpted Aegis,Tempest Citadel,Galereaver,Galereaver,Tempest Citadel,Sculpted Aegis
+GTop20140817:Constantine,Tempest Citadel,Flash Deity,Grand Templar,Bolt Crag,Tempest Citadel,Bolt Crag,Conquest Mason,Bolt Crag,Crogall Static,Bolt Crag
+GTop20140818:Barracus,Warp Alchemist,Deranged Malgoth,Araqualis,Narscious the Eerie,Warp Alchemist,Narscious the Eerie,Noxious Tank,Tempest Citadel,Withersnare,Tazerious
+GTop20140819:Constantine,Contaminant Purifier,Honorable Samurai,Bolt Crag,Noble Defiance,Contaminant Purifier,Bolt Crag,Grand Templar,Noble Defiance,Tempest Citadel,Sacred Sanctuary
+GTop20140820:Constantine,Zodiac Harbinger,Charincinerator,Grand Templar,Bolt Crag,Bolt Crag,Zodiac Harbinger,Tempest Citadel,Sacred Sanctuary,Longshot Deadeye,Bolt Crag
+GTop20140821:Constantine,Bolt Crag,Bolt Crag,Bolt Crag,Zodiac Harbinger,Grand Templar,Tempest Citadel,Sacred Sanctuary
+GTop20140822:Constantine,Zodiac Harbinger,Arc Mason,Tempest Citadel,Bolt Crag,Sacred Sanctuary,Zodiac Harbinger,Bolt Crag,Noble Defiance,Messale
+GTop20140823:Constantine,Zodiac Harbinger,Zodiac Harbinger,Sacred Sanctuary,Noble Defiance,Dignified Vigil,Noble Defiance,Tempest Citadel
+GTop20140824:Constantine,Longshot Deadeye,Longshot Deadeye,Bolt Crag,Grand Templar,Zodiac Harbinger,Noble Defiance,Noble Defiance,Sacred Sanctuary,Recovery Sanctum
+GTop20140825:Constantine,Longshot Deadeye,Noble Defiance,Bolt Crag,Grand Templar,Sultan,Noble Defiance,Sacred Sanctuary
+GTop201408: /^GTop201408\d\d$/
